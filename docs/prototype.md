@@ -108,7 +108,7 @@ section).
   opens the role list with the search applied, and "Hiring? Post a role".
 - **Map of Milan** with a pin per company showing its number of open roles.
   Hover or focus a pin for each role's pay, schedule and posted date; click it
-  to filter the role list by that company. Drag to pan, + / − / reset, double
+  to filter the role list by that employer (an "Employer: …" chip). Drag to pan, + / − / reset, double
   click to zoom, or click the map then scroll. Remote roles and employers who
   hide their area stay off the map. Below it: "Open Milan in Google Maps".
 - **The five newest roles** and "See all roles".
@@ -126,12 +126,15 @@ section).
 - **Rows**: title, employer with verified mark and star rating, "New" and
   "Basic Italian" tags, type · area with metro badge · schedule (and "Private
   employer" where it applies), pay and posted date. With Best match the top
-  three rows give a one-line reason.
+  three rows give a one-line reason. Reasons say "your" (for example "Fits
+  your weekend availability") only when a signed-in student's availability
+  really matches; signed out, they describe the role instead.
 - **Empty state**: names the filter that excludes the most roles, offers to
   remove it, and offers to save the search for alerts.
 - **Save search** stores the current filters with an "Email me when a new
   role matches" switch. When the admin approves a matching role, the student
-  gets an alert in their dashboard.
+  gets an alert in their dashboard. Signed-in students see a "Your saved
+  searches (n)" link next to the button.
 
 ## 3. Role detail (`#job/<id>`)
 
@@ -183,8 +186,11 @@ follows what you've filled in.
 
 ## 6. Student dashboard (`#me`)
 
-- **Alerts**: new roles matching saved searches, new roles from followed
-  employers, and accepted or rejected applications. Unread count in the header.
+- **Alerts**: one alert per new role that matches a saved search, comes from
+  a followed employer, or fits your availability (the "Email me when new roles
+  match my availability" choice from sign-up, which can be switched here),
+  plus accepted or rejected applications and invites from past employers.
+  Unread count in the header.
 - **My applications**: every role you applied to, with date and how (company
   site or email), filterable by Applied, Accepted and Rejected. You can update
   the status yourself (for applications on company sites); employers who use
@@ -224,7 +230,8 @@ follows what you've filled in.
   admin queue).
 - **Past employees**: students who worked for you. Tick **Alert first** for
   recurring employees: they are told about your next role before everyone
-  else when it goes live.
+  else when it goes live. **Invite to apply** sends one past employee a
+  personal alert about a chosen live role, with a message.
 - **Reviews from students**, and "Tell us how it went" feedback.
 
 ## 8. Admin (`#admin`)
@@ -242,7 +249,7 @@ follows what you've filled in.
 ## 9. About, privacy and terms
 
 About: why GigoMe exists, the four principles, a **contact section** for
-students and for employers (email, phone, LinkedIn), a note about the demo and
+students and for employers (email, phone and LinkedIn for each), a note about the demo and
 the team. Privacy notice and Terms are short drafts, clearly marked as needing
 legal review before launch.
 

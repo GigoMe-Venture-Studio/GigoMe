@@ -710,6 +710,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
         <select class="select" id="sort"><option value="match">Best match</option><option value="pay">Highest pay</option><option value="new">Newest</option></select>
       </label>
       <button type="button" class="btn btn-secondary" id="save-search">Save search</button>
+      <a class="btn btn-tertiary btn-sm" id="saved-link" href="#me/searches" hidden></a>
     </div>
 
     <div class="jobs-layout">
@@ -1284,7 +1285,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
   // Contact details on the About page. Placeholders: replace before launch.
   // Leave linkedin empty to show "coming soon".
   var CONTACT = {
-    students: { email: 'students@gigome.example', linkedin: '' },
+    students: { email: 'students@gigome.example', phone: '+39 000 000 0000', linkedin: '' },
     employers: { email: 'employers@gigome.example', phone: '+39 000 000 0000', linkedin: '' }
   };
 
@@ -1382,11 +1383,25 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
     if (!companyInfo(j.company).showLocation) return 'Milan, area on request';
     return '<span class="place">' + esc(j.area) + (j.metro && j.metro.length ? ' ' + metroBadges(j) : '') + '</span>';
   }
+  // Does a role fit a student's availability? Flexible roles fit anyone.
+  var AVAIL_FIT = { 'Weekends': function (j) { return j.when.indexOf('Weekends') !== -1; }, 'Evenings': function (j) { return j.when.indexOf('Evenings') !== -1; },
+    'Weekday mornings': function (j) { return j.when.indexOf('Weekdays') !== -1; }, 'Remote': function (j) { return j.mode === 'Remote'; } };
+  function fitsAvail(j, avail) {
+    if (!avail || !avail.length) return false;
+    return j.when.indexOf('Flexible') !== -1 || avail.some(function (a) { return AVAIL_FIT[a] && AVAIL_FIT[a](j); });
+  }
+  // One plain reason for the top results. "Your" only when it is really about the signed-in student.
   function reason(j) {
-    if (j.when.indexOf('Weekends') !== -1) return 'Fits your weekend availability';
-    if (j.when.indexOf('Evenings') !== -1) return 'Fits your evening availability';
+    var avail = db.session === 'student' && db.profile ? db.profile.avail || [] : [];
+    if (avail.indexOf('Weekends') !== -1 && AVAIL_FIT.Weekends(j)) return 'Fits your weekend availability';
+    if (avail.indexOf('Evenings') !== -1 && AVAIL_FIT.Evenings(j)) return 'Fits your evening availability';
+    if (avail.indexOf('Weekday mornings') !== -1 && AVAIL_FIT['Weekday mornings'](j)) return 'Fits your weekday availability';
+    if (avail.indexOf('Remote') !== -1 && j.mode === 'Remote') return 'Remote, as you asked';
     if (j.rate >= HIGH_PAY) return 'Above-average pay';
-    return 'No Italian needed';
+    if (j.when.indexOf('Flexible') !== -1) return 'Flexible hours';
+    if (!avail.length && j.when.indexOf('Weekends') !== -1) return 'Weekend shifts, around lectures';
+    if (!avail.length && j.when.indexOf('Evenings') !== -1) return 'Evening hours, around lectures';
+    return j.lang === 'en' ? 'No Italian needed' : 'Highly rated match';
   }
   function row(j, withReason) {
     var info = companyInfo(j.company);
@@ -1525,7 +1540,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
   // ==========================================================================
   // Jobs: state, filters, results
   // ==========================================================================
-  function freshState() { return { q: '', area: '', cats: [], minPay: 0, when: [], modes: [], englishOnly: false, sort: 'match' }; }
+  function freshState() { return { q: '', company: '', area: '', cats: [], minPay: 0, when: [], modes: [], englishOnly: false, sort: 'match' }; }
   var state = freshState();
   var form = $('filters');
 
@@ -1538,7 +1553,8 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
 
   function passes(j, s) {
     var q = (s.q || '').toLowerCase().trim();
-    return (!s.cats.length || s.cats.indexOf(j.cat) !== -1) &&
+    return (!s.company || j.company === s.company) &&
+      (!s.cats.length || s.cats.indexOf(j.cat) !== -1) &&
       j.rate >= s.minPay &&
       (!s.area || j.area === s.area) &&
       (!s.when.length || j.when.some(function (w) { return s.when.indexOf(w) !== -1; })) &&
@@ -1554,6 +1570,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
   function activeFilters(s) {
     var out = [];
     if (s.q) out.push({ label: 'Search: ' + s.q, drop: function (t) { t.q = ''; } });
+    if (s.company) out.push({ label: 'Employer: ' + s.company, drop: function (t) { t.company = ''; } });
     if (s.area) out.push({ label: 'Area: ' + s.area, drop: function (t) { t.area = ''; } });
     s.cats.forEach(function (c) { out.push({ label: TYPE[c], drop: function (t) { t.cats = t.cats.filter(function (x) { return x !== c; }); } }); });
     if (s.minPay) out.push({ label: 'At least €' + s.minPay + '/h', drop: function (t) { t.minPay = 0; } });
@@ -1580,6 +1597,9 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
     var list = filtered(state);
     var active = activeFilters(state);
     $('result-count').textContent = plural(list.length, 'role', 'roles');
+    var mine = db.session === 'student' ? db.searches.length : 0;
+    $('saved-link').hidden = !mine;
+    $('saved-link').textContent = 'Your saved searches (' + mine + ')';
     $('filters-btn').textContent = active.length ? 'Filters (' + active.length + ')' : 'Filters';
     $('drawer-apply').textContent = 'Show ' + plural(list.length, 'role', 'roles');
     $('active-chips').innerHTML = active.map(function (f, i) {
@@ -1642,7 +1662,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
         onSubmit: function (fd) {
           var s = clone(state); s.sort = 'match';
           db.searches.push({ id: 's' + Date.now(), name: fd.get('name').trim() || label, state: s, alerts: !!fd.get('alerts') });
-          save();
+          save(); render();
           toast('Search saved. <a href="#me/searches">See your saved searches</a>');
         }
       });
@@ -1725,7 +1745,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
         var show = function () { showTip(html, btn); }, hide = function () { hideTip(btn); };
         btn.addEventListener('mouseenter', show); btn.addEventListener('focus', show);
         btn.addEventListener('mouseleave', hide); btn.addEventListener('blur', hide);
-        btn.addEventListener('click', function () { state = freshState(); state.q = name; location.hash = '#jobs'; });
+        btn.addEventListener('click', function () { state = freshState(); state.company = name; location.hash = '#jobs'; });
         placeAt(btn, POS[name]);
         layer.appendChild(btn);
       });
@@ -2221,9 +2241,11 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
 
       '<section class="dash-block" id="me-alerts" aria-labelledby="me-alerts-t"><div class="section-head"><h2 class="section-title" id="me-alerts-t">Alerts' + (unread ? ' <span class="badge tnum">' + unread + '</span>' : '') + '</h2>' +
         (db.notes.length ? '<button type="button" class="btn btn-tertiary btn-sm" data-me="read">Mark all as read</button>' : '') + '</div>' +
+        '<label class="check" style="font-size:14px;margin-bottom:var(--s3)"><input type="checkbox" data-avail-alerts' + (p.alerts ? ' checked' : '') + '> Email me about new roles that fit my availability' +
+          (p.avail && p.avail.length ? ' (' + esc(p.avail.join(', ').toLowerCase()) + ')' : ' (set your availability in <a href="#signup">your profile</a>)') + '</label>' +
         (db.notes.length ? '<ul class="plain-list">' + db.notes.slice(0, 8).map(function (n) {
           return '<li><div><a href="' + esc(n.href) + '"' + (n.read ? '' : ' style="font-weight:600"') + '>' + esc(n.text) + '</a>' + (n.read ? '' : ' <span class="sr-only">(new)</span>') + '</div><span class="muted">' + fmtDate(n.date) + '</span></li>';
-        }).join('') + '</ul>' : '<p class="empty-line">No alerts yet. Save a search or follow an employer to get alerts about new roles.</p>') + '</section>' +
+        }).join('') + '</ul>' : '<p class="empty-line">No alerts yet. Turn on availability alerts, save a search or follow an employer to hear about new roles.</p>') + '</section>' +
 
       '<section class="dash-block" id="me-apps" aria-labelledby="me-apps-t"><div class="section-head"><h2 class="section-title" id="me-apps-t">My applications</h2>' +
         '<p class="hint">Applied on a company site? Update the status when you hear back.</p></div>' +
@@ -2291,6 +2313,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
   $('me-root').addEventListener('change', function (e) {
     var t = e.target;
     if (t.dataset.status !== undefined) { db.apps[+t.dataset.status].status = t.value; save(); renderMe(); toast('Status updated.'); }
+    if (t.dataset.availAlerts !== undefined) { db.profile.alerts = t.checked; save(); toast(t.checked ? 'You\'ll get an email when a role that fits your availability goes live.' : 'Availability alerts off.'); return; }
     if (t.dataset.alert !== undefined) { db.searches[+t.dataset.alert].alerts = t.checked; save(); toast(t.checked ? 'Email alerts on.' : 'Email alerts off.'); }
   });
   function downloadData() {
@@ -2437,16 +2460,35 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
     var recurring = db.past.filter(function (p) { return p.recurring; }).length;
     $('co-past').innerHTML = '<div class="section-head"><h2 class="section-title">Past employees</h2><span class="muted tnum">' + (recurring ? plural(recurring, 'recurring employee', 'recurring employees') : '') + '</span></div>' +
       '<p class="hint" style="margin-bottom:var(--s3)">Students who have worked for you. Tick "Alert first" for people you\'d hire again: when your next role goes live, they get an alert before everyone else.</p>' +
-      (db.past.length ? '<table class="table"><thead><tr><th scope="col">Name</th><th scope="col">Last role</th><th scope="col">Last worked</th><th scope="col">Recurring</th></tr></thead><tbody>' +
+      (db.past.length ? '<table class="table"><thead><tr><th scope="col">Name</th><th scope="col">Last role</th><th scope="col">Last worked</th><th scope="col">Recurring</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' +
         db.past.map(function (p, i) {
           return '<tr><td><strong>' + esc(p.name) + '</strong></td><td data-label="Last role">' + esc(p.role) + '</td><td data-label="Last worked">' + esc(p.last) + '</td>' +
-            '<td data-label="Recurring"><label class="check" style="font-size:14px;min-height:24px"><input type="checkbox" data-recurring="' + i + '"' + (p.recurring ? ' checked' : '') + '> Alert first</label></td></tr>';
+            '<td data-label="Recurring"><label class="check" style="font-size:14px;min-height:24px"><input type="checkbox" data-recurring="' + i + '"' + (p.recurring ? ' checked' : '') + '> Alert first</label></td>' +
+            '<td><div class="actions">' + (p.invited ? '<span class="muted" style="font-size:14px">Invited: ' + esc(p.invited) + '</span>' : '') + '<button type="button" class="btn btn-secondary btn-sm" data-co="invite" data-id="' + i + '">Invite to apply</button></div></td></tr>';
         }).join('') + '</tbody></table>' : '<p class="empty-line">No past employees yet. Students you accept appear here.</p>');
 
     $('co-reviews').innerHTML = reviewsBlock(e.name, 'Reviews from students') +
       '<p class="hint" style="margin-top:var(--s3)">Only students you accepted can review you. Anonymous reviews don\'t show the student\'s name.</p>';
   }
 
+  // Send a past employee a personal alert about one of your live roles.
+  function openInvite(person) {
+    var live = db.listings.filter(function (L) { return L.status === 'Live' && L.job && findJob(L.job); });
+    if (!live.length) { toast('You have no live roles yet. Post one, and invite ' + esc(person.name) + ' once it\'s approved.'); return; }
+    openModal({
+      title: 'Invite ' + person.name + ' to apply',
+      body: '<label class="field">Role<select class="select" name="job">' + live.map(function (L) { return '<option value="' + esc(L.job) + '">' + esc(L.title) + '</option>'; }).join('') + '</select></label>' +
+        '<label class="field">Message <span class="hint">(optional)</span><textarea class="textarea" name="msg" rows="4" maxlength="500">' + esc('Hi ' + person.name.split(' ')[0] + ', we loved working with you on ' + person.role + '. Would you like to apply for this one?') + '</textarea></label>' +
+        '<p class="hint">' + esc(person.name) + ' gets an alert by email and in their GigoMe dashboard, with a link to the role.</p>',
+      submit: 'Send invite',
+      onSubmit: function (fd) {
+        var j = findJob(fd.get('job'));
+        person.invited = j.title;
+        if (db.profile && person.name === db.profile.name) note(db.employer.name + ' invited you to apply for ' + j.title + ': "' + fd.get('msg').trim() + '"', '#job/' + j.id);
+        save(); renderAuth(); renderCompany(); toast('Invite sent to ' + esc(person.name) + '.');
+      }
+    });
+  }
   function decideApplicant(jobId, key, status) {
     var j = findJob(jobId), name;
     if (key.charAt(0) === 'm') {
@@ -2472,6 +2514,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
       save(); renderCompany(); toast('Verification requested. The team will check your account.');
     }
     else if (act === 'toggle') { openListing = openListing === id ? null : id; renderCompany(); }
+    else if (act === 'invite') openInvite(db.past[+id]);
     else if (act === 'accept' || act === 'reject') decideApplicant(id, b.dataset.key, act === 'accept' ? 'Accepted' : 'Rejected');
     else if (act === 'profile') {
       var key = b.dataset.key, p;
@@ -2574,14 +2617,18 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
   // A new role goes live: alert matching saved searches, followers and recurring employees.
   function goLive(job) {
     db.posted.push(job);
-    var searches = 0, fans = 0, rec = 0;
-    db.searches.forEach(function (s) { if (s.alerts && passes(job, s.state)) { searches++; note('New role matches "' + s.name + '": ' + job.title + ' at ' + job.company, '#job/' + job.id); } });
-    if (db.follows.indexOf(job.company) !== -1) { fans++; note(job.company + ', which you follow, posted a new role: ' + job.title, '#job/' + job.id); }
+    var searches = 0, fans = 0, rec = 0, fits = 0, why = [];
+    db.searches.forEach(function (s) { if (s.alerts && passes(job, s.state)) { searches++; why.push('matches "' + s.name + '"'); } });
+    if (db.follows.indexOf(job.company) !== -1) { fans++; why.push('from ' + job.company + ', which you follow'); }
+    if (db.profile && db.profile.alerts && fitsAvail(job, db.profile.avail)) { fits++; why.push('fits your availability'); }
+    // One alert per new role for the student, listing every reason it was sent.
+    if (why.length) note('New role: ' + job.title + ' at ' + job.company + ' (' + why.join(', ') + ')', '#job/' + job.id);
     if (db.employer && job.company === db.employer.name) rec = db.past.filter(function (p) { return p.recurring; }).length;
     var sent = [];
     if (rec) sent.push(plural(rec, 'recurring employee', 'recurring employees') + ' (first)');
     if (searches) sent.push(plural(searches, 'saved search', 'saved searches'));
     if (fans) sent.push(plural(fans, 'follower', 'followers'));
+    if (fits) sent.push(plural(fits, 'student', 'students') + ' whose availability fits');
     return sent.length ? ' Alerts sent to ' + sent.join(', ') + '.' : '';
   }
   function decide(i, ok) {
@@ -2651,10 +2698,12 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
     var li = function (url) { return url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">GigoMe on LinkedIn</a>' : '<span class="muted">Page coming soon</span>'; };
     var c = CONTACT;
     $('contact-grid').innerHTML =
-      '<div><h3>Students</h3><dl><div><dt>Email</dt><dd><a href="mailto:' + esc(c.students.email) + '">' + esc(c.students.email) + '</a></dd></div><div><dt>LinkedIn</dt><dd>' + li(c.students.linkedin) + '</dd></div></dl></div>' +
-      '<div><h3>Employers and partners</h3><dl><div><dt>Email</dt><dd><a href="mailto:' + esc(c.employers.email) + '">' + esc(c.employers.email) + '</a></dd></div>' +
-        (c.employers.phone ? '<div><dt>Phone</dt><dd><a href="tel:' + esc(c.employers.phone.replace(/\s/g, '')) + '">' + esc(c.employers.phone) + '</a></dd></div>' : '') +
-        '<div><dt>LinkedIn</dt><dd>' + li(c.employers.linkedin) + '</dd></div></dl></div>';
+      [['Students', c.students], ['Employers and partners', c.employers]].map(function (g) {
+        var x = g[1];
+        return '<div><h3>' + g[0] + '</h3><dl><div><dt>Email</dt><dd><a href="mailto:' + esc(x.email) + '">' + esc(x.email) + '</a></dd></div>' +
+          (x.phone ? '<div><dt>Phone</dt><dd><a href="tel:' + esc(x.phone.replace(/\s/g, '')) + '">' + esc(x.phone) + '</a></dd></div>' : '') +
+          '<div><dt>LinkedIn</dt><dd>' + li(x.linkedin) + '</dd></div></dl></div>';
+      }).join('');
   })();
 
   function openFeedback(who) {
