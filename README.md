@@ -7,7 +7,7 @@ university students in Milan. Students create a verified profile, companies
 post English-friendly roles, and the two find each other. It is a
 student-run, non-profit project built by the GigoMe Venture Studio team.
 
-**Website:** https://gigome-venture-studio.github.io/GigoMe/
+**Website:** https://gigome.org
 
 ## The problem
 
@@ -95,10 +95,24 @@ companies and a compliant way of operating.
 | Path | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The website: one self-contained file of HTML, CSS and JavaScript, with no build step. |
+| [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite copies the site into `dist/`, Cloudflare Workers serves it. |
 | [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
 
-The site is published with GitHub Pages from the `main` branch. To run it
-locally, download `index.html` and open it in a browser.
+The site is hosted on Cloudflare Workers (static assets) at
+https://gigome.org, built from the `main` branch on GitHub. To work on it
+locally (Node 20.19 or newer):
+
+```bash
+npm install
+```
+
+```bash
+npm run dev
+```
+
+`npm run build` writes the site to `dist/`, and `npx wrangler dev` serves
+that folder the way Cloudflare does. The build needs no environment
+variables. You can also just open `index.html` in a browser.
 
 The current version is front-end only: the roles, companies and numbers on
 the site are sample data. What you enter is saved in your own browser and

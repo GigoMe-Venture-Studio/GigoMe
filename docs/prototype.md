@@ -10,8 +10,9 @@ inline except one Google Font (Schibsted Grotesk).
 
 **How to open it**
 
-- Online, via GitHub Pages: https://gigome-venture-studio.github.io/GigoMe/
-- Locally: download `index.html` and open it in any browser.
+- Online: https://gigome.org (Cloudflare Workers, built from `main`)
+- Locally: open `index.html` in any browser, or run `npm install` then
+  `npm run dev`.
 
 All companies, roles, profiles, reviews and map locations are **sample
 data**. Everything you do (sign up, apply, review, post a role, approve in
