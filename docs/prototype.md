@@ -1,9 +1,10 @@
-# Front-end prototype
+# Front-end demo
 
-Detailed notes on the clickable prototype in [`index.html`](../index.html): what each screen contains, the design rules it follows and how to edit it. For general information about GigoMe, see the [README](../README.md).
+Detailed notes on the clickable demo in [`index.html`](../index.html): what
+each screen does, the design rules it follows and how to edit it. For general
+information about GigoMe, see the [README](../README.md).
 
-[`index.html`](../index.html) is a clickable front-end prototype of the platform,
-branded **GigoMe**. It is one self-contained file: plain HTML, CSS and
+[`index.html`](../index.html) is one self-contained file: plain HTML, CSS and
 JavaScript, with no frameworks, no build step and no backend. Everything is
 inline except one Google Font (Schibsted Grotesk).
 
@@ -12,9 +13,11 @@ inline except one Google Font (Schibsted Grotesk).
 - Online, via GitHub Pages: https://gigome-venture-studio.github.io/GigoMe/
 - Locally: download `index.html` and open it in any browser.
 
-All companies, roles, profiles and map locations are **simulated**. Nothing is
-saved, nothing is sent anywhere, and no personal data is collected. The site
-says this once, in the dark prototype bar at the top of every page.
+All companies, roles, profiles, reviews and map locations are **sample
+data**. Everything you do (sign up, apply, review, post a role, approve in
+admin) is saved in your browser's `localStorage` under the key
+`gigome.demo.v2`, so it survives a reload. Nothing is ever sent to a server.
+**Reset** in the dark bar at the top deletes it and restores the sample data.
 
 ## Design approach
 
@@ -33,8 +36,8 @@ The design follows a written redesign brief and the
 - **One typeface**, Schibsted Grotesk, on a fixed size scale. Tool screens
   never go above 32px.
 - **Honest data.** The map shows how many roles each company has open, not
-  "people applying", because applications happen off-platform and GigoMe
-  cannot know them. Recommendations give a plain reason ("Fits your weekend
+  "people applying". Application counts appear only on the employer's own
+  dashboard. Recommendations give a plain reason ("Fits your weekend
   availability") instead of a fake match percentage.
 - **Signature detail: the metro line.** Every on-site role shows its area
   with the nearest Milan metro line as a small badge (M1, M2, M3, M5). A
@@ -50,8 +53,8 @@ the accents stand out.
 | Colour | Hex | Used for |
 | --- | --- | --- |
 | Orchid | `#A67CBA` | Actions (primary buttons), selection, focus rings and the verified mark. Text on orchid is always graphite: white on orchid is too low in contrast. |
-| Gold | `#FFD700` | Pending and new only: the "New" tag, "In review" and the admin queue count. Never as text on white. |
-| Graphite | `#1D1B2E` | Text, the prototype bar, metro badges, map pins |
+| Gold | `#FFD700` | Pending and new only: the "New" tag, "In review", "Applied", unread alert counts and the admin queue count. Never as text on white. |
+| Graphite | `#1D1B2E` | Text, the demo bar, toasts, metro badges, map pins |
 | Slate | `#5F6478` | Secondary text, captions, form field borders |
 | Mist | `#DCDDE8` | Borders and hairline dividers |
 | Cloud | `#F6F6FA` | Second surface: sidebars, table headers, tags, footer |
@@ -60,15 +63,28 @@ the accents stand out.
 
 Links are graphite text with an orchid underline, because orchid text on white
 is too faint to read. No other colours are used anywhere, including the map.
-Status tags use real states: Live (orchid outline), In review (gold), Draft
-(cloud, slate text). The colours are CSS variables at the top of `index.html`.
+Status tags use real states: Live and Accepted (orchid outline), In review
+and Applied (gold), Draft, Rejected and Not verified (cloud, slate text). The colours are CSS variables at the top of `index.html`.
 
 ## Navigation
 
 The header has Jobs, For employers and About, plus Sign in and Create
-profile. Under 768px the links collapse into a Menu button. The prototype bar
-has a "Jump to" menu for every screen, including Admin. Every screen also has
-its own link:
+profile. When signed in, these become Sign out and My dashboard (students,
+with the unread alert count) or Dashboard (employers). Under 768px the links
+collapse into a Menu button.
+
+The dark demo bar has a **Jump to** menu for every screen and a **Reset**
+button. Jumping to the student or employer dashboard signs in to the sample
+account (Alex Kim, or Nebbia Coffee Bar) so every screen can be seen.
+
+**Sign in** opens a dialog: choose student or employer, then any email and
+password (or "Demo account") signs in to the sample account. Actions that need
+a student account (apply, save, follow, save search, review) ask you to sign
+in first and then carry on.
+
+The footer links to About, Privacy notice, Terms, Give feedback (a dialog that
+reaches the admin "Latest feedback" list) and Contact (the About page contact
+section).
 
 | Link | Screen |
 | --- | --- |
@@ -76,143 +92,207 @@ its own link:
 | `#jobs` | Roles in Milan |
 | `#jobs/parttime`, `#jobs/day`, `#jobs/tutoring`, `#jobs/project`, `#jobs/internship` | Roles with that type pre-selected |
 | `#jobs/high`, `#jobs/remote` | Roles paying €18/h or more, or remote roles |
-| `#job` | Role detail (sample) |
-| `#signup` | Student sign-up |
-| `#company` | Employer dashboard |
-| `#admin` | Admin |
-| `#about` | About and team |
+| `#job/<id>` | Role detail, for example `#job/w1` (Weekend barista) |
+| `#employer/<name>` | Public employer page, for example `#employer/nebbia-coffee-bar` |
+| `#signup` | Student sign-up (or "Edit your profile" when signed in) |
+| `#me` | Student dashboard (`#me/saved`, `#me/searches` jump to a section) |
+| `#company` | Employer sign-up, or the employer dashboard when signed in |
+| `#admin` | Admin (`#admin/queue`, `/students`, `/companies`, `/reports`, `/feedback`) |
+| `#about`, `#about/contact` | About and team, contact section |
+| `#privacy`, `#terms` | Draft privacy notice and terms |
 
 ## 1. Home (`#home`)
 
-- **Hero**: "Part-time work and internships in Milan, in English." A working
-  search in one row: role or keyword, area, "No Italian needed" (on by
-  default) and **Search roles**, which opens the role list with the search
-  applied. Under it: "Hiring? Post a role".
-- **Map and newest roles side by side.** The map of Milan has 17 company pins
-  (20 on-site and hybrid roles). Each pin shows how many roles that company
-  has open. Hovering over or focusing a pin lists the roles with pay, schedule
-  and when they were posted, and clicking it opens the role list for that company. You can
-  drag to pan, use the + / − / reset buttons, double-click to zoom, or click
-  the map and then scroll. Below the map: "Open Milan in Google Maps". Next
-  to it: the six newest roles and "See all 24 roles".
-- **How it works**: three short steps for students and three for employers.
-- **About the project**: one paragraph (student-run, non-profit, free,
-  launching 18 December) with a link to About.
+- **Hero**: a working one-row search (keyword, area, "No Italian needed") that
+  opens the role list with the search applied, and "Hiring? Post a role".
+- **Map of Milan** with a pin per company showing its number of open roles.
+  Hover or focus a pin for each role's pay, schedule and posted date; click it
+  to filter the role list by that company. Drag to pan, + / − / reset, double
+  click to zoom, or click the map then scroll. Remote roles and employers who
+  hide their area stay off the map. Below it: "Open Milan in Google Maps".
+- **The five newest roles** and "See all roles".
+- **How it works** (students and employers) and **About the project**.
 
 ## 2. Roles in Milan (`#jobs`)
 
-- **Toolbar**: search by role or company, the result count and a sort menu
-  (Best match, Highest pay, Newest).
-- **Filters** in a sidebar: Type (Part-time, Day job, Tutoring, Short
-  project, Internship, with counts), Minimum pay (a slider; day, project and
-  monthly pay are converted to an hourly estimate), When, Work mode and
-  Language. Under 900px the sidebar becomes a **Filters (n)** button that
-  opens a drawer with a live "Show 12 roles" button. The drawer keeps
-  keyboard focus inside and closes on Escape.
-- **Active filters** appear as removable chips with "Clear all".
-- **One list of roles**: title, company and verified mark, then type · area
-  with metro badge · schedule, and on the right the pay and how long ago it
-  was posted. "New" and "Basic Italian" are the only tags. With Best match,
-  the top three rows give a one-line reason.
-- **Empty state**: says which filter excludes the most roles and offers to
-  remove it.
+- **Toolbar**: search by role or company, result count, sort (Best match,
+  Highest pay, Newest) and **Save search**.
+- **Filters**: Type with counts, minimum pay slider (day, project and monthly
+  pay converted to an hourly estimate), When, Work mode and Language. Under
+  900px they move into a **Filters (n)** drawer that keeps focus inside and
+  closes on Escape.
+- **Removable chips** for each active filter, and Clear all.
+- **Rows**: title, employer with verified mark and star rating, "New" and
+  "Basic Italian" tags, type · area with metro badge · schedule (and "Private
+  employer" where it applies), pay and posted date. With Best match the top
+  three rows give a one-line reason.
+- **Empty state**: names the filter that excludes the most roles, offers to
+  remove it, and offers to save the search for alerts.
+- **Save search** stores the current filters with an "Email me when a new
+  role matches" switch. When the admin approves a matching role, the student
+  gets an alert in their dashboard.
 
-## 3. Role detail (`#job`)
+## 3. Role detail (`#job/<id>`)
 
-A sample role: **Weekend barista at Nebbia Coffee Bar**.
+Every role has its own page. The barista role has hand-written text; the
+others are built from the role's data (or the description the employer typed).
 
-- Title, company with verified mark, and tags (New, Part-time, No Italian
-  needed).
-- Key facts in one row: pay (€11 per hour), schedule (Sat and Sun, 8:00 to
-  14:00), location (Porta Venezia, M1) and start (November). Two by two on
-  phones.
+- Title, employer (links to its public page) with verified mark and rating,
+  tags (New, type, language, work mode).
+- Key facts: pay, schedule, location with metro badge (or "area on request"),
+  start or length.
 - About the role, What you'll do, Good to know.
-- A side panel: **Apply on company site**, Email employer, Save, the note
-  "Applications go straight to the employer", the employer (reviewed by the
-  GigoMe team) with a link to the company, and "Report this role".
+- **Apply on company site** (explains the hand-off and adds the role to your
+  applications) and **Email employer** (a prefilled email dialog). Once you've
+  applied, the panel shows the date and status instead.
+- **Save**, the employer block (sector, area, verification, rating, View
+  employer, **Follow**) and **Report this role** (reason and details, which
+  appear in admin "Reported listings").
 
-## 4. Student sign-up (`#signup`)
+## 4. Employer page (`#employer/<name>`)
 
-"Step 2 of 3: Build your profile" with a three-part progress bar.
+Public page for each employer: verification, business or private employer,
+sector, area (unless hidden), description, open roles, and **reviews from
+students** with the average rating. **Follow** gives an alert when they post a
+new role. Contact details (person, email, phone, website) show to signed-in
+students only. "Write a review" appears only for a student who was accepted
+for one of the employer's roles.
 
-- **Student email**: a verified address. Only verified student addresses can
-  join (confirmed with a 6-digit code), and employers never see it.
-- **About you**: name, contact email shown to employers, programme, year of
-  study, languages as removable tags with "Add language", availability
-  checkboxes, a short intro and an optional CV (PDF up to 5 MB).
-- **Privacy**: required consent to the privacy notice, optional email
-  alerts, and a note that you can download or delete your data.
-- **What employers see**: a preview card of the profile (name, programme,
-  verified student, languages, availability, CV).
+## 5. Student sign-up (`#signup`)
 
-## 5. Employer dashboard (`#company`)
+A three-step progress bar (verify email, build profile, check and finish) that
+follows what you've filled in.
 
-Shown as the sample employer **Nebbia Coffee Bar** (reviewed employer), with
-its sector, area, website and a short description.
+- **Student email with a 6-digit code**: enter a university address (personal
+  addresses such as Gmail are refused), press Send code, type the code. In the
+  demo the code is shown on screen. Wrong codes are rejected; you can resend
+  or change the email. Employers never see this address.
+- **About you**: full name, username, contact email (shown to employers you
+  apply to), age and nationality (each with its own "Show to employers" box,
+  off by default), programme, year, languages (add with a level, remove with
+  ×, no duplicates), availability and a short intro. There is no CV upload.
+- **Your background**: open text boxes for education, past experience,
+  ambitions, personality, soft skills and hard skills. All optional, all shown
+  on the profile employers see.
+- **Privacy**: required consent, optional email alerts.
+- **What employers see**: a live preview that updates as you type.
+- **Save draft** keeps your progress. **Finish** checks the required fields,
+  creates the account and signs you in. Signed-in students get the same form
+  as "Edit your profile".
 
-- **Your listings**: a table with type, status (Live, In review, Draft) and
-  last update.
-- **Post a role**: title, type of work, location, pay, schedule, language
-  requirement, description, and how students should apply (link or email).
-  **Submit for review** changes to "Submitted, in review". GigoMe doesn't
-  handle applications, contracts or payments.
-- A one-line link to give feedback after hiring a student.
+## 6. Student dashboard (`#me`)
 
-## 6. Admin (`#admin`)
+- **Alerts**: new roles matching saved searches, new roles from followed
+  employers, and accepted or rejected applications. Unread count in the header.
+- **My applications**: every role you applied to, with date and how (company
+  site or email), filterable by Applied, Accepted and Rejected. You can update
+  the status yourself (for applications on company sites); employers who use
+  GigoMe update it for you. Accepted applications get **Review employer**:
+  a 1 to 5 rating, a short text and an **anonymous** option that hides your
+  name from the employer and other students.
+- **Saved roles**, **Saved searches and email alerts** (switch alerts on or
+  off, show roles, delete) and **Employers you follow**.
+- **Your data**: download everything as JSON, or delete the account.
 
-- A sidebar with Overview, Review queue (with a gold count), Students,
-  Companies, Reports and Feedback.
-- **Goal progress**: 64 / 100 verified students, 7 / 10 reviewed companies
-  and 18 live listings.
-- **Review queue** as a table (type, item, details, submitted). Approve and
-  Reject work: the row disappears, the counts update, and "All caught up"
-  shows when it is empty.
-- **Reported listings** and **Latest feedback**.
+## 7. Employer sign-up and dashboard (`#company`)
 
-## 7. About (`#about`)
+**Signed out**: "Hire international students in Milan" and the account form.
 
-Why GigoMe exists (the language barrier, scattered roles, small businesses
-that can't reach students, learning by building), the four principles
-(Student-first, Trust-based, Discovery only, Non-profit), a short prototype
-note, and the team.
+- **Who is hiring?** A business or organisation, or a private person (a
+  family looking for a tutor, someone who needs a dog walker). Private
+  accounts don't get sector or website fields.
+- Name, sector, area, **Show my area to students and on the map** (when off,
+  roles say "Area on request" and stay off the map).
+- **Contact information**: contact person, email, phone, website.
+- Description, then **Verification**: ask the GigoMe team to verify you
+  (goes to the admin queue) or not now (roles show as not verified).
+
+**Signed in** (sample: Nebbia Coffee Bar):
+
+- Header with verification mark, sector, area, website, description and
+  rating, plus Post a role, Edit profile (the same form), View public page and
+  Sign out. Unverified accounts can request verification from here.
+- **Your listings**: type, status (Live, In review, Draft, Not approved),
+  **number of applications** with how many are new, and updated date. **View
+  applicants** opens the list: name, programme, date, how they applied, status,
+  View profile, and **Accept** / **Reject**. The student is told either way,
+  and accepted students are added to past employees. Drafts can be edited.
+- **Post a role**: title, type, location, pay, schedule, language, description
+  and how to apply (link or email, checked). Save as draft, Preview, and
+  **Submit for review** (adds it to "Your listings" as In review and to the
+  admin queue).
+- **Past employees**: students who worked for you. Tick **Alert first** for
+  recurring employees: they are told about your next role before everyone
+  else when it goes live.
+- **Reviews from students**, and "Tell us how it went" feedback.
+
+## 8. Admin (`#admin`)
+
+- Sidebar links jump to each section.
+- **Goal progress**: verified students and reviewed companies against the
+  goal, and live listings. Approvals update them.
+- **Review queue** with working Approve and Reject, and "All caught up" when
+  empty. Approving a listing puts it live (role list, map, employer page) and
+  sends alerts to recurring employees, matching saved searches and followers.
+  Approving a verification request verifies the employer.
+- **Reported listings** and **Latest feedback**, which fill from the site.
+- **Students** and **Companies** tables (type, open roles, rating, status).
+
+## 9. About, privacy and terms
+
+About: why GigoMe exists, the four principles, a **contact section** for
+students and for employers (email, phone, LinkedIn), a note about the demo and
+the team. Privacy notice and Terms are short drafts, clearly marked as needing
+legal review before launch.
 
 ## Sample data
 
 | | |
 | --- | --- |
 | Roles | 24: 5 part-time, 5 day jobs, 5 tutoring, 5 short projects, 4 internships |
-| Companies | 19 fictional employers (cafés, startups, studios, families) |
+| Employers | 19 fictional employers (cafés, startups, studios); 2 are private families, 2 are not verified |
 | Work mode | 13 on-site, 7 hybrid, 4 remote |
 | Language | 22 with no Italian needed, 2 with basic Italian |
 | Pay | €9.50 to €30 per hour (estimated); 6 roles pay €18/h or more |
-| Metro | M1, M2, M3 and M5 badges; none for Ortica, where the nearest station is unclear |
+| Reviews | 7 reviews across 5 employers, some anonymous |
+| Review queue | 2 listings, 1 verification request, 1 student |
 
-## What works and what is a mock-up
+## What works and what is simulated
 
-**Works:** navigation and links to every screen, the header menu on phones,
-search from Home, the map (pan, zoom, tooltips, company filter), all filters,
-sorting, removable filter chips, the empty state, the mobile filter drawer,
-removing language tags, the admin queue and "Submit for review".
+**Works (in this browser):** every screen and link, sign in and out, student
+sign-up with code verification, profile editing, applying, saving, following,
+saved searches with alerts, reporting, reviews (with anonymous option), the
+student dashboard, data download and account deletion, employer sign-up as a
+business or private person, hidden location, verification requests, posting
+and editing roles, accepting and rejecting applicants, recurring past
+employees, the admin queue and its effects, feedback.
 
-**Mock-up only:** every role opens the same barista page; apply, email, save,
-report, sign in, CV upload, add language, save draft, preview and edit do
-nothing; sign-up fields aren't saved and verification is shown as done; admin
-sections other than Overview have no content; footer links (privacy notice,
-terms, give feedback, contact) go back to Home.
+**Simulated:** no emails are sent (the verification code is shown on screen,
+and "email" alerts appear only in the dashboard); "Apply on company site"
+doesn't open a real page; any email and password sign in to the sample
+accounts; there is one student account and one employer account per browser.
 
-## Editing the prototype
+## Editing the demo
 
 All the content lives in the `<script>` at the bottom of `index.html`:
 
 | What | Where in the script |
 | --- | --- |
 | Roles | `JOBS` (title, company, type, area, `metro`, work mode, schedule, pay, hourly `rate`, match score) |
-| Map pin positions per company | `POS` (a company not listed here is counted as remote) |
-| Admin review queue | `queue` |
+| Hand-written role text | `DETAIL` (only the barista role; others are generated) |
+| Employer sector, description, private or unverified | `COMPANY` |
+| Map pin positions per company | `POS` (a company not listed here stays off the map) |
+| Sample reviews | `SEED_REVIEWS` |
+| Sample student and employer accounts | `DEMO_PROFILE`, `DEMO_EMPLOYER`, `SEED_LISTINGS`, `SEED_APPLICANTS`, `SEED_PAST` |
+| Admin review queue | `SEED_QUEUE` |
+| Contact details on About | `CONTACT` (**placeholders**: replace before launch) |
 | Team members | `TEAM` |
 | "High-paying" threshold for `#jobs/high` | `HIGH_PAY` (currently €18/h) |
 
-`APPL` (simulated applicant counts) is kept in the data but deliberately not
-shown. The stylesheet is in one block at the top: tokens, then base, layout,
-components and pages. The map is a large inline SVG (around 430 KB) inside
-`#map-stage`, which makes up most of the file size.
+After changing any seed data, press **Reset** (or clear the site's storage) to
+see it, because saved state from an earlier visit takes priority. If you change
+the shape of the saved data, bump `KEY` (`gigome.demo.v2`) so old saves are
+ignored.
+
+The stylesheet is in one block at the top: tokens, base, layout, components
+and pages. The map is a large inline SVG (around 430 KB) inside `#map-stage`.

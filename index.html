@@ -419,6 +419,143 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
 .team .role{display:block;font-size:14px;color:var(--muted)}
 .team-note{font-size:14px;color:var(--muted);margin-top:var(--s4)}
 
+/* ---- Shared: dialogs, toast, small parts ---- */
+.protobar button{height:28px;padding:0 var(--s2);border:1px solid var(--slate);border-radius:var(--r-sm);background:var(--graphite);color:var(--white);font-size:14px}
+.protobar button:hover{border-color:var(--white)}
+.auth-actions,.menu-auth{display:contents}
+.menu-panel button{display:flex;align-items:center;width:100%;min-height:48px;padding:var(--s2) var(--s3);border:0;border-radius:var(--r-sm);background:none;font-weight:500;text-align:left}
+.menu-panel button:hover{background:var(--paper)}
+.btn-link{display:inline;padding:0;border:0;background:none;font:inherit;color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:pointer}
+.btn-link:hover{text-decoration-color:var(--ink)}
+.btn-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
+.rating{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:14px;color:var(--ink)}
+.stars-txt{letter-spacing:1px}
+.err{color:var(--error);font-size:14px;font-weight:400}
+.input[aria-invalid=true],.textarea[aria-invalid=true],.select[aria-invalid=true]{border-color:var(--error)}
+.note{padding:var(--s3) var(--s4);border-radius:var(--r-md);background:var(--paper);font-size:14px}
+.section-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s3);margin-bottom:var(--s4)}
+.section-head .hint{margin:0}
+.inline-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s2) var(--s3)}
+.inline-form .field{flex:1 1 200px}
+.inline-form .input,.inline-form .select{width:auto;flex:1 1 140px}
+.inline-form .field .input{width:100%;flex:none}
+.bar-short{display:none}
+@media (max-width:599px){ .bar-long{display:none} .bar-short{display:inline} }
+.radio-row{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5)}
+.choice{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);border:1px solid var(--line);border-radius:var(--r-md);font-size:16px;font-weight:400;cursor:pointer}
+.choice:has(input:checked){border-color:var(--accent);background:var(--paper)}
+.choice input{margin-top:4px;flex:none}
+.choice strong{display:block;font-weight:600}
+.choice .hint{display:block;margin-top:2px}
+.choices{display:grid;gap:var(--s2)}
+.toggle-line{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4)}
+.toggle-line .check{font-size:14px;min-height:24px}
+
+.toast{position:fixed;left:50%;bottom:var(--s5);z-index:100;max-width:calc(100vw - 32px);width:max-content;padding:var(--s3) var(--s4);border-radius:var(--r-md);background:var(--ink);color:var(--white);font-size:14px;box-shadow:var(--float);transform:translate(-50%,8px);opacity:0;visibility:hidden;transition:opacity .15s,transform .15s,visibility 0s .15s}
+.toast.show{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .15s,transform .15s}
+.toast a{color:var(--white)}
+
+.modal{width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:var(--r-md);background:var(--white);color:var(--ink);box-shadow:var(--float)}
+.modal::backdrop{background:rgba(29,27,46,.4)}
+.modal-inner{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s4) var(--s5);border-bottom:1px solid var(--line)}
+.modal-head h2{font-size:20px;font-weight:600}
+.modal-body{padding:var(--s5);overflow:auto}
+.modal-body > * + *{margin-top:var(--s4)}
+.modal-body .preview-card{margin:0}
+.modal-foot{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--s3);padding:var(--s3) var(--s5);border-top:1px solid var(--line)}
+@media (max-width:479px){ .modal-head,.modal-body,.modal-foot{padding-left:var(--s4);padding-right:var(--s4)} }
+.star-pick{display:grid;gap:2px}
+
+/* status tags for applications */
+.tag-applied{background:var(--warn);color:var(--on-warn)}
+.tag-accepted{background:var(--white);border:1px solid var(--accent);color:var(--ink)}
+.tag-rejected{background:var(--paper);color:var(--muted)}
+
+/* ---- Role detail additions ---- */
+.detail-co a{color:var(--ink)}
+.detail-co .rating{margin-left:var(--s3)}
+.applied{font-size:14px}
+.applied strong{display:block;font-size:16px}
+.applied > * + *{margin-top:var(--s2)}
+button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.save[aria-pressed=true]{font-weight:700}
+
+/* ---- Reviews ---- */
+.reviews{list-style:none;border-top:1px solid var(--line)}
+.review{padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+.review-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s1) var(--s3);font-size:14px}
+.review-head .who{color:var(--muted)}
+.review p{margin-top:var(--s2);max-width:65ch}
+.rating-sum{display:flex;align-items:baseline;gap:var(--s2)}
+.rating-sum .big{font-size:24px;font-weight:700}
+
+/* ---- Employer public page ---- */
+.emp-meta{margin-top:var(--s2);color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
+.emp-desc{margin-top:var(--s4);max-width:65ch}
+.emp-block{margin-top:var(--s7)}
+.contact-list{font-size:14px}
+.contact-list div + div{margin-top:var(--s2)}
+.contact-list dt{color:var(--muted)}
+.contact-list dd{word-break:break-word}
+
+/* ---- Student dashboard ---- */
+.dash-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s4)}
+.dash-head p{margin-top:var(--s2)}
+.dash-block{margin-top:var(--s7)}
+.dash-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s7);margin-top:var(--s7)}
+.dash-grid .dash-block{margin-top:0}
+@media (max-width:899px){ .dash-grid{grid-template-columns:1fr;gap:var(--s6)} }
+.tabs{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s3)}
+.tabs button{height:32px;padding:0 var(--s3);border:1px solid var(--line);border-radius:999px;background:var(--white);font-size:14px}
+.tabs button[aria-pressed=true]{border-color:var(--accent);background:var(--paper);font-weight:600}
+.plain-list li > div{min-width:0}
+.plain-list .sub{display:block;color:var(--muted);font-size:14px}
+.plain-list .actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);flex:none}
+.table .select{height:32px;width:auto;font-size:14px}
+.empty-line{padding:var(--s4) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:14px}
+
+/* ---- Sign-up additions ---- */
+.lang-add{margin-top:var(--s3)}
+.preview-card .handle{font-size:14px;color:var(--muted)}
+.preview-card .bg{margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--line);font-size:14px}
+.preview-card .bg div + div{margin-top:var(--s3)}
+.preview-card .bg dt{color:var(--muted)}
+.preview-card .bg dd{white-space:pre-line}
+.form-errors{margin-top:var(--s3);text-align:right}
+
+/* ---- Employer dashboard additions ---- */
+.co-block > .section-head > h2{margin:0}
+.applicants{margin:0}
+.applicants li{align-items:center}
+.table tr.open td{background:var(--paper)}
+.table tr.sub-row > td{padding:0 var(--s3) var(--s3);background:var(--paper)}
+.co-landing{max-width:640px}
+.co-landing .lead{margin-top:var(--s3);color:var(--muted);font-size:18px}
+.emp-form{margin-top:var(--s6)}
+.emp-form > * + *{margin-top:var(--s5)}
+.co-edit{margin-top:var(--s6);padding:var(--s5);border:1px solid var(--line);border-radius:var(--r-md);max-width:720px}
+.co-edit .emp-form{margin-top:var(--s4)}
+.co-note{margin-top:var(--s4)}
+@media (max-width:767px){ .table tr.sub-row > td{padding:var(--s3)} }
+
+/* ---- Admin additions ---- */
+.admin-block .table + .hint{margin-top:var(--s2)}
+.admin-main section[id]{scroll-margin-top:var(--s5)}
+
+/* ---- About, privacy, terms ---- */
+.contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5);margin-top:var(--s4);font-size:16px}
+.contact-grid h3{font-size:16px;font-weight:600;margin-bottom:var(--s2)}
+.contact-grid dl div + div{margin-top:var(--s1)}
+.contact-grid dt{display:inline;color:var(--muted)}
+.contact-grid dt::after{content:": "}
+.contact-grid dd{display:inline}
+@media (max-width:599px){ .contact-grid{grid-template-columns:1fr} }
+.about [id]{scroll-margin-top:var(--s5)}
+.about ul.plain{padding-left:1.25em}
+.about ul.plain li + li{margin-top:var(--s2)}
+
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition:none!important;animation:none!important}
 }
@@ -434,24 +571,26 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
     <symbol id="i-verified" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
     <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
-    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></symbol>
   </defs>
 </svg>
 
 <div class="protobar">
   <div class="wrap">
-    <span>Prototype. All data is simulated.</span>
+    <span class="bar-long">Demo. Sample data, saved in this browser only.</span><span class="bar-short">Demo</span>
     <label for="jump"><span class="jump-text">Jump to</span>
       <select id="jump">
         <option value="home">Home</option>
         <option value="jobs">Jobs</option>
         <option value="job">Role detail</option>
+        <option value="employer">Employer page</option>
         <option value="signup">Sign-up</option>
+        <option value="me">Student dashboard</option>
         <option value="company">Employer dashboard</option>
         <option value="admin">Admin</option>
         <option value="about">About</option>
       </select>
     </label>
+    <button type="button" id="reset-demo" title="Delete everything saved in this browser and start again">Reset</button>
   </div>
 </div>
 
@@ -464,8 +603,7 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
       <a href="#about" data-nav="about">About</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-tertiary btn-sm signin" href="#signup">Sign in</a>
-      <a class="btn btn-primary btn-sm" href="#signup">Create profile</a>
+      <span class="auth-actions" id="auth-actions"></span>
       <button type="button" class="btn btn-secondary btn-sm menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu-panel">Menu</button>
     </div>
   </div>
@@ -473,7 +611,7 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     <a href="#jobs">Jobs</a>
     <a href="#company">For employers</a>
     <a href="#about">About</a>
-    <a href="#signup">Sign in</a>
+    <span class="menu-auth" id="menu-auth"></span>
   </nav>
 </header>
 
@@ -535,24 +673,24 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     <div>
       <h3>For students</h3>
       <ol>
-        <li>Sign up with your student email and confirm it with a one-time code.</li>
-        <li>Add your languages, availability and, if you like, a CV.</li>
-        <li>Find a role and apply on the employer's site or by email.</li>
+        <li>Sign up with your student email and confirm it with a 6-digit code.</li>
+        <li>Add your languages, availability, experience and skills.</li>
+        <li>Apply on the employer's site or by email, and track every application in your dashboard.</li>
       </ol>
     </div>
     <div>
       <h3>For employers</h3>
       <ol>
-        <li>Create a company profile.</li>
+        <li>Create an account as a business or as a private person.</li>
         <li>Post a role. The team reviews it, usually within one working day.</li>
-        <li>Students contact you directly. You hire on your own terms.</li>
+        <li>Students contact you directly. Accept or reject them from your dashboard.</li>
       </ol>
     </div>
   </section>
 
   <section class="wrap home-about" aria-labelledby="home-about-title">
     <h2 class="section-title" id="home-about-title">About the project</h2>
-    <p>GigoMe is run by students, as a non-profit. It is free for students and employers, and it launches on 18 December. Applications, contracts and pay stay between you and the employer. <a href="#about">Why we built it</a></p>
+    <p>GigoMe is run by students, as a non-profit. It is free for students and employers, and it launches on 18 December. Contracts and pay stay between you and the employer. <a href="#about">Why we built it</a></p>
   </section>
 </main>
 
@@ -571,6 +709,7 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
       <label class="sort" for="sort">Sort
         <select class="select" id="sort"><option value="match">Best match</option><option value="pay">Highest pay</option><option value="new">Newest</option></select>
       </label>
+      <button type="button" class="btn btn-secondary" id="save-search">Save search</button>
     </div>
 
     <div class="jobs-layout">
@@ -627,201 +766,175 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
   </dialog>
 </main>
 
-<!-- ============ ROLE DETAIL ============ -->
+<!-- ============ ROLE DETAIL (rendered from JOBS) ============ -->
 <main class="page" id="page-job">
-  <div class="wrap page-main">
-    <a class="back" href="#jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>
-    <div class="detail">
-      <article>
-        <h1 class="page-title">Weekend barista</h1>
-        <p class="detail-co"><span class="verified">Nebbia Coffee Bar <svg class="icon" role="img" aria-label="Verified employer"><use href="#i-verified"/></svg></span></p>
-        <div class="tags"><span class="tag tag-new">New</span><span class="tag">Part-time</span><span class="tag">No Italian needed</span></div>
-        <dl class="facts">
-          <div><dt>Pay</dt><dd class="tnum">€11 per hour</dd></div>
-          <div><dt>Schedule</dt><dd>Sat and Sun, 8:00 to 14:00</dd></div>
-          <div><dt>Location</dt><dd><span class="place">Porta Venezia <span class="metro" title="Metro line M1" aria-label="Metro line M1">M1</span></span></dd></div>
-          <div><dt>Start</dt><dd>November</dd></div>
-        </dl>
-        <div class="prose-role">
-          <h2>About the role</h2>
-          <p>We're a specialty coffee bar near the Porta Venezia metro with a mostly international crowd. We're looking for a friendly student to help behind the counter on weekend mornings: taking orders, preparing drinks and keeping the space tidy.</p>
-          <h2>What you'll do</h2>
-          <ul><li>Serve customers in English. Italian is a plus, not required.</li><li>Prepare espresso drinks, with full training on your first day.</li><li>Help open the bar and keep the counter stocked.</li></ul>
-          <h2>Good to know</h2>
-          <ul><li>Shifts can be swapped around exam periods.</li><li>Free coffee and breakfast on shift.</li><li>Contract and pay are agreed directly with the employer.</li></ul>
-        </div>
-      </article>
+  <div class="wrap page-main" id="job-root"></div>
+</main>
 
-      <aside aria-label="Apply">
-        <div class="apply">
-          <a class="btn btn-primary" href="#job">Apply on company site <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a>
-          <a class="btn btn-secondary" href="#job">Email employer</a>
-          <button type="button" class="btn btn-tertiary btn-sm save">Save</button>
-          <p class="apply-note">Applications go straight to the employer.</p>
-          <div class="employer">
-            <strong>Nebbia Coffee Bar</strong>
-            <p class="muted">Food and hospitality, Porta Venezia</p>
-            <p><span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Reviewed by the GigoMe team</span></p>
-            <p><a href="#company">View company</a></p>
-          </div>
-        </div>
-        <a class="report" href="#job"><svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg>Report this role</a>
-      </aside>
-    </div>
-  </div>
+<!-- ============ EMPLOYER PUBLIC PAGE ============ -->
+<main class="page" id="page-employer">
+  <div class="wrap page-main" id="employer-root"></div>
 </main>
 
 <!-- ============ SIGN-UP ============ -->
 <main class="page" id="page-signup">
   <div class="wrap page-main">
-    <h1 class="page-title">Create your student profile</h1>
-    <p class="muted" style="margin-top:var(--s2)">Free. Employers only see what you choose to share.</p>
-    <div class="progress">
-      <p class="progress-label">Step 2 of 3: Build your profile</p>
-      <div class="progress-bar" aria-hidden="true"><span class="done"></span><span class="done"></span><span></span></div>
+    <h1 class="page-title" id="su-title">Create your student profile</h1>
+    <p class="muted" style="margin-top:var(--s2)" id="su-lead">Free. Employers only see what you choose to share.</p>
+    <div class="progress" id="su-progress">
+      <p class="progress-label" id="su-step">Step 1 of 3: Verify your student email</p>
+      <div class="progress-bar" aria-hidden="true"><span></span><span></span><span></span></div>
     </div>
 
     <div class="signup">
-      <form class="signup-form" onsubmit="return false" aria-label="Student profile">
+      <form class="signup-form" id="signup-form" novalidate aria-label="Student profile">
         <section class="form-section" aria-labelledby="su-email">
           <h2 id="su-email">Student email</h2>
-          <div class="email-line">
-            <span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg><strong>a.kim@student.example.com</strong></span>
-            <span class="muted">Verified</span>
-            <a href="#signup">Change</a>
-          </div>
+          <div id="su-verify"></div>
           <p class="hint">Only verified student addresses can join. We confirm yours with a 6-digit code. Employers never see your student email.</p>
         </section>
 
         <section class="form-section" aria-labelledby="su-about">
           <h2 id="su-about">About you</h2>
           <div class="form-row">
-            <label class="field">Full name<input class="input" type="text" placeholder="Alex Kim" autocomplete="name"></label>
-            <label class="field">Contact email<span class="hint">Shown to employers</span><input class="input" type="email" placeholder="alex.kim@example.com" autocomplete="email"></label>
+            <label class="field">Full name<input class="input" name="fullname" type="text" placeholder="Alex Kim" autocomplete="name" required></label>
+            <label class="field">Username<span class="hint">3 to 20 letters, numbers, dots or underscores</span><input class="input" name="username" type="text" placeholder="alexkim" autocomplete="username" required pattern="[A-Za-z0-9._]{3,20}"></label>
           </div>
+          <label class="field">Contact email<span class="hint">Shown to employers you apply to</span><input class="input" name="cemail" type="email" placeholder="alex.kim@example.com" autocomplete="email" required></label>
           <div class="form-row">
-            <label class="field">Programme<input class="input" type="text" placeholder="MSc Management"></label>
-            <label class="field">Year of study<select class="select"><option>1st year</option><option selected>2nd year</option><option>3rd year</option><option>Master's</option><option>Exchange student</option></select></label>
+            <div class="stack-s">
+              <label class="field">Age<input class="input" name="age" type="number" min="16" max="99" inputmode="numeric" placeholder="22" required></label>
+              <label class="check" style="font-size:14px;min-height:24px"><input type="checkbox" name="showAge"> Show to employers</label>
+            </div>
+            <div class="stack-s">
+              <label class="field">Nationality<input class="input" name="nationality" type="text" list="nat-list" placeholder="e.g. South Korean"></label>
+              <label class="check" style="font-size:14px;min-height:24px"><input type="checkbox" name="showNat"> Show to employers</label>
+            </div>
+          </div>
+          <datalist id="nat-list"></datalist>
+          <div class="form-row">
+            <label class="field">Programme<input class="input" name="programme" type="text" placeholder="MSc Management"></label>
+            <label class="field">Year of study<select class="select" name="year"><option>1st year</option><option selected>2nd year</option><option>3rd year</option><option>Master's</option><option>Exchange student</option></select></label>
           </div>
           <fieldset>
             <legend>Languages</legend>
-            <div class="lang-tags" id="lang-tags">
-              <span class="lang-tag">English, fluent <button type="button" aria-label="Remove English">&times;</button></span>
-              <span class="lang-tag">Korean, native <button type="button" aria-label="Remove Korean">&times;</button></span>
-              <span class="lang-tag">Italian, basic <button type="button" aria-label="Remove Italian">&times;</button></span>
-              <button type="button" class="btn btn-secondary btn-sm">Add language</button>
+            <div class="lang-tags" id="lang-tags"></div>
+            <div class="inline-form lang-add">
+              <label class="sr-only" for="lang-name">Language</label>
+              <input class="input" id="lang-name" list="lang-list" placeholder="Add a language">
+              <datalist id="lang-list"></datalist>
+              <label class="sr-only" for="lang-level">Level</label>
+              <select class="select" id="lang-level" style="flex:0 1 160px"><option>Native</option><option selected>Fluent</option><option>Intermediate</option><option>Basic</option></select>
+              <button type="button" class="btn btn-secondary btn-sm" id="lang-add-btn">Add language</button>
             </div>
+            <p class="err" id="lang-err" hidden></p>
           </fieldset>
           <fieldset>
             <legend>When can you work?</legend>
             <div class="inline-checks">
-              <label class="check"><input type="checkbox" checked> Weekends</label>
-              <label class="check"><input type="checkbox" checked> Evenings</label>
-              <label class="check"><input type="checkbox"> Weekday mornings</label>
-              <label class="check"><input type="checkbox"> Remote</label>
+              <label class="check"><input type="checkbox" name="avail" value="Weekends"> Weekends</label>
+              <label class="check"><input type="checkbox" name="avail" value="Evenings"> Evenings</label>
+              <label class="check"><input type="checkbox" name="avail" value="Weekday mornings"> Weekday mornings</label>
+              <label class="check"><input type="checkbox" name="avail" value="Remote"> Remote</label>
             </div>
           </fieldset>
-          <label class="field">Short intro<textarea class="textarea" rows="3" placeholder="A couple of lines about you and the work you're looking for."></textarea></label>
-          <div class="file-line">
-            <svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>
-            <span>CV <span class="muted">(optional, PDF up to 5 MB)</span></span>
-            <button type="button" class="btn btn-secondary btn-sm">Upload CV</button>
+          <label class="field">Short intro<textarea class="textarea" name="intro" rows="3" maxlength="300" placeholder="A couple of lines about you and the work you're looking for."></textarea></label>
+        </section>
+
+        <section class="form-section" aria-labelledby="su-bg">
+          <h2 id="su-bg">Your background</h2>
+          <p class="hint" style="margin-top:calc(-1 * var(--s2))">All optional. Employers see these on your profile, so a few honest lines go a long way.</p>
+          <label class="field">Education<textarea class="textarea" name="education" rows="3" maxlength="600" placeholder="Degrees, schools, exchange semesters."></textarea></label>
+          <label class="field">Past experience<textarea class="textarea" name="experience" rows="3" maxlength="600" placeholder="Jobs, internships, volunteering. Where, what you did, how long."></textarea></label>
+          <label class="field">Ambitions<textarea class="textarea" name="ambitions" rows="2" maxlength="400" placeholder="What you'd like to do after your studies."></textarea></label>
+          <label class="field">Personality<textarea class="textarea" name="personality" rows="2" maxlength="400" placeholder="How friends or colleagues would describe you."></textarea></label>
+          <div class="form-row">
+            <label class="field">Soft skills<textarea class="textarea" name="soft" rows="3" maxlength="400" placeholder="e.g. customer service, teamwork, public speaking"></textarea></label>
+            <label class="field">Hard skills<textarea class="textarea" name="hard" rows="3" maxlength="400" placeholder="e.g. Excel, Python, Canva, espresso machines"></textarea></label>
           </div>
         </section>
 
         <section class="form-section" aria-labelledby="su-privacy">
           <h2 id="su-privacy">Privacy</h2>
-          <label class="check" style="align-items:flex-start"><input type="checkbox" required style="margin-top:4px"> <span>I've read the <a href="#signup">privacy notice</a> and agree to my profile being stored to run the platform. (Required)</span></label>
-          <label class="check" style="align-items:flex-start"><input type="checkbox" style="margin-top:4px"> <span>Email me when new roles match my availability. You can turn this off at any time.</span></label>
-          <p class="hint">You can download or delete your data from your account settings at any time.</p>
+          <label class="check" style="align-items:flex-start"><input type="checkbox" name="consent" required style="margin-top:4px"> <span>I've read the <a href="#privacy">privacy notice</a> and agree to my profile being stored to run the platform. (Required)</span></label>
+          <label class="check" style="align-items:flex-start"><input type="checkbox" name="alerts" style="margin-top:4px"> <span>Email me when new roles match my availability. You can turn this off at any time.</span></label>
+          <p class="hint">You can download or delete your data from your dashboard at any time.</p>
         </section>
 
         <div class="form-actions">
-          <button type="button" class="btn btn-secondary">Save draft</button>
-          <a class="btn btn-primary" href="#jobs">Finish and browse roles</a>
+          <button type="button" class="btn btn-secondary" id="su-draft">Save draft</button>
+          <button type="submit" class="btn btn-primary" id="su-finish">Finish and browse roles</button>
         </div>
+        <p class="err form-errors" id="su-errors" role="alert" hidden></p>
       </form>
 
       <aside class="preview" aria-labelledby="preview-title">
         <h2 id="preview-title">What employers see</h2>
-        <div class="preview-card">
-          <span class="avatar" aria-hidden="true">AK</span>
-          <p class="name">Alex Kim</p>
-          <p class="muted" style="font-size:14px">MSc Management, 2nd year</p>
-          <p style="margin-top:var(--s2);font-size:14px"><span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Verified student</span></p>
-          <dl>
-            <div><dt>Speaks</dt><dd>English, Korean, basic Italian</dd></div>
-            <div><dt>Available</dt><dd>Weekends, evenings</dd></div>
-            <div><dt>CV</dt><dd>Not uploaded yet</dd></div>
-          </dl>
-        </div>
-        <p class="hint">Only reviewed employers can see your profile. It is never public on the web.</p>
+        <div id="su-preview"></div>
+        <p class="hint">Only reviewed employers can see your profile, and only after you apply or they're shown your application. It is never public on the web.</p>
       </aside>
     </div>
   </div>
 </main>
 
+<!-- ============ STUDENT DASHBOARD ============ -->
+<main class="page" id="page-me">
+  <div class="wrap page-main" id="me-root"></div>
+</main>
+
 <!-- ============ EMPLOYER DASHBOARD ============ -->
 <main class="page" id="page-company">
   <div class="wrap page-main">
-    <div class="co-head">
-      <div>
-        <h1>Nebbia Coffee Bar <span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Reviewed employer</span></h1>
-        <p>Food and hospitality, Porta Venezia, Milan. nebbia-example.it</p>
-        <p class="co-desc">Specialty coffee bar with a mostly international crowd. We hire students for weekend shifts and train everyone from scratch.</p>
-      </div>
-      <a class="btn btn-secondary" href="#company">Edit profile</a>
+    <div id="co-landing" hidden></div>
+    <div id="co-dash" hidden>
+      <div id="co-top"></div>
+
+      <section class="co-block" id="co-listings"></section>
+
+      <section class="co-block" aria-labelledby="co-post-title" id="co-post">
+        <h2 class="section-title" id="co-post-title">Post a role</h2>
+        <p class="hint" style="margin-top:var(--s2);margin-bottom:var(--s5)">The team reviews each listing, usually within one working day.</p>
+        <form class="post-form" id="post-form" novalidate>
+          <label class="field">Role title<input class="input" name="title" type="text" placeholder="e.g. Weekend barista" required maxlength="80"></label>
+          <label class="field">Type of work<select class="select" name="cat"><option value="parttime">Part-time</option><option value="day">Day job</option><option value="tutoring">Tutoring</option><option value="project">Short project</option><option value="internship">Internship</option></select></label>
+          <div class="form-row">
+            <label class="field">Location<input class="input" name="area" type="text" list="area-list" placeholder="Area or Remote" required></label>
+            <label class="field">Pay<input class="input" name="pay" type="text" placeholder="e.g. €11/h" required></label>
+            <label class="field">Schedule<select class="select" name="when"><option value="Weekends">Weekends</option><option value="Evenings">Evenings</option><option value="Flexible">Flexible</option><option value="Weekdays">Fixed weekdays</option></select></label>
+          </div>
+          <datalist id="area-list"></datalist>
+          <fieldset>
+            <legend>Language requirement</legend>
+            <div class="radio-row">
+              <label class="check"><input type="radio" name="lang" value="en" checked> No Italian needed</label>
+              <label class="check"><input type="radio" name="lang" value="en-it"> Basic Italian</label>
+            </div>
+          </fieldset>
+          <label class="field">Description<textarea class="textarea" name="desc" rows="5" maxlength="1500" placeholder="What the student will do, what you offer, and anything they should know before applying."></textarea></label>
+          <fieldset>
+            <legend>How should students apply?</legend>
+            <div class="radio-row">
+              <label class="check"><input type="radio" name="apply" value="link" checked> Link to our application page</label>
+              <label class="check"><input type="radio" name="apply" value="email"> Email us</label>
+            </div>
+            <label class="sr-only" for="apply-url" id="apply-url-label">Application link</label>
+            <input class="input" id="apply-url" name="applyTo" type="url" placeholder="https://" style="margin-top:var(--s3)">
+            <p class="hint" style="margin-top:var(--s2)">Applications come to you. Mark each one as accepted or rejected in "Your listings" so students know where they stand.</p>
+          </fieldset>
+          <div class="form-actions" style="margin-top:var(--s5)">
+            <button type="button" class="btn btn-tertiary" id="post-draft">Save as draft</button>
+            <button type="button" class="btn btn-secondary" id="post-preview">Preview</button>
+            <button type="submit" class="btn btn-primary" id="submit-review">Submit for review</button>
+          </div>
+          <p class="err form-errors" id="post-errors" role="alert" hidden></p>
+        </form>
+      </section>
+
+      <section class="co-block" id="co-past"></section>
+      <section class="co-block" id="co-reviews"></section>
+
+      <p class="co-feedback">Hired a student through GigoMe? <button type="button" class="btn-link" data-feedback="employer">Tell us how it went</button> in two minutes.</p>
     </div>
-
-    <section class="co-block" aria-labelledby="co-listings">
-      <h2 class="section-title" id="co-listings">Your listings</h2>
-      <table class="table">
-        <thead><tr><th scope="col">Listing</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Updated</th></tr></thead>
-        <tbody>
-          <tr><td><a href="#job">Weekend barista</a></td><td data-label="Type">Part-time</td><td data-label="Status"><span class="tag tag-live">Live</span></td><td data-label="Updated">Today</td></tr>
-          <tr><td>Latte art workshop helper</td><td data-label="Type">Day job</td><td data-label="Status"><span class="tag tag-review">In review</span></td><td data-label="Updated">Yesterday</td></tr>
-          <tr><td>Evening closing shift</td><td data-label="Type">Part-time</td><td data-label="Status"><span class="tag tag-draft">Draft</span></td><td data-label="Updated">3 days ago</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="co-block" aria-labelledby="co-post">
-      <h2 class="section-title" id="co-post">Post a role</h2>
-      <p class="hint" style="margin-top:calc(-1 * var(--s3));margin-bottom:var(--s5)">The team reviews each listing, usually within one working day.</p>
-      <form class="post-form" onsubmit="return false">
-        <label class="field">Role title<input class="input" type="text" placeholder="e.g. Weekend barista"></label>
-        <label class="field">Type of work<select class="select"><option>Part-time</option><option>Day job</option><option>Tutoring</option><option>Short project</option><option>Internship</option></select></label>
-        <div class="form-row">
-          <label class="field">Location<input class="input" type="text" placeholder="Area or Remote"></label>
-          <label class="field">Pay<input class="input" type="text" placeholder="e.g. €11 per hour"></label>
-          <label class="field">Schedule<select class="select"><option>Weekends</option><option>Evenings</option><option>Flexible</option><option>Fixed weekdays</option></select></label>
-        </div>
-        <fieldset>
-          <legend>Language requirement</legend>
-          <div class="radio-row">
-            <label class="check"><input type="radio" name="lang" checked> No Italian needed</label>
-            <label class="check"><input type="radio" name="lang"> Basic Italian</label>
-          </div>
-        </fieldset>
-        <label class="field">Description<textarea class="textarea" rows="5" placeholder="What the student will do, what you offer, and anything they should know before applying."></textarea></label>
-        <fieldset>
-          <legend>How should students apply?</legend>
-          <div class="radio-row">
-            <label class="check"><input type="radio" name="apply" checked> Link to our application page</label>
-            <label class="check"><input type="radio" name="apply"> Email us</label>
-          </div>
-          <label class="sr-only" for="apply-url">Application link</label>
-          <input class="input" id="apply-url" type="url" placeholder="https://" style="margin-top:var(--s3)">
-          <p class="hint" style="margin-top:var(--s2)">GigoMe doesn't handle applications, contracts or payments.</p>
-        </fieldset>
-        <div class="form-actions" style="margin-top:var(--s5)">
-          <button type="button" class="btn btn-secondary">Preview</button>
-          <button type="button" class="btn btn-primary" id="submit-review">Submit for review</button>
-        </div>
-      </form>
-    </section>
-
-    <p class="co-feedback">Hired a student through GigoMe? <a href="#company">Tell us how it went</a> in two minutes.</p>
   </div>
 </main>
 
@@ -830,13 +943,13 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
   <div class="admin">
     <nav class="admin-nav" aria-label="Admin">
       <a class="wordmark" href="#home">GigoMe<span>Admin</span></a>
-      <ul>
-        <li><a href="#admin" aria-current="page">Overview</a></li>
-        <li><a href="#admin">Review queue <span class="badge tnum" id="queue-badge"></span></a></li>
-        <li><a href="#admin">Students</a></li>
-        <li><a href="#admin">Companies</a></li>
-        <li><a href="#admin">Reports</a></li>
-        <li><a href="#admin">Feedback</a></li>
+      <ul id="admin-links">
+        <li><a href="#admin" data-sec="">Overview</a></li>
+        <li><a href="#admin/queue" data-sec="queue">Review queue <span class="badge tnum" id="queue-badge"></span></a></li>
+        <li><a href="#admin/students" data-sec="students">Students</a></li>
+        <li><a href="#admin/companies" data-sec="companies">Companies</a></li>
+        <li><a href="#admin/reports" data-sec="reports">Reports</a></li>
+        <li><a href="#admin/feedback" data-sec="feedback">Feedback</a></li>
       </ul>
     </nav>
     <main class="admin-main">
@@ -844,13 +957,9 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
         <h1 class="page-title">Overview</h1>
         <p class="muted">Goal: 100 students and 10 companies by 18 December</p>
       </header>
-      <div class="kpis">
-        <div class="kpi"><p class="label">Verified students</p><p class="num tnum">64 <small>/ 100</small></p><div class="bar" role="img" aria-label="64 percent of the student goal"><span style="width:64%"></span></div></div>
-        <div class="kpi"><p class="label">Reviewed companies</p><p class="num tnum">7 <small>/ 10</small></p><div class="bar" role="img" aria-label="70 percent of the company goal"><span style="width:70%"></span></div></div>
-        <div class="kpi"><p class="label">Live listings</p><p class="num tnum">18</p><p class="hint">Apply clicks are tracked per listing.</p></div>
-      </div>
+      <div class="kpis" id="kpis"></div>
 
-      <section class="admin-block" aria-labelledby="q-title">
+      <section class="admin-block" aria-labelledby="q-title" id="adm-queue">
         <header><h2 class="section-title" id="q-title">Review queue</h2><span class="muted tnum" id="queue-label" aria-live="polite" style="font-size:14px"></span></header>
         <table class="table" id="queue-table">
           <thead><tr><th scope="col">Type</th><th scope="col">Item</th><th scope="col">Details</th><th scope="col">Submitted</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
@@ -860,21 +969,31 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
       </section>
 
       <div class="admin-lists">
-        <section aria-labelledby="rep-title">
+        <section aria-labelledby="rep-title" id="adm-reports">
           <h2 class="section-title" id="rep-title">Reported listings</h2>
-          <ul class="plain-list">
-            <li><span>Promoter, nightlife events</span><span class="muted">Pay unclear</span></li>
-            <li><span>Delivery rider</span><span class="muted">Italian required</span></li>
-          </ul>
+          <ul class="plain-list" id="reports"></ul>
         </section>
-        <section aria-labelledby="fb-title">
+        <section aria-labelledby="fb-title" id="adm-feedback">
           <h2 class="section-title" id="fb-title">Latest feedback</h2>
-          <ul class="plain-list">
-            <li><span>"Would love a filter for roles near where I live."</span><span class="muted">Student</span></li>
-            <li><span>"Posting took five minutes."</span><span class="muted">Employer</span></li>
-          </ul>
+          <ul class="plain-list" id="feedback"></ul>
         </section>
       </div>
+
+      <section class="admin-block" aria-labelledby="st-title" id="adm-students">
+        <header><h2 class="section-title" id="st-title">Students</h2><span class="muted tnum" id="students-label" style="font-size:14px"></span></header>
+        <table class="table">
+          <thead><tr><th scope="col">Name</th><th scope="col">Programme</th><th scope="col">Joined</th><th scope="col">Status</th></tr></thead>
+          <tbody id="students"></tbody>
+        </table>
+      </section>
+
+      <section class="admin-block" aria-labelledby="cos-title" id="adm-companies">
+        <header><h2 class="section-title" id="cos-title">Companies</h2><span class="muted tnum" id="companies-label" style="font-size:14px"></span></header>
+        <table class="table">
+          <thead><tr><th scope="col">Employer</th><th scope="col">Type</th><th scope="col">Open roles</th><th scope="col">Rating</th><th scope="col">Status</th></tr></thead>
+          <tbody id="companies"></tbody>
+        </table>
+      </section>
     </main>
   </div>
 </div>
@@ -884,25 +1003,29 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
   <div class="wrap">
     <article class="about">
       <h1>Making part-time work in Milan accessible in English.</h1>
-      <p class="lead">GigoMe is a small, trusted job board that connects international students in Milan with businesses looking for flexible, English-speaking help. It is designed and run by a team of students.</p>
+      <p class="lead">GigoMe is a small, trusted job board that connects international students in Milan with businesses and people looking for flexible, English-speaking help. It is designed and run by a team of students.</p>
 
       <h2>Why we're building this</h2>
       <p><strong>The language barrier.</strong> Many international students arrive without fluent Italian. Most part-time listings assume it, so capable students are filtered out before they can apply.</p>
       <p><strong>Scattered roles.</strong> English-friendly roles exist, but they are spread across group chats, forums and word of mouth. There is no single trusted place to find them.</p>
-      <p><strong>Small businesses can't reach students.</strong> Cafés, startups and studios want short-term help but have no easy way to reach motivated students. Large career portals are built for corporate recruiting.</p>
+      <p><strong>Small businesses can't reach students.</strong> Cafés, startups, studios and families want short-term help but have no easy way to reach motivated students. Large career portals are built for corporate recruiting.</p>
       <p><strong>Learning by building.</strong> As a student project, this is also how we practise strategy: validating a real problem, designing a solution and testing it with users.</p>
 
       <h2>Principles</h2>
       <ul class="principles">
         <li><strong>Student-first.</strong> Free for students and built around lecture timetables and exam seasons.</li>
-        <li><strong>Trust-based.</strong> Verified students and employers reviewed by the team.</li>
-        <li><strong>Discovery only.</strong> We connect people. Applications, contracts and pay stay between student and employer.</li>
+        <li><strong>Trust-based.</strong> Verified students, employers reviewed by the team, and honest reviews from students who did the work.</li>
+        <li><strong>Direct contact.</strong> Students apply on the employer's site or by email. Contracts and pay stay between student and employer.</li>
         <li><strong>Non-profit.</strong> No fees and no paid placements.</li>
       </ul>
 
+      <h2 id="contact">Contact</h2>
+      <p>Questions about a role, an account or working with us? Write to the address for your side and we'll reply within two working days.</p>
+      <div class="contact-grid" id="contact-grid"></div>
+
       <section class="proto-note" aria-labelledby="proto-title">
-        <h2 id="proto-title">This is a prototype</h2>
-        <p>It shows how the product could look and work. Sign-ups, applications and verification aren't connected to anything yet, and no personal data is collected. GigoMe is an independent student initiative.</p>
+        <h2 id="proto-title">About this demo</h2>
+        <p>The roles, companies and numbers here are sample data. Anything you enter (your profile, applications, reviews) is saved only in this browser and never sent anywhere. Use "Reset" in the top bar to delete it. GigoMe is an independent student initiative.</p>
       </section>
 
       <h2>Team</h2>
@@ -912,20 +1035,99 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
   </div>
 </main>
 
+<!-- ============ PRIVACY ============ -->
+<main class="page" id="page-privacy">
+  <div class="wrap">
+    <article class="about">
+      <h1>Privacy notice</h1>
+      <p class="lead">Draft. This notice will be checked by a legal adviser before launch.</p>
+
+      <h2>What we collect</h2>
+      <ul class="plain">
+        <li><strong>Your student email</strong>, only to confirm that you're a student. Employers never see it.</li>
+        <li><strong>Your profile</strong>: name, username, contact email, programme, languages, availability and the background fields you choose to fill in.</li>
+        <li><strong>Age and nationality</strong>, only if you add them. Employers see them only if you tick "Show to employers".</li>
+        <li><strong>Your activity</strong>: the applications you track, the roles and searches you save and the employers you follow.</li>
+        <li><strong>Reviews you write.</strong> Anonymous reviews hide your name from employers and other students. The team can still see who wrote them, to deal with abuse.</li>
+      </ul>
+
+      <h2>Who sees your profile</h2>
+      <p>Only reviewed employers, and only the parts marked as shown to employers. Your profile is never public on the web and never sold or shared for advertising.</p>
+
+      <h2>Employers</h2>
+      <p>We store the employer profile, contact details and listings you submit. Your area is hidden from students if you turn off "Show my area".</p>
+
+      <h2>Your rights</h2>
+      <p>You can see, download and delete your data at any time from your dashboard, or by writing to us. You can withdraw consent to email alerts at any time.</p>
+
+      <h2>This demo</h2>
+      <p>In this demo, everything you enter stays in your browser's local storage and is never sent to a server. "Reset" in the top bar deletes it.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about your data: <a href="#about/contact">contact the team</a>.</p>
+    </article>
+  </div>
+</main>
+
+<!-- ============ TERMS ============ -->
+<main class="page" id="page-terms">
+  <div class="wrap">
+    <article class="about">
+      <h1>Terms</h1>
+      <p class="lead">Draft. These terms will be checked by a legal adviser before launch.</p>
+
+      <h2>Using GigoMe</h2>
+      <ul class="plain">
+        <li>Student accounts are for students with a verified university email.</li>
+        <li>Employer accounts are for businesses and private people hiring in or around Milan.</li>
+        <li>GigoMe is free for both sides. We never charge fees or take a share of pay.</li>
+      </ul>
+
+      <h2>Roles</h2>
+      <ul class="plain">
+        <li>Every role must be real, legal and paid, with the pay stated clearly.</li>
+        <li>If a role says "No Italian needed", English must be enough to do it.</li>
+        <li>The team reviews roles before they go live and can remove any role that breaks these rules.</li>
+      </ul>
+
+      <h2>Reviews</h2>
+      <ul class="plain">
+        <li>Only students who were accepted for a role can review that employer.</li>
+        <li>Reviews must be honest and about the work. We remove insults, personal data and fake reviews.</li>
+      </ul>
+
+      <h2>Contracts and pay</h2>
+      <p>GigoMe connects students and employers. It is not a party to any contract, and it doesn't handle pay. Agree the terms of the work directly with each other.</p>
+    </article>
+  </div>
+</main>
+
 <footer class="site-footer">
   <div class="wrap">
     <div class="brand"><a class="wordmark" href="#home">GigoMe</a><span class="muted">A non-profit student project in Milan</span></div>
     <nav aria-label="Footer">
-      <a href="#about">About</a><a href="#home">Privacy notice</a><a href="#home">Terms</a><a href="#home">Give feedback</a><a href="#home">Contact</a>
+      <a href="#about">About</a><a href="#privacy">Privacy notice</a><a href="#terms">Terms</a><button type="button" class="btn-link" data-feedback>Give feedback</button><a href="#about/contact">Contact</a>
     </nav>
   </div>
 </footer>
+
+<dialog class="modal" id="modal" aria-labelledby="modal-title">
+  <form class="modal-inner" id="modal-form">
+    <div class="modal-head"><h2 id="modal-title"></h2><button type="button" class="btn btn-tertiary btn-sm" data-close>Close</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (function () {
   'use strict';
 
-  // ---------- Data (all simulated) ----------
+  // ==========================================================================
+  // Data (sample data for the demo)
+  // ==========================================================================
   // rate = hourly-equivalent pay in €, used for the pay filter and sorting.
   // metro = nearest metro line(s); omitted where the nearest station is uncertain.
   var JOBS = [
@@ -939,14 +1141,14 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     { id: 't3', title: 'Online maths tutor', company: 'LearnLoop', cat: 'tutoring', area: 'Remote', mode: 'Remote', when: ['Flexible'], lang: 'en', pay: '€18/h', rate: 18, duration: 'Ongoing', posted: 6, match: 84 },
     { id: 't4', title: 'GMAT prep tutor', company: 'Peak Prep Milano', cat: 'tutoring', area: 'Porta Romana', metro: ['M3'], mode: 'Hybrid', when: ['Evenings', 'Weekends'], lang: 'en', pay: '€30/h', rate: 30, duration: 'Ongoing', posted: 3, match: 86 },
     { id: 't5', title: 'Homework help in English', company: 'International family', cat: 'tutoring', area: 'CityLife', metro: ['M5'], mode: 'On-site', when: ['Weekdays'], lang: 'en', pay: '€14/h', rate: 14, duration: 'Ongoing', posted: 7, match: 66 },
-    { id: 'p1', title: 'Market research sprint', company: 'Fintra', sector: 'Fintech startup', cat: 'project', area: 'Remote', mode: 'Remote', when: ['Flexible'], lang: 'en', pay: '€450/project', rate: 18.75, duration: '1 week', posted: 2, match: 90 },
-    { id: 'p2', title: 'Pitch deck redesign', company: 'Tavola', sector: 'Food-tech startup', cat: 'project', area: 'Isola', metro: ['M5'], mode: 'Hybrid', when: ['Flexible'], lang: 'en', pay: '€350/project', rate: 17.5, duration: '1 week', posted: 4, match: 85 },
+    { id: 'p1', title: 'Market research sprint', company: 'Fintra', cat: 'project', area: 'Remote', mode: 'Remote', when: ['Flexible'], lang: 'en', pay: '€450/project', rate: 18.75, duration: '1 week', posted: 2, match: 90 },
+    { id: 'p2', title: 'Pitch deck redesign', company: 'Tavola', cat: 'project', area: 'Isola', metro: ['M5'], mode: 'Hybrid', when: ['Flexible'], lang: 'en', pay: '€350/project', rate: 17.5, duration: '1 week', posted: 4, match: 85 },
     { id: 'p3', title: 'Customer interviews in English', company: 'Navigli Bike Tours', cat: 'project', area: 'Navigli', metro: ['M2'], mode: 'On-site', when: ['Weekends'], lang: 'en', pay: '€300/project', rate: 15, duration: '5 days', posted: 6, match: 72 },
     { id: 'p4', title: 'Social media content week', company: 'Nebbia Coffee Bar', cat: 'project', area: 'Porta Venezia', metro: ['M1'], mode: 'Hybrid', when: ['Flexible'], lang: 'en', pay: '€250/project', rate: 12.5, duration: '1 week', posted: 3, match: 74 },
     { id: 'p5', title: 'Competitor analysis for expansion', company: 'Ortica Studio', cat: 'project', area: 'Remote', mode: 'Remote', when: ['Flexible'], lang: 'en', pay: '€500/project', rate: 25, duration: '1 week', posted: 1, match: 93 },
     { id: 'i1', title: 'Marketing intern', company: 'Porta Studio', cat: 'internship', area: 'Isola', metro: ['M5'], mode: 'Hybrid', when: ['Weekdays'], lang: 'en', pay: '€800/month', rate: 10, duration: '3 months', posted: 5, match: 80 },
-    { id: 'i2', title: 'Finance analyst intern', company: 'Fintra', sector: 'Fintech startup', cat: 'internship', area: 'Porta Romana', metro: ['M3'], mode: 'On-site', when: ['Weekdays'], lang: 'en', pay: '€1000/month', rate: 12.5, duration: '6 months', posted: 5, match: 89 },
-    { id: 'i3', title: 'Social media intern', company: 'Tavola', sector: 'Food-tech startup', cat: 'internship', area: 'Isola', metro: ['M5'], mode: 'Hybrid', when: ['Flexible'], lang: 'en', pay: '€600/month', rate: 9.5, duration: '3 months', posted: 2, match: 77 },
+    { id: 'i2', title: 'Finance analyst intern', company: 'Fintra', cat: 'internship', area: 'Porta Romana', metro: ['M3'], mode: 'On-site', when: ['Weekdays'], lang: 'en', pay: '€1000/month', rate: 12.5, duration: '6 months', posted: 5, match: 89 },
+    { id: 'i3', title: 'Social media intern', company: 'Tavola', cat: 'internship', area: 'Isola', metro: ['M5'], mode: 'Hybrid', when: ['Flexible'], lang: 'en', pay: '€600/month', rate: 9.5, duration: '3 months', posted: 2, match: 77 },
     { id: 'i4', title: 'Venture analyst intern', company: 'Brick Ventures', cat: 'internship', area: 'Porta Nuova', metro: ['M2'], mode: 'Hybrid', when: ['Weekdays'], lang: 'en', pay: '€1200/month', rate: 15, duration: '4 months', posted: 8, match: 87 },
     { id: 'w1', title: 'Weekend barista', company: 'Nebbia Coffee Bar', cat: 'parttime', area: 'Porta Venezia', metro: ['M1'], mode: 'On-site', when: ['Weekends'], lang: 'en', pay: '€11/h', rate: 11, duration: 'Ongoing', posted: 0, match: 79 },
     { id: 'w2', title: 'Business development assistant', company: 'Ortica Studio', cat: 'parttime', area: 'Ortica', mode: 'Hybrid', when: ['Evenings'], lang: 'en', pay: '€12/h', rate: 12, duration: 'Ongoing', posted: 7, match: 76 },
@@ -954,9 +1156,41 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     { id: 'w4', title: 'Remote data entry assistant', company: 'Casa Verde Hostels', cat: 'parttime', area: 'Remote', mode: 'Remote', when: ['Flexible'], lang: 'en', pay: '€13/h', rate: 13, duration: 'Ongoing', posted: 9, match: 64 },
     { id: 'w5', title: 'Front-of-house host', company: 'Sakura Navigli', cat: 'parttime', area: 'Navigli', metro: ['M2'], mode: 'On-site', when: ['Evenings'], lang: 'en', pay: '€12/h', rate: 12, duration: 'Ongoing', posted: 4, match: 58 }
   ];
-  // Simulated applicant counts. Not shown anywhere: applications happen off-platform,
-  // so the platform cannot know them.
-  var APPL = { d1: 34, d2: 12, d3: 27, d4: 9, d5: 18, t1: 22, t2: 41, t3: 15, t4: 38, t5: 11, p1: 29, p2: 24, p3: 8, p4: 16, p5: 47, i1: 52, i2: 63, i3: 31, i4: 58, w1: 19, w2: 14, w3: 10, w4: 7, w5: 6 };
+
+  // Hand-written detail for the sample barista role. Other roles get text built from their data.
+  var DETAIL = {
+    w1: {
+      schedule: 'Sat and Sun, 8:00 to 14:00', start: 'November',
+      about: "We're a specialty coffee bar near the Porta Venezia metro with a mostly international crowd. We're looking for a friendly student to help behind the counter on weekend mornings: taking orders, preparing drinks and keeping the space tidy.",
+      tasks: ['Serve customers in English. Italian is a plus, not required.', 'Prepare espresso drinks, with full training on your first day.', 'Help open the bar and keep the counter stocked.'],
+      good: ['Shifts can be swapped around exam periods.', 'Free coffee and breakfast on shift.', 'Contract and pay are agreed directly with the employer.']
+    }
+  };
+
+  // Employers. private = a person hiring (a family, someone who needs a dog walker), not a business.
+  // verified: false = not (yet) checked by the GigoMe team.
+  var COMPANY = {
+    'Lumen Events': { sector: 'Events' },
+    'Fresca Drinks': { sector: 'Food and drink brand' },
+    'Studio Lambrate': { sector: 'Photography studio' },
+    'Brera Congress': { sector: 'Conference venue' },
+    'Ortica Gallery': { sector: 'Art gallery' },
+    'Brera Language Hub': { sector: 'Language school', desc: 'A small language school in Brera. Students run English conversation groups for adult learners in the evening.' },
+    'Private family': { private: true, desc: 'A family in Città Studi looking for a patient tutor to help their teenage son with statistics.' },
+    'LearnLoop': { sector: 'Online tutoring', desc: 'An online tutoring platform matching university students with secondary-school pupils across Italy.' },
+    'Peak Prep Milano': { sector: 'Test preparation' },
+    'International family': { private: true, verified: false, desc: 'An English-speaking family in CityLife looking for after-school homework help for two children.' },
+    'Fintra': { sector: 'Fintech startup', desc: 'A 20-person fintech startup building payment tools for small businesses. Office near Porta Romana, hybrid by default.' },
+    'Tavola': { sector: 'Food-tech startup' },
+    'Navigli Bike Tours': { sector: 'Tourism', desc: 'A small company running English-language bike tours along the canals and through the old town.' },
+    'Nebbia Coffee Bar': { sector: 'Food and hospitality', site: 'nebbia-example.it', desc: 'Specialty coffee bar with a mostly international crowd. We hire students for weekend shifts and train everyone from scratch.' },
+    'Ortica Studio': { sector: 'Strategy studio' },
+    'Porta Studio': { sector: 'Design agency', verified: false },
+    'Brick Ventures': { sector: 'Venture capital' },
+    'Casa Verde Hostels': { sector: 'Hostels' },
+    'Sakura Navigli': { sector: 'Restaurant' }
+  };
+
   // Simulated company positions on the map (map units)
   var POS = {
     'Lumen Events': [165, 215], 'International family': [190, 330], 'Porta Studio': [420, 175],
@@ -966,11 +1200,75 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     'Ortica Studio': [770, 540], 'Sakura Navigli': [210, 640], 'Navigli Bike Tours': [330, 690],
     'Peak Prep Milano': [640, 640], 'Fintra': [560, 760]
   };
-  var queue = [
-    { kind: 'Listing', title: 'Latte art workshop helper', detail: 'Nebbia Coffee Bar, day job', submitted: 'Yesterday' },
-    { kind: 'Company', title: 'Porta Studio', detail: 'Design agency, Isola', submitted: '2 days ago' },
+
+  var SEED_REVIEWS = {
+    'Navigli Bike Tours': [
+      { rating: 5, text: 'Great team, and flexible about exam weeks. Tips are good on weekends.', author: 'Lena M.', role: 'Bike tour guide', date: '2026-09-21' },
+      { rating: 4, text: 'Fun job, but tours in the rain are hard work.', author: null, role: 'Bike tour guide', date: '2026-07-02' }
+    ],
+    'Nebbia Coffee Bar': [
+      { rating: 5, text: 'Good training on the first day and the owners are patient. Free breakfast helps.', author: 'Tomás R.', role: 'Weekend barista', date: '2026-10-12' },
+      { rating: 4, text: 'Busy Sunday mornings, but shifts are easy to swap.', author: null, role: 'Weekend barista', date: '2026-08-30' }
+    ],
+    'Fintra': [{ rating: 4, text: 'Real work from week one. The hybrid schedule fits around lectures.', author: 'Priya S.', role: 'Finance analyst intern', date: '2026-06-15' }],
+    'Brera Language Hub': [{ rating: 5, text: 'Friendly learners and clear lesson plans.', author: null, role: 'English conversation tutor', date: '2026-10-01' }],
+    'Lumen Events': [{ rating: 3, text: 'Long days on your feet. Pay arrived on time.', author: 'Jonas K.', role: 'Trade fair event staff', date: '2026-09-05' }]
+  };
+
+  // The sample student and employer used by "Sign in" and the Jump to menu.
+  var DEMO_PROFILE = {
+    name: 'Alex Kim', username: 'alexkim', email: 'alex.kim@example.com', studentEmail: 'a.kim@student.example.com',
+    age: '22', showAge: true, nationality: 'South Korean', showNat: false, programme: 'MSc Management', year: '2nd year',
+    langs: [['English', 'Fluent'], ['Korean', 'Native'], ['Italian', 'Basic']], avail: ['Weekends', 'Evenings'],
+    intro: 'Second-year management student looking for weekend work in hospitality or tutoring.',
+    education: 'BSc Business Administration in Seoul. Now MSc Management in Milan.',
+    experience: 'Barista at a café in Seoul for a year. Maths tutor for two high-school students.',
+    ambitions: 'Consumer marketing, and one day my own café brand.',
+    personality: 'Calm under pressure and happy talking to strangers.',
+    soft: 'Customer service, teamwork, time management', hard: 'Excel, basic SQL, espresso machines', alerts: true
+  };
+  var DEMO_EMPLOYER = {
+    type: 'business', name: 'Nebbia Coffee Bar', sector: 'Food and hospitality', area: 'Porta Venezia', showLocation: true,
+    contactName: 'Giulia Ferri', email: 'jobs@nebbia-example.it', phone: '+39 02 0000 0000', site: 'nebbia-example.it',
+    desc: COMPANY['Nebbia Coffee Bar'].desc, verify: 'verified'
+  };
+  var SEED_LISTINGS = [
+    { id: 'w1', title: 'Weekend barista', cat: 'parttime', status: 'Live', updated: 'Today', job: 'w1' },
+    { id: 'p4', title: 'Social media content week', cat: 'project', status: 'Live', updated: '3 days ago', job: 'p4' },
+    { id: 'l2', title: 'Latte art workshop helper', cat: 'day', status: 'In review', updated: 'Yesterday',
+      draft: { title: 'Latte art workshop helper', cat: 'day', area: 'Porta Venezia', metro: ['M1'], mode: 'On-site', when: ['Weekends'], lang: 'en', pay: '€80/day', rate: 10, duration: '1 day', desc: 'Help our baristas run a Saturday latte art workshop for customers: set up, hand out cups and keep the counter clean.' } },
+    { id: 'l3', title: 'Evening closing shift', cat: 'parttime', status: 'Draft', updated: '3 days ago',
+      draft: { title: 'Evening closing shift', cat: 'parttime', area: 'Porta Venezia', when: ['Evenings'], lang: 'en', pay: '€11/h', desc: '' } }
+  ];
+  var SEED_APPLICANTS = {
+    w1: [
+      { name: 'Sofia Brandt', programme: 'BA Economics, 1st year', langs: [['English', 'Fluent'], ['German', 'Native']], avail: ['Weekends'], date: '2026-11-03', via: 'email', status: 'Applied' },
+      { name: 'Daniel Okafor', programme: 'MSc Data Science, 2nd year', langs: [['English', 'Native'], ['Italian', 'Basic']], avail: ['Weekends', 'Evenings'], date: '2026-11-02', via: 'site', status: 'Applied' },
+      { name: 'Mei Lin', programme: 'Exchange student', langs: [['English', 'Fluent'], ['Mandarin', 'Native']], avail: ['Weekends'], date: '2026-10-20', via: 'email', status: 'Accepted' },
+      { name: 'Lucas Martin', programme: 'BA Design, 3rd year', langs: [['English', 'Fluent'], ['French', 'Native']], avail: ['Evenings'], date: '2026-10-18', via: 'site', status: 'Rejected' }
+    ],
+    p4: [
+      { name: 'Hana Sato', programme: 'BA Communication, 3rd year', langs: [['English', 'Fluent'], ['Japanese', 'Native']], avail: ['Remote'], date: '2026-11-01', via: 'email', status: 'Applied' },
+      { name: 'Omar Haddad', programme: 'MSc Marketing, 1st year', langs: [['English', 'Fluent'], ['Arabic', 'Native']], avail: ['Weekends', 'Remote'], date: '2026-10-31', via: 'email', status: 'Applied' }
+    ]
+  };
+  var SEED_PAST = [
+    { name: 'Mei Lin', role: 'Weekend barista', last: 'October 2026', recurring: true },
+    { name: 'Tomás Rivera', role: 'Weekend barista', last: 'August 2026', recurring: true },
+    { name: 'Ana Popescu', role: 'Social media content week', last: 'June 2026', recurring: false }
+  ];
+  var SEED_QUEUE = [
+    { kind: 'Listing', title: 'Latte art workshop helper', detail: 'Nebbia Coffee Bar, day job', submitted: 'Yesterday', listing: 'l2' },
+    { kind: 'Company', title: 'Porta Studio', detail: 'Design agency, Isola. Asked to be verified.', submitted: '2 days ago', company: 'Porta Studio' },
     { kind: 'Student', title: 'Unrecognised student email', detail: 'Exchange student, domain not on the list', submitted: 'Today' },
-    { kind: 'Listing', title: 'Tour guide, Duomo rooftops', detail: 'Navigli Bike Tours, day job', submitted: 'Today' }
+    { kind: 'Listing', title: 'Tour guide, Duomo rooftops', detail: 'Navigli Bike Tours, day job', submitted: 'Today',
+      job: { title: 'Tour guide, Duomo rooftops', company: 'Navigli Bike Tours', cat: 'day', area: 'Duomo', metro: ['M1', 'M3'], mode: 'On-site', when: ['Weekends'], lang: 'en', pay: '€75/day', rate: 12.5, duration: '1 day' } }
+  ];
+  var SEED_STUDENTS = [
+    { name: 'Sofia Brandt', programme: 'BA Economics', joined: '28 Oct' },
+    { name: 'Daniel Okafor', programme: 'MSc Data Science', joined: '30 Oct' },
+    { name: 'Hana Sato', programme: 'BA Communication', joined: '1 Nov' },
+    { name: 'Mei Lin', programme: 'Exchange student', joined: '2 Oct' }
   ];
   var TEAM = [
     { name: 'Matteo Scarano', role: 'Project lead' },
@@ -983,23 +1281,106 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     { name: 'Taha' },
     { name: 'Yujin Nakamura' }
   ];
+  // Contact details on the About page. Placeholders: replace before launch.
+  // Leave linkedin empty to show "coming soon".
+  var CONTACT = {
+    students: { email: 'students@gigome.example', linkedin: '' },
+    employers: { email: 'employers@gigome.example', phone: '+39 000 000 0000', linkedin: '' }
+  };
 
   var TYPES = [['parttime', 'Part-time'], ['day', 'Day job'], ['tutoring', 'Tutoring'], ['project', 'Short project'], ['internship', 'Internship']];
   var TYPE = {}; TYPES.forEach(function (t) { TYPE[t[0]] = t[1]; });
   var HIGH_PAY = 18;
+  var LANGS = ['Arabic', 'Chinese (Mandarin)', 'Dutch', 'English', 'French', 'German', 'Greek', 'Hindi', 'Italian', 'Japanese', 'Korean', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Spanish', 'Swedish', 'Turkish', 'Ukrainian', 'Urdu', 'Vietnamese'];
+  var NATIONALITIES = ['American', 'Brazilian', 'British', 'Canadian', 'Chinese', 'Colombian', 'Dutch', 'Egyptian', 'French', 'German', 'Greek', 'Indian', 'Indonesian', 'Iranian', 'Italian', 'Japanese', 'Mexican', 'Moroccan', 'Nigerian', 'Pakistani', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'South Korean', 'Spanish', 'Swedish', 'Turkish', 'Ukrainian', 'Vietnamese'];
+  var PERSONAL_DOMAINS = /@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|libero|virgilio|proton|protonmail)\./i;
 
-  // ---------- Helpers ----------
+  // ==========================================================================
+  // Saved state. Everything lives in this browser's localStorage, never on a server.
+  // ==========================================================================
+  var KEY = 'gigome.demo.v2';
+  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+  function seed() {
+    return {
+      session: null,            // null | 'student' | 'employer'
+      profile: null, draft: null, verify: null,
+      apps: [], saved: [], searches: [], follows: [], notes: [], myReviews: [],
+      reviews: clone(SEED_REVIEWS), verified: {},
+      employer: clone(DEMO_EMPLOYER), listings: clone(SEED_LISTINGS), applicants: clone(SEED_APPLICANTS), past: clone(SEED_PAST),
+      posted: [], queue: clone(SEED_QUEUE),
+      reports: [{ title: 'Promoter, nightlife events', reason: 'Pay unclear' }, { title: 'Delivery rider', reason: 'Italian required' }],
+      feedback: [{ text: '"Would love a filter for roles near where I live."', who: 'Student' }, { text: '"Posting took five minutes."', who: 'Employer' }],
+      kpi: { students: 64, companies: 7 }
+    };
+  }
+  var db = (function () {
+    var fresh = seed();
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var d = JSON.parse(raw); Object.keys(fresh).forEach(function (k) { if (!(k in d)) d[k] = fresh[k]; }); return d; }
+    } catch (e) { /* storage blocked: run with the seed only */ }
+    return fresh;
+  })();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* ignore */ } }
+
+  // ==========================================================================
+  // Helpers
+  // ==========================================================================
   var $ = function (id) { return document.getElementById(id); };
-  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var each = function (list, fn) { Array.prototype.forEach.call(list, fn); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
   var postedLabel = function (d) { return d === 0 ? 'Today' : d === 1 ? 'Yesterday' : d + ' days ago'; };
+  var slug = function (s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
+  var todayISO = function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var fmtDate = function (iso) { var p = String(iso).split('-'); return p.length === 3 ? (+p[2]) + ' ' + MONTHS[+p[1] - 1] + ' ' + p[0] : iso; };
+  var initials = function (n) { return String(n || '?').trim().split(/\s+/).map(function (p) { return p[0]; }).join('').slice(0, 2).toUpperCase(); };
+  var shortName = function (n) { var p = String(n).trim().split(/\s+/); return p.length > 1 ? p[0] + ' ' + p[p.length - 1][0] + '.' : p[0]; };
   var verifiedIcon = '<svg class="icon" role="img" aria-label="Verified employer"><use href="#i-verified"/></svg>';
+  var starsTxt = function (n) { var r = Math.round(n); return '<span class="stars-txt" aria-hidden="true">' + '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r) + '</span>'; };
+
+  function allJobs() { return JOBS.concat(db.posted); }
+  function findJob(id) { return allJobs().filter(function (j) { return j.id === id; })[0]; }
+  function areaOf(name) { var j = allJobs().filter(function (x) { return x.company === name && x.mode !== 'Remote'; })[0]; return j ? j.area : 'Remote'; }
+  function allCompanies() {
+    var names = [];
+    allJobs().forEach(function (j) { if (names.indexOf(j.company) === -1) names.push(j.company); });
+    if (db.employer && names.indexOf(db.employer.name) === -1) names.push(db.employer.name);
+    return names.sort();
+  }
+  function companyBySlug(s) { return allCompanies().filter(function (n) { return slug(n) === s; })[0]; }
+  function companyInfo(name) {
+    var base = COMPANY[name] || {};
+    var info = { name: name, sector: base.sector || '', private: !!base.private, desc: base.desc || name + ' hires students through GigoMe.', site: base.site || '', area: areaOf(name), showLocation: true, verified: base.verified !== false, status: '' };
+    if (db.verified[name]) info.verified = true;
+    var e = db.employer;
+    if (e && e.name === name) {
+      info.private = e.type === 'private'; info.sector = info.private ? '' : e.sector; info.desc = e.desc || info.desc; info.site = info.private ? '' : e.site;
+      info.area = e.area || info.area; info.showLocation = e.showLocation !== false; info.verified = e.verify === 'verified';
+      info.email = e.email; info.phone = e.phone; info.contactName = e.contactName; info.status = e.verify;
+    }
+    if (!info.status) info.status = info.verified ? 'verified' : 'none';
+    return info;
+  }
+  function kindLabel(info) { return info.private ? 'Private employer' : info.sector; }
+  function ratingOf(name) {
+    var r = db.reviews[name] || [];
+    if (!r.length) return null;
+    return { avg: r.reduce(function (s, x) { return s + x.rating; }, 0) / r.length, n: r.length };
+  }
+  function ratingHTML(name, long) {
+    var r = ratingOf(name);
+    if (!r) return long ? '<span class="muted">No reviews yet</span>' : '';
+    return '<span class="rating" aria-label="Rated ' + r.avg.toFixed(1) + ' out of 5 from ' + plural(r.n, 'review', 'reviews') + '">' + (long ? starsTxt(r.avg) : '★') + ' ' + r.avg.toFixed(1) + (long ? ' <span class="muted">(' + plural(r.n, 'review', 'reviews') + ')</span>' : '') + '</span>';
+  }
   function metroBadges(j) {
     return (j.metro || []).map(function (m) { return '<span class="metro" title="Metro line ' + m + '" aria-label="Metro line ' + m + '">' + m + '</span>'; }).join('');
   }
   function place(j) {
     if (j.mode === 'Remote') return 'Remote';
-    return '<span class="place">' + esc(j.area) + (j.metro ? ' ' + metroBadges(j) : '') + '</span>';
+    if (!companyInfo(j.company).showLocation) return 'Milan, area on request';
+    return '<span class="place">' + esc(j.area) + (j.metro && j.metro.length ? ' ' + metroBadges(j) : '') + '</span>';
   }
   function reason(j) {
     if (j.when.indexOf('Weekends') !== -1) return 'Fits your weekend availability';
@@ -1008,42 +1389,167 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     return 'No Italian needed';
   }
   function row(j, withReason) {
+    var info = companyInfo(j.company);
     var tags = (j.posted === 0 ? '<span class="tag tag-new">New</span>' : '') + (j.lang === 'en' ? '' : '<span class="tag">Basic Italian</span>');
-    var meta = [TYPE[j.cat], place(j), esc(j.when.join(', '))].concat(j.sector ? [esc(j.sector)] : []).join('<span class="sep" aria-hidden="true">·</span>');
-    return '<li><a class="role-row" href="#job">' +
+    var meta = [TYPE[j.cat], place(j), esc(j.when.join(', '))].concat(info.private ? ['Private employer'] : []).join('<span class="sep" aria-hidden="true">·</span>');
+    return '<li><a class="role-row" href="#job/' + esc(j.id) + '">' +
       '<div><div class="role-l1"><span class="role-title">' + esc(j.title) + '</span>' +
-        '<span class="role-co"><span class="verified">' + esc(j.company) + verifiedIcon + '</span></span>' + tags + '</div>' +
+        '<span class="role-co"><span class="verified">' + esc(j.company) + (info.verified ? verifiedIcon : '') + '</span></span>' + ratingHTML(j.company) + tags + '</div>' +
         '<div class="role-meta">' + meta + '</div>' +
         (withReason ? '<div class="role-reason">' + reason(j) + '</div>' : '') + '</div>' +
       '<div class="role-pay"><span class="pay tnum">' + esc(j.pay) + '</span><span class="posted tnum">' + postedLabel(j.posted) + '</span></div>' +
       '</a></li>';
   }
+  // Rough hourly equivalent for pay typed by an employer, used for the pay filter.
+  function hourlyRate(pay) {
+    var m = String(pay).replace(',', '.').match(/(\d+(?:\.\d+)?)/);
+    if (!m) return 0;
+    var n = +m[1], p = pay.toLowerCase();
+    if (/month/.test(p)) return Math.round(n / 80 * 10) / 10;     // student internships: about 20 h a week
+    if (/project/.test(p)) return Math.round(n / 24 * 10) / 10;
+    if (/day/.test(p)) return Math.round(n / 8 * 10) / 10;
+    if (/evening|tour|shift/.test(p)) return Math.round(n / 4 * 10) / 10;
+    return n;
+  }
 
-  // ---------- Jobs: state, filters, results ----------
+  // ---------- Toast ----------
+  var toastTimer;
+  function toast(html) {
+    var t = $('toast');
+    t.innerHTML = html; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 5000);
+  }
+
+  // ---------- Modal: one dialog reused for every form ----------
+  var modal = $('modal'), modalForm = $('modal-form'), modalSubmit = null;
+  function openModal(o) {
+    $('modal-title').textContent = o.title;
+    $('modal-body').innerHTML = o.body;
+    var foot = '';
+    if (o.cancel !== false) foot += '<button type="button" class="btn btn-secondary" data-close>' + esc(o.cancel || 'Cancel') + '</button>';
+    (o.extra || []).forEach(function (b, i) { foot += '<button type="button" class="btn btn-secondary" data-extra="' + i + '">' + esc(b.label) + '</button>'; });
+    if (o.submit) foot += '<button type="submit" class="btn btn-primary">' + esc(o.submit) + '</button>';
+    $('modal-foot').innerHTML = foot;
+    $('modal-foot').hidden = !foot;
+    modalSubmit = o;
+    if (modal.open) modal.close();
+    modal.showModal();
+    var first = $('modal-body').querySelector('input:not([type=hidden]), textarea, select') || $('modal-foot').querySelector('[type=submit]') || $('modal-foot').querySelector('button');
+    if (first) first.focus();
+    if (o.onOpen) o.onOpen($('modal-body'));
+  }
+  function closeModal() { if (modal.open) modal.close(); }
+  modalForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!modalSubmit || !modalSubmit.onSubmit) { closeModal(); return; }
+    // Close first: onSubmit may open the next dialog (sign in, then apply).
+    var o = modalSubmit, fd = new FormData(modalForm);
+    closeModal(); o.onSubmit(fd, modalForm);
+  });
+  modal.addEventListener('click', function (e) {
+    if (e.target.closest('[data-close]')) { closeModal(); return; }
+    var x = e.target.closest('[data-extra]');
+    if (x && modalSubmit && modalSubmit.extra) { var o = modalSubmit, fd = new FormData(modalForm); closeModal(); o.extra[+x.dataset.extra].onClick(fd); }
+  });
+
+  // ==========================================================================
+  // Accounts (demo: any email and password sign in to the sample accounts)
+  // ==========================================================================
+  function signIn(kind) {
+    if (kind === 'student') {
+      if (!db.profile) {
+        db.profile = clone(DEMO_PROFILE);
+        db.verify = { email: DEMO_PROFILE.studentEmail, verified: true };
+        if (!db.apps.length) db.apps = [
+          { job: 'w3', via: 'site', status: 'Accepted', date: '2026-10-02' },
+          { job: 'i2', via: 'email', status: 'Rejected', date: '2026-10-10' },
+          { job: 't2', via: 'email', status: 'Applied', date: '2026-10-28' }
+        ];
+        if (!db.searches.length) db.searches = [{ id: 's1', name: 'Weekend roles', state: { q: '', area: '', cats: [], minPay: 0, when: ['Weekends'], modes: [], englishOnly: true, sort: 'match' }, alerts: true }];
+        if (!db.follows.length) db.follows = ['Navigli Bike Tours'];
+        if (!db.notes.length) db.notes = [{ text: 'New role matches "Weekend roles": Weekend barista at Nebbia Coffee Bar', href: '#job/w1', date: todayISO() }];
+      }
+      db.session = 'student';
+    } else {
+      if (!db.employer) { db.employer = clone(DEMO_EMPLOYER); db.listings = clone(SEED_LISTINGS); db.applicants = clone(SEED_APPLICANTS); db.past = clone(SEED_PAST); }
+      db.session = 'employer';
+    }
+    save(); renderAuth();
+  }
+  function signOut() {
+    db.session = null; save(); renderAuth(); toast('Signed out.');
+    route();
+  }
+  function openSignIn(kind, then) {
+    kind = kind || 'student';
+    openModal({
+      title: 'Sign in',
+      body: (then ? '<p>Sign in to a student account to do this.</p>' : '') +
+        '<fieldset><legend>I am</legend><div class="radio-row">' +
+        '<label class="check"><input type="radio" name="kind" value="student"' + (kind === 'student' ? ' checked' : '') + '> A student</label>' +
+        '<label class="check"><input type="radio" name="kind" value="employer"' + (kind === 'employer' ? ' checked' : '') + '> An employer</label></div></fieldset>' +
+        '<label class="field">Email<input class="input" type="email" name="email" required autocomplete="email"></label>' +
+        '<label class="field">Password<input class="input" type="password" name="pw" required autocomplete="current-password"></label>' +
+        '<p class="note">Demo: any email and password sign you in to the sample account. Or use "Demo account".</p>' +
+        '<p class="hint">New here? <a href="#signup" data-close>Create a student profile</a> or <a href="#company" data-close>an employer account</a>.</p>',
+      extra: [{ label: 'Demo account', onClick: function (fd) { finish(fd.get('kind')); } }],
+      submit: 'Sign in',
+      onSubmit: function (fd) { finish(fd.get('kind')); }
+    });
+    function finish(k) {
+      signIn(k);
+      toast('Signed in as ' + esc(k === 'student' ? db.profile.name : db.employer.name) + '.');
+      if (then && k === 'student') then();
+      else if (!then) go(k === 'student' ? '#me' : '#company');
+      else route();
+    }
+  }
+  // Run fn as a signed-in student, asking to sign in first if needed.
+  function needStudent(fn) {
+    if (db.session === 'student' && db.profile) fn();
+    else openSignIn('student', function () { fn(); refresh(); });
+  }
+  function renderAuth() {
+    var s = db.session;
+    var unread = s === 'student' ? db.notes.filter(function (n) { return !n.read; }).length : 0;
+    $('auth-actions').innerHTML = s
+      ? '<button type="button" class="btn btn-tertiary btn-sm signin" data-signout>Sign out</button><a class="btn btn-primary btn-sm" href="' + (s === 'student' ? '#me' : '#company') + '">' + (s === 'student' ? 'My dashboard' + (unread ? ' (' + unread + ')' : '') : 'Dashboard') + '</a>'
+      : '<button type="button" class="btn btn-tertiary btn-sm signin" data-signin>Sign in</button><a class="btn btn-primary btn-sm" href="#signup">Create profile</a>';
+    $('menu-auth').innerHTML = s ? '<button type="button" data-signout>Sign out</button>' : '<button type="button" data-signin>Sign in</button>';
+  }
+
+  // Alerts for the (single) demo student
+  function note(text, href) { db.notes.unshift({ text: text, href: href, date: todayISO() }); }
+
+  // ==========================================================================
+  // Jobs: state, filters, results
+  // ==========================================================================
   function freshState() { return { q: '', area: '', cats: [], minPay: 0, when: [], modes: [], englishOnly: false, sort: 'match' }; }
   var state = freshState();
   var form = $('filters');
 
-  $('type-filters').innerHTML = TYPES.map(function (t) {
-    var n = JOBS.filter(function (j) { return j.cat === t[0]; }).length;
-    return '<label class="check"><input type="checkbox" name="cat" value="' + t[0] + '"> ' + t[1] + '<span class="count tnum">' + n + '</span></label>';
-  }).join('');
+  function renderTypeFilters() {
+    $('type-filters').innerHTML = TYPES.map(function (t) {
+      var n = allJobs().filter(function (j) { return j.cat === t[0]; }).length;
+      return '<label class="check"><input type="checkbox" name="cat" value="' + t[0] + '"> ' + t[1] + '<span class="count tnum">' + n + '</span></label>';
+    }).join('');
+  }
 
   function passes(j, s) {
-    var q = s.q.toLowerCase().trim();
+    var q = (s.q || '').toLowerCase().trim();
     return (!s.cats.length || s.cats.indexOf(j.cat) !== -1) &&
       j.rate >= s.minPay &&
       (!s.area || j.area === s.area) &&
       (!s.when.length || j.when.some(function (w) { return s.when.indexOf(w) !== -1; })) &&
       (!s.modes.length || s.modes.indexOf(j.mode) !== -1) &&
       (!s.englishOnly || j.lang === 'en') &&
-      (!q || (j.title + ' ' + j.company + ' ' + (j.sector || '') + ' ' + TYPE[j.cat] + ' ' + j.area).toLowerCase().indexOf(q) !== -1);
+      (!q || (j.title + ' ' + j.company + ' ' + kindLabel(companyInfo(j.company)) + ' ' + TYPE[j.cat] + ' ' + j.area).toLowerCase().indexOf(q) !== -1);
   }
   function filtered(s) {
     var by = { match: function (a, b) { return b.match - a.match; }, pay: function (a, b) { return b.rate - a.rate; }, new: function (a, b) { return a.posted - b.posted || b.match - a.match; } }[s.sort];
-    return JOBS.filter(function (j) { return passes(j, s); }).sort(by);
+    return allJobs().filter(function (j) { return passes(j, s); }).sort(by);
   }
-
   // Each active filter as a removable item: label + how to remove it from a state.
   function activeFilters(s) {
     var out = [];
@@ -1056,12 +1562,12 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     if (s.englishOnly) out.push({ label: 'No Italian needed', drop: function (t) { t.englishOnly = false; } });
     return out;
   }
-  function copyState(s) { return JSON.parse(JSON.stringify(s)); }
+  function summary(s) { var a = activeFilters(s).map(function (f) { return f.label; }); return a.length ? a.join(', ') : 'All roles'; }
 
   function syncControls() {
-    Array.prototype.forEach.call(form.querySelectorAll('input[name=cat]'), function (el) { el.checked = state.cats.indexOf(el.value) !== -1; });
-    Array.prototype.forEach.call(form.querySelectorAll('input[name=when]'), function (el) { el.checked = state.when.indexOf(el.value) !== -1; });
-    Array.prototype.forEach.call(form.querySelectorAll('input[name=mode]'), function (el) { el.checked = state.modes.indexOf(el.value) !== -1; });
+    each(form.querySelectorAll('input[name=cat]'), function (el) { el.checked = state.cats.indexOf(el.value) !== -1; });
+    each(form.querySelectorAll('input[name=when]'), function (el) { el.checked = state.when.indexOf(el.value) !== -1; });
+    each(form.querySelectorAll('input[name=mode]'), function (el) { el.checked = state.modes.indexOf(el.value) !== -1; });
     $('english-only').checked = state.englishOnly;
     $('min-pay').value = state.minPay;
     $('min-pay-label').textContent = state.minPay ? '€' + state.minPay + '+/h' : 'Any';
@@ -1089,22 +1595,24 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
       // Find the single filter whose removal brings back the most roles.
       var best = null;
       active.forEach(function (f, i) {
-        var t = copyState(state); f.drop(t);
+        var t = clone(state); f.drop(t);
         var n = filtered(t).length;
         if (!best || n > best.n) best = { i: i, n: n, label: f.label };
       });
       empty.innerHTML = '<p><strong>No roles match these filters.</strong></p>' +
         (best && best.n ? '<p class="muted">"' + esc(best.label) + '" excludes the most. Removing it shows ' + plural(best.n, 'role', 'roles') + '.</p>' : '') +
+        '<p class="muted">Or <button type="button" class="btn-link" data-save-search>save this search</button> and get an email when a matching role is posted.</p>' +
         '<div class="btns">' + (best && best.n ? '<button type="button" class="btn btn-primary btn-sm" data-drop="' + best.i + '">Remove "' + esc(best.label) + '"</button>' : '') +
         '<button type="button" class="btn btn-secondary btn-sm" data-clear>Clear all filters</button></div>';
     }
   }
 
   function dropFilter(i) { var f = activeFilters(state)[i]; if (f) { f.drop(state); render(); } }
-  document.getElementById('page-jobs').addEventListener('click', function (e) {
+  $('page-jobs').addEventListener('click', function (e) {
     var d = e.target.closest('[data-drop]');
     if (d) { dropFilter(+d.dataset.drop); return; }
-    if (e.target.closest('[data-clear]')) { var keepSort = state.sort; state = freshState(); state.sort = keepSort; render(); }
+    if (e.target.closest('[data-clear]')) { var keepSort = state.sort; state = freshState(); state.sort = keepSort; render(); return; }
+    if (e.target.closest('[data-save-search]')) saveSearch();
   });
   form.addEventListener('change', function (e) {
     var t = e.target;
@@ -1120,6 +1628,28 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
   $('sort').addEventListener('change', function (e) { state.sort = e.target.value; render(); });
   $('job-search').addEventListener('input', function (e) { state.q = e.target.value; render(); });
 
+  // Saved searches with email alerts
+  function saveSearch() {
+    needStudent(function () {
+      var label = summary(state);
+      openModal({
+        title: 'Save this search',
+        body: '<label class="field">Name<input class="input" name="name" required maxlength="60" value="' + esc(label) + '"></label>' +
+          '<p class="hint">Filters: ' + esc(label) + '</p>' +
+          '<label class="check"><input type="checkbox" name="alerts" checked> Email me when a new role matches</label>' +
+          '<p class="hint">Alerts go to ' + esc(db.profile.email) + '. Manage saved searches in your dashboard.</p>',
+        submit: 'Save search',
+        onSubmit: function (fd) {
+          var s = clone(state); s.sort = 'match';
+          db.searches.push({ id: 's' + Date.now(), name: fd.get('name').trim() || label, state: s, alerts: !!fd.get('alerts') });
+          save();
+          toast('Search saved. <a href="#me/searches">See your saved searches</a>');
+        }
+      });
+    });
+  }
+  $('save-search').addEventListener('click', saveSearch);
+
   // Filters drawer (under 900px): the same form moves into a modal <dialog>,
   // which traps focus and closes on Escape.
   var drawer = $('filter-drawer');
@@ -1127,7 +1657,6 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
   $('drawer-close').addEventListener('click', function () { drawer.close(); });
   $('drawer-apply').addEventListener('click', function () { drawer.close(); });
   drawer.addEventListener('close', function () { $('filters-slot').appendChild(form); $('filters-btn').focus(); });
-  // Keep Tab inside the drawer (a modal dialog alone lets focus leave to the browser UI).
   drawer.addEventListener('keydown', function (e) {
     if (e.key !== 'Tab') return;
     var f = Array.prototype.filter.call(drawer.querySelectorAll('button, input, select, a[href]'), function (el) { return !el.disabled && el.offsetParent; });
@@ -1145,51 +1674,62 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
     else if (key === 'remote') state.modes = ['Remote'];
   }
 
-  // ---------- Home ----------
+  // ==========================================================================
+  // Home
+  // ==========================================================================
   var areas = JOBS.map(function (j) { return j.area; }).filter(function (a, i, arr) { return a !== 'Remote' && arr.indexOf(a) === i; }).sort();
   $('home-area').innerHTML += areas.concat(['Remote']).map(function (a) { return '<option>' + esc(a) + '</option>'; }).join('');
+  $('area-list').innerHTML = areas.concat(['Remote']).map(function (a) { return '<option value="' + esc(a) + '">'; }).join('');
   $('home-search').addEventListener('submit', function (e) {
     e.preventDefault();
     state = freshState();
     state.q = $('home-q').value.trim();
     state.area = $('home-area').value;
+    if (state.area === 'Remote') { state.area = ''; state.modes = ['Remote']; }
     state.englishOnly = $('home-english').checked;
     if (location.hash === '#jobs') { route(); } else { location.hash = '#jobs'; }
   });
-  var newest = JOBS.slice().sort(function (a, b) { return a.posted - b.posted || b.match - a.match; }).slice(0, 6);
-  $('newest').innerHTML = newest.map(function (j) { return row(j, false); }).join('');
-  $('see-all').textContent = 'See all ' + JOBS.length + ' roles';
+  function renderHome() {
+    var newest = allJobs().slice().sort(function (a, b) { return a.posted - b.posted || b.match - a.match; }).slice(0, 5);
+    $('newest').innerHTML = newest.map(function (j) { return row(j, false); }).join('');
+    $('see-all').textContent = 'See all ' + allJobs().length + ' roles';
+    map.renderPins();
+  }
 
   // ---------- Home: map ----------
-  (function initMap() {
+  var map = (function initMap() {
     var vp = $('map-viewport'), stage = $('map-stage'), layer = $('map-pins'), tip = $('map-tip'), wrap = $('map-wrap'), hint = $('map-hint');
     var SIZE = 808, OFF = 17, CENTER = [500, 480];
-    var groups = {}, remote = 0, onMap = 0;
-    JOBS.forEach(function (j) {
-      if (j.mode === 'Remote' || !POS[j.company]) { remote++; return; }
-      onMap++;
-      (groups[j.company] = groups[j.company] || []).push(j);
-    });
-    $('map-total').textContent = plural(onMap, 'role', 'roles');
-    $('map-remote').textContent = remote;
 
     function placeAt(el, pt) { el.style.left = (pt[0] - OFF) + 'px'; el.style.top = (pt[1] - OFF) + 'px'; }
-    Object.keys(groups).forEach(function (name) {
-      var jobs = groups[name];
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'map-pin';
-      btn.textContent = jobs.length;
-      btn.setAttribute('aria-label', name + ', ' + plural(jobs.length, 'open role', 'open roles') + '. Show in the role list.');
-      var html = '<strong>' + esc(name) + '</strong><span class="tip-area">' + esc(jobs[0].area) + '</span><ul>' +
-        jobs.map(function (j) { return '<li>' + esc(j.title) + '<span>' + esc(j.pay) + ', ' + esc(j.when.join(', ')) + '</span><span>Posted ' + postedLabel(j.posted).toLowerCase() + '</span></li>'; }).join('') + '</ul>';
-      var show = function () { showTip(html, btn); }, hide = function () { hideTip(btn); };
-      btn.addEventListener('mouseenter', show); btn.addEventListener('focus', show);
-      btn.addEventListener('mouseleave', hide); btn.addEventListener('blur', hide);
-      btn.addEventListener('click', function () { state = freshState(); state.q = name; location.hash = '#jobs'; });
-      placeAt(btn, POS[name]);
-      layer.appendChild(btn);
-    });
+    function renderPins() {
+      var groups = {}, remote = 0, onMap = 0;
+      allJobs().forEach(function (j) {
+        // Remote roles, companies without a map position, and employers who hide their area stay off the map.
+        if (j.mode === 'Remote' || !POS[j.company] || !companyInfo(j.company).showLocation) { remote += j.mode === 'Remote' ? 1 : 0; return; }
+        onMap++;
+        (groups[j.company] = groups[j.company] || []).push(j);
+      });
+      $('map-total').textContent = plural(onMap, 'role', 'roles');
+      $('map-remote').textContent = remote;
+      layer.innerHTML = '';
+      Object.keys(groups).forEach(function (name) {
+        var jobs = groups[name];
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'map-pin';
+        btn.textContent = jobs.length;
+        btn.setAttribute('aria-label', name + ', ' + plural(jobs.length, 'open role', 'open roles') + '. Show in the role list.');
+        var html = '<strong>' + esc(name) + '</strong><span class="tip-area">' + esc(jobs[0].area) + '</span><ul>' +
+          jobs.map(function (j) { return '<li>' + esc(j.title) + '<span>' + esc(j.pay) + ', ' + esc(j.when.join(', ')) + '</span><span>Posted ' + postedLabel(j.posted).toLowerCase() + '</span></li>'; }).join('') + '</ul>';
+        var show = function () { showTip(html, btn); }, hide = function () { hideTip(btn); };
+        btn.addEventListener('mouseenter', show); btn.addEventListener('focus', show);
+        btn.addEventListener('mouseleave', hide); btn.addEventListener('blur', hide);
+        btn.addEventListener('click', function () { state = freshState(); state.q = name; location.hash = '#jobs'; });
+        placeAt(btn, POS[name]);
+        layer.appendChild(btn);
+      });
+    }
 
     function showTip(html, el) {
       tip.innerHTML = html;
@@ -1255,68 +1795,965 @@ legend{padding:0;margin-bottom:var(--s2);font-size:14px;font-weight:600}
       minS = Math.max(vp.clientWidth / SIZE, vp.clientHeight / SIZE); maxS = minS * 3.5; s = minS * ratio; apply(false);
     });
     setTimeout(function () { hint.classList.add('gone'); }, 5000);
-    window._gigomeMap = { refresh: function () { if (!minS) fit(false); else apply(false); } };
+    return { renderPins: renderPins, refresh: function () { if (!minS) fit(false); else apply(false); } };
   })();
 
-  // ---------- Sign-up: removable language tags ----------
-  $('lang-tags').addEventListener('click', function (e) {
-    var b = e.target.closest('.lang-tag button');
-    if (b) { var next = b.closest('.lang-tag').nextElementSibling; b.closest('.lang-tag').remove(); if (next) next.querySelector('button') ? next.querySelector('button').focus() : next.focus(); }
+  // ==========================================================================
+  // Role detail (#job/<id>)
+  // ==========================================================================
+  var TASKS = {
+    parttime: ['Work regular shifts agreed with the employer.', 'Serve customers and keep the space tidy.', 'Ask the team for training on anything new.'],
+    day: ['Arrive on time and check in with the organiser.', 'Welcome and help guests in English.', 'Help set up before and pack down after.'],
+    tutoring: ['Plan short sessions around the learner\'s needs.', 'Explain ideas clearly in English.', 'Give a short progress update every month.'],
+    project: ['Agree the brief and deadline at the start.', 'Deliver a short, finished piece of work.', 'Present what you found in a final call.'],
+    internship: ['Work with a small team on real projects.', 'Join weekly check-ins with your manager.', 'Agree a learning plan in your first week.']
+  };
+  function detailOf(j) {
+    var d = DETAIL[j.id] || {};
+    var where = j.mode === 'Remote' ? ' that you can do from anywhere' : ' in ' + j.area;
+    return {
+      schedule: d.schedule || j.when.join(', '),
+      start: d.start,
+      about: d.about || j.desc || (j.company + ' is looking for a student for a ' + TYPE[j.cat].toLowerCase() + ' role' + where + '. ' + (j.lang === 'en' ? 'English is enough: no Italian needed.' : 'Basic Italian helps for this role.') + ' Pay is ' + j.pay + '.'),
+      tasks: d.tasks || TASKS[j.cat],
+      good: d.good || [
+        'Length: ' + j.duration.toLowerCase() + '.',
+        j.mode === 'Hybrid' ? 'Part of the work can be done remotely.' : j.mode === 'Remote' ? 'Fully remote. You need your own laptop.' : 'On-site.',
+        'Contract and pay are agreed directly with the employer.'
+      ]
+    };
+  }
+  function appFor(jobId) { return db.session === 'student' ? db.apps.filter(function (a) { return a.job === jobId; })[0] : null; }
+  function statusTag(s) { return '<span class="tag tag-' + s.toLowerCase() + '">' + s + '</span>'; }
+
+  function renderJob(id) {
+    var j = findJob(id) || findJob('w1');
+    var info = companyInfo(j.company), d = detailOf(j), app = appFor(j.id), saved = db.saved.indexOf(j.id) !== -1;
+    var following = db.follows.indexOf(j.company) !== -1;
+    var tags = (j.posted === 0 ? '<span class="tag tag-new">New</span>' : '') + '<span class="tag">' + TYPE[j.cat] + '</span><span class="tag">' + (j.lang === 'en' ? 'No Italian needed' : 'Basic Italian') + '</span>' + (j.mode !== 'On-site' ? '<span class="tag">' + j.mode + '</span>' : '');
+    var applyBox = app
+      ? '<div class="applied"><strong>You applied on ' + fmtDate(app.date) + '</strong><p>Status: ' + statusTag(app.status) + '</p><p><a href="#me">Track it in your dashboard</a></p></div>'
+      : '<button type="button" class="btn btn-primary" data-apply="site">Apply on company site <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></button>' +
+        '<button type="button" class="btn btn-secondary" data-apply="email">Email employer</button>';
+    $('job-root').innerHTML =
+      '<a class="back" href="#jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>' +
+      '<div class="detail"><article>' +
+        '<h1 class="page-title">' + esc(j.title) + '</h1>' +
+        '<p class="detail-co"><span class="verified"><a href="#employer/' + slug(j.company) + '">' + esc(j.company) + '</a>' + (info.verified ? verifiedIcon : '') + '</span>' + ratingHTML(j.company) + '</p>' +
+        '<div class="tags">' + tags + '</div>' +
+        '<dl class="facts">' +
+          '<div><dt>Pay</dt><dd class="tnum">' + esc(j.pay) + '</dd></div>' +
+          '<div><dt>Schedule</dt><dd>' + esc(d.schedule) + '</dd></div>' +
+          '<div><dt>Location</dt><dd>' + place(j) + '</dd></div>' +
+          '<div><dt>' + (d.start ? 'Start' : 'Length') + '</dt><dd>' + esc(d.start || j.duration) + '</dd></div>' +
+        '</dl>' +
+        '<div class="prose-role">' +
+          '<h2>About the role</h2><p>' + esc(d.about) + '</p>' +
+          '<h2>What you\'ll do</h2><ul>' + d.tasks.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+          '<h2>Good to know</h2><ul>' + d.good.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+        '</div>' +
+      '</article>' +
+      '<aside aria-label="Apply"><div class="apply">' + applyBox +
+        '<button type="button" class="btn btn-tertiary btn-sm save" data-save aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save') + '</button>' +
+        '<p class="apply-note">Applications go straight to the employer. Track them in your dashboard.</p>' +
+        '<div class="employer">' +
+          '<strong>' + esc(j.company) + '</strong>' +
+          '<p class="muted">' + esc([kindLabel(info), info.showLocation ? info.area : 'Area on request'].filter(Boolean).join(', ')) + '</p>' +
+          '<p>' + (info.verified ? '<span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Reviewed by the GigoMe team</span>' : '<span class="muted">Not verified by the GigoMe team yet</span>') + '</p>' +
+          '<p>' + ratingHTML(j.company, true) + '</p>' +
+          '<p class="btn-row"><a href="#employer/' + slug(j.company) + '">View employer</a><button type="button" class="btn btn-secondary btn-sm" data-follow="' + esc(j.company) + '" aria-pressed="' + following + '">' + (following ? 'Following' : 'Follow') + '</button></p>' +
+        '</div>' +
+      '</div>' +
+      '<button type="button" class="report" data-report><svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg>Report this role</button>' +
+      '</aside></div>';
+    $('job-root').dataset.job = j.id;
+  }
+  $('job-root').addEventListener('click', function (e) {
+    var j = findJob($('job-root').dataset.job);
+    if (!j) return;
+    var a = e.target.closest('[data-apply]');
+    if (a) { startApply(j, a.dataset.apply); return; }
+    if (e.target.closest('[data-save]')) { needStudent(function () { toggleSaved(j.id); renderJob(j.id); }); return; }
+    if (e.target.closest('[data-report]')) { openReport(j); }
   });
 
-  // ---------- Employer: submit for review ----------
-  $('submit-review').addEventListener('click', function () { this.textContent = 'Submitted, in review'; this.disabled = true; });
+  function startApply(j, via) {
+    needStudent(function () {
+      if (appFor(j.id)) { renderJob(j.id); return; }
+      var info = companyInfo(j.company), p = db.profile;
+      if (via === 'site') {
+        openModal({
+          title: 'Apply on ' + j.company + "'s site",
+          body: '<p>This opens the employer\'s own application page in a new tab. In this demo there is no real page, so nothing opens.</p>' +
+            '<p>We\'ll add the role to your applications so you can track it. Update the status when you hear back.</p>',
+          submit: 'Continue to apply',
+          onSubmit: function () { addApp(j, 'site'); }
+        });
+      } else {
+        var msg = 'Hi,\n\nI\'d like to apply for the ' + j.title + ' role. I\'m a ' + (p.programme || 'university') + ' student' + (p.avail && p.avail.length ? ' and I\'m available ' + p.avail.join(', ').toLowerCase() : '') + '.\n\nBest,\n' + p.name;
+        openModal({
+          title: 'Email ' + j.company,
+          body: '<p class="hint">To: ' + esc(info.email || 'the employer') + '. Sent from your contact email, ' + esc(p.email) + '.</p>' +
+            '<label class="field">Subject<input class="input" name="subject" required value="' + esc('Application: ' + j.title) + '"></label>' +
+            '<label class="field">Message<textarea class="textarea" name="msg" rows="7" required>' + esc(msg) + '</textarea></label>' +
+            '<label class="check"><input type="checkbox" name="link" checked> Include a link to my GigoMe profile</label>',
+          submit: 'Send email',
+          onSubmit: function () { addApp(j, 'email'); }
+        });
+      }
+    });
+  }
+  function addApp(j, via) {
+    db.apps.unshift({ job: j.id, via: via, status: 'Applied', date: todayISO() });
+    save(); renderAuth();
+    toast(via === 'email' ? 'Email sent. Added to <a href="#me">your applications</a>.' : 'Added to <a href="#me">your applications</a>. Good luck!');
+    renderJob(j.id);
+  }
+  function toggleSaved(id) {
+    var i = db.saved.indexOf(id);
+    if (i === -1) { db.saved.push(id); toast('Saved. Find it in <a href="#me/saved">your dashboard</a>.'); } else { db.saved.splice(i, 1); toast('Removed from saved roles.'); }
+    save();
+  }
+  function toggleFollow(name) {
+    needStudent(function () {
+      var i = db.follows.indexOf(name);
+      if (i === -1) { db.follows.push(name); toast('Following ' + esc(name) + '. You\'ll get an alert when they post a new role.'); }
+      else { db.follows.splice(i, 1); toast('Unfollowed ' + esc(name) + '.'); }
+      save(); refresh();
+    });
+  }
+  function openReport(j) {
+    var reasons = ['Pay is unclear or too low', 'Italian is actually required', 'Looks like a scam', 'The role is no longer available', 'Something else'];
+    openModal({
+      title: 'Report this role',
+      body: '<p>' + esc(j.title) + ', ' + esc(j.company) + '</p>' +
+        '<fieldset><legend>What\'s wrong?</legend>' + reasons.map(function (r, i) { return '<label class="check"><input type="radio" name="reason" value="' + esc(r) + '"' + (i === 0 ? ' required' : '') + '> ' + esc(r) + '</label>'; }).join('') + '</fieldset>' +
+        '<label class="field">Details <span class="hint">(optional)</span><textarea class="textarea" name="details" rows="3" maxlength="500"></textarea></label>' +
+        '<p class="hint">Reports are anonymous to the employer. The team checks every one.</p>',
+      submit: 'Send report',
+      onSubmit: function (fd) {
+        db.reports.unshift({ title: j.title + ', ' + j.company, reason: fd.get('reason') });
+        save(); toast('Thanks. The team will check this role.');
+      }
+    });
+  }
 
-  // ---------- Admin queue (working approve / reject) ----------
-  function renderQueue() {
-    $('queue').innerHTML = queue.map(function (it, i) {
-      return '<tr><td data-label="Type">' + it.kind + '</td><td><strong>' + esc(it.title) + '</strong></td><td data-label="Details" class="muted">' + esc(it.detail) + '</td><td data-label="Submitted">' + esc(it.submitted) + '</td>' +
-        '<td><div class="actions"><button type="button" class="btn btn-secondary btn-sm" data-done="' + i + '" aria-label="Reject ' + esc(it.title) + '">Reject</button><button type="button" class="btn btn-primary btn-sm" data-done="' + i + '" aria-label="Approve ' + esc(it.title) + '">Approve</button></div></td></tr>';
+  // ==========================================================================
+  // Reviews
+  // ==========================================================================
+  function reviewHTML(r) {
+    return '<li class="review"><div class="review-head"><span>' + starsTxt(r.rating) + ' <span class="sr-only">' + r.rating + ' out of 5</span> <strong>' + esc(r.role) + '</strong></span>' +
+      '<span class="who">' + esc(r.author || 'Anonymous student') + ', ' + fmtDate(r.date) + '</span></div><p>' + esc(r.text) + '</p></li>';
+  }
+  function reviewsBlock(name, title) {
+    var list = db.reviews[name] || [], r = ratingOf(name);
+    return '<div class="section-head"><h2 class="section-title">' + title + '</h2>' + (r ? '<span class="rating-sum"><span class="big tnum">' + r.avg.toFixed(1) + '</span>' + starsTxt(r.avg) + '<span class="muted">' + plural(r.n, 'review', 'reviews') + '</span></span>' : '') + '</div>' +
+      (list.length ? '<ul class="reviews">' + list.map(reviewHTML).join('') + '</ul>' : '<p class="empty-line">No reviews yet.</p>');
+  }
+  // A student can review an employer once per accepted application.
+  function reviewableApp(company) {
+    if (db.session !== 'student') return null;
+    return db.apps.filter(function (a) { var j = findJob(a.job); return j && j.company === company && a.status === 'Accepted' && !a.reviewed; })[0] || null;
+  }
+  var RATING_LABEL = { 5: 'Excellent', 4: 'Good', 3: 'OK', 2: 'Poor', 1: 'Bad' };
+  function openReview(app) {
+    var j = findJob(app.job);
+    openModal({
+      title: 'Review ' + j.company,
+      body: '<p class="hint">For: ' + esc(j.title) + '. Only students who were accepted for a role can review it.</p>' +
+        '<fieldset><legend>Your rating</legend><div class="star-pick">' + [5, 4, 3, 2, 1].map(function (n) {
+          return '<label class="check"><input type="radio" name="rating" value="' + n + '"' + (n === 5 ? ' required' : '') + '> ' + starsTxt(n) + ' ' + n + ' <span class="muted">' + RATING_LABEL[n] + '</span></label>';
+        }).join('') + '</div></fieldset>' +
+        '<label class="field">What was it like?<textarea class="textarea" name="text" rows="4" required minlength="10" maxlength="600" placeholder="Pay, schedule, training, how you were treated."></textarea></label>' +
+        '<label class="check" style="align-items:flex-start"><input type="checkbox" name="anon" style="margin-top:4px"> <span>Post anonymously. Your name is hidden from the employer and other students. The GigoMe team can still see who wrote it.</span></label>',
+      submit: 'Post review',
+      onSubmit: function (fd) {
+        var r = { rating: +fd.get('rating'), text: fd.get('text').trim(), author: fd.get('anon') ? null : shortName(db.profile.name), role: j.title, date: todayISO() };
+        (db.reviews[j.company] = db.reviews[j.company] || []).unshift(r);
+        db.myReviews.push({ company: j.company, review: r });
+        app.reviewed = true;
+        save(); toast('Review posted on <a href="#employer/' + slug(j.company) + '">' + esc(j.company) + '</a>.'); refresh();
+      }
+    });
+  }
+
+  // ==========================================================================
+  // Employer public page (#employer/<slug>)
+  // ==========================================================================
+  function renderEmployerPage(s) {
+    var name = companyBySlug(s) || 'Nebbia Coffee Bar';
+    var info = companyInfo(name);
+    var jobs = allJobs().filter(function (j) { return j.company === name; });
+    var following = db.follows.indexOf(name) !== -1, canReview = reviewableApp(name);
+    var contact = '';
+    if (db.session === 'student') {
+      var rows = [];
+      if (info.contactName) rows.push(['Contact', esc(info.contactName)]);
+      if (info.email) rows.push(['Email', '<a href="mailto:' + esc(info.email) + '">' + esc(info.email) + '</a>']);
+      if (info.phone) rows.push(['Phone', esc(info.phone)]);
+      if (info.site) rows.push(['Website', esc(info.site)]);
+      contact = rows.length ? '<dl class="contact-list">' + rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>' : '<p class="hint">Contact this employer through one of their roles.</p>';
+    } else {
+      contact = '<p class="hint">Sign in as a student to see contact details.</p><button type="button" class="btn btn-secondary btn-sm" data-signin>Sign in</button>';
+    }
+    $('employer-root').innerHTML =
+      '<a class="back" href="#jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>' +
+      '<div class="detail"><article>' +
+        '<h1 class="page-title">' + esc(name) + '</h1>' +
+        '<p class="emp-meta">' + (info.verified ? '<span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Reviewed by the GigoMe team</span>' : '<span>Not verified yet</span>') +
+          '<span>' + esc(kindLabel(info) || 'Employer') + '</span><span>' + esc(info.showLocation ? info.area : 'Area on request') + '</span>' + ratingHTML(name) + '</p>' +
+        '<p class="emp-desc">' + esc(info.desc) + '</p>' +
+        '<section class="emp-block" aria-label="Open roles"><div class="section-head"><h2 class="section-title">Open roles</h2><span class="muted tnum">' + jobs.length + '</span></div>' +
+          (jobs.length ? '<ul class="role-list">' + jobs.map(function (j) { return row(j, false); }).join('') + '</ul>' : '<p class="empty-line">No open roles right now. Follow ' + esc(name) + ' to hear about the next one.</p>') + '</section>' +
+        '<section class="emp-block" aria-label="Reviews">' + reviewsBlock(name, 'Reviews from students') +
+          (canReview ? '<p style="margin-top:var(--s4)"><button type="button" class="btn btn-primary" data-review>Write a review</button></p>' : '<p class="hint" style="margin-top:var(--s3)">Only students who were accepted for a role here can leave a review.</p>') + '</section>' +
+      '</article>' +
+      '<aside aria-label="Follow and contact"><div class="apply">' +
+        '<button type="button" class="btn ' + (following ? 'btn-secondary' : 'btn-primary') + '" data-follow="' + esc(name) + '" aria-pressed="' + following + '">' + (following ? 'Following' : 'Follow ' + esc(name)) + '</button>' +
+        '<p class="apply-note">Get an alert in your dashboard and by email when they post a new role.</p>' +
+        '<div class="employer"><strong>Contact</strong>' + contact + '</div>' +
+      '</div></aside></div>';
+    $('employer-root').dataset.company = name;
+  }
+  $('employer-root').addEventListener('click', function (e) {
+    if (e.target.closest('[data-review]')) { var a = reviewableApp($('employer-root').dataset.company); if (a) openReview(a); }
+  });
+
+  // ==========================================================================
+  // Student sign-up (#signup): verification by code, profile, live preview
+  // ==========================================================================
+  var suForm = $('signup-form'), langs = [];
+  $('lang-list').innerHTML = LANGS.map(function (l) { return '<option value="' + l + '">'; }).join('');
+  $('nat-list').innerHTML = NATIONALITIES.map(function (l) { return '<option value="' + l + '">'; }).join('');
+  var F = function (n) { return suForm.elements.namedItem(n); };
+  var editing = function () { return db.session === 'student' && !!db.profile; };
+
+  function renderVerify() {
+    var v = db.verify || {}, box = $('su-verify');
+    if (v.verified) {
+      box.innerHTML = '<div class="email-line"><span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg><strong>' + esc(v.email) + '</strong></span><span class="muted">Verified</span>' +
+        (editing() ? '' : '<button type="button" class="btn-link" data-v="change">Change</button>') + '</div>';
+    } else if (v.sent) {
+      box.innerHTML = '<p>We sent a 6-digit code to <strong>' + esc(v.email) + '</strong>. <button type="button" class="btn-link" data-v="change">Change email</button></p>' +
+        '<div class="inline-form" style="margin-top:var(--s3)"><label class="field" style="flex:0 1 200px">6-digit code<input class="input tnum" id="su-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-describedby="su-v-err"></label>' +
+        '<button type="button" class="btn btn-primary" data-v="check">Verify</button><button type="button" class="btn btn-tertiary btn-sm" data-v="resend">Send a new code</button></div>' +
+        '<p class="note" style="margin-top:var(--s3)">Demo: no email is sent. Your code is <strong class="tnum">' + esc(v.code) + '</strong>.</p>' +
+        '<p class="err" id="su-v-err" hidden style="margin-top:var(--s2)"></p>';
+    } else {
+      box.innerHTML = '<div class="inline-form"><label class="field">University email<input class="input" id="su-email-input" type="email" autocomplete="email" placeholder="name@university.it" value="' + esc(v.email || '') + '" aria-describedby="su-v-err"></label>' +
+        '<button type="button" class="btn btn-primary" data-v="send">Send code</button></div>' +
+        '<p class="err" id="su-v-err" hidden style="margin-top:var(--s2)"></p>';
+    }
+    renderStep();
+  }
+  function vErr(msg) { var e = $('su-v-err'); if (!e) return; e.textContent = msg; e.hidden = !msg; var i = $('su-code') || $('su-email-input'); if (i) { i.setAttribute('aria-invalid', msg ? 'true' : 'false'); if (msg) i.focus(); } }
+  function newCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
+  function verifyAction(act) {
+    var v = db.verify || {};
+    if (act === 'send') {
+      var email = $('su-email-input').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return vErr('Enter a valid email address.');
+      if (PERSONAL_DOMAINS.test(email)) return vErr('Use your university email, not a personal one.');
+      db.verify = { email: email, code: newCode(), sent: true, verified: false };
+    } else if (act === 'resend') { v.code = newCode(); db.verify = v; toast('New code sent.'); }
+    else if (act === 'change') { db.verify = { email: v.email }; }
+    else if (act === 'check') {
+      var code = $('su-code').value.replace(/\D/g, '');
+      if (code.length !== 6) return vErr('Enter the 6-digit code.');
+      if (code !== v.code) return vErr('That code doesn\'t match. Check it or send a new one.');
+      v.verified = true; v.sent = false; db.verify = v; toast('Student email verified.');
+    }
+    save(); renderVerify();
+    var next = act === 'check' ? F('fullname') : ($('su-code') || $('su-email-input'));
+    if (next) next.focus();
+  }
+  $('su-verify').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) verifyAction(b.dataset.v); });
+  $('su-verify').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    if (e.target.id === 'su-email-input') { e.preventDefault(); verifyAction('send'); }
+    if (e.target.id === 'su-code') { e.preventDefault(); verifyAction('check'); }
+  });
+
+  function readProfile() {
+    var avail = []; each(suForm.querySelectorAll('input[name=avail]:checked'), function (el) { avail.push(el.value); });
+    var val = function (n) { return F(n).value.trim(); };
+    return {
+      name: val('fullname'), username: val('username').replace(/^@/, ''), email: val('cemail'), age: val('age'), showAge: F('showAge').checked,
+      nationality: val('nationality'), showNat: F('showNat').checked, programme: val('programme'), year: F('year').value,
+      langs: langs.slice(), avail: avail, intro: val('intro'), education: val('education'), experience: val('experience'),
+      ambitions: val('ambitions'), personality: val('personality'), soft: val('soft'), hard: val('hard'),
+      consent: F('consent').checked, alerts: F('alerts').checked,
+      studentEmail: db.verify && db.verify.verified ? db.verify.email : ''
+    };
+  }
+  function fillProfile(p) {
+    p = p || {};
+    var set = function (n, v) { F(n).value = v || ''; };
+    set('fullname', p.name); set('username', p.username); set('cemail', p.email); set('age', p.age); set('nationality', p.nationality);
+    set('programme', p.programme); F('year').value = p.year || '2nd year';
+    ['intro', 'education', 'experience', 'ambitions', 'personality', 'soft', 'hard'].forEach(function (n) { set(n, p[n]); });
+    F('showAge').checked = !!p.showAge; F('showNat').checked = !!p.showNat;
+    each(suForm.querySelectorAll('input[name=avail]'), function (el) { el.checked = (p.avail || []).indexOf(el.value) !== -1; });
+    F('consent').checked = !!p.consent || editing(); F('alerts').checked = !!p.alerts;
+    langs = (p.langs || []).map(function (l) { return l.slice(); });
+    each(suForm.querySelectorAll('[aria-invalid]'), function (el) { el.removeAttribute('aria-invalid'); });
+    $('su-errors').hidden = true;
+    renderLangs();
+  }
+  function langText(l) { return l[0] + ', ' + l[1].toLowerCase(); }
+  function speaks(list) { return list.map(function (l) { return l[1] === 'Basic' ? 'basic ' + l[0] : l[0]; }).join(', '); }
+  function renderLangs() {
+    $('lang-tags').innerHTML = langs.length ? langs.map(function (l, i) {
+      return '<span class="lang-tag">' + esc(langText(l)) + ' <button type="button" data-lang="' + i + '" aria-label="Remove ' + esc(l[0]) + '">&times;</button></span>';
+    }).join('') : '<span class="hint">No languages yet. Add at least English.</span>';
+    renderPreview();
+  }
+  $('lang-tags').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-lang]');
+    if (!b) return;
+    langs.splice(+b.dataset.lang, 1); renderLangs();
+    var next = $('lang-tags').querySelector('[data-lang]') || $('lang-name'); next.focus();
+  });
+  function addLang() {
+    var name = $('lang-name').value.trim(), err = $('lang-err');
+    err.hidden = true;
+    if (!name) { err.textContent = 'Type a language first.'; err.hidden = false; $('lang-name').focus(); return; }
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    if (langs.some(function (l) { return l[0].toLowerCase() === name.toLowerCase(); })) { err.textContent = name + ' is already on your list.'; err.hidden = false; return; }
+    langs.push([name, $('lang-level').value]); $('lang-name').value = ''; renderLangs(); $('lang-name').focus();
+  }
+  $('lang-add-btn').addEventListener('click', addLang);
+  $('lang-name').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addLang(); } });
+
+  // The profile card employers see. Used in the sign-up preview and the employer's applicant list.
+  function profileCard(p) {
+    var rows = [];
+    if (p.age && p.showAge) rows.push(['Age', esc(p.age)]);
+    if (p.nationality && p.showNat) rows.push(['Nationality', esc(p.nationality)]);
+    rows.push(['Speaks', p.langs && p.langs.length ? esc(speaks(p.langs)) : '<span class="muted">No languages yet</span>']);
+    rows.push(['Available', p.avail && p.avail.length ? esc(p.avail.join(', ')) : '<span class="muted">Not set</span>']);
+    if (p.email) rows.push(['Contact', esc(p.email)]);
+    var bg = [['About', p.intro], ['Education', p.education], ['Past experience', p.experience], ['Ambitions', p.ambitions], ['Personality', p.personality], ['Soft skills', p.soft], ['Hard skills', p.hard]].filter(function (r) { return r[1]; });
+    var verified = p.verified !== undefined ? p.verified : !!p.studentEmail;
+    return '<div class="preview-card">' +
+      '<span class="avatar" aria-hidden="true">' + esc(p.name ? initials(p.name) : '?') + '</span>' +
+      '<p class="name">' + esc(p.name || 'Your name') + '</p>' +
+      (p.username ? '<p class="handle">@' + esc(p.username) + '</p>' : '') +
+      '<p class="muted" style="font-size:14px">' + esc([p.programme, p.year].filter(Boolean).join(', ') || 'Programme') + '</p>' +
+      '<p style="margin-top:var(--s2);font-size:14px">' + (verified ? '<span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Verified student</span>' : '<span class="muted">Student email not verified yet</span>') + '</p>' +
+      '<dl>' + rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>' +
+      (bg.length ? '<dl class="bg">' + bg.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl>' : '') +
+      '</div>';
+  }
+  function renderPreview() { $('su-preview').innerHTML = profileCard(readProfile()); renderStep(); }
+  function renderStep() {
+    if (editing()) { $('su-progress').hidden = true; return; }
+    $('su-progress').hidden = false;
+    var p = readProfile(), verified = !!(db.verify && db.verify.verified);
+    var basics = verified && p.name && p.username && p.email && p.age;
+    var step = !verified ? 1 : !basics ? 2 : 3;
+    $('su-step').textContent = ['Step 1 of 3: Verify your student email', 'Step 2 of 3: Build your profile', 'Step 3 of 3: Check and finish'][step - 1];
+    each($('su-progress').querySelectorAll('.progress-bar span'), function (s, i) { s.classList.toggle('done', i < step); });
+  }
+  suForm.addEventListener('input', function (e) { if (e.target.id !== 'lang-name' && e.target.id !== 'su-code' && e.target.id !== 'su-email-input') renderPreview(); });
+  suForm.addEventListener('change', function (e) { if (e.target.id !== 'lang-level') renderPreview(); });
+
+  $('su-draft').addEventListener('click', function () { db.draft = readProfile(); save(); toast('Draft saved in this browser.'); });
+  suForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var p = readProfile(), errs = [], first = null;
+    each(suForm.querySelectorAll('[aria-invalid]'), function (el) { el.removeAttribute('aria-invalid'); });
+    var bad = function (el, msg) { el.setAttribute('aria-invalid', 'true'); errs.push(msg); if (!first) first = el; };
+    if (!db.verify || !db.verify.verified) { errs.push('Verify your student email.'); first = first || $('su-email-input') || $('su-code'); }
+    if (!p.name) bad(F('fullname'), 'Add your name.');
+    if (!/^[A-Za-z0-9._]{3,20}$/.test(p.username)) bad(F('username'), 'Choose a username of 3 to 20 letters, numbers, dots or underscores.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) bad(F('cemail'), 'Add a contact email.');
+    var age = +p.age;
+    if (!p.age || age < 16 || age > 99) bad(F('age'), 'Add your age (16 or older).');
+    if (!p.langs.length) { errs.push('Add at least one language.'); first = first || $('lang-name'); }
+    if (!p.consent) bad(F('consent'), 'Agree to the privacy notice.');
+    if (errs.length) {
+      $('su-errors').innerHTML = errs.map(esc).join('<br>'); $('su-errors').hidden = false;
+      if (first) first.focus();
+      return;
+    }
+    $('su-errors').hidden = true;
+    var wasEditing = editing();
+    p.verified = true;
+    db.profile = p; db.draft = null; db.session = 'student';
+    if (!wasEditing) db.kpi.students++;
+    save(); renderAuth();
+    toast(wasEditing ? 'Profile saved.' : 'Welcome to GigoMe, ' + esc(p.name.split(' ')[0]) + '. Your profile is ready.');
+    go(wasEditing ? '#me' : '#jobs');
+  });
+  function renderSignup() {
+    var ed = editing();
+    $('su-title').textContent = ed ? 'Edit your profile' : 'Create your student profile';
+    $('su-lead').textContent = ed ? 'Changes show to employers straight away.' : 'Free. Employers only see what you choose to share.';
+    $('su-draft').hidden = ed;
+    $('su-finish').textContent = ed ? 'Save changes' : 'Finish and browse roles';
+    if (ed && (!db.verify || !db.verify.verified)) db.verify = { email: db.profile.studentEmail, verified: true };
+    fillProfile(ed ? db.profile : db.draft);
+    renderVerify();
+  }
+
+  // ==========================================================================
+  // Student dashboard (#me)
+  // ==========================================================================
+  var meTab = 'All';
+  function renderMe() {
+    var root = $('me-root');
+    if (db.session !== 'student' || !db.profile) {
+      root.innerHTML = '<h1 class="page-title">Your dashboard</h1><p class="muted" style="margin-top:var(--s2)">Track applications, saved roles and alerts in one place.</p>' +
+        '<div class="btn-row" style="margin-top:var(--s5)"><button type="button" class="btn btn-primary" data-signin>Sign in</button><a class="btn btn-secondary" href="#signup">Create a student profile</a></div>';
+      return;
+    }
+    var p = db.profile;
+    var counts = { All: db.apps.length, Applied: 0, Accepted: 0, Rejected: 0 };
+    db.apps.forEach(function (a) { counts[a.status]++; });
+    var apps = db.apps.map(function (a, i) { return { a: a, i: i, j: findJob(a.job) }; }).filter(function (x) { return x.j && (meTab === 'All' || x.a.status === meTab); });
+    var unread = db.notes.filter(function (n) { return !n.read; }).length;
+
+    root.innerHTML =
+      '<div class="dash-head"><div><h1 class="page-title">Hi, ' + esc(p.name.split(' ')[0]) + '</h1>' +
+        '<p class="muted">@' + esc(p.username) + (p.programme ? ' · ' + esc(p.programme) : '') + '</p></div>' +
+        '<div class="btn-row"><a class="btn btn-secondary" href="#signup">Edit profile</a><button type="button" class="btn btn-tertiary btn-sm" data-signout>Sign out</button></div></div>' +
+
+      '<section class="dash-block" id="me-alerts" aria-labelledby="me-alerts-t"><div class="section-head"><h2 class="section-title" id="me-alerts-t">Alerts' + (unread ? ' <span class="badge tnum">' + unread + '</span>' : '') + '</h2>' +
+        (db.notes.length ? '<button type="button" class="btn btn-tertiary btn-sm" data-me="read">Mark all as read</button>' : '') + '</div>' +
+        (db.notes.length ? '<ul class="plain-list">' + db.notes.slice(0, 8).map(function (n) {
+          return '<li><div><a href="' + esc(n.href) + '"' + (n.read ? '' : ' style="font-weight:600"') + '>' + esc(n.text) + '</a>' + (n.read ? '' : ' <span class="sr-only">(new)</span>') + '</div><span class="muted">' + fmtDate(n.date) + '</span></li>';
+        }).join('') + '</ul>' : '<p class="empty-line">No alerts yet. Save a search or follow an employer to get alerts about new roles.</p>') + '</section>' +
+
+      '<section class="dash-block" id="me-apps" aria-labelledby="me-apps-t"><div class="section-head"><h2 class="section-title" id="me-apps-t">My applications</h2>' +
+        '<p class="hint">Applied on a company site? Update the status when you hear back.</p></div>' +
+        '<div class="tabs" role="group" aria-label="Filter applications">' + ['All', 'Applied', 'Accepted', 'Rejected'].map(function (t) {
+          return '<button type="button" data-tab="' + t + '" aria-pressed="' + (meTab === t) + '">' + t + ' <span class="tnum">' + counts[t] + '</span></button>';
+        }).join('') + '</div>' +
+        (apps.length ? '<table class="table"><thead><tr><th scope="col">Role</th><th scope="col">Employer</th><th scope="col">Applied</th><th scope="col">How</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' +
+          apps.map(function (x) {
+            var review = x.a.status === 'Accepted' ? (x.a.reviewed ? '<span class="muted">Reviewed</span>' : '<button type="button" class="btn btn-secondary btn-sm" data-review-app="' + x.i + '">Review employer</button>') : '';
+            return '<tr><td><a href="#job/' + esc(x.j.id) + '">' + esc(x.j.title) + '</a></td><td data-label="Employer"><a href="#employer/' + slug(x.j.company) + '">' + esc(x.j.company) + '</a></td>' +
+              '<td data-label="Applied" class="tnum">' + fmtDate(x.a.date) + '</td><td data-label="How">' + (x.a.via === 'email' ? 'By email' : 'Company site') + '</td>' +
+              '<td data-label="Status"><label class="sr-only" for="st-' + x.i + '">Status for ' + esc(x.j.title) + '</label><select class="select" id="st-' + x.i + '" data-status="' + x.i + '">' +
+                ['Applied', 'Accepted', 'Rejected'].map(function (s) { return '<option' + (s === x.a.status ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></td>' +
+              '<td><div class="actions">' + review + '</div></td></tr>';
+          }).join('') + '</tbody></table>'
+          : '<p class="empty-line">' + (db.apps.length ? 'No ' + meTab.toLowerCase() + ' applications.' : 'No applications yet. <a href="#jobs">Browse roles</a>') + '</p>') + '</section>' +
+
+      '<div class="dash-grid">' +
+      '<section class="dash-block" id="me-saved" aria-labelledby="me-saved-t"><div class="section-head"><h2 class="section-title" id="me-saved-t">Saved roles</h2></div>' +
+        (db.saved.length ? '<ul class="plain-list">' + db.saved.map(findJob).filter(Boolean).map(function (j) {
+          return '<li><div><a href="#job/' + esc(j.id) + '">' + esc(j.title) + '</a><span class="sub">' + esc(j.company) + ', ' + esc(j.pay) + '</span></div><div class="actions"><button type="button" class="btn btn-tertiary btn-sm" data-unsave="' + esc(j.id) + '">Remove</button></div></li>';
+        }).join('') + '</ul>' : '<p class="empty-line">Nothing saved yet. Use "Save" on any role.</p>') + '</section>' +
+
+      '<section class="dash-block" id="me-searches" aria-labelledby="me-searches-t"><div class="section-head"><h2 class="section-title" id="me-searches-t">Saved searches and email alerts</h2></div>' +
+        (db.searches.length ? '<ul class="plain-list">' + db.searches.map(function (s, i) {
+          return '<li><div><strong>' + esc(s.name) + '</strong><span class="sub">' + esc(summary(s.state)) + ', ' + plural(filtered(s.state).length, 'role', 'roles') + ' now</span>' +
+            '<label class="check" style="font-size:14px;min-height:28px"><input type="checkbox" data-alert="' + i + '"' + (s.alerts ? ' checked' : '') + '> Email alerts</label></div>' +
+            '<div class="actions"><button type="button" class="btn btn-secondary btn-sm" data-run="' + i + '">Show roles</button><button type="button" class="btn btn-tertiary btn-sm" data-del-search="' + i + '">Delete</button></div></li>';
+        }).join('') + '</ul>' : '<p class="empty-line">No saved searches. Set filters on <a href="#jobs">Jobs</a> and press "Save search".</p>') + '</section>' +
+
+      '<section class="dash-block" id="me-follows" aria-labelledby="me-follows-t"><div class="section-head"><h2 class="section-title" id="me-follows-t">Employers you follow</h2></div>' +
+        (db.follows.length ? '<ul class="plain-list">' + db.follows.map(function (n) {
+          var open = allJobs().filter(function (j) { return j.company === n; }).length;
+          return '<li><div><a href="#employer/' + slug(n) + '">' + esc(n) + '</a><span class="sub">' + plural(open, 'open role', 'open roles') + '</span></div><div class="actions"><button type="button" class="btn btn-tertiary btn-sm" data-follow="' + esc(n) + '">Unfollow</button></div></li>';
+        }).join('') + '</ul>' : '<p class="empty-line">Follow employers from their page to hear about new roles first.</p>') + '</section>' +
+
+      '<section class="dash-block" aria-labelledby="me-data-t"><div class="section-head"><h2 class="section-title" id="me-data-t">Your data</h2></div>' +
+        '<p class="hint">Download everything GigoMe stores about you, or delete your account.</p>' +
+        '<div class="btn-row" style="margin-top:var(--s3)"><button type="button" class="btn btn-secondary btn-sm" data-me="download">Download my data</button><button type="button" class="btn btn-tertiary btn-sm" data-me="delete">Delete my account</button></div></section>' +
+      '</div>';
+  }
+  $('me-root').addEventListener('click', function (e) {
+    var t = e.target, b;
+    if ((b = t.closest('[data-tab]'))) { meTab = b.dataset.tab; renderMe(); $('me-root').querySelector('[data-tab="' + meTab + '"]').focus(); return; }
+    if ((b = t.closest('[data-review-app]'))) { openReview(db.apps[+b.dataset.reviewApp]); return; }
+    if ((b = t.closest('[data-unsave]'))) { toggleSaved(b.dataset.unsave); renderMe(); return; }
+    if ((b = t.closest('[data-run]'))) { state = clone(db.searches[+b.dataset.run].state); location.hash = '#jobs'; return; }
+    if ((b = t.closest('[data-del-search]'))) { db.searches.splice(+b.dataset.delSearch, 1); save(); renderMe(); toast('Saved search deleted.'); return; }
+    if ((b = t.closest('[data-me]'))) {
+      var act = b.dataset.me;
+      if (act === 'read') { db.notes.forEach(function (n) { n.read = true; }); save(); renderAuth(); renderMe(); }
+      if (act === 'download') downloadData();
+      if (act === 'delete') openModal({
+        title: 'Delete your account?',
+        body: '<p>This deletes your profile, applications, saved roles, saved searches and alerts. Reviews you posted stay up, shown as "Anonymous student".</p>',
+        submit: 'Delete my account',
+        onSubmit: function () {
+          (db.myReviews || []).forEach(function (m) { m.review.author = null; var list = db.reviews[m.company] || []; list.forEach(function (r) { if (r.text === m.review.text && r.date === m.review.date) r.author = null; }); });
+          db.profile = null; db.verify = null; db.draft = null; db.apps = []; db.saved = []; db.searches = []; db.follows = []; db.notes = []; db.myReviews = []; db.session = null;
+          save(); renderAuth(); toast('Your account was deleted.'); go('#home');
+        }
+      });
+    }
+  });
+  $('me-root').addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.dataset.status !== undefined) { db.apps[+t.dataset.status].status = t.value; save(); renderMe(); toast('Status updated.'); }
+    if (t.dataset.alert !== undefined) { db.searches[+t.dataset.alert].alerts = t.checked; save(); toast(t.checked ? 'Email alerts on.' : 'Email alerts off.'); }
+  });
+  function downloadData() {
+    var data = { profile: db.profile, applications: db.apps.map(function (a) { var j = findJob(a.job); return { role: j && j.title, employer: j && j.company, applied: a.date, via: a.via, status: a.status }; }),
+      savedRoles: db.saved.map(findJob).filter(Boolean).map(function (j) { return j.title + ', ' + j.company; }), savedSearches: db.searches, following: db.follows, reviews: db.myReviews };
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    a.download = 'gigome-my-data.json'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  // ==========================================================================
+  // Employer: account setup, dashboard, listings, applicants, past employees
+  // ==========================================================================
+  var coEdit = false, openListing = null, postEditing = null;
+  function employerForm(e, mode) {
+    e = e || { type: 'business', showLocation: true };
+    var priv = e.type === 'private';
+    return '<form class="emp-form" id="emp-form" data-mode="' + mode + '" novalidate>' +
+      '<fieldset><legend>Who is hiring?</legend><div class="choices">' +
+        '<label class="choice"><input type="radio" name="type" value="business"' + (!priv ? ' checked' : '') + (mode === 'edit' ? ' disabled' : '') + '><span><strong>A business or organisation</strong><span class="hint">Cafés, shops, startups, studios, schools, agencies.</span></span></label>' +
+        '<label class="choice"><input type="radio" name="type" value="private"' + (priv ? ' checked' : '') + (mode === 'edit' ? ' disabled' : '') + '><span><strong>A private person</strong><span class="hint">For example, a family looking for a tutor or someone who needs a dog walker.</span></span></label>' +
+      '</div></fieldset>' +
+      '<div class="form-row">' +
+        '<label class="field"><span data-name-label>' + (priv ? 'Your name' : 'Business name') + '</span>' + (mode === 'edit' ? '<span class="hint">Contact the team to change it</span>' : '') + '<input class="input" name="ename" required maxlength="60" value="' + esc(e.name || '') + '"' + (mode === 'edit' ? ' disabled' : '') + ' placeholder="' + (priv ? 'e.g. Giulia R.' : 'e.g. Nebbia Coffee Bar') + '"></label>' +
+        '<label class="field" data-biz' + (priv ? ' hidden' : '') + '>Sector<input class="input" name="sector" maxlength="60" value="' + esc(e.sector || '') + '" placeholder="e.g. Food and hospitality"></label>' +
+      '</div>' +
+      '<div class="stack-s"><label class="field">Area of Milan<input class="input" name="area" list="area-list" required maxlength="40" value="' + esc(e.area || '') + '" placeholder="e.g. Porta Venezia"></label>' +
+        '<label class="check" style="font-size:14px"><input type="checkbox" name="showLocation"' + (e.showLocation !== false ? ' checked' : '') + '> Show my area to students and on the map</label>' +
+        '<p class="hint">Turn this off to share your location only when you reply to a student. Your roles then show "Area on request" and stay off the map.</p></div>' +
+      '<fieldset><legend>Contact information</legend><p class="hint" style="margin-bottom:var(--s3)">Signed-in students see this on your employer page.</p>' +
+        '<div class="form-row"><label class="field">Contact person<input class="input" name="contactName" maxlength="60" value="' + esc(e.contactName || '') + '" autocomplete="name"></label>' +
+        '<label class="field">Email<input class="input" name="email" type="email" required value="' + esc(e.email || '') + '" autocomplete="email"></label></div>' +
+        '<div class="form-row" style="margin-top:var(--s4)"><label class="field">Phone <span class="hint">(optional)</span><input class="input" name="phone" type="tel" value="' + esc(e.phone || '') + '" autocomplete="tel"></label>' +
+        '<label class="field" data-biz' + (priv ? ' hidden' : '') + '>Website <span class="hint">(optional)</span><input class="input" name="site" value="' + esc(e.site || '') + '" placeholder="example.it"></label></div>' +
+      '</fieldset>' +
+      '<label class="field">' + (priv ? 'About you and the help you need' : 'About the business') + '<textarea class="textarea" name="desc" rows="4" maxlength="600">' + esc(e.desc || '') + '</textarea></label>' +
+      (mode === 'setup'
+        ? '<fieldset><legend>Verification</legend><div class="choices">' +
+            '<label class="choice"><input type="radio" name="verify" value="requested" checked><span><strong>Ask the GigoMe team to verify me</strong><span class="hint">Recommended. The team checks that the business or person is real, usually within one working day. Verified employers get a mark on every role.</span></span></label>' +
+            '<label class="choice"><input type="radio" name="verify" value="none"><span><strong>Not now</strong><span class="hint">Your roles still go through review, but show as "Not verified". You can ask later.</span></span></label>' +
+          '</div></fieldset>' +
+          '<label class="check" style="align-items:flex-start"><input type="checkbox" name="terms" required style="margin-top:4px"> <span>I agree to the <a href="#terms">terms</a> and will only post real, paid roles. (Required)</span></label>'
+        : '') +
+      '<div class="form-actions">' + (mode === 'edit' ? '<button type="button" class="btn btn-secondary" data-co="cancel-edit">Cancel</button>' : '') +
+        '<button type="submit" class="btn btn-primary">' + (mode === 'edit' ? 'Save profile' : 'Create employer account') + '</button></div>' +
+      '<p class="err form-errors" id="emp-errors" role="alert" hidden></p>' +
+    '</form>';
+  }
+  function readEmployerForm(f, mode) {
+    var g = function (n) { var el = f.elements.namedItem(n); return el ? (el.type === 'checkbox' ? el.checked : el.value.trim()) : ''; };
+    var type = mode === 'edit' ? db.employer.type : (f.querySelector('input[name=type]:checked') || {}).value;
+    return { type: type, name: mode === 'edit' ? db.employer.name : g('ename'), sector: type === 'private' ? '' : g('sector'), area: g('area'), showLocation: g('showLocation'),
+      contactName: g('contactName'), email: g('email'), phone: g('phone'), site: type === 'private' ? '' : g('site'), desc: g('desc'), verify: g('verify'), terms: g('terms') };
+  }
+  function submitEmployerForm(f, mode) {
+    var e = readEmployerForm(f, mode), errs = [], first = null;
+    each(f.querySelectorAll('[aria-invalid]'), function (el) { el.removeAttribute('aria-invalid'); });
+    var bad = function (n, msg) { var el = f.elements.namedItem(n); el.setAttribute('aria-invalid', 'true'); errs.push(msg); if (!first) first = el; };
+    if (mode === 'setup' && !e.name) bad('ename', e.type === 'private' ? 'Add your name.' : 'Add the business name.');
+    if (mode === 'setup' && e.name && allCompanies().indexOf(e.name) !== -1 && (!db.employer || db.employer.name !== e.name)) bad('ename', 'An employer with this name already exists. Sign in instead.');
+    if (!e.area) bad('area', 'Add your area of Milan.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.email)) bad('email', 'Add a contact email.');
+    if (mode === 'setup' && !e.terms) bad('terms', 'Agree to the terms.');
+    if (errs.length) { var box = f.querySelector('#emp-errors'); box.innerHTML = errs.map(esc).join('<br>'); box.hidden = false; if (first) first.focus(); return; }
+    if (mode === 'edit') {
+      ['sector', 'area', 'showLocation', 'contactName', 'email', 'phone', 'site', 'desc'].forEach(function (k) { db.employer[k] = e[k]; });
+      coEdit = false; save(); toast('Profile saved.'); renderCompany(); return;
+    }
+    delete e.terms;
+    db.employer = e; db.listings = []; db.applicants = {}; db.past = []; db.session = 'employer';
+    if (e.verify === 'requested') db.queue.push({ kind: 'Company', title: e.name, detail: (e.type === 'private' ? 'Private employer' : e.sector || 'Business') + ', ' + e.area + '. Asked to be verified.', submitted: 'Today', employer: true });
+    save(); renderAuth(); window.scrollTo(0, 0);
+    toast('Account created. Post your first role below.');
+    renderCompany();
+  }
+  // Show or hide business-only fields when the account type changes.
+  document.addEventListener('change', function (e) {
+    if (e.target.name !== 'type' || !e.target.closest('#emp-form')) return;
+    var f = e.target.closest('#emp-form'), priv = e.target.value === 'private';
+    each(f.querySelectorAll('[data-biz]'), function (el) { el.hidden = priv; });
+    f.querySelector('[data-name-label]').textContent = priv ? 'Your name' : 'Business name';
+    f.elements.namedItem('ename').placeholder = priv ? 'e.g. Giulia R.' : 'e.g. Nebbia Coffee Bar';
+  });
+  document.addEventListener('submit', function (e) {
+    if (e.target.id !== 'emp-form') return;
+    e.preventDefault(); submitEmployerForm(e.target, e.target.dataset.mode);
+  });
+
+  function applicantsFor(jobId) {
+    var list = (db.applicants[jobId] || []).map(function (a, i) { return { a: a, key: 's' + i }; });
+    // The demo student's own application to this employer's role
+    db.apps.forEach(function (a, i) { if (a.job === jobId && db.profile) list.unshift({ a: { name: db.profile.name, programme: [db.profile.programme, db.profile.year].filter(Boolean).join(', '), date: a.date, via: a.via, status: a.status, me: true }, key: 'm' + i }); });
+    return list;
+  }
+  function renderCompany() {
+    var signedIn = db.session === 'employer' && db.employer;
+    $('co-landing').hidden = !!signedIn; $('co-dash').hidden = !signedIn;
+    if (signedIn) $('co-landing').innerHTML = ''; else { $('co-top').innerHTML = ''; coEdit = false; }
+    if (!signedIn) {
+      $('co-landing').innerHTML = '<div class="co-landing"><h1 class="page-title">Hire international students in Milan</h1>' +
+        '<p class="lead">Free for businesses and private people. Post a role in five minutes and reach students who speak English and are ready to work.</p>' +
+        '<p style="margin-top:var(--s4)">Already have an account? <button type="button" class="btn-link" data-signin="employer">Sign in</button></p>' +
+        '<h2 class="section-title" style="margin-top:var(--s7)">Create an employer account</h2>' + employerForm(null, 'setup') + '</div>';
+      return;
+    }
+    var e = db.employer, info = companyInfo(e.name);
+    var mark = e.verify === 'verified' ? '<span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Verified employer</span>' : e.verify === 'requested' ? '<span class="tag tag-review">Verification requested</span>' : '<span class="tag tag-draft">Not verified</span>';
+    var verifyNote = e.verify === 'requested' ? '<p class="note co-note">Verification requested. The GigoMe team usually replies within one working day.</p>'
+      : e.verify !== 'verified' ? '<p class="note co-note">Your account isn\'t verified. Verified employers get a mark on every role and more applications. <button type="button" class="btn-link" data-co="verify">Ask the team to verify you</button></p>' : '';
+    $('co-top').innerHTML = '<div class="co-head"><div>' +
+        '<h1>' + esc(e.name) + ' ' + mark + '</h1>' +
+        '<p>' + esc([kindLabel(info), e.area ? e.area + ', Milan' : '', e.site].filter(Boolean).join('. ')) + (e.showLocation === false ? '. <strong>Area hidden from students</strong>' : '') + '</p>' +
+        (e.desc ? '<p class="co-desc">' + esc(e.desc) + '</p>' : '') +
+        '<p>' + ratingHTML(e.name, true) + '</p>' +
+      '</div><div class="btn-row"><button type="button" class="btn btn-primary" data-co="goto-post">Post a role</button><button type="button" class="btn btn-secondary" data-co="edit" aria-expanded="' + coEdit + '">Edit profile</button><a class="btn btn-tertiary btn-sm" href="#employer/' + slug(e.name) + '">View public page</a><button type="button" class="btn btn-tertiary btn-sm" data-signout>Sign out</button></div></div>' +
+      verifyNote +
+      (coEdit ? '<div class="co-edit"><h2 class="section-title">Edit profile</h2>' + employerForm(e, 'edit') + '</div>' : '');
+
+    // Listings with applications
+    var rows = db.listings.map(function (L) {
+      var apps = L.job ? applicantsFor(L.job) : [], waiting = apps.filter(function (x) { return x.a.status === 'Applied'; }).length;
+      var tag = { Live: 'tag-live', 'In review': 'tag-review', Draft: 'tag-draft', 'Not approved': 'tag-draft' }[L.status] || 'tag-draft';
+      var action = L.job ? '<button type="button" class="btn btn-secondary btn-sm" data-co="toggle" data-id="' + L.id + '" aria-expanded="' + (openListing === L.id) + '">' + (openListing === L.id ? 'Hide applicants' : 'View applicants') + '</button>'
+        : (L.status === 'Draft' || L.status === 'Not approved') ? '<button type="button" class="btn btn-secondary btn-sm" data-co="edit-listing" data-id="' + L.id + '">Edit</button>' : '';
+      var main = '<tr' + (openListing === L.id ? ' class="open"' : '') + '><td>' + (L.job ? '<a href="#job/' + esc(L.job) + '">' + esc(L.title) + '</a>' : esc(L.title)) + '</td><td data-label="Type">' + TYPE[L.cat] + '</td>' +
+        '<td data-label="Status"><span class="tag ' + tag + '">' + L.status + '</span></td>' +
+        '<td data-label="Applications" class="tnum">' + (L.job ? apps.length + (waiting ? ' <span class="muted">(' + waiting + ' new)</span>' : '') : '<span class="muted">None yet</span>') + '</td>' +
+        '<td data-label="Updated">' + esc(L.updated) + '</td><td><div class="actions">' + action + '</div></td></tr>';
+      if (openListing !== L.id) return main;
+      return main + '<tr class="sub-row"><td colspan="6">' + (apps.length ? '<ul class="plain-list applicants">' + apps.map(function (x) {
+        var a = x.a;
+        return '<li><div><strong>' + esc(a.name) + '</strong>' + (a.me ? ' <span class="tag">Demo student</span>' : '') + '<span class="sub">' + esc(a.programme) + '. Applied ' + fmtDate(a.date) + ' ' + (a.via === 'email' ? 'by email' : 'on your site') + '.</span></div>' +
+          '<div class="actions">' + statusTag(a.status) + '<button type="button" class="btn btn-tertiary btn-sm" data-co="profile" data-id="' + L.job + '" data-key="' + x.key + '">View profile</button>' +
+          (a.status === 'Applied' ? '<button type="button" class="btn btn-secondary btn-sm" data-co="reject" data-id="' + L.job + '" data-key="' + x.key + '">Reject</button><button type="button" class="btn btn-primary btn-sm" data-co="accept" data-id="' + L.job + '" data-key="' + x.key + '">Accept</button>' : '') +
+          '</div></li>';
+      }).join('') + '</ul>' : '<p class="muted" style="padding:var(--s3) 0">No applications yet.</p>') + '</td></tr>';
     }).join('');
-    $('queue-table').hidden = !queue.length;
-    $('queue-empty').hidden = queue.length > 0;
-    $('queue-badge').textContent = queue.length;
-    $('queue-badge').hidden = !queue.length;
-    $('queue-label').textContent = queue.length ? plural(queue.length, 'item', 'items') + ' waiting' : '';
+    $('co-listings').innerHTML = '<div class="section-head"><h2 class="section-title">Your listings</h2><span class="hint">Accept or reject applicants so students know where they stand.</span></div>' +
+      (db.listings.length ? '<table class="table"><thead><tr><th scope="col">Listing</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Applications</th><th scope="col">Updated</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' + rows + '</tbody></table>'
+        : '<p class="empty-line">No listings yet. Post your first role below.</p>');
+
+    // Past employees
+    var recurring = db.past.filter(function (p) { return p.recurring; }).length;
+    $('co-past').innerHTML = '<div class="section-head"><h2 class="section-title">Past employees</h2><span class="muted tnum">' + (recurring ? plural(recurring, 'recurring employee', 'recurring employees') : '') + '</span></div>' +
+      '<p class="hint" style="margin-bottom:var(--s3)">Students who have worked for you. Tick "Alert first" for people you\'d hire again: when your next role goes live, they get an alert before everyone else.</p>' +
+      (db.past.length ? '<table class="table"><thead><tr><th scope="col">Name</th><th scope="col">Last role</th><th scope="col">Last worked</th><th scope="col">Recurring</th></tr></thead><tbody>' +
+        db.past.map(function (p, i) {
+          return '<tr><td><strong>' + esc(p.name) + '</strong></td><td data-label="Last role">' + esc(p.role) + '</td><td data-label="Last worked">' + esc(p.last) + '</td>' +
+            '<td data-label="Recurring"><label class="check" style="font-size:14px;min-height:24px"><input type="checkbox" data-recurring="' + i + '"' + (p.recurring ? ' checked' : '') + '> Alert first</label></td></tr>';
+        }).join('') + '</tbody></table>' : '<p class="empty-line">No past employees yet. Students you accept appear here.</p>');
+
+    $('co-reviews').innerHTML = reviewsBlock(e.name, 'Reviews from students') +
+      '<p class="hint" style="margin-top:var(--s3)">Only students you accepted can review you. Anonymous reviews don\'t show the student\'s name.</p>';
+  }
+
+  function decideApplicant(jobId, key, status) {
+    var j = findJob(jobId), name;
+    if (key.charAt(0) === 'm') {
+      var app = db.apps[+key.slice(1)]; app.status = status; name = db.profile.name;
+      note(j.company + (status === 'Accepted' ? ' accepted' : ' declined') + ' your application for ' + j.title + (status === 'Accepted' ? '. You can now review them.' : '.'), '#me');
+    } else {
+      var a = db.applicants[jobId][+key.slice(1)]; a.status = status; name = a.name;
+    }
+    if (status === 'Accepted' && !db.past.some(function (p) { return p.name === name; })) db.past.unshift({ name: name, role: j.title, last: 'Now', recurring: false });
+    save(); renderAuth(); renderCompany();
+    toast(esc(name) + (status === 'Accepted' ? ' accepted. They\'ve been told and added to your past employees.' : ' rejected. They\'ve been told.'));
+  }
+  $('page-company').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-co]');
+    if (!b) return;
+    var act = b.dataset.co, id = b.dataset.id;
+    if (act === 'edit') { coEdit = !coEdit; renderCompany(); if (coEdit) $('emp-form').querySelector('input:not([disabled])').focus(); }
+    else if (act === 'cancel-edit') { coEdit = false; renderCompany(); }
+    else if (act === 'goto-post') { $('co-post').scrollIntoView({ block: 'start' }); post.elements.namedItem('title').focus({ preventScroll: true }); }
+    else if (act === 'verify') {
+      db.employer.verify = 'requested';
+      db.queue.push({ kind: 'Company', title: db.employer.name, detail: kindLabel(companyInfo(db.employer.name)) + ', ' + db.employer.area + '. Asked to be verified.', submitted: 'Today', employer: true });
+      save(); renderCompany(); toast('Verification requested. The team will check your account.');
+    }
+    else if (act === 'toggle') { openListing = openListing === id ? null : id; renderCompany(); }
+    else if (act === 'accept' || act === 'reject') decideApplicant(id, b.dataset.key, act === 'accept' ? 'Accepted' : 'Rejected');
+    else if (act === 'profile') {
+      var key = b.dataset.key, p;
+      if (key.charAt(0) === 'm') { p = clone(db.profile); p.studentEmail = p.studentEmail || 'yes'; }
+      else { var a = db.applicants[id][+key.slice(1)]; p = { name: a.name, programme: a.programme, langs: a.langs, avail: a.avail, verified: true }; }
+      if (!p.showAge) delete p.age;
+      if (!p.showNat) delete p.nationality;
+      openModal({ title: p.name, body: profileCard(p) + '<p class="hint">Students choose what employers see. The student email is never shown.</p>', cancel: 'Close' });
+    }
+    else if (act === 'edit-listing') {
+      var L = db.listings.filter(function (x) { return x.id === id; })[0];
+      fillPost(L.draft || { title: L.title, cat: L.cat }); postEditing = id;
+      $('co-post').scrollIntoView({ block: 'start' }); $('post-form').elements.namedItem('title').focus();
+      toast('Editing "' + esc(L.title) + '". Submit it for review when ready.');
+    }
+  });
+  $('page-company').addEventListener('change', function (e) {
+    var r = e.target.dataset.recurring;
+    if (r === undefined) return;
+    db.past[+r].recurring = e.target.checked; save(); renderCompany();
+    toast(e.target.checked ? esc(db.past[+r].name) + ' will get an alert first about your next role.' : 'Alert first turned off.');
+  });
+
+  // Post a role
+  var post = $('post-form');
+  var P = function (n) { return post.elements.namedItem(n); };
+  function readPost() {
+    var area = P('area').value.trim(), pay = P('pay').value.trim();
+    var remote = /^remote$/i.test(area);
+    var known = JOBS.filter(function (j) { return j.area.toLowerCase() === area.toLowerCase() && j.metro; })[0];
+    return {
+      title: P('title').value.trim(), cat: P('cat').value, area: remote ? 'Remote' : area, metro: known ? known.metro.slice() : undefined,
+      mode: remote ? 'Remote' : 'On-site', when: [P('when').value], lang: post.querySelector('input[name=lang]:checked').value,
+      pay: pay, rate: hourlyRate(pay), duration: P('cat').value === 'parttime' || P('cat').value === 'tutoring' ? 'Ongoing' : P('cat').value === 'internship' ? '3 months' : '1 day',
+      desc: P('desc').value.trim(), apply: post.querySelector('input[name=apply]:checked').value, applyTo: P('applyTo').value.trim()
+    };
+  }
+  function fillPost(d) {
+    P('title').value = d.title || ''; P('cat').value = d.cat || 'parttime'; P('area').value = d.area || ''; P('pay').value = d.pay || '';
+    P('when').value = (d.when && d.when[0]) || 'Weekends'; P('desc').value = d.desc || ''; P('applyTo').value = d.applyTo || '';
+    each(post.querySelectorAll('input[name=lang]'), function (r) { r.checked = r.value === (d.lang || 'en'); });
+    each(post.querySelectorAll('input[name=apply]'), function (r) { r.checked = r.value === (d.apply || 'link'); });
+    syncApply();
+  }
+  function syncApply() {
+    var email = post.querySelector('input[name=apply]:checked').value === 'email';
+    P('applyTo').type = email ? 'email' : 'url';
+    P('applyTo').placeholder = email ? 'jobs@example.it' : 'https://';
+    $('apply-url-label').textContent = email ? 'Application email' : 'Application link';
+  }
+  post.addEventListener('change', function (e) { if (e.target.name === 'apply') syncApply(); });
+  function postErrors(d, full) {
+    var errs = [], first = null;
+    each(post.querySelectorAll('[aria-invalid]'), function (el) { el.removeAttribute('aria-invalid'); });
+    var bad = function (n, msg) { P(n).setAttribute('aria-invalid', 'true'); errs.push(msg); if (!first) first = P(n); };
+    if (!d.title) bad('title', 'Add a role title.');
+    if (full) {
+      if (!d.area) bad('area', 'Add a location, or "Remote".');
+      if (!/\d/.test(d.pay)) bad('pay', 'Add the pay, for example €11/h or €100/day.');
+      if (d.apply === 'link' && d.applyTo && !/^https?:\/\/\S+\.\S+/.test(d.applyTo)) bad('applyTo', 'The application link should start with https://');
+      if (d.apply === 'email' && d.applyTo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.applyTo)) bad('applyTo', 'Check the application email.');
+      if (!d.applyTo) bad('applyTo', d.apply === 'email' ? 'Add the email students should write to.' : 'Add the link to your application page.');
+    }
+    var box = $('post-errors');
+    box.innerHTML = errs.map(esc).join('<br>'); box.hidden = !errs.length;
+    if (first) first.focus();
+    return errs.length;
+  }
+  function upsertListing(d, status) {
+    var L = postEditing && db.listings.filter(function (x) { return x.id === postEditing; })[0];
+    if (!L) { L = { id: 'l' + Date.now() }; db.listings.unshift(L); }
+    L.title = d.title; L.cat = d.cat; L.status = status; L.updated = 'Today'; L.draft = d;
+    postEditing = null;
+    return L;
+  }
+  $('post-draft').addEventListener('click', function () {
+    var d = readPost(); if (postErrors(d, false)) return;
+    upsertListing(d, 'Draft'); save(); fillPost({}); renderCompany(); toast('Draft saved to your listings.');
+  });
+  $('post-preview').addEventListener('click', function () {
+    var d = readPost(); if (postErrors(d, true)) return;
+    var j = clone(d); j.id = 'preview'; j.company = db.employer.name; j.posted = 0; j.match = 0;
+    openModal({ title: 'Preview', body: '<p class="hint">How your role looks in the list:</p><ul class="role-list">' + row(j, false).replace(/href="[^"]*"/, 'href="#company"') + '</ul>' +
+      '<p class="hint">Description</p><p>' + esc(detailOf(j).about) + '</p>', cancel: 'Back to editing' });
+  });
+  post.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var d = readPost(); if (postErrors(d, true)) return;
+    var L = upsertListing(d, 'In review');
+    db.queue.push({ kind: 'Listing', title: d.title, detail: db.employer.name + ', ' + TYPE[d.cat].toLowerCase(), submitted: 'Today', listing: L.id });
+    var rec = db.past.filter(function (p) { return p.recurring; }).length;
+    save(); fillPost({}); renderCompany();
+    $('co-listings').scrollIntoView({ block: 'start' });
+    toast('Submitted for review. ' + (rec ? 'When it goes live, your ' + plural(rec, 'recurring employee is', 'recurring employees are') + ' told first.' : 'You\'ll see it go live in "Your listings".'));
+  });
+
+  // ==========================================================================
+  // Admin
+  // ==========================================================================
+  // A new role goes live: alert matching saved searches, followers and recurring employees.
+  function goLive(job) {
+    db.posted.push(job);
+    var searches = 0, fans = 0, rec = 0;
+    db.searches.forEach(function (s) { if (s.alerts && passes(job, s.state)) { searches++; note('New role matches "' + s.name + '": ' + job.title + ' at ' + job.company, '#job/' + job.id); } });
+    if (db.follows.indexOf(job.company) !== -1) { fans++; note(job.company + ', which you follow, posted a new role: ' + job.title, '#job/' + job.id); }
+    if (db.employer && job.company === db.employer.name) rec = db.past.filter(function (p) { return p.recurring; }).length;
+    var sent = [];
+    if (rec) sent.push(plural(rec, 'recurring employee', 'recurring employees') + ' (first)');
+    if (searches) sent.push(plural(searches, 'saved search', 'saved searches'));
+    if (fans) sent.push(plural(fans, 'follower', 'followers'));
+    return sent.length ? ' Alerts sent to ' + sent.join(', ') + '.' : '';
+  }
+  function decide(i, ok) {
+    var it = db.queue[i], msg = (ok ? 'Approved: ' : 'Rejected: ') + esc(it.title) + '.';
+    db.queue.splice(i, 1);
+    if (it.kind === 'Listing') {
+      var L = it.listing && db.listings.filter(function (x) { return x.id === it.listing; })[0];
+      var src = L ? L.draft : it.job;
+      if (L) { L.status = ok ? 'Live' : 'Not approved'; L.updated = 'Today'; }
+      if (ok && src) {
+        var job = clone(src); job.id = 'n' + Date.now(); job.company = job.company || db.employer.name; job.posted = 0; job.match = 75;
+        job.rate = job.rate || hourlyRate(job.pay); job.duration = job.duration || '1 day'; job.mode = job.mode || 'On-site';
+        if (L) L.job = job.id;
+        msg += ' It\'s live.' + goLive(job);
+      }
+    } else if (it.kind === 'Company') {
+      if (it.employer && db.employer) db.employer.verify = ok ? 'verified' : 'none';
+      else if (ok && it.company) db.verified[it.company] = true;
+      if (ok) db.kpi.companies++;
+    } else if (it.kind === 'Student' && ok) db.kpi.students++;
+    save(); renderAuth(); renderAdmin(); toast(msg);
+    var next = $('queue').querySelector('[data-decide]'); if (next) next.focus();
+  }
+  function renderAdmin() {
+    var k = db.kpi, live = allJobs().length;
+    var pct = function (n, goal) { return Math.min(100, Math.round(n / goal * 100)); };
+    $('kpis').innerHTML =
+      '<div class="kpi"><p class="label">Verified students</p><p class="num tnum">' + k.students + ' <small>/ 100</small></p><div class="bar" role="img" aria-label="' + pct(k.students, 100) + ' percent of the student goal"><span style="width:' + pct(k.students, 100) + '%"></span></div></div>' +
+      '<div class="kpi"><p class="label">Reviewed companies</p><p class="num tnum">' + k.companies + ' <small>/ 10</small></p><div class="bar" role="img" aria-label="' + pct(k.companies, 10) + ' percent of the company goal"><span style="width:' + pct(k.companies, 10) + '%"></span></div></div>' +
+      '<div class="kpi"><p class="label">Live listings</p><p class="num tnum">' + live + '</p><p class="hint">Apply clicks are tracked per listing.</p></div>';
+    var q = db.queue;
+    $('queue').innerHTML = q.map(function (it, i) {
+      return '<tr><td data-label="Type">' + it.kind + '</td><td><strong>' + esc(it.title) + '</strong></td><td data-label="Details" class="muted">' + esc(it.detail) + '</td><td data-label="Submitted">' + esc(it.submitted) + '</td>' +
+        '<td><div class="actions"><button type="button" class="btn btn-secondary btn-sm" data-decide="' + i + '" data-ok="0" aria-label="Reject ' + esc(it.title) + '">Reject</button><button type="button" class="btn btn-primary btn-sm" data-decide="' + i + '" data-ok="1" aria-label="Approve ' + esc(it.title) + '">Approve</button></div></td></tr>';
+    }).join('');
+    $('queue-table').hidden = !q.length;
+    $('queue-empty').hidden = q.length > 0;
+    $('queue-badge').textContent = q.length;
+    $('queue-badge').hidden = !q.length;
+    $('queue-label').textContent = q.length ? plural(q.length, 'item', 'items') + ' waiting' : '';
+    $('reports').innerHTML = db.reports.map(function (r) { return '<li><span>' + esc(r.title) + '</span><span class="muted">' + esc(r.reason) + '</span></li>'; }).join('') || '<li class="muted">No reports.</li>';
+    $('feedback').innerHTML = db.feedback.slice(0, 6).map(function (f) { return '<li><span>' + esc(f.text) + '</span><span class="muted">' + esc(f.who) + '</span></li>'; }).join('');
+    var students = SEED_STUDENTS.slice();
+    if (db.profile) students.unshift({ name: db.profile.name, programme: db.profile.programme || 'Not set', joined: 'Today' });
+    $('students').innerHTML = students.map(function (s) { return '<tr><td><strong>' + esc(s.name) + '</strong></td><td data-label="Programme">' + esc(s.programme) + '</td><td data-label="Joined">' + esc(s.joined) + '</td><td data-label="Status"><span class="tag tag-live">Verified</span></td></tr>'; }).join('');
+    $('students-label').textContent = 'Newest ' + students.length + ' of ' + k.students;
+    var cos = allCompanies();
+    $('companies').innerHTML = cos.map(function (n) {
+      var info = companyInfo(n), open = allJobs().filter(function (j) { return j.company === n; }).length;
+      var st = info.status === 'verified' || info.verified ? '<span class="tag tag-live">Verified</span>' : info.status === 'requested' || q.some(function (it) { return it.kind === 'Company' && it.title === n; }) ? '<span class="tag tag-review">Requested</span>' : '<span class="tag tag-draft">Not verified</span>';
+      return '<tr><td><a href="#employer/' + slug(n) + '">' + esc(n) + '</a></td><td data-label="Type">' + (info.private ? 'Private' : 'Business') + '</td><td data-label="Open roles" class="tnum">' + open + '</td><td data-label="Rating">' + (ratingHTML(n) || '<span class="muted">None</span>') + '</td><td data-label="Status">' + st + '</td></tr>';
+    }).join('');
+    $('companies-label').textContent = plural(cos.length, 'employer', 'employers');
   }
   $('queue').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-done]');
-    if (b) { queue.splice(+b.dataset.done, 1); renderQueue(); var next = $('queue').querySelector('[data-done]'); if (next) next.focus(); }
+    var b = e.target.closest('[data-decide]');
+    if (b) decide(+b.dataset.decide, b.dataset.ok === '1');
   });
-  renderQueue();
 
-  // ---------- About: team ----------
-  var initials = function (n) { return n.split(' ').map(function (p) { return p[0]; }).join('').slice(0, 2).toUpperCase(); };
+  // ==========================================================================
+  // About, feedback, header menu
+  // ==========================================================================
   $('team').innerHTML = TEAM.map(function (m) {
     return '<li><span class="initials" aria-hidden="true">' + esc(initials(m.name)) + '</span><span>' + esc(m.name) + (m.role ? '<span class="role">' + esc(m.role) + '</span>' : '') + '</span></li>';
   }).join('');
+  (function renderContact() {
+    var li = function (url) { return url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">GigoMe on LinkedIn</a>' : '<span class="muted">Page coming soon</span>'; };
+    var c = CONTACT;
+    $('contact-grid').innerHTML =
+      '<div><h3>Students</h3><dl><div><dt>Email</dt><dd><a href="mailto:' + esc(c.students.email) + '">' + esc(c.students.email) + '</a></dd></div><div><dt>LinkedIn</dt><dd>' + li(c.students.linkedin) + '</dd></div></dl></div>' +
+      '<div><h3>Employers and partners</h3><dl><div><dt>Email</dt><dd><a href="mailto:' + esc(c.employers.email) + '">' + esc(c.employers.email) + '</a></dd></div>' +
+        (c.employers.phone ? '<div><dt>Phone</dt><dd><a href="tel:' + esc(c.employers.phone.replace(/\s/g, '')) + '">' + esc(c.employers.phone) + '</a></dd></div>' : '') +
+        '<div><dt>LinkedIn</dt><dd>' + li(c.employers.linkedin) + '</dd></div></dl></div>';
+  })();
 
-  // ---------- Header menu (under 768px) ----------
+  function openFeedback(who) {
+    who = who || (db.session === 'employer' ? 'employer' : db.session === 'student' ? 'student' : 'student');
+    openModal({
+      title: who === 'employer' && db.session === 'employer' ? 'How did hiring go?' : 'Give feedback',
+      body: '<fieldset><legend>I am</legend><div class="radio-row">' + [['student', 'A student'], ['employer', 'An employer'], ['other', 'Someone else']].map(function (o) {
+          return '<label class="check"><input type="radio" name="who" value="' + o[0] + '"' + (o[0] === who ? ' checked' : '') + '> ' + o[1] + '</label>';
+        }).join('') + '</div></fieldset>' +
+        '<label class="field">Your feedback<textarea class="textarea" name="text" rows="5" required minlength="5" maxlength="1000" placeholder="What worked, what didn\'t, what\'s missing?"></textarea></label>' +
+        '<p class="hint">Feedback goes to the GigoMe team. Add your email if you\'d like a reply.</p>',
+      submit: 'Send feedback',
+      onSubmit: function (fd) {
+        var w = fd.get('who');
+        db.feedback.unshift({ text: '"' + fd.get('text').trim() + '"', who: w === 'other' ? 'Visitor' : w.charAt(0).toUpperCase() + w.slice(1) });
+        save(); toast('Thanks. The team reads every message.');
+      }
+    });
+  }
+
   var menuBtn = $('menu-btn'), panel = $('menu-panel');
   function setMenu(open) { panel.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.textContent = open ? 'Close' : 'Menu'; }
   menuBtn.addEventListener('click', function () { setMenu(panel.hidden); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) { setMenu(false); menuBtn.focus(); } });
 
-  // ---------- Router ----------
-  var PAGES = ['home', 'jobs', 'job', 'signup', 'company', 'admin', 'about'];
+  // Global buttons: sign in / out, feedback, follow
+  document.addEventListener('click', function (e) {
+    var b;
+    if ((b = e.target.closest('[data-signin]'))) {
+      setMenu(false);
+      var stay = ['job', 'employer', 'jobs', 'home', 'about'].indexOf(current.id) !== -1;
+      openSignIn(b.dataset.signin || (current.id === 'company' ? 'employer' : 'student'), stay ? function () { refresh(); } : null);
+      return;
+    }
+    if (e.target.closest('[data-signout]')) { setMenu(false); signOut(); return; }
+    if ((b = e.target.closest('[data-feedback]'))) { openFeedback(b.dataset.feedback); return; }
+    if ((b = e.target.closest('[data-follow]'))) { toggleFollow(b.dataset.follow); }
+  });
+
+  $('reset-demo').addEventListener('click', function () {
+    openModal({
+      title: 'Reset the demo?', body: '<p>This deletes everything saved in this browser (profile, applications, reviews, listings) and starts again with the sample data.</p>',
+      submit: 'Reset',
+      onSubmit: function () { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } db = seed(); location.hash = '#home'; location.reload(); }
+    });
+  });
+
+  // ==========================================================================
+  // Router
+  // ==========================================================================
+  var PAGES = ['home', 'jobs', 'job', 'employer', 'signup', 'me', 'company', 'admin', 'about', 'privacy', 'terms'];
+  var current = { id: '', arg: '' };
+  function renderPage(id, arg) {
+    if (id === 'home') renderHome();
+    else if (id === 'jobs') { renderTypeFilters(); render(); }
+    else if (id === 'job') renderJob(arg || 'w1');
+    else if (id === 'employer') renderEmployerPage(arg || 'nebbia-coffee-bar');
+    else if (id === 'signup') renderSignup();
+    else if (id === 'me') renderMe();
+    else if (id === 'company') renderCompany();
+    else if (id === 'admin') renderAdmin();
+  }
+  // Re-render the current page after an action that changes data (keeps scroll position).
+  function refresh() { if (current.id !== 'signup' && current.id !== 'jobs') renderPage(current.id, current.arg); else if (current.id === 'jobs') render(); }
+  function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
   function route() {
     var parts = (location.hash || '#home').slice(1).split('/');
     var id = PAGES.indexOf(parts[0]) === -1 ? 'home' : parts[0];
-    if (id === 'jobs' && parts[1]) applyDeepLink(parts[1]);
+    var arg = decodeURIComponent(parts.slice(1).join('/'));
+    if (id === 'jobs' && arg) applyDeepLink(arg);
+    current = { id: id, arg: arg };
     PAGES.forEach(function (p) { $('page-' + p).classList.toggle('active', p === id); });
     document.body.dataset.page = id;
-    Array.prototype.forEach.call(document.querySelectorAll('.main-nav a'), function (a) {
+    each(document.querySelectorAll('.main-nav a'), function (a) {
       if (a.dataset.nav.split(' ').indexOf(id) !== -1) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
-    $('jump').value = id;
+    each(document.querySelectorAll('#admin-links a'), function (a) {
+      if (a.dataset.sec === (id === 'admin' ? arg : '__')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    $('jump').value = $('jump').querySelector('option[value="' + id + '"]') ? id : '';
     setMenu(false);
     if (drawer.open) drawer.close();
-    if (id === 'jobs') render();
-    window.scrollTo(0, 0);
-    if (id === 'home') setTimeout(function () { window._gigomeMap.refresh(); }, 0);
+    if (modal.open) modal.close();
+    renderPage(id, arg);
+    // Sub-sections: #admin/queue, #about/contact, #me/saved, #company/post
+    var target = arg && ({ admin: 'adm-' + arg, about: arg, me: 'me-' + arg, company: arg === 'post' ? 'co-post' : '' }[id]);
+    var el = target && $(target);
+    if (el) setTimeout(function () { el.scrollIntoView({ block: 'start' }); }, 0); else window.scrollTo(0, 0);
+    if (id === 'home') setTimeout(function () { map.refresh(); }, 0);
   }
-  $('jump').addEventListener('change', function (e) { location.hash = '#' + e.target.value; });
+  $('jump').addEventListener('change', function (e) {
+    var v = e.target.value;
+    // The Jump to menu signs in to the sample accounts so every screen can be seen.
+    if (v === 'me' && db.session !== 'student') signIn('student');
+    if (v === 'company' && db.session !== 'employer') signIn('employer');
+    go(v === 'employer' ? '#employer/nebbia-coffee-bar' : v === 'job' ? '#job/w1' : '#' + v);
+  });
   window.addEventListener('hashchange', route);
+  renderAuth();
   route();
 })();
 </script>

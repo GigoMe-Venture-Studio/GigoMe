@@ -21,11 +21,14 @@ English-speaking student have no simple way to reach them.
 
 - **For students:** browse part-time jobs, day jobs, tutoring, short projects
   and internships that don't need Italian, filtered by pay, schedule, area and
-  work mode. Every on-site role shows its area and nearest metro line.
-- **For employers:** create a company profile, post roles for free and reach
-  students who are verified and ready to work.
-- **Discovery only:** GigoMe connects students and employers. Applications,
-  contracts and payments happen directly between them, outside the platform.
+  work mode. Every on-site role shows its area and nearest metro line. Save
+  searches for email alerts, follow employers, track every application and
+  review employers you worked for.
+- **For employers:** businesses and private people (a family looking for a
+  tutor, someone who needs a dog walker) post roles for free, accept or
+  reject applicants, and alert their recurring past employees first.
+- **Direct contact:** students apply on the employer's site or by email.
+  Contracts and pay are agreed directly between them, outside the platform.
 
 ## Principles
 
@@ -33,19 +36,22 @@ English-speaking student have no simple way to reach them.
   that fit around university life.
 - **Trust-based:** verified student status, reviewed employer profiles and
   transparent role information.
-- **Simple:** focus on discovery, profiles and direct contact rather than
-  complex integrations.
+- **Simple:** focus on discovery, profiles, reviews and direct contact rather
+  than complex integrations.
 - **Non-profit:** build something useful and widely used before any
   discussion of monetisation.
 
 ## Features
 
-| Students | Companies | Platform |
+| Students | Employers | Platform |
 | --- | --- | --- |
-| Sign-up and profile creation | Company registration and profile | Admin dashboard for moderation |
-| University-student verification | Role posting with review | Usage tracking and feedback collection |
-| Role browsing with filters and a map | | |
-| Apply or contact the employer directly | | |
+| Sign-up with university email and a 6-digit code | Accounts for businesses or private people | Review queue for listings, students and employer verification |
+| Profile with languages, availability, experience and skills | Optional verification by the team | Goal tracking (students, companies, live listings) |
+| Role browsing with filters, a map and metro lines | Choice to show or hide their location | Reported listings and feedback |
+| Apply on the employer's site or by email | Contact details on a public employer page | Students and companies overview |
+| Dashboard of applications (applied, accepted, rejected) | Listings with applications, accept or reject | |
+| Saved roles, saved searches with email alerts, followed employers | Past employees, with alerts first for recurring ones | |
+| Ratings and reviews of employers, optionally anonymous | Reviews from students on their dashboard | |
 
 ## Goal
 
@@ -89,10 +95,11 @@ companies and a compliant way of operating.
 | Path | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The website: one self-contained file of HTML, CSS and JavaScript, with no build step. |
-| [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content. |
+| [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
 
 The site is published with GitHub Pages from the `main` branch. To run it
 locally, download `index.html` and open it in a browser.
 
 The current version is front-end only: the roles, companies and numbers on
-the site are sample data, and nothing is stored yet.
+the site are sample data. What you enter is saved in your own browser and
+never sent to a server; "Reset" in the top bar clears it.
