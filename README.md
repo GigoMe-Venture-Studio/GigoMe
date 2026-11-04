@@ -3,13 +3,13 @@
 First prototype of the **International Student Jobs Platform**, a student-run
 project (Milan, autumn 2026).
 
-> Status: clickable front-end prototype ("Gigomy"). All roles, companies and
+> Status: clickable front-end prototype ("GigoMe"). All roles, companies and
 > numbers in it are simulated; nothing is stored and there is no backend.
 
 ## The prototype
 
 [`index.html`](index.html) is a clickable front-end prototype of the platform,
-branded **Gigomy**. It is one self-contained file: plain HTML, CSS and
+branded **GigoMe**. It is one self-contained file: plain HTML, CSS and
 JavaScript, with no frameworks, no build step and no backend. Everything is
 inline except one Google Font (Schibsted Grotesk).
 
@@ -39,7 +39,7 @@ The design follows a written redesign brief and the
 - **One typeface**, Schibsted Grotesk, on a fixed size scale. Tool screens
   never go above 32px.
 - **Honest data.** The map shows how many roles each company has open, not
-  "people applying", because applications happen off-platform and Gigomy
+  "people applying", because applications happen off-platform and GigoMe
   cannot know them. Recommendations give a plain reason ("Fits your weekend
   availability") instead of a fake match percentage.
 - **Signature detail: the metro line.** Every on-site role shows its area
@@ -135,7 +135,7 @@ A sample role: **Weekend barista at Nebbia Coffee Bar**.
 - About the role, What you'll do, Good to know.
 - A side panel: **Apply on company site**, Email employer, Save, the note
   "Applications go straight to the employer", the employer (reviewed by the
-  Gigomy team) with a link to the company, and "Report this role".
+  GigoMe team) with a link to the company, and "Report this role".
 
 ### 4. Student sign-up (`#signup`)
 
@@ -160,7 +160,7 @@ its sector, area, website and a short description.
   last update.
 - **Post a role**: title, type of work, location, pay, schedule, language
   requirement, description, and how students should apply (link or email).
-  **Submit for review** changes to "Submitted, in review". Gigomy doesn't
+  **Submit for review** changes to "Submitted, in review". GigoMe doesn't
   handle applications, contracts or payments.
 - A one-line link to give feedback after hiring a student.
 
@@ -177,7 +177,7 @@ its sector, area, website and a short description.
 
 ### 7. About (`#about`)
 
-Why Gigomy exists (the language barrier, scattered roles, small businesses
+Why GigoMe exists (the language barrier, scattered roles, small businesses
 that can't reach students, learning by building), the four principles
 (Student-first, Trust-based, Discovery only, Non-profit), a short prototype
 note, and the team.
