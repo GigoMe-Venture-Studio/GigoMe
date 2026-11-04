@@ -96,6 +96,7 @@ companies and a compliant way of operating.
 | --- | --- |
 | [`index.html`](index.html) | The website: one self-contained file of HTML, CSS and JavaScript, with no build step. |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite copies the site into `dist/`, Cloudflare Workers serves it. |
+| [`public/_headers`](public/_headers) | Cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
 | [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
 
 The site is hosted on Cloudflare Workers (static assets) at

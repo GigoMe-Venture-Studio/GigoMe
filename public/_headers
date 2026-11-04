@@ -1,0 +1,14 @@
+# Cloudflare Workers static assets: response headers by path.
+# Vite copies this file from public/ into dist/.
+
+# index.html and every page path (served by the single-page fallback):
+# the browser must check for a new version on every visit. With the ETag it
+# gets a quick 304 when nothing changed, and the new page right after a deploy.
+/*
+  Cache-Control: no-cache
+
+# Hashed build files (Vite writes them to /assets/ with a content hash in the
+# name, so a new deploy always gets a new file name): cache for a year.
+/assets/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
