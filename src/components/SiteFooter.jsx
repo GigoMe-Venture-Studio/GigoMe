@@ -1,8 +1,10 @@
 import { Link } from 'react-router';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import { useOpenFeedback } from './Feedback.jsx';
 
 // The footer on every page (rendered once in App.jsx).
 export default function SiteFooter() {
+  const openFeedback = useOpenFeedback();
   return (
     <footer className="site-footer">
       <div className="wrap">
@@ -13,6 +15,7 @@ export default function SiteFooter() {
         <nav aria-label="Footer">
           <Link to="/about">About</Link>
           <Link to="/privacy">Privacy notice</Link>
+          <button type="button" className="footer-link-btn" onClick={openFeedback}>Give feedback</button>
         </nav>
         <p className="footer-help">
           Questions or need help? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>

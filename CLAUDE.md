@@ -44,13 +44,22 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   name and "Log out". Under 768px the links move into a Menu panel. Don't
   add links for features that don't exist yet (no "For employers", "Create
   profile" or "Post a role").
+- Feedback: `src/components/Feedback.jsx` (`FeedbackProvider` in `App.jsx`)
+  puts a fixed "Feedback" button at the bottom right of every page and opens
+  a panel (native `<dialog>`); the footer's "Give feedback" opens it too via
+  `useOpenFeedback()`. Logged-in users insert `page` and `message` (max 2000)
+  through `sendFeedback()` in `src/lib/feedback.js`; the database sets
+  `user_id`. Logged-out visitors get "Log in ... or write to" instead, since
+  the database refuses their feedback. The button fades out whenever it would
+  overlap a button, link or field (`KEEP_CLEAR`), so it never covers "How to
+  apply" or "Search jobs" on a phone: keep that working when adding pages.
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
   that opens `/jobs` with those filters), the 5 newest live jobs, "How it
   works". `src/pages/About.jsx`: `/about`, with one placeholder paragraph
   ("Who runs GigoMe") that the owner will write. Show only real data: no
   sample listings, ratings, numbers or features that don't exist.
 - `src/styles/site.css`: tokens, base styles and shared components; page
-  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`).
+  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`).
   No CSS framework.
 - `public/`: copied into `dist/` as is (`_headers` with the cache rules,
   and any favicon or images).

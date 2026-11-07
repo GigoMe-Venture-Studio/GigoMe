@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router';
 import SiteHeader from './components/SiteHeader.jsx';
 import SiteFooter from './components/SiteFooter.jsx';
+import { FeedbackProvider } from './components/Feedback.jsx';
 import Home from './pages/Home.jsx';
 import Jobs from './pages/Jobs.jsx';
 import JobDetail from './pages/JobDetail.jsx';
@@ -12,7 +13,7 @@ import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
   return (
-    <>
+    <FeedbackProvider>
       <SiteHeader />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -25,6 +26,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <SiteFooter />
-    </>
+    </FeedbackProvider>
   );
 }

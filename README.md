@@ -5,7 +5,8 @@
 GigoMe is a job discovery platform for international and English-speaking
 university students in Milan. Employers list English-friendly roles, students
 log in with their university email and apply directly with the employer. It is a
-student-run, non-profit project built by the GigoMe Venture Studio team.
+student-run project built by the GigoMe Venture Studio team. Free for
+students. No monetisation before the platform is useful.
 
 **Website:** https://gigome.org
 
@@ -36,8 +37,8 @@ English-speaking student have no simple way to reach them.
   transparent role information.
 - **Simple:** focus on discovery and direct contact rather
   than complex integrations.
-- **Non-profit:** build something useful and widely used before any
-  discussion of monetisation.
+- **Useful first:** free for students. No monetisation before the platform
+  is useful and widely used.
 
 ## Features
 
@@ -49,11 +50,11 @@ What exists today:
 | Browse live jobs, filtered by keyword, job type, remote, Italian level and hours | Company name, description and website shown on each job | Only emails from listed university domains get a student account |
 | See how to apply on each job (employer's website or email) once logged in | Applications go straight to the employer | Jobs disappear from the site when they expire or are closed |
 | Free, always | | "How to apply" clicks are counted per job |
+| Send feedback from any page (logged-in users) | | Feedback is readable only by admins |
 
 ## Planned
 
 - Company sign-up and a company dashboard.
-- A feedback form.
 - Bot protection on login.
 
 ## Not built on purpose
@@ -110,9 +111,9 @@ companies and a compliant way of operating.
 | [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
 | [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/about`, `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
 | [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `About.jsx`, `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
-| [`src/components/`](src/components) | Shared React parts: the site header and footer (every page), the page frame, the job card used on the home page and `/jobs`, the configuration error message. |
-| [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `jobs.js` (job board queries), `useSession.js`, `contact.js`. |
-| [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login pages), `header.css` (the site header), `jobs.css` (the job board) and `home.css` (the home and About pages). |
+| [`src/components/`](src/components) | Shared React parts: the site header and footer (every page), the feedback button and panel (every page), the page frame, the job card used on the home page and `/jobs`, the configuration error message. |
+| [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `jobs.js` (job board queries), `feedback.js` (sends feedback), `useSession.js`, `contact.js`. |
+| [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login pages), `header.css` (the site header), `jobs.css` (the job board), `home.css` (the home and About pages) and `feedback.css` (the feedback button and panel). |
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it. |
 | [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |
