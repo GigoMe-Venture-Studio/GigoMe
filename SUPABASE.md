@@ -66,7 +66,7 @@ A few details worth knowing:
 
 | Function | Who can call it | What it does |
 | --- | --- | --- |
-| `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records a click. Anyone else gets an error. |
+| `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records a click. Anyone else gets an error. The job page calls it only when a student presses "How to apply". |
 | `set_job_contact(job_id, apply_url, apply_email)` | The job's owner | Sets how students apply. Two empty values remove it. |
 | `get_own_job_contact(job_id)` | The job's owner | Shows the owner what they set. |
 | `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company. |

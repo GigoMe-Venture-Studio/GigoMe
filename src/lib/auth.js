@@ -19,6 +19,13 @@ export const DEGREE_LEVELS = [
   ['other', 'Other']
 ];
 
+// Where to go after login (?next=/jobs/123). Only paths on this site are
+// accepted, so the parameter can't send anyone to another website.
+export function safeNext(value) {
+  const v = String(value || '');
+  return v.startsWith('/') && !v.startsWith('//') && !v.startsWith('/\\') ? v : '';
+}
+
 export function normalizeEmail(raw) {
   return String(raw || '').trim().toLowerCase();
 }

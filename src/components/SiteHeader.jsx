@@ -14,7 +14,8 @@ function DemoLink({ onHome, hash, className, current, onClick, children }) {
   return <Link to={'/' + hash} className={className} onClick={onClick}>{children}</Link>;
 }
 
-// The site header on every page: GigoMe, Jobs, About, and "Log in", or the
+// The site header on every page: GigoMe, Jobs (/jobs), About (the demo's
+// #about screen), and "Log in", or the
 // logged-in student's name and "Log out". Under 768px the links move into a
 // Menu panel (site.css).
 export default function SiteHeader() {
@@ -62,7 +63,7 @@ export default function SiteHeader() {
   }
 
   const screen = onHome ? (hash.replace('#', '').split('/')[0] || 'home') : '';
-  const jobsCurrent = screen === 'jobs' || screen === 'job';
+  const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
   const aboutCurrent = screen === 'about';
   const label = name || (session ? session.user.email : '');
 
@@ -75,7 +76,7 @@ export default function SiteHeader() {
           <Link className="wordmark" to="/">GigoMe</Link>
         )}
         <nav className="main-nav" aria-label="Main">
-          <DemoLink onHome={onHome} hash="#jobs" current={jobsCurrent}>Jobs</DemoLink>
+          <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>Jobs</Link>
           <DemoLink onHome={onHome} hash="#about" current={aboutCurrent}>About</DemoLink>
         </nav>
         <div className="header-actions">
@@ -104,7 +105,7 @@ export default function SiteHeader() {
       </div>
       {menuOpen && (
         <nav className="menu-panel" id="menu-panel" aria-label="Mobile">
-          <DemoLink onHome={onHome} hash="#jobs" current={jobsCurrent} onClick={() => setMenuOpen(false)}>Jobs</DemoLink>
+          <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>Jobs</Link>
           <DemoLink onHome={onHome} hash="#about" current={aboutCurrent} onClick={() => setMenuOpen(false)}>About</DemoLink>
           {session && (
             <button type="button" onClick={onLogOut}>Log out</button>

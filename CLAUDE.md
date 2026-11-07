@@ -11,8 +11,19 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/login`, `/welcome`, `/privacy` and `*` (404). Don't add placeholder pages
-  for features that aren't built.
+  `/jobs`, `/jobs/:id`, `/login`, `/welcome`, `/privacy` and `*` (404). Don't
+  add placeholder pages for features that aren't built.
+- Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
+  `?type=&remote=yes|no&italian=none|basic&hours=`), `src/pages/JobDetail.jsx`
+  (job, company, "How to apply"), logic in `src/lib/jobs.js`. Queries ask for
+  live jobs explicitly (published, not expired, approved company), because
+  company owners and admins can also read jobs that aren't live.
+  `reveal_job_contact` counts a click on every call: call it only when a
+  student presses "How to apply", never on page load. Logged-out visitors go
+  to `/login?next=/jobs/<id>`; `safeNext()` in `src/lib/auth.js` only accepts
+  paths on this site.
+- `src/components/PageShell.jsx`: page frame (content and footer) for every
+  React page except the home page.
 - New features are React pages and components (`src/pages/`,
   `src/components/`), never code inside `src/legacy/`. Styles for them go in
   their own file (e.g. `src/styles/auth.css`) and reuse the tokens and
@@ -24,11 +35,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
   a code. `/privacy` is a placeholder until the owner supplies the text.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
-  `App.jsx`): GigoMe, Jobs, About, and "Log in" or the student's name and
-  "Log out". Under 768px the links move into a Menu panel. Jobs and About
-  open demo screens: on `/` they must be plain `#jobs` / `#about` links (the
-  demo routes on `hashchange`, which React Router's `<Link>` never fires);
-  elsewhere a `<Link>` to `/#jobs`. Don't add links for features that don't
+  `App.jsx`): GigoMe, Jobs (`/jobs`), About, and "Log in" or the student's
+  name and "Log out". Under 768px the links move into a Menu panel. About
+  opens a demo screen: on `/` it must be a plain `#about` link (the demo
+  routes on `hashchange`, which React Router's `<Link>` never fires);
+  elsewhere a `<Link>` to `/#about`. Don't add links for features that don't
   exist yet (no "For employers", "Create profile" or "Post a role").
   `src/styles/header.css` keeps the demo's dark "Demo" bar above it on `/`.
 - `src/pages/Home.jsx` mounts the original demo: `src/legacy/markup.html`
@@ -36,8 +47,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   unchanged apart from running inside `mountLegacyApp()`, registering
   window/document listeners through `on()` so they're removed on unmount, and
   having no header of its own: `renderAuth()` is a no-op).
-  The demo's screens are hash links (`/#jobs`, `/#job/w1`, ...), all under
-  `/`. Keep new window/document listeners in that file going through `on()`.
+  The demo's screens are hash links (`/#about`, `/#signup`, ...), all under
+  `/`; its job links point to `/jobs`, and `Home.jsx` sends clicks on links
+  to real paths through React Router. Keep new window/document listeners in
+  that file going through `on()`.
 - `src/styles/site.css`: the whole stylesheet. No CSS framework.
 - `public/`: copied into `dist/` as is (`_headers` with the cache rules,
   and any favicon or images).

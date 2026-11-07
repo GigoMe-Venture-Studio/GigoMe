@@ -1,0 +1,37 @@
+/* Job board: /jobs and /jobs/:id. Mobile first. The list rows, tags, facts
+   row and apply panel reuse .role-row, .tag, .facts, .detail and .apply from
+   site.css, so jobs look like the rest of the site. */
+
+.jobs-main { padding-top: var(--s5); padding-bottom: var(--s7); }
+.jobs-lead { margin-top: var(--s2); }
+
+.job-filters {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3); margin-top: var(--s5);
+}
+.job-filters .select { height: 44px; }
+
+.jobs-status {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: var(--s2) var(--s4); margin: var(--s5) 0 var(--s3); font-size: 14px;
+}
+
+.job-list.is-loading { opacity: 0.6; }
+.tag-italian-none { background: var(--white); border: 1px solid var(--accent); }
+
+.empty-state { padding: var(--s6) 0; border-top: 1px solid var(--line); }
+.empty-state > * + * { margin-top: var(--s3); }
+.empty-state .page-title { margin-top: var(--s5); }
+
+.job-text { white-space: pre-line; overflow-wrap: anywhere; }
+.job-posted { font-size: 14px; }
+
+.apply-contact > * + * { margin-top: var(--s3); }
+.apply-heading { font-weight: 600; }
+.apply-email { overflow-wrap: anywhere; }
+.apply-company { margin-top: 0; }
+
+@media (min-width: 768px) {
+  .jobs-main { padding-top: var(--s6); padding-bottom: var(--s8); }
+  .job-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
