@@ -295,7 +295,7 @@ export function mountLegacyApp() {
     var info = companyInfo(j.company);
     var tags = (j.posted === 0 ? '<span class="tag tag-new">New</span>' : '') + (j.lang === 'en' ? '' : '<span class="tag">Basic Italian</span>');
     var meta = [TYPE[j.cat], place(j), esc(j.when.join(', '))].concat(info.private ? ['Private employer'] : []).join('<span class="sep" aria-hidden="true">·</span>');
-    return '<li><a class="role-row" href="#job/' + esc(j.id) + '">' +
+    return '<li><a class="role-row" href="/jobs">' +
       '<div><div class="role-l1"><span class="role-title">' + esc(j.title) + '</span>' +
         '<span class="role-co"><span class="verified">' + esc(j.company) + (info.verified ? verifiedIcon : '') + '</span></span>' + ratingHTML(j.company) + tags + '</div>' +
         '<div class="role-meta">' + meta + '</div>' +
@@ -371,7 +371,7 @@ export function mountLegacyApp() {
         ];
         if (!db.searches.length) db.searches = [{ id: 's1', name: 'Weekend roles', state: { q: '', area: '', cats: [], minPay: 0, when: ['Weekends'], modes: [], englishOnly: true, sort: 'match' }, alerts: true }];
         if (!db.follows.length) db.follows = ['Navigli Bike Tours'];
-        if (!db.notes.length) db.notes = [{ text: 'New role matches "Weekend roles": Weekend barista at Nebbia Coffee Bar', href: '#job/w1', date: todayISO() }];
+        if (!db.notes.length) db.notes = [{ text: 'New role matches "Weekend roles": Weekend barista at Nebbia Coffee Bar', href: '/jobs', date: todayISO() }];
       }
       db.session = 'student';
     } else {
@@ -740,7 +740,7 @@ export function mountLegacyApp() {
       : '<button type="button" class="btn btn-primary" data-apply="site">Apply on company site <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></button>' +
         '<button type="button" class="btn btn-secondary" data-apply="email">Email employer</button>';
     $('job-root').innerHTML =
-      '<a class="back" href="#jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>' +
+      '<a class="back" href="/jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>' +
       '<div class="detail"><article>' +
         '<h1 class="page-title">' + esc(j.title) + '</h1>' +
         '<p class="detail-co"><span class="verified"><a href="#employer/' + slug(j.company) + '">' + esc(j.company) + '</a>' + (info.verified ? verifiedIcon : '') + '</span>' + ratingHTML(j.company) + '</p>' +
@@ -901,7 +901,7 @@ export function mountLegacyApp() {
       contact = '<p class="hint">Sign in as a student to see contact details.</p><button type="button" class="btn btn-secondary btn-sm" data-signin>Sign in</button>';
     }
     $('employer-root').innerHTML =
-      '<a class="back" href="#jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>' +
+      '<a class="back" href="/jobs"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>All roles</a>' +
       '<div class="detail"><article>' +
         '<h1 class="page-title">' + esc(name) + '</h1>' +
         '<p class="emp-meta">' + (info.verified ? '<span class="verified"><svg class="icon" aria-hidden="true"><use href="#i-verified"/></svg>Reviewed by the GigoMe team</span>' : '<span>Not verified yet</span>') +
@@ -1139,18 +1139,18 @@ export function mountLegacyApp() {
         (apps.length ? '<table class="table"><thead><tr><th scope="col">Role</th><th scope="col">Employer</th><th scope="col">Applied</th><th scope="col">How</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' +
           apps.map(function (x) {
             var review = x.a.status === 'Accepted' ? (x.a.reviewed ? '<span class="muted">Reviewed</span>' : '<button type="button" class="btn btn-secondary btn-sm" data-review-app="' + x.i + '">Review employer</button>') : '';
-            return '<tr><td><a href="#job/' + esc(x.j.id) + '">' + esc(x.j.title) + '</a></td><td data-label="Employer"><a href="#employer/' + slug(x.j.company) + '">' + esc(x.j.company) + '</a></td>' +
+            return '<tr><td><a href="/jobs">' + esc(x.j.title) + '</a></td><td data-label="Employer"><a href="#employer/' + slug(x.j.company) + '">' + esc(x.j.company) + '</a></td>' +
               '<td data-label="Applied" class="tnum">' + fmtDate(x.a.date) + '</td><td data-label="How">' + (x.a.via === 'email' ? 'By email' : 'Company site') + '</td>' +
               '<td data-label="Status"><label class="sr-only" for="st-' + x.i + '">Status for ' + esc(x.j.title) + '</label><select class="select" id="st-' + x.i + '" data-status="' + x.i + '">' +
                 ['Applied', 'Accepted', 'Rejected'].map(function (s) { return '<option' + (s === x.a.status ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></td>' +
               '<td><div class="actions">' + review + '</div></td></tr>';
           }).join('') + '</tbody></table>'
-          : '<p class="empty-line">' + (db.apps.length ? 'No ' + meTab.toLowerCase() + ' applications.' : 'No applications yet. <a href="#jobs">Browse roles</a>') + '</p>') + '</section>' +
+          : '<p class="empty-line">' + (db.apps.length ? 'No ' + meTab.toLowerCase() + ' applications.' : 'No applications yet. <a href="/jobs">Browse roles</a>') + '</p>') + '</section>' +
 
       '<div class="dash-grid">' +
       '<section class="dash-block" id="me-saved" aria-labelledby="me-saved-t"><div class="section-head"><h2 class="section-title" id="me-saved-t">Saved roles</h2></div>' +
         (db.saved.length ? '<ul class="plain-list">' + db.saved.map(findJob).filter(Boolean).map(function (j) {
-          return '<li><div><a href="#job/' + esc(j.id) + '">' + esc(j.title) + '</a><span class="sub">' + esc(j.company) + ', ' + esc(j.pay) + '</span></div><div class="actions"><button type="button" class="btn btn-tertiary btn-sm" data-unsave="' + esc(j.id) + '">Remove</button></div></li>';
+          return '<li><div><a href="/jobs">' + esc(j.title) + '</a><span class="sub">' + esc(j.company) + ', ' + esc(j.pay) + '</span></div><div class="actions"><button type="button" class="btn btn-tertiary btn-sm" data-unsave="' + esc(j.id) + '">Remove</button></div></li>';
         }).join('') + '</ul>' : '<p class="empty-line">Nothing saved yet. Use "Save" on any role.</p>') + '</section>' +
 
       '<section class="dash-block" id="me-searches" aria-labelledby="me-searches-t"><div class="section-head"><h2 class="section-title" id="me-searches-t">Saved searches and email alerts</h2></div>' +
@@ -1158,7 +1158,7 @@ export function mountLegacyApp() {
           return '<li><div><strong>' + esc(s.name) + '</strong><span class="sub">' + esc(summary(s.state)) + ', ' + plural(filtered(s.state).length, 'role', 'roles') + ' now</span>' +
             '<label class="check" style="font-size:14px;min-height:28px"><input type="checkbox" data-alert="' + i + '"' + (s.alerts ? ' checked' : '') + '> Email alerts</label></div>' +
             '<div class="actions"><button type="button" class="btn btn-secondary btn-sm" data-run="' + i + '">Show roles</button><button type="button" class="btn btn-tertiary btn-sm" data-del-search="' + i + '">Delete</button></div></li>';
-        }).join('') + '</ul>' : '<p class="empty-line">No saved searches. Set filters on <a href="#jobs">Jobs</a> and press "Save search".</p>') + '</section>' +
+        }).join('') + '</ul>' : '<p class="empty-line">No saved searches. Set filters on <a href="/jobs">Jobs</a> and press "Save search".</p>') + '</section>' +
 
       '<section class="dash-block" id="me-follows" aria-labelledby="me-follows-t"><div class="section-head"><h2 class="section-title" id="me-follows-t">Employers you follow</h2></div>' +
         (db.follows.length ? '<ul class="plain-list">' + db.follows.map(function (n) {
@@ -1323,7 +1323,7 @@ export function mountLegacyApp() {
       var tag = { Live: 'tag-live', 'In review': 'tag-review', Draft: 'tag-draft', 'Not approved': 'tag-draft' }[L.status] || 'tag-draft';
       var action = L.job ? '<button type="button" class="btn btn-secondary btn-sm" data-co="toggle" data-id="' + L.id + '" aria-expanded="' + (openListing === L.id) + '">' + (openListing === L.id ? 'Hide applicants' : 'View applicants') + '</button>'
         : (L.status === 'Draft' || L.status === 'Not approved') ? '<button type="button" class="btn btn-secondary btn-sm" data-co="edit-listing" data-id="' + L.id + '">Edit</button>' : '';
-      var main = '<tr' + (openListing === L.id ? ' class="open"' : '') + '><td>' + (L.job ? '<a href="#job/' + esc(L.job) + '">' + esc(L.title) + '</a>' : esc(L.title)) + '</td><td data-label="Type">' + TYPE[L.cat] + '</td>' +
+      var main = '<tr' + (openListing === L.id ? ' class="open"' : '') + '><td>' + (L.job ? '<a href="/jobs">' + esc(L.title) + '</a>' : esc(L.title)) + '</td><td data-label="Type">' + TYPE[L.cat] + '</td>' +
         '<td data-label="Status"><span class="tag ' + tag + '">' + L.status + '</span></td>' +
         '<td data-label="Applications" class="tnum">' + (L.job ? apps.length + (waiting ? ' <span class="muted">(' + waiting + ' new)</span>' : '') : '<span class="muted">None yet</span>') + '</td>' +
         '<td data-label="Updated">' + esc(L.updated) + '</td><td><div class="actions">' + action + '</div></td></tr>';
@@ -1368,7 +1368,7 @@ export function mountLegacyApp() {
       onSubmit: function (fd) {
         var j = findJob(fd.get('job'));
         person.invited = j.title;
-        if (db.profile && person.name === db.profile.name) note(db.employer.name + ' invited you to apply for ' + j.title + ': "' + fd.get('msg').trim() + '"', '#job/' + j.id);
+        if (db.profile && person.name === db.profile.name) note(db.employer.name + ' invited you to apply for ' + j.title + ': "' + fd.get('msg').trim() + '"', '/jobs');
         save(); renderAuth(); renderCompany(); toast('Invite sent to ' + esc(person.name) + '.');
       }
     });
@@ -1506,7 +1506,7 @@ export function mountLegacyApp() {
     if (db.follows.indexOf(job.company) !== -1) { fans++; why.push('from ' + job.company + ', which you follow'); }
     if (db.profile && db.profile.alerts && fitsAvail(job, db.profile.avail)) { fits++; why.push('fits your availability'); }
     // One alert per new role for the student, listing every reason it was sent.
-    if (why.length) note('New role: ' + job.title + ' at ' + job.company + ' (' + why.join(', ') + ')', '#job/' + job.id);
+    if (why.length) note('New role: ' + job.title + ' at ' + job.company + ' (' + why.join(', ') + ')', '/jobs');
     if (db.employer && job.company === db.employer.name) rec = db.past.filter(function (p) { return p.recurring; }).length;
     var sent = [];
     if (rec) sent.push(plural(rec, 'recurring employee', 'recurring employees') + ' (first)');

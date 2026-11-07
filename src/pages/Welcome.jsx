@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router';
-import AuthShell from '../components/AuthShell.jsx';
+import { Navigate, useNavigate, useSearchParams } from 'react-router';
+import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { DEGREE_LEVELS, fetchProfile, logOut, saveProfile } from '../lib/auth.js';
+import { DEGREE_LEVELS, fetchProfile, logOut, safeNext, saveProfile } from '../lib/auth.js';
 
 export default function Welcome() {
-  return <AuthShell>{supabase ? <WelcomeGate /> : <ConfigError />}</AuthShell>;
+  return <PageShell>{supabase ? <WelcomeGate /> : <ConfigError />}</PageShell>;
 }
 
 function WelcomeGate() {
   const { session, loading } = useSession();
+  const [params] = useSearchParams();
+  const next = safeNext(params.get('next'));
   if (loading) return <p className="auth-card muted">Loading…</p>;
-  if (!session) return <Navigate to="/login" replace />;
-  return <WelcomeForm user={session.user} />;
+  if (!session) return <Navigate to={'/login' + (next ? '?next=' + encodeURIComponent(next) : '')} replace />;
+  return <WelcomeForm user={session.user} next={next} />;
 }
 
 // Graduation years on offer: last year to eight years from now (the database
@@ -27,7 +29,7 @@ function yearOptions(saved) {
   return years;
 }
 
-function WelcomeForm({ user }) {
+function WelcomeForm({ user, next }) {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState('');
@@ -60,17 +62,17 @@ function WelcomeForm({ user }) {
     e.preventDefault();
     setSaveError('');
     const name = fullName.trim().replace(/\s+/g, ' ');
-    const next = {};
-    if (!name) next.fullName = 'Add your full name.';
-    else if (name.length > 120) next.fullName = 'Keep your name under 120 characters.';
-    if (!degree) next.degree = 'Choose what you are studying.';
-    if (!year) next.year = 'Choose the year you expect to graduate.';
-    setErrors(next);
-    if (Object.keys(next).length) return;
+    const found = {};
+    if (!name) found.fullName = 'Add your full name.';
+    else if (name.length > 120) found.fullName = 'Keep your name under 120 characters.';
+    if (!degree) found.degree = 'Choose what you are studying.';
+    if (!year) found.year = 'Choose the year you expect to graduate.';
+    setErrors(found);
+    if (Object.keys(found).length) return;
     setBusy(true);
     try {
       await saveProfile(user.id, { full_name: name, degree_level: degree, graduation_year: Number(year) });
-      navigate('/', { replace: true });
+      navigate(next || '/', { replace: true });
     } catch {
       setSaveError("We couldn't save your details. Check your connection and try again.");
       setBusy(false);

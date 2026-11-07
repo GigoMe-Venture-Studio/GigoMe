@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import AuthShell from '../components/AuthShell.jsx';
+import { Link, useNavigate, useSearchParams } from 'react-router';
+import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
@@ -13,6 +13,7 @@ import {
   logOut,
   looksLikeEmail,
   normalizeEmail,
+  safeNext,
   sendCode,
   verifyCode
 } from '../lib/auth.js';
@@ -38,11 +39,13 @@ function writePending(p) {
 }
 
 export default function Login() {
-  return <AuthShell>{supabase ? <LoginFlow /> : <ConfigError />}</AuthShell>;
+  return <PageShell>{supabase ? <LoginFlow /> : <ConfigError />}</PageShell>;
 }
 
 function LoginFlow() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = safeNext(params.get('next'));
   const { session, loading } = useSession();
   const pending = useRef(readPending()).current;
 
@@ -59,7 +62,7 @@ function LoginFlow() {
 
   if (loading) return <p className="auth-card muted">Loading…</p>;
   if (finishing) return <p className="auth-card muted" role="status">Logging you in…</p>;
-  if (session) return <LoggedIn email={session.user.email} />;
+  if (session) return <LoggedIn email={session.user.email} next={next} />;
 
   async function onSubmitEmail(e) {
     e.preventDefault();
@@ -126,7 +129,10 @@ function LoginFlow() {
     } catch {
       /* the welcome page loads the profile again and shows any error */
     }
-    navigate(profile && profile.full_name ? '/' : '/welcome', { replace: true });
+    const after = next || '/';
+    navigate(profile && profile.full_name ? after : '/welcome' + (next ? '?next=' + encodeURIComponent(next) : ''), {
+      replace: true
+    });
   }
 
   async function onResend() {
@@ -300,7 +306,7 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
   );
 }
 
-function LoggedIn({ email }) {
+function LoggedIn({ email, next }) {
   const [error, setError] = useState('');
   return (
     <div className="auth-card">
@@ -309,7 +315,7 @@ function LoggedIn({ email }) {
         Logged in as <strong className="auth-email">{email}</strong>.
       </p>
       <div className="auth-buttons">
-        <Link className="btn btn-primary" to="/">Go to GigoMe</Link>
+        <Link className="btn btn-primary" to={next || '/'}>{next ? 'Continue' : 'Go to GigoMe'}</Link>
         <button type="button" className="btn btn-secondary" onClick={async () => setError((await logOut()) || '')}>
           Log out
         </button>
