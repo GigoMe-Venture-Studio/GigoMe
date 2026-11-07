@@ -1,18 +1,20 @@
 # Front-end demo
 
-Detailed notes on the clickable demo in [`index.html`](../index.html): what
+Detailed notes on the clickable demo (the home page at `/`): what
 each screen does, the design rules it follows and how to edit it. For general
 information about GigoMe, see the [README](../README.md).
 
-[`index.html`](../index.html) is one self-contained file: plain HTML, CSS and
-JavaScript, with no frameworks, no build step and no backend. Everything is
-inline except one Google Font (Schibsted Grotesk).
+The site is a Vite + React app, but the demo itself is still the original
+plain HTML and JavaScript, unchanged: React mounts it as the home page. Its
+markup is [`src/legacy/markup.html`](../src/legacy/markup.html), its script
+[`src/legacy/app.js`](../src/legacy/app.js) and its styles
+[`src/styles/site.css`](../src/styles/site.css). There is no backend, and the
+only external file is one Google Font (Schibsted Grotesk).
 
 **How to open it**
 
 - Online: https://gigome.org (Cloudflare Workers, built from `main`)
-- Locally: open `index.html` in any browser, or run `npm install` then
-  `npm run dev`.
+- Locally: run `npm install`, then `npm run dev`.
 
 All companies, roles, profiles, reviews and map locations are **sample
 data**. Everything you do (sign up, apply, review, post a role, approve in
@@ -24,7 +26,8 @@ admin) is saved in your browser's `localStorage` under the key
 
 The design follows a written redesign brief and the
 [Impeccable](https://github.com/pbakaus/impeccable) anti-pattern checks
-(`npx impeccable detect index.html` reports 0 findings). In short:
+(`npx impeccable detect` reported 0 findings on the original single
+`index.html`). In short:
 
 - **Each screen is judged by its job.** Home persuades (understand the offer
   and search in five seconds). Jobs, role detail, sign-up, the employer
@@ -65,7 +68,7 @@ the accents stand out.
 Links are graphite text with an orchid underline, because orchid text on white
 is too faint to read. No other colours are used anywhere, including the map.
 Status tags use real states: Live and Accepted (orchid outline), In review
-and Applied (gold), Draft, Rejected and Not verified (cloud, slate text). The colours are CSS variables at the top of `index.html`.
+and Applied (gold), Draft, Rejected and Not verified (cloud, slate text). The colours are CSS variables at the top of `src/styles/site.css`.
 
 ## Navigation
 
@@ -282,7 +285,7 @@ accounts; there is one student account and one employer account per browser.
 
 ## Editing the demo
 
-All the content lives in the `<script>` at the bottom of `index.html`:
+All the content lives in [`src/legacy/app.js`](../src/legacy/app.js):
 
 | What | Where in the script |
 | --- | --- |
@@ -302,5 +305,6 @@ see it, because saved state from an earlier visit takes priority. If you change
 the shape of the saved data, bump `KEY` (`gigome.demo.v2`) so old saves are
 ignored.
 
-The stylesheet is in one block at the top: tokens, base, layout, components
-and pages. The map is a large inline SVG (around 430 KB) inside `#map-stage`.
+The stylesheet, `src/styles/site.css`, runs from tokens to base, layout,
+components and pages. The screens' markup is `src/legacy/markup.html`. The map
+is a large inline SVG (around 430 KB) inside `#map-stage` in that file.

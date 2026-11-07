@@ -94,19 +94,23 @@ companies and a compliant way of operating.
 
 | Path | What it is |
 | --- | --- |
-| [`index.html`](index.html) | The website: one self-contained file of HTML, CSS and JavaScript, with no build step. |
-| [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite copies the site into `dist/`, Cloudflare Workers serves it. |
-| [`public/_headers`](public/_headers) | Cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
+| [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
+| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: the home page at `/`, and a 404 page for any other path. |
+| [`src/pages/`](src/pages) | `Home.jsx` (mounts the demo) and `NotFound.jsx`. |
+| [`src/legacy/`](src/legacy) | The demo as it was in the old single `index.html`: `markup.html` (every screen, including the map) and `app.js` (its script). The demo's screens are hash links such as `/#jobs`, all under `/`. |
+| [`src/styles/site.css`](src/styles/site.css) | The whole stylesheet. |
+| [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
+| [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it. |
 | [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
 | [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |
 | [`supabase/checks/security_check.sql`](supabase/checks/security_check.sql) | Security check to paste into the Supabase SQL Editor after a migration. |
-| [`src/lib/supabase.js`](src/lib/supabase.js), [`.env.example`](.env.example) | Supabase client for the website (not used by any page yet) and the two variables it needs. |
+| [`src/lib/supabase.js`](src/lib/supabase.js), [`.env.example`](.env.example) | Supabase client (not used by any page yet) and the two variables it needs. |
 | [`SUPABASE.md`](SUPABASE.md) | The database explained in plain English: tables, who can do what, common tasks. |
 | [`CLAUDE.md`](CLAUDE.md) | Rules for AI coding assistants working in this repo. |
 
-The site is hosted on Cloudflare Workers (static assets) at
-https://gigome.org, built from the `main` branch on GitHub. To work on it
-locally (Node 20.19 or newer):
+The site is a Vite + React app (JavaScript, React Router), hosted on
+Cloudflare Workers (static assets) at https://gigome.org and built from the
+`main` branch on GitHub. To work on it locally (Node 20.19 or newer):
 
 ```bash
 npm install
@@ -116,10 +120,11 @@ npm install
 npm run dev
 ```
 
-`npm run build` writes the site to `dist/`, and `npx wrangler dev` serves
-that folder the way Cloudflare does. The current site needs no environment
-variables to build; the Supabase client will need the two in `.env.example`
-once a page uses it. You can also just open `index.html` in a browser.
+`npm run dev` starts a local server with live reload. `npm run build` writes
+the site to `dist/`; `npm run preview` or `npx wrangler dev` serves that
+folder, the second exactly the way Cloudflare does. The current site needs no
+environment variables to build; the Supabase client will need the two in
+`.env.example` once a page uses it.
 
 The current version is front-end only: the roles, companies and numbers on
 the site are sample data. What you enter is saved in your own browser and

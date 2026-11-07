@@ -1,5 +1,33 @@
 # CLAUDE.md
 
+## Project structure and commands
+
+Vite + React + React Router, in JavaScript (no TypeScript), at the repo root.
+Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
+`main`.
+
+- `npm install`, then `npm run dev` (local server), `npm run build` (writes
+  `dist/`), `npm run preview` or `npx wrangler dev` (serves `dist/`, the second
+  the way Cloudflare does).
+- `index.html`: page shell only (`<head>`, fonts, `#root`).
+- `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home)
+  and `*` (404). Don't add placeholder pages for features that aren't built.
+- `src/pages/Home.jsx` mounts the original demo: `src/legacy/markup.html`
+  (every screen, including the map SVG) and `src/legacy/app.js` (its script,
+  unchanged apart from running inside `mountLegacyApp()` and registering
+  window/document listeners through `on()` so they're removed on unmount).
+  The demo's screens are hash links (`/#jobs`, `/#job/w1`, ...), all under
+  `/`. Keep new window/document listeners in that file going through `on()`.
+- `src/styles/site.css`: the whole stylesheet. No CSS framework.
+- `public/`: copied into `dist/` as is (`_headers` with the cache rules,
+  and any favicon or images).
+- `wrangler.jsonc`: assets from `./dist`, `not_found_handling`
+  `"single-page-application"`.
+- `src/lib/supabase.js`: Supabase client, not used by any page yet.
+
+A PR that only restructures must not change the look: compare screenshots
+of the built site before and after.
+
 ## Email
 
 - All auth emails are sent by Supabase Auth through Brevo SMTP. The SMTP
