@@ -39,14 +39,6 @@
 
 .btn-link:disabled { color: var(--muted); cursor: default; }
 
-/* Shown above the demo on the home page while a student is logged in */
-.account-bar { background: var(--paper); border-bottom: 1px solid var(--line); font-size: 14px; }
-.account-bar .wrap {
-  min-height: 40px; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end;
-  gap: var(--s1) var(--s3); padding-top: 6px; padding-bottom: 6px;
-}
-.account-email { overflow-wrap: anywhere; }
-
 @media (min-width: 600px) {
   .auth-main { padding-top: var(--s7); padding-bottom: var(--s8); }
   .auth-card h1 { font-size: 32px; }

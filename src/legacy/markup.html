@@ -29,26 +29,7 @@
   </div>
 </div>
 
-<header class="site-header">
-  <div class="wrap">
-    <a class="wordmark" href="#home">GigoMe</a>
-    <nav class="main-nav" aria-label="Main">
-      <a href="#jobs" data-nav="jobs job">Jobs</a>
-      <a href="#company" data-nav="company">For employers</a>
-      <a href="#about" data-nav="about">About</a>
-    </nav>
-    <div class="header-actions">
-      <span class="auth-actions" id="auth-actions"></span>
-      <button type="button" class="btn btn-secondary btn-sm menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu-panel">Menu</button>
-    </div>
-  </div>
-  <nav class="menu-panel" id="menu-panel" aria-label="Mobile" hidden>
-    <a href="#jobs">Jobs</a>
-    <a href="#company">For employers</a>
-    <a href="#about">About</a>
-    <span class="menu-auth" id="menu-auth"></span>
-  </nav>
-</header>
+<!-- The site header is React: src/components/SiteHeader.jsx -->
 
 <!-- ============ HOME ============ -->
 <main class="page" id="page-home">
@@ -64,7 +45,6 @@
         <label class="check"><input type="checkbox" id="home-english" checked> No Italian needed</label>
         <button type="submit" class="btn btn-primary btn-lg">Search roles</button>
       </form>
-      <p class="hero-hire">Hiring? <a href="#company">Post a role</a></p>
     </div>
   </section>
 

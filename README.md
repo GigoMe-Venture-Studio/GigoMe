@@ -97,10 +97,10 @@ companies and a compliant way of operating.
 | [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
 | [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
 | [`src/pages/`](src/pages) | `Home.jsx` (mounts the demo), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
-| [`src/components/`](src/components) | Shared React parts: the page frame for the login pages, the "Logged in as" bar, the configuration error message. |
+| [`src/components/`](src/components) | Shared React parts: the site header (every page), the page frame for the login pages, the configuration error message. |
 | [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `useSession.js`, `contact.js`. |
 | [`src/legacy/`](src/legacy) | The demo as it was in the old single `index.html`: `markup.html` (every screen, including the map) and `app.js` (its script). The demo's screens are hash links such as `/#jobs`, all under `/`. |
-| [`src/styles/`](src/styles) | `site.css` (the site's stylesheet) and `auth.css` (login pages and the account bar). |
+| [`src/styles/`](src/styles) | `site.css` (the site's stylesheet), `auth.css` (login pages) and `header.css` (the site header). |
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it. |
 | [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
