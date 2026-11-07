@@ -1,0 +1,78 @@
+/* Feedback: the floating button, the panel, and "Give feedback" in the footer. */
+
+.feedback-fab {
+  position: fixed;
+  right: max(var(--s4), env(safe-area-inset-right));
+  bottom: calc(var(--s4) + env(safe-area-inset-bottom));
+  z-index: 30;
+  height: 40px;
+  font-size: 14px;
+  box-shadow: var(--float);
+  transition: opacity .15s, visibility .15s, background-color .15s;
+}
+.feedback-fab[data-away] { opacity: 0; visibility: hidden; pointer-events: none; }
+.feedback-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Room under the footer so the button never has to sit on its last line. */
+.site-footer .wrap { padding-bottom: calc(var(--s5) + 56px); }
+
+.footer-link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color .15s;
+}
+.footer-link-btn:hover { text-decoration-color: var(--ink); }
+
+.feedback-dialog {
+  position: fixed;
+  inset: auto var(--s4) var(--s4) auto;
+  width: min(420px, calc(100vw - 2 * var(--s4)));
+  max-height: calc(100dvh - 2 * var(--s4));
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: var(--float);
+  overflow: auto;
+}
+.feedback-dialog::backdrop { background: rgba(29, 27, 46, .3); }
+.feedback-inner { padding: var(--s5); display: flex; flex-direction: column; gap: var(--s4); }
+.feedback-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
+.feedback-head h2 { font-size: 20px; font-weight: 600; }
+.feedback-form { display: flex; flex-direction: column; gap: var(--s2); }
+.feedback-label { font-size: 16px; font-weight: 600; }
+.feedback-text {
+  height: auto;
+  min-height: 140px;
+  padding: var(--s3);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+.feedback-text:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--ink); }
+.feedback-count { font-size: 14px; text-align: right; }
+.feedback-actions { display: flex; justify-content: flex-end; }
+.feedback-thanks { font-weight: 600; }
+
+/* Phones: the panel is a sheet along the bottom of the screen. */
+@media (max-width: 599px) {
+  .feedback-dialog {
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 90dvh;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    border-width: 1px 0 0;
+  }
+  .feedback-inner { padding: var(--s5) var(--gutter) calc(var(--s5) + env(safe-area-inset-bottom)); }
+  .feedback-actions .btn { width: 100%; height: 48px; }
+}
