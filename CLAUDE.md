@@ -11,10 +11,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/login`, `/welcome`, `/privacy` and `*` (404). Don't
+  `/jobs`, `/jobs/:id`, `/about`, `/login`, `/welcome`, `/privacy` and `*`
+  (404). Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
-  `?type=&remote=yes|no&italian=none|basic&hours=`), `src/pages/JobDetail.jsx`
+  `?q=&type=&remote=yes|no&italian=none|basic&hours=`; `q` matches title and
+  description and goes through `cleanKeyword()`, which keeps only letters,
+  numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
+  `or()` filter), `src/pages/JobDetail.jsx`
   (job, company, "How to apply"), logic in `src/lib/jobs.js`. Queries ask for
   live jobs explicitly (published, not expired, approved company), because
   company owners and admins can also read jobs that aren't live.
@@ -22,13 +26,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   student presses "How to apply", never on page load. Logged-out visitors go
   to `/login?next=/jobs/<id>`; `safeNext()` in `src/lib/auth.js` only accepts
   paths on this site.
-- `src/components/PageShell.jsx`: page frame (content and footer) for every
-  React page except the home page.
+- `src/components/PageShell.jsx`: the `<main>` frame for every page except
+  the home page. `src/components/SiteFooter.jsx`: the footer on every page
+  (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
+  `/jobs` and on the home page.
 - New features are React pages and components (`src/pages/`,
-  `src/components/`), never code inside `src/legacy/`. Styles for them go in
-  their own file (e.g. `src/styles/auth.css`) and reuse the tokens and
-  classes in `site.css`. Check new class names don't clash with the demo's
-  (`grep` `src/legacy/` and `site.css`).
+  `src/components/`). Styles for them go in their own file (e.g.
+  `src/styles/auth.css`) and reuse the tokens and classes in `site.css`.
+  Check new class names don't clash with existing ones (`grep src/styles/`).
 - Student login: `src/pages/Login.jsx` (email, then 6-digit code),
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
@@ -36,32 +41,27 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   a code. `/privacy` is a placeholder until the owner supplies the text.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): GigoMe, Jobs (`/jobs`), About, and "Log in" or the student's
-  name and "Log out". Under 768px the links move into a Menu panel. About
-  opens a demo screen: on `/` it must be a plain `#about` link (the demo
-  routes on `hashchange`, which React Router's `<Link>` never fires);
-  elsewhere a `<Link>` to `/#about`. Don't add links for features that don't
-  exist yet (no "For employers", "Create profile" or "Post a role").
-  `src/styles/header.css` keeps the demo's dark "Demo" bar above it on `/`.
-- `src/pages/Home.jsx` mounts the original demo: `src/legacy/markup.html`
-  (every screen, including the map SVG) and `src/legacy/app.js` (its script,
-  unchanged apart from running inside `mountLegacyApp()`, registering
-  window/document listeners through `on()` so they're removed on unmount, and
-  having no header of its own: `renderAuth()` is a no-op).
-  The demo's screens are hash links (`/#about`, `/#signup`, ...), all under
-  `/`; its job links point to `/jobs`, and `Home.jsx` sends clicks on links
-  to real paths through React Router. Keep new window/document listeners in
-  that file going through `on()`.
-- `src/styles/site.css`: the whole stylesheet. No CSS framework.
+  name and "Log out". Under 768px the links move into a Menu panel. Don't
+  add links for features that don't exist yet (no "For employers", "Create
+  profile" or "Post a role").
+- `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
+  that opens `/jobs` with those filters), the 5 newest live jobs, "How it
+  works". `src/pages/About.jsx`: `/about`, with one placeholder paragraph
+  ("Who runs GigoMe") that the owner will write. Show only real data: no
+  sample listings, ratings, numbers or features that don't exist.
+- `src/styles/site.css`: tokens, base styles and shared components; page
+  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`).
+  No CSS framework.
 - `public/`: copied into `dist/` as is (`_headers` with the cache rules,
   and any favicon or images).
 - `wrangler.jsonc`: assets from `./dist`, `not_found_handling`
   `"single-page-application"`.
 - `src/lib/supabase.js`: the only Supabase client (publishable key). If the
   build variables are missing it exports `supabase = null` and
-  `supabaseConfigError`; pages then show `ConfigError` instead of crashing.
-  The home page (demo) works without Supabase.
-- `src/lib/contact.js`: `CONTACT_EMAIL` for React pages. The demo has its own
-  copy in `src/legacy/app.js`; keep both the same.
+  `supabaseConfigError`; pages then show `ConfigError` instead of crashing
+  (the home page shows its hero and a short notice instead of the jobs).
+- `src/lib/contact.js`: `CONTACT_EMAIL`, the only place the contact address
+  is set.
 
 A PR that only restructures must not change the look: compare screenshots
 of the built site before and after.

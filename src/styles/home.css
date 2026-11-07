@@ -1,0 +1,13 @@
+/* Home and About pages. Mobile first; the hero, "How it works" and the
+   reading layout (.about) come from site.css. */
+
+.home-newest { padding-bottom: var(--s7); }
+.home-newest .newest-head { margin-bottom: var(--s3); }
+.home-jobs-note { padding: var(--s4) 0; }
+.how p { color: var(--ink); }
+
+.about-main { padding-top: 0; }
+.placeholder-text {
+  padding: var(--s3) var(--s4); border: 1px dashed var(--slate); border-radius: var(--r-md);
+  background: var(--paper); color: var(--muted); font-style: italic;
+}

@@ -9,7 +9,8 @@
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s3); margin-top: var(--s5);
 }
-.job-filters .select { height: 44px; }
+.job-filters .select, .job-filters .input { height: 44px; }
+.job-keyword { grid-column: 1 / -1; }
 
 .jobs-status {
   display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
@@ -22,6 +23,8 @@
 .empty-state { padding: var(--s6) 0; border-top: 1px solid var(--line); }
 .empty-state > * + * { margin-top: var(--s3); }
 .empty-state .page-title { margin-top: var(--s5); }
+/* A whole page that is only a message (job not found): no line under the header */
+.empty-state.page-empty { border-top: 0; padding-top: 0; }
 
 .job-text { white-space: pre-line; overflow-wrap: anywhere; }
 .job-posted { font-size: 14px; }

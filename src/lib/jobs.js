@@ -12,7 +12,19 @@ export const JOB_TYPE_LABEL = Object.fromEntries(JOB_TYPES);
 export const ITALIAN_LABEL = { none: 'No Italian needed', basic: 'Basic Italian', fluent: 'Fluent Italian' };
 export const MAX_HOURS_OPTIONS = [10, 15, 20, 25, 30];
 
-// Filters live in the URL (?type=part_time&remote=yes&italian=none&hours=20)
+// A search keyword, reduced to letters, numbers, spaces, hyphens and
+// apostrophes. Everything else is dropped, so the keyword can be placed
+// safely inside PostgREST's or() filter below and can't change the query.
+export function cleanKeyword(raw) {
+  return String(raw || '')
+    .normalize('NFC')
+    .replace(/[^\p{L}\p{N}\s'-]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 60);
+}
+
+// Filters live in the URL (?q=barista&type=part_time&remote=yes&italian=none&hours=20)
 // so a filtered list can be shared. Unknown values are ignored.
 export function readFilters(params) {
   const type = params.get('type');
@@ -20,6 +32,7 @@ export function readFilters(params) {
   const italian = params.get('italian');
   const hours = Number(params.get('hours'));
   return {
+    q: cleanKeyword(params.get('q')),
     type: JOB_TYPE_LABEL[type] ? type : '',
     remote: remote === 'yes' || remote === 'no' ? remote : '',
     italian: italian === 'none' || italian === 'basic' ? italian : '',
@@ -28,6 +41,7 @@ export function readFilters(params) {
 }
 export function filtersToParams(filters) {
   const out = {};
+  if (filters.q) out.q = filters.q;
   if (filters.type) out.type = filters.type;
   if (filters.remote) out.remote = filters.remote;
   if (filters.italian) out.italian = filters.italian;
@@ -35,7 +49,7 @@ export function filtersToParams(filters) {
   return out;
 }
 export function hasFilters(filters) {
-  return Boolean(filters.type || filters.remote || filters.italian || filters.hours);
+  return Boolean(filters.q || filters.type || filters.remote || filters.italian || filters.hours);
 }
 
 // The database already limits visitors and students to live jobs, but a
@@ -51,17 +65,20 @@ function liveJobs(columns) {
     .eq('companies.status', 'approved');
 }
 
-export async function fetchJobs(filters) {
+export async function fetchJobs(filters, { limit = 200 } = {}) {
   let query = liveJobs(
     'id, title, job_type, location, remote, hours_per_week, pay, italian_level, created_at, companies!inner(name, status)'
   );
+  // Keyword: matches the title or the description, ignoring case.
+  const q = cleanKeyword(filters.q);
+  if (q) query = query.or(`title.ilike."*${q}*",description.ilike."*${q}*"`);
   if (filters.type) query = query.eq('job_type', filters.type);
   if (filters.remote === 'yes') query = query.eq('remote', true);
   if (filters.remote === 'no') query = query.eq('remote', false);
   if (filters.italian === 'none') query = query.eq('italian_level', 'none');
   if (filters.italian === 'basic') query = query.in('italian_level', ['none', 'basic']);
   if (filters.hours) query = query.lte('hours_per_week', Number(filters.hours));
-  const { data, error } = await query.order('created_at', { ascending: false }).limit(200);
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
   if (error) throw error;
   return data || [];
 }

@@ -6,6 +6,7 @@ import './styles/site.css';
 import './styles/auth.css';
 import './styles/header.css';
 import './styles/jobs.css';
+import './styles/home.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
