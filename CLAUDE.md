@@ -22,13 +22,20 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
-  a code. `src/components/AccountBar.jsx` shows "Logged in as … · Log out" on
-  the home page. `/privacy` is a placeholder until the owner supplies the
-  text.
+  a code. `/privacy` is a placeholder until the owner supplies the text.
+- `src/components/SiteHeader.jsx`: the header on every page (rendered once in
+  `App.jsx`): GigoMe, Jobs, About, and "Log in" or the student's name and
+  "Log out". Under 768px the links move into a Menu panel. Jobs and About
+  open demo screens: on `/` they must be plain `#jobs` / `#about` links (the
+  demo routes on `hashchange`, which React Router's `<Link>` never fires);
+  elsewhere a `<Link>` to `/#jobs`. Don't add links for features that don't
+  exist yet (no "For employers", "Create profile" or "Post a role").
+  `src/styles/header.css` keeps the demo's dark "Demo" bar above it on `/`.
 - `src/pages/Home.jsx` mounts the original demo: `src/legacy/markup.html`
   (every screen, including the map SVG) and `src/legacy/app.js` (its script,
-  unchanged apart from running inside `mountLegacyApp()` and registering
-  window/document listeners through `on()` so they're removed on unmount).
+  unchanged apart from running inside `mountLegacyApp()`, registering
+  window/document listeners through `on()` so they're removed on unmount, and
+  having no header of its own: `renderAuth()` is a no-op).
   The demo's screens are hash links (`/#jobs`, `/#job/w1`, ...), all under
   `/`. Keep new window/document listeners in that file going through `on()`.
 - `src/styles/site.css`: the whole stylesheet. No CSS framework.

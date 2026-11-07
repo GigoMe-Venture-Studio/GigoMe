@@ -413,14 +413,10 @@ export function mountLegacyApp() {
     if (db.session === 'student' && db.profile) fn();
     else openSignIn('student', function () { fn(); refresh(); });
   }
-  function renderAuth() {
-    var s = db.session;
-    var unread = s === 'student' ? db.notes.filter(function (n) { return !n.read; }).length : 0;
-    $('auth-actions').innerHTML = s
-      ? '<button type="button" class="btn btn-tertiary btn-sm signin" data-signout>Sign out</button><a class="btn btn-primary btn-sm" href="' + (s === 'student' ? '#me' : '#company') + '">' + (s === 'student' ? 'My dashboard' + (unread ? ' (' + unread + ')' : '') : 'Dashboard') + '</a>'
-      : '<a class="btn btn-tertiary btn-sm signin" href="/login">Sign in</a><a class="btn btn-primary btn-sm" href="/login">Create profile</a>';
-    $('menu-auth').innerHTML = s ? '<button type="button" data-signout>Sign out</button>' : '<a href="/login">Sign in</a>';
-  }
+  // The site header is React now (src/components/SiteHeader.jsx) and shows the
+  // real login, not the demo's sample accounts. Kept as a no-op because the
+  // demo calls it after every change.
+  function renderAuth() {}
 
   // Alerts for the (single) demo student
   function note(text, href) { db.notes.unshift({ text: text, href: href, date: todayISO() }); }
@@ -1614,21 +1610,15 @@ export function mountLegacyApp() {
     });
   }
 
-  var menuBtn = $('menu-btn'), panel = $('menu-panel');
-  function setMenu(open) { panel.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.textContent = open ? 'Close' : 'Menu'; }
-  menuBtn.addEventListener('click', function () { setMenu(panel.hidden); });
-  on(document, 'keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) { setMenu(false); menuBtn.focus(); } });
-
   // Global buttons: sign in / out, feedback, follow
   on(document, 'click', function (e) {
     var b;
     if ((b = e.target.closest('[data-signin]'))) {
-      setMenu(false);
       var stay = ['job', 'employer', 'jobs', 'home', 'about'].indexOf(current.id) !== -1;
       openSignIn(b.dataset.signin || (current.id === 'company' ? 'employer' : 'student'), stay ? function () { refresh(); } : null);
       return;
     }
-    if (e.target.closest('[data-signout]')) { setMenu(false); signOut(); return; }
+    if (e.target.closest('[data-signout]')) { signOut(); return; }
     if ((b = e.target.closest('[data-feedback]'))) { openFeedback(b.dataset.feedback); return; }
     if ((b = e.target.closest('[data-follow]'))) { toggleFollow(b.dataset.follow); }
   });
@@ -1667,14 +1657,10 @@ export function mountLegacyApp() {
     current = { id: id, arg: arg };
     PAGES.forEach(function (p) { $('page-' + p).classList.toggle('active', p === id); });
     document.body.dataset.page = id;
-    each(document.querySelectorAll('.main-nav a'), function (a) {
-      if (a.dataset.nav.split(' ').indexOf(id) !== -1) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-    });
     each(document.querySelectorAll('#admin-links a'), function (a) {
       if (a.dataset.sec === (id === 'admin' ? arg : '__')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     $('jump').value = $('jump').querySelector('option[value="' + id + '"]') ? id : '';
-    setMenu(false);
     if (drawer.open) drawer.close();
     if (modal.open) modal.close();
     renderPage(id, arg);

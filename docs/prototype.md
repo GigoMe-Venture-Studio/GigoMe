@@ -72,19 +72,20 @@ and Applied (gold), Draft, Rejected and Not verified (cloud, slate text). The co
 
 ## Navigation
 
-The header has Jobs, For employers and About, plus Sign in and Create
-profile. When signed in, these become Sign out and My dashboard (students,
-with the unread alert count) or Dashboard (employers). Under 768px the links
-collapse into a Menu button.
+The site header is no longer part of the demo: it's the React
+`SiteHeader` (GigoMe, Jobs, About, and "Log in" or the real logged-in
+student's name and "Log out"). It doesn't show the demo's sample accounts.
+Under 768px the links collapse into a Menu button. The demo's student and
+employer dashboards are reached through **Jump to**.
 
 The dark demo bar has a **Jump to** menu for every screen and a **Reset**
 button. Jumping to the student or employer dashboard signs in to the sample
 account (Alex Kim, or Nebbia Coffee Bar) so every screen can be seen.
 
-**Sign in** opens a dialog: choose student or employer, then any email and
-password (or "Demo account") signs in to the sample account. Actions that need
-a student account (apply, save, follow, save search, review) ask you to sign
-in first and then carry on.
+Actions that need a student account in the demo (apply, save, follow, save
+search, review) open the demo's sign-in dialog: choose student or employer,
+then any email and password (or "Demo account") signs in to the sample
+account, and the action carries on.
 
 The footer links to About, Privacy notice, Terms, Give feedback (a dialog that
 reaches the admin "Latest feedback" list) and Contact (the About page contact
@@ -108,7 +109,7 @@ section).
 ## 1. Home (`#home`)
 
 - **Hero**: a working one-row search (keyword, area, "No Italian needed") that
-  opens the role list with the search applied, and "Hiring? Post a role".
+  opens the role list with the search applied.
 - **Map of Milan** with a pin per company showing its number of open roles.
   Hover or focus a pin for each role's pay, schedule and posted date; click it
   to filter the role list by that employer (an "Employer: …" chip). Drag to pan, + / − / reset, double
@@ -193,7 +194,7 @@ follows what you've filled in.
   a followed employer, or fits your availability (the "Email me when new roles
   match my availability" choice from sign-up, which can be switched here),
   plus accepted or rejected applications and invites from past employers.
-  Unread count in the header.
+  Unread count on the dashboard.
 - **My applications**: every role you applied to, with date and how (company
   site or email), filterable by Applied, Accepted and Rejected. You can update
   the status yourself (for applications on company sites); employers who use

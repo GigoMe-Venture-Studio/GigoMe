@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 
-// Page frame for /login, /welcome and /privacy, using the site's own header
-// and footer styles.
+// Page frame for /login, /welcome and /privacy: the site's footer under the
+// page. The header is SiteHeader, shown on every page by App.jsx.
 export default function AuthShell({ children }) {
   useEffect(() => {
     // The demo hides the header on its admin screen through body[data-page].
@@ -12,11 +12,6 @@ export default function AuthShell({ children }) {
 
   return (
     <>
-      <header className="site-header">
-        <div className="wrap">
-          <Link className="wordmark" to="/">GigoMe</Link>
-        </div>
-      </header>
       <main className="wrap auth-main">{children}</main>
       <footer className="site-footer">
         <div className="wrap">
