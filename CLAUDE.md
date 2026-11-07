@@ -57,6 +57,12 @@ Schema rules
   else is a `company`. Users can edit only `full_name`, `degree_level` and
   `graduation_year`; nobody can change `account_type` or `university_id` from
   the client.
+- When a university is added or its `email_domains` change, the
+  `on_university_domains_changed` trigger upgrades matching `company` accounts
+  to `student` (with `university_id`), except accounts that own a company.
+  Nothing ever downgrades an account automatically.
+- `universities` is read-only for `anon` and `authenticated` (no write grants,
+  no write policies). It is changed only in the dashboard.
 - Company accounts create and edit their own company (one per account) but
   never its `status`. Owners manage their own jobs and can set only `draft`,
   `pending` or `closed`. Only admins approve companies and publish jobs (with

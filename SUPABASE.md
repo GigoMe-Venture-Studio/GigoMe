@@ -33,14 +33,17 @@ do, the database creates a **profile** for them automatically:
 - Everyone else becomes a **company** account.
 
 Nobody can switch their own account type or university. Students of a
-university that isn't in the list yet become company accounts, so add the
-university before inviting its students (see "Common tasks").
+university that isn't in the list yet first get a company account. As soon
+as their university is added (or its domain is added to an existing
+university), they are upgraded to students automatically, unless they
+already own a company. Nobody is ever downgraded automatically: removing a
+domain changes no one.
 
 ## The tables
 
 | Table | What it holds | Who can see it | Who can change it |
 | --- | --- | --- | --- |
-| `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard |
+| `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
 | `profiles` | One row per user: account type, university, name, degree level, graduation year | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
 | `companies` | Employers: name, website, description, contact email, and a status (pending, approved or rejected) | Everyone sees approved companies; owners see their own; admins see all | Company accounts create one company and edit its details. Only admins change the status |
@@ -92,9 +95,13 @@ get one row per check; every row should say `passed = true`. If any says
 ## Common tasks
 
 - **Add a university:** Table Editor → `universities` → insert a row with the
-  name and its student email domains, for example `{unimi.it}`. Users who
-  signed up from that domain before it was added stay company accounts; fix
-  them by updating their `profiles` row in the dashboard.
+  name and its student email domains, for example `{unimi.it}`. Anyone who
+  already signed up with that domain becomes a student right away, unless they
+  own a company. To check: Table Editor → `profiles`, filter by the new
+  `university_id`.
+- **Move someone back to a company account:** the database never does this on
+  its own. Change their `profiles` row (`account_type` and `university_id`)
+  in the Table Editor.
 - **Make someone an admin:** find their user ID under Authentication → Users,
   then insert it into the `admins` table.
 - **Approve a company or publish a job:** change its `status` in the Table

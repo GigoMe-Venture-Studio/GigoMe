@@ -195,6 +195,40 @@ on conflict (id) do nothing;
 
 
 -- ===========================================================================
+-- Adding a university upgrades matching accounts
+-- ===========================================================================
+
+-- When a university is added, or its email domains change, company accounts
+-- whose email domain now matches become students of that university.
+-- Accounts that own a company are left alone, and nobody is ever downgraded:
+-- removing a domain changes no one.
+create function public.upgrade_profiles_for_university()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  update public.profiles p
+  set account_type = 'student',
+      university_id = new.id
+  from auth.users u
+  where u.id = p.id
+    and p.account_type = 'company'
+    and not exists (select 1 from public.companies c where c.owner_id = p.id)
+    and lower(substring(u.email from '@([^@]+)$')) in (
+      select lower(btrim(d.domain)) from unnest(new.email_domains) as d(domain)
+    );
+  return null;
+end;
+$$;
+
+create trigger on_university_domains_changed
+  after insert or update of email_domains on public.universities
+  for each row execute function public.upgrade_profiles_for_university();
+
+
+-- ===========================================================================
 -- Functions called from the app
 -- ===========================================================================
 
@@ -330,6 +364,7 @@ revoke all on function
   public.current_account_type(),
   public.university_for_email(text),
   public.handle_new_user(),
+  public.upgrade_profiles_for_university(),
   public.reveal_job_contact(uuid),
   public.set_job_contact(uuid, text, text),
   public.get_own_job_contact(uuid),
@@ -346,7 +381,8 @@ grant execute on function public.set_job_contact(uuid, text, text) to authentica
 grant execute on function public.get_own_job_contact(uuid) to authenticated;
 grant execute on function public.admin_set_company_status(uuid, text) to authenticated;
 grant execute on function public.admin_set_job_status(uuid, text) to authenticated;
--- university_for_email and handle_new_user: internal only, no grants.
+-- university_for_email, handle_new_user and upgrade_profiles_for_university:
+-- internal only, no grants.
 
 
 -- ===========================================================================
@@ -358,7 +394,9 @@ revoke all on table
   public.jobs, public.job_contacts, public.job_clicks, public.feedback
 from public, anon, authenticated;
 
--- universities: readable by everyone
+-- universities: readable by everyone, changed only in the dashboard. No
+-- insert, update, delete or truncate for anon or authenticated, and no write
+-- policies, so not even admins can change it through the API.
 grant select on table public.universities to anon, authenticated;
 
 -- profiles: signed-in users read their own row and edit three fields

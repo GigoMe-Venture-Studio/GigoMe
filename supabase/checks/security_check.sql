@@ -35,6 +35,12 @@ declare
   v_job_own_draft uuid;  -- v_company's own draft
   v_bocconi uuid;
   test_jobs uuid[];
+  -- universities added later
+  v_late        uuid := gen_random_uuid();   -- matches the new university
+  v_late_alt    uuid := gen_random_uuid();   -- matches a domain added afterwards
+  v_late_owner  uuid := gen_random_uuid();   -- matches, but owns a company
+  v_late_sub    uuid := gen_random_uuid();   -- sub.check-uni.example: no exact match
+  v_new_uni     uuid;
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -72,6 +78,17 @@ begin
       results := pg_temp.res(results, 'No API privileges at all on public.' || v_text, 'none',
                              coalesce(v_err, 'none'), v_err is null);
     end loop;
+
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p from unnest(array['anon', 'authenticated']) r,
+             unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER']) p
+      where has_table_privilege(r, 'public.universities', p)
+      union all
+      select r || ':column ' || p from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p
+      where has_any_column_privilege(r, 'public.universities', p)
+    ) s(x);
+    results := pg_temp.res(results, 'anon and authenticated can only read public.universities', 'SELECT only',
+                           coalesce('also: ' || v_err, 'SELECT only'), v_err is null);
 
     select string_agg(p.proname, ', ') into v_err
     from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
@@ -111,6 +128,45 @@ begin
 
     insert into public.companies (owner_id, name, status) values (v_company, 'Check Co (pending)', 'pending') returning id into v_co_own;
     insert into public.companies (owner_id, name, status) values (v_other, 'Check Co (approved)', 'approved') returning id into v_co_approved;
+
+    -- A university added after its students signed up
+    insert into auth.users (id, email) values
+      (v_late,       'Late.Student@Check-Uni.example'),
+      (v_late_alt,   'second@check-alt.example'),
+      (v_late_owner, 'owner@check-uni.example'),
+      (v_late_sub,   'someone@sub.check-uni.example');
+    insert into public.companies (owner_id, name) values (v_late_owner, 'Check Co (owned by a check-uni address)');
+
+    select string_agg(account_type, ',' order by account_type) into v_text
+    from public.profiles where id in (v_late, v_late_alt, v_late_owner, v_late_sub);
+    results := pg_temp.res(results, 'Before the university exists, its students get company accounts',
+                           'company,company,company,company', v_text, v_text = 'company,company,company,company');
+
+    insert into public.universities (name, email_domains) values ('Check University', array['check-uni.example'])
+      returning id into v_new_uni;
+    select account_type || ', ' || coalesce((select name from public.universities where id = university_id), 'no university')
+      into v_text from public.profiles where id = v_late;
+    results := pg_temp.res(results, 'Adding a university upgrades a matching company account to student',
+                           'student, Check University', v_text, v_text = 'student, Check University');
+
+    select account_type into v_text from public.profiles where id = v_late_owner;
+    results := pg_temp.res(results, 'Adding a university does not upgrade an account that owns a company', 'company', v_text, v_text = 'company');
+
+    select account_type into v_text from public.profiles where id = v_late_sub;
+    results := pg_temp.res(results, 'Adding a university does not upgrade a sub-domain (sub.check-uni.example)', 'company', v_text, v_text = 'company');
+
+    select account_type into v_text from public.profiles where id = v_late_alt;
+    results := pg_temp.res(results, 'Adding a university does not upgrade other domains', 'company', v_text, v_text = 'company');
+
+    update public.universities set email_domains = array_append(email_domains, 'Check-Alt.example') where id = v_new_uni;
+    select account_type || ', ' || coalesce((select name from public.universities where id = university_id), 'no university')
+      into v_text from public.profiles where id = v_late_alt;
+    results := pg_temp.res(results, 'Adding a domain to a university upgrades matching company accounts',
+                           'student, Check University', v_text, v_text = 'student, Check University');
+
+    update public.universities set email_domains = '{}' where id = v_new_uni;
+    select string_agg(account_type, ',' order by account_type) into v_text from public.profiles where id in (v_late, v_late_alt);
+    results := pg_temp.res(results, 'Removing domains never downgrades a student', 'student,student', v_text, v_text = 'student,student');
 
     insert into public.jobs (company_id, title, job_type, hours_per_week, status)
       values (v_co_approved, 'Check live job', 'gig', 10, 'published') returning id into v_job_live;
@@ -220,6 +276,20 @@ begin
     exception when others then v_err := 'error: ' || sqlerrm; v_count := -1;
     end;
     results := pg_temp.res(results, 'anon can read universities (Bocconi)', '1 visible', v_err, v_count = 1);
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      delete from public.universities where id = v_bocconi;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'deleted ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select count(*) into v_count from public.universities where id = v_bocconi;
+    results := pg_temp.res(results, 'anon cannot delete a university', 'error, Bocconi still there',
+                           v_err || case when v_count = 1 then ', Bocconi still there' else ', Bocconi gone' end,
+                           v_err like 'error:%' and v_count = 1);
 
     begin
       perform set_config('request.jwt.claims', '{"role":"anon"}', true);
@@ -352,6 +422,31 @@ begin
     select status into v_text from public.companies where id = v_co_own;
     results := pg_temp.res(results, 'Company user cannot approve their company through admin_set_company_status', 'error, still pending',
                            v_err || ', now ' || v_text, v_err like 'error:%' and v_text = 'pending');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_lookalike, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.universities (name, email_domains) values ('Check Fake University', array['notstudbocconi.it']);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select account_type into v_text from public.profiles where id = v_lookalike;
+    results := pg_temp.res(results, 'Signed-in user cannot add a university (and so cannot make themselves a student)', 'error, still company',
+                           v_err || ', now ' || v_text, v_err like 'error:%' and v_text = 'company');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.universities set email_domains = array_append(email_domains, 'check-company.example') where id = v_bocconi;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select array_to_string(email_domains, ',') into v_text from public.universities where id = v_bocconi;
+    results := pg_temp.res(results, 'Signed-in user cannot change a university''s email domains', 'error, unchanged',
+                           v_err || ', domains: ' || v_text, v_err like 'error:%' and v_text not like '%check-company.example%');
 
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
