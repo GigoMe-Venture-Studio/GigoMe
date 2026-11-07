@@ -10,8 +10,21 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `dist/`), `npm run preview` or `npx wrangler dev` (serves `dist/`, the second
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
-- `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home)
-  and `*` (404). Don't add placeholder pages for features that aren't built.
+- `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
+  `/login`, `/welcome`, `/privacy` and `*` (404). Don't add placeholder pages
+  for features that aren't built.
+- New features are React pages and components (`src/pages/`,
+  `src/components/`), never code inside `src/legacy/`. Styles for them go in
+  their own file (e.g. `src/styles/auth.css`) and reuse the tokens and
+  classes in `site.css`. Check new class names don't clash with the demo's
+  (`grep` `src/legacy/` and `site.css`).
+- Student login: `src/pages/Login.jsx` (email, then 6-digit code),
+  `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
+  profile has no name yet), logic in `src/lib/auth.js`, session in
+  `src/lib/useSession.js`. Only emails whose domain is in `universities` get
+  a code. `src/components/AccountBar.jsx` shows "Logged in as … · Log out" on
+  the home page. `/privacy` is a placeholder until the owner supplies the
+  text.
 - `src/pages/Home.jsx` mounts the original demo: `src/legacy/markup.html`
   (every screen, including the map SVG) and `src/legacy/app.js` (its script,
   unchanged apart from running inside `mountLegacyApp()` and registering
@@ -23,7 +36,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   and any favicon or images).
 - `wrangler.jsonc`: assets from `./dist`, `not_found_handling`
   `"single-page-application"`.
-- `src/lib/supabase.js`: Supabase client, not used by any page yet.
+- `src/lib/supabase.js`: the only Supabase client (publishable key). If the
+  build variables are missing it exports `supabase = null` and
+  `supabaseConfigError`; pages then show `ConfigError` instead of crashing.
+  The home page (demo) works without Supabase.
+- `src/lib/contact.js`: `CONTACT_EMAIL` for React pages. The demo has its own
+  copy in `src/legacy/app.js`; keep both the same.
 
 A PR that only restructures must not change the look: compare screenshots
 of the built site before and after.
@@ -36,7 +54,7 @@ of the built site before and after.
 - Login uses 6-digit email OTP codes (`signInWithOtp`, then `verifyOtp` with
   `type: 'email'`), never magic links. Brevo rewrites links in emails, so auth
   emails must not depend on a clickable link.
-- The sender for auth emails is `login@gigome.org`.
+- The sender for auth emails is `no-reply@gigome.org`.
 - Brevo's free plan allows 300 emails a day for the whole account. Don't build
   any feature that sends email in bulk (newsletters, notifications to all
   users) without asking first.

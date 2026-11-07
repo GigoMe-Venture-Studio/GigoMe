@@ -418,8 +418,8 @@ export function mountLegacyApp() {
     var unread = s === 'student' ? db.notes.filter(function (n) { return !n.read; }).length : 0;
     $('auth-actions').innerHTML = s
       ? '<button type="button" class="btn btn-tertiary btn-sm signin" data-signout>Sign out</button><a class="btn btn-primary btn-sm" href="' + (s === 'student' ? '#me' : '#company') + '">' + (s === 'student' ? 'My dashboard' + (unread ? ' (' + unread + ')' : '') : 'Dashboard') + '</a>'
-      : '<button type="button" class="btn btn-tertiary btn-sm signin" data-signin>Sign in</button><a class="btn btn-primary btn-sm" href="#signup">Create profile</a>';
-    $('menu-auth').innerHTML = s ? '<button type="button" data-signout>Sign out</button>' : '<button type="button" data-signin>Sign in</button>';
+      : '<a class="btn btn-tertiary btn-sm signin" href="/login">Sign in</a><a class="btn btn-primary btn-sm" href="/login">Create profile</a>';
+    $('menu-auth').innerHTML = s ? '<button type="button" data-signout>Sign out</button>' : '<a href="/login">Sign in</a>';
   }
 
   // Alerts for the (single) demo student

@@ -95,16 +95,18 @@ companies and a compliant way of operating.
 | Path | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
-| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: the home page at `/`, and a 404 page for any other path. |
-| [`src/pages/`](src/pages) | `Home.jsx` (mounts the demo) and `NotFound.jsx`. |
+| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
+| [`src/pages/`](src/pages) | `Home.jsx` (mounts the demo), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
+| [`src/components/`](src/components) | Shared React parts: the page frame for the login pages, the "Logged in as" bar, the configuration error message. |
+| [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `useSession.js`, `contact.js`. |
 | [`src/legacy/`](src/legacy) | The demo as it was in the old single `index.html`: `markup.html` (every screen, including the map) and `app.js` (its script). The demo's screens are hash links such as `/#jobs`, all under `/`. |
-| [`src/styles/site.css`](src/styles/site.css) | The whole stylesheet. |
+| [`src/styles/`](src/styles) | `site.css` (the site's stylesheet) and `auth.css` (login pages and the account bar). |
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it. |
 | [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
 | [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |
 | [`supabase/checks/security_check.sql`](supabase/checks/security_check.sql) | Security check to paste into the Supabase SQL Editor after a migration. |
-| [`src/lib/supabase.js`](src/lib/supabase.js), [`.env.example`](.env.example) | Supabase client (not used by any page yet) and the two variables it needs. |
+| [`.env.example`](.env.example) | The two build variables the Supabase client needs. |
 | [`SUPABASE.md`](SUPABASE.md) | The database explained in plain English: tables, who can do what, common tasks. |
 | [`CLAUDE.md`](CLAUDE.md) | Rules for AI coding assistants working in this repo. |
 
@@ -123,8 +125,9 @@ npm run dev
 `npm run dev` starts a local server with live reload. `npm run build` writes
 the site to `dist/`; `npm run preview` or `npx wrangler dev` serves that
 folder, the second exactly the way Cloudflare does. The current site needs no
-environment variables to build; the Supabase client will need the two in
-`.env.example` once a page uses it.
+environment variables to build, but login only works when the two in
+`.env.example` are set (copy it to `.env.local` for local work). Without them,
+the login pages show a clear error and the rest of the site still works.
 
 The current version is front-end only: the roles, companies and numbers on
 the site are sample data. What you enter is saved in your own browser and
