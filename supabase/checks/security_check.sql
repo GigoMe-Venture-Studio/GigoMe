@@ -103,6 +103,17 @@ begin
     results := pg_temp.res(results, 'anon cannot execute any SECURITY DEFINER function', 'none',
                            coalesce(v_err, 'none'), v_err is null);
 
+    -- The project's "Enable automatic RLS" setting must still work: a table
+    -- created now gets RLS without asking. The table is dropped right away.
+    begin
+      create table public.gigome_security_check_auto_rls (id int);
+      select case when c.relrowsecurity then 'on' else 'off' end into v_text
+      from pg_class c where c.oid = 'public.gigome_security_check_auto_rls'::regclass;
+      drop table public.gigome_security_check_auto_rls;
+    exception when others then v_text := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Automatic RLS: a new table in public gets RLS turned on', 'on', v_text, v_text = 'on');
+
     -- ----------------------------------------------------------------------
     -- Test data (as the SQL Editor's own role, which bypasses RLS)
     -- ----------------------------------------------------------------------
