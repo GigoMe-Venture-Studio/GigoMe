@@ -98,6 +98,11 @@ companies and a compliant way of operating.
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite copies the site into `dist/`, Cloudflare Workers serves it. |
 | [`public/_headers`](public/_headers) | Cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
 | [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
+| [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |
+| [`supabase/checks/security_check.sql`](supabase/checks/security_check.sql) | Security check to paste into the Supabase SQL Editor after a migration. |
+| [`src/lib/supabase.js`](src/lib/supabase.js), [`.env.example`](.env.example) | Supabase client for the website (not used by any page yet) and the two variables it needs. |
+| [`SUPABASE.md`](SUPABASE.md) | The database explained in plain English: tables, who can do what, common tasks. |
+| [`CLAUDE.md`](CLAUDE.md) | Rules for AI coding assistants working in this repo. |
 
 The site is hosted on Cloudflare Workers (static assets) at
 https://gigome.org, built from the `main` branch on GitHub. To work on it
@@ -112,8 +117,9 @@ npm run dev
 ```
 
 `npm run build` writes the site to `dist/`, and `npx wrangler dev` serves
-that folder the way Cloudflare does. The build needs no environment
-variables. You can also just open `index.html` in a browser.
+that folder the way Cloudflare does. The current site needs no environment
+variables to build; the Supabase client will need the two in `.env.example`
+once a page uses it. You can also just open `index.html` in a browser.
 
 The current version is front-end only: the roles, companies and numbers on
 the site are sample data. What you enter is saved in your own browser and
