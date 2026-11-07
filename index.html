@@ -113,6 +113,7 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
 .site-footer .brand{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s3)}
 .site-footer .brand .wordmark{font-size:16px}
 .site-footer nav{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5)}
+.site-footer .footer-help{flex-basis:100%}
 body[data-page=admin] .site-header,body[data-page=admin] .site-footer{display:none}
 
 /* buttons */
@@ -1109,6 +1110,7 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
     <nav aria-label="Footer">
       <a href="#about">About</a><a href="#privacy">Privacy notice</a><a href="#terms">Terms</a><button type="button" class="btn-link" data-feedback>Give feedback</button><a href="#about/contact">Contact</a>
     </nav>
+    <p class="footer-help">Questions or need help? <a id="footer-email"></a></p>
   </div>
 </footer>
 
@@ -1282,6 +1284,8 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
     { name: 'Taha' },
     { name: 'Yujin Nakamura' }
   ];
+  // Main contact address, shown in the footer on every page. Change it here only.
+  var CONTACT_EMAIL = 'hello@gigome.org';
   // Contact details on the About page. Placeholders: replace before launch.
   // Leave linkedin empty to show "coming soon".
   var CONTACT = {
@@ -2694,6 +2698,8 @@ button.report{background:none;border:0;padding:0;font:inherit;font-size:14px;cur
   $('team').innerHTML = TEAM.map(function (m) {
     return '<li><span class="initials" aria-hidden="true">' + esc(initials(m.name)) + '</span><span>' + esc(m.name) + (m.role ? '<span class="role">' + esc(m.role) + '</span>' : '') + '</span></li>';
   }).join('');
+  $('footer-email').href = 'mailto:' + CONTACT_EMAIL;
+  $('footer-email').textContent = CONTACT_EMAIL;
   (function renderContact() {
     var li = function (url) { return url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">GigoMe on LinkedIn</a>' : '<span class="muted">Page coming soon</span>'; };
     var c = CONTACT;
