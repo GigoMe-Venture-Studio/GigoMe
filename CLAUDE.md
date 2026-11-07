@@ -40,8 +40,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
   a code. `/privacy` is a placeholder until the owner supplies the text.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
-  `App.jsx`): GigoMe, Jobs (`/jobs`), About, and "Log in" or the student's
-  name and "Log out". Under 768px the links move into a Menu panel. Don't
+  `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
+  `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
+  (`/jobs`), About, and "Log in" or the student's name (truncated when it
+  doesn't fit) and "Log out". Under 768px the links move into a Menu panel. Don't
   add links for features that don't exist yet (no "For employers", "Create
   profile" or "Post a role").
 - Feedback: `src/components/Feedback.jsx` (`FeedbackProvider` in `App.jsx`)
@@ -61,8 +63,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`).
   No CSS framework.
-- `public/`: copied into `dist/` as is (`_headers` with the cache rules,
-  and any favicon or images).
+- `public/`: copied into `dist/` as is: `_headers` (cache rules),
+  `favicon.ico` (16 and 32 px, flat purple on a white tile),
+  `apple-touch-icon.png`, `og-image.png` (link previews, referenced from
+  `index.html` with absolute https://gigome.org URLs), and `brand/` (the
+  original logo JPEGs, transparent PNGs cut from them, and the header WebPs).
+  Don't put the logo or other images in auth emails: they get blocked and
+  hurt deliverability.
 - `wrangler.jsonc`: assets from `./dist`, `not_found_handling`
   `"single-page-application"`.
 - `src/lib/supabase.js`: the only Supabase client (publishable key). If the

@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile, logOut } from '../lib/auth.js';
 
-// The site header on every page: GigoMe, Jobs, About, and "Log in", or the
+// The site header on every page: the GigoMe logo (the G alone on narrow
+// phones), Jobs, About, and "Log in", or the
 // logged-in student's name and "Log out". Under 768px the links move into a
 // Menu panel (site.css).
 export default function SiteHeader() {
@@ -56,7 +57,12 @@ export default function SiteHeader() {
   return (
     <header className="site-header">
       <div className="wrap">
-        <Link className="wordmark" to="/">GigoMe</Link>
+        <Link className="site-logo" to="/">
+          <picture>
+            <source media="(max-width: 359px)" srcSet="/brand/header-mark.webp" width="35" height="30" />
+            <img src="/brand/header-wordmark.webp" alt="GigoMe" width="132" height="30" />
+          </picture>
+        </Link>
         <nav className="main-nav" aria-label="Main">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>Jobs</Link>
           <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined}>About</Link>

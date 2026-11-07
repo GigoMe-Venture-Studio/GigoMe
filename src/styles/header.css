@@ -2,10 +2,19 @@
    buttons and the phone menu come from the .site-header rules in site.css. */
 
 .header-user {
-  max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   font-size: 14px; font-weight: 600; color: var(--ink);
 }
 @media (max-width: 767px) {
   .header-user { max-width: 40vw; }
 }
 .header-error { padding-bottom: var(--s2); font-size: 14px; }
+
+/* The logo: the wordmark, or the G alone on narrow phones (<picture> in
+   SiteHeader.jsx). Files in public/brand/. */
+/* A long name truncates instead of pushing "Log out" and Menu off-screen. */
+.site-header .header-actions { min-width: 0; }
+
+.site-logo { display: flex; align-items: center; flex: none; text-decoration: none; border-radius: var(--r-sm); }
+.site-logo img { display: block; height: 30px; width: auto; }
+.site-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
