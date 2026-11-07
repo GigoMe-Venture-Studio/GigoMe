@@ -1,13 +1,19 @@
 import { Routes, Route } from 'react-router';
 import Home from './pages/Home.jsx';
+import Login from './pages/Login.jsx';
+import Welcome from './pages/Welcome.jsx';
+import Privacy from './pages/Privacy.jsx';
 import NotFound from './pages/NotFound.jsx';
 
-// Two routes only. The demo's own screens (#jobs, #job/w1, #signup, ...) are
-// hash links handled inside the home page, so they all live under "/".
+// The demo's own screens (#jobs, #job/w1, #signup, ...) are hash links
+// handled inside the home page, so they all live under "/".
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/welcome" element={<Welcome />} />
+      <Route path="/privacy" element={<Privacy />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
