@@ -9,10 +9,3 @@
   .header-user { max-width: 40vw; }
 }
 .header-error { padding-bottom: var(--s2); font-size: 14px; }
-
-/* On the home page the demo's dark "Demo" bar stays above the site header, as
-   it was before the header moved to React. The demo's container joins #root's
-   layout and the bar is placed first. Only applies while the demo is shown. */
-#root:has(> .demo-root) { display: flex; flex-direction: column; }
-.demo-root { display: contents; }
-.demo-root > .protobar { order: -1; }

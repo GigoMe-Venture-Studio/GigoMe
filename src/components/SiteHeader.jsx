@@ -3,24 +3,11 @@ import { Link, useLocation } from 'react-router';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile, logOut } from '../lib/auth.js';
 
-// A link to one of the demo's screens on the home page (#jobs, #about, ...).
-// The demo switches screens on `hashchange`. On the home page this must be a
-// plain fragment link, because React Router's <Link> uses pushState, which
-// fires no hashchange. Anywhere else, a <Link> to "/#jobs" mounts the home
-// page, which then opens that screen.
-function DemoLink({ onHome, hash, className, current, onClick, children }) {
-  const aria = current ? 'page' : undefined;
-  if (onHome) return <a href={hash} className={className} aria-current={aria} onClick={onClick}>{children}</a>;
-  return <Link to={'/' + hash} className={className} onClick={onClick}>{children}</Link>;
-}
-
-// The site header on every page: GigoMe, Jobs (/jobs), About (the demo's
-// #about screen), and "Log in", or the
+// The site header on every page: GigoMe, Jobs, About, and "Log in", or the
 // logged-in student's name and "Log out". Under 768px the links move into a
 // Menu panel (site.css).
 export default function SiteHeader() {
-  const { pathname, hash } = useLocation();
-  const onHome = pathname === '/';
+  const { pathname } = useLocation();
   const { session } = useSession();
   const userId = session ? session.user.id : null;
   const [name, setName] = useState('');
@@ -43,7 +30,7 @@ export default function SiteHeader() {
     };
   }, [userId, pathname]);
 
-  useEffect(() => setMenuOpen(false), [pathname, hash]);
+  useEffect(() => setMenuOpen(false), [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -62,22 +49,17 @@ export default function SiteHeader() {
     setError((await logOut()) || '');
   }
 
-  const screen = onHome ? (hash.replace('#', '').split('/')[0] || 'home') : '';
   const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
-  const aboutCurrent = screen === 'about';
+  const aboutCurrent = pathname === '/about';
   const label = name || (session ? session.user.email : '');
 
   return (
     <header className="site-header">
       <div className="wrap">
-        {onHome ? (
-          <a className="wordmark" href="#home">GigoMe</a>
-        ) : (
-          <Link className="wordmark" to="/">GigoMe</Link>
-        )}
+        <Link className="wordmark" to="/">GigoMe</Link>
         <nav className="main-nav" aria-label="Main">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>Jobs</Link>
-          <DemoLink onHome={onHome} hash="#about" current={aboutCurrent}>About</DemoLink>
+          <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined}>About</Link>
         </nav>
         <div className="header-actions">
           {session ? (
@@ -106,7 +88,7 @@ export default function SiteHeader() {
       {menuOpen && (
         <nav className="menu-panel" id="menu-panel" aria-label="Mobile">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>Jobs</Link>
-          <DemoLink onHome={onHome} hash="#about" current={aboutCurrent} onClick={() => setMenuOpen(false)}>About</DemoLink>
+          <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>About</Link>
           {session && (
             <button type="button" onClick={onLogOut}>Log out</button>
           )}

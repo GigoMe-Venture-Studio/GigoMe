@@ -56,7 +56,7 @@ function JobPage() {
   if (state.status === 'loading') return <p className="muted">Loading the job…</p>;
   if (state.status === 'error') {
     return (
-      <div className="empty-state" role="alert">
+      <div className="empty-state page-empty" role="alert">
         <BackLink />
         <p><strong>We couldn't load this job.</strong></p>
         <p className="muted">Check your connection and try again.</p>
@@ -66,7 +66,7 @@ function JobPage() {
   }
   if (state.status === 'missing') {
     return (
-      <div className="empty-state">
+      <div className="empty-state page-empty">
         <BackLink />
         <h1 className="page-title">This job isn't available</h1>
         <p className="muted">It may have been filled, closed or expired.</p>

@@ -1,21 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
+import JobCard from '../components/JobCard.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import {
-  ITALIAN_LABEL,
   JOB_TYPES,
-  JOB_TYPE_LABEL,
   MAX_HOURS_OPTIONS,
+  cleanKeyword,
   fetchJobs,
   filtersToParams,
   hasFilters,
-  hoursLabel,
-  payLabel,
-  placeLabel,
-  postedLabel,
   readFilters
 } from '../lib/jobs.js';
 
@@ -48,6 +44,21 @@ function JobBoard() {
   function setFilter(name, value) {
     setParams(filtersToParams({ ...filters, [name]: value }), { replace: true });
   }
+
+  // The keyword updates the list 300 ms after typing stops (Enter applies it
+  // at once). Typed text is kept as it is unless the URL changes elsewhere
+  // (Clear filters, back button), so a trailing space isn't eaten mid-word.
+  const [keyword, setKeyword] = useState(filters.q);
+  useEffect(() => {
+    setKeyword((typed) => (cleanKeyword(typed) === filters.q ? typed : filters.q));
+  }, [filters.q]);
+  useEffect(() => {
+    const clean = cleanKeyword(keyword);
+    if (clean === filters.q) return undefined;
+    const timer = setTimeout(() => setFilter('q', clean), 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyword]);
   function clearFilters() {
     setParams({}, { replace: true });
   }
@@ -60,7 +71,26 @@ function JobBoard() {
       <h1 className="page-title">Jobs in Milan</h1>
       <p className="muted jobs-lead">Part-time work, gigs and internships for students, in English.</p>
 
-      <form className="job-filters" aria-label="Filter jobs" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="job-filters"
+        aria-label="Filter jobs"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setFilter('q', cleanKeyword(keyword));
+        }}
+      >
+        <label className="field job-keyword">
+          Keyword
+          <input
+            className="input"
+            type="search"
+            name="q"
+            placeholder="e.g. barista, tutor, marketing"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            enterKeyHint="search"
+          />
+        </label>
         <label className="field">
           Type of job
           <select className="select" value={filters.type} onChange={(e) => setFilter('type', e.target.value)}>
@@ -140,34 +170,5 @@ function JobBoard() {
         </ul>
       )}
     </>
-  );
-}
-
-function JobCard({ job }) {
-  return (
-    <li>
-      <Link className="role-row" to={`/jobs/${job.id}`}>
-        <div>
-          <div className="role-l1">
-            <span className="role-title">{job.title}</span>
-            <span className="role-co">{job.companies.name}</span>
-            <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>
-              {ITALIAN_LABEL[job.italian_level]}
-            </span>
-          </div>
-          <div className="role-meta">
-            <span>{JOB_TYPE_LABEL[job.job_type]}</span>
-            <span className="sep" aria-hidden="true">·</span>
-            <span>{placeLabel(job)}</span>
-            <span className="sep" aria-hidden="true">·</span>
-            <span className="tnum">{hoursLabel(job)}</span>
-          </div>
-        </div>
-        <div className="role-pay">
-          <span className="pay">{payLabel(job)}</span>
-          <span className="posted tnum">{postedLabel(job.created_at)}</span>
-        </div>
-      </Link>
-    </li>
   );
 }

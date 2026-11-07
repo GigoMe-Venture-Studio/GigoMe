@@ -95,15 +95,13 @@ companies and a compliant way of operating.
 | Path | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
-| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
-| [`src/pages/`](src/pages) | `Home.jsx` (mounts the demo), `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
-| [`src/components/`](src/components) | Shared React parts: the site header (every page), the page frame with the footer, the configuration error message. |
+| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/about`, `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
+| [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `About.jsx`, `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
+| [`src/components/`](src/components) | Shared React parts: the site header and footer (every page), the page frame, the job card used on the home page and `/jobs`, the configuration error message. |
 | [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `jobs.js` (job board queries), `useSession.js`, `contact.js`. |
-| [`src/legacy/`](src/legacy) | The demo as it was in the old single `index.html`: `markup.html` (every screen, including the map) and `app.js` (its script). The demo's screens are hash links such as `/#jobs`, all under `/`. |
-| [`src/styles/`](src/styles) | `site.css` (the site's stylesheet), `auth.css` (login pages), `header.css` (the site header) and `jobs.css` (the job board). |
+| [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login pages), `header.css` (the site header), `jobs.css` (the job board) and `home.css` (the home and About pages). |
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it. |
-| [`docs/prototype.md`](docs/prototype.md) | Screen-by-screen notes, design rules, colour palette and how to edit the content and contact details. |
 | [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |
 | [`supabase/checks/security_check.sql`](supabase/checks/security_check.sql) | Security check to paste into the Supabase SQL Editor after a migration. |
 | [`.env.example`](.env.example) | The two build variables the Supabase client needs. |
@@ -124,11 +122,11 @@ npm run dev
 
 `npm run dev` starts a local server with live reload. `npm run build` writes
 the site to `dist/`; `npm run preview` or `npx wrangler dev` serves that
-folder, the second exactly the way Cloudflare does. The current site needs no
-environment variables to build, but login only works when the two in
+folder, the second exactly the way Cloudflare does. The site builds without
+environment variables, but jobs and login only work when the two in
 `.env.example` are set (copy it to `.env.local` for local work). Without them,
-the login pages show a clear error and the rest of the site still works.
+those pages show a clear error instead of crashing.
 
-The current version is front-end only: the roles, companies and numbers on
-the site are sample data. What you enter is saved in your own browser and
-never sent to a server; "Reset" in the top bar clears it.
+Everything on the site comes from the database: there is no sample data.
+Jobs are added by the team for now; employers who want to list one write to
+hello@gigome.org.
