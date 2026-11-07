@@ -3,8 +3,8 @@
 **Part-time work and internships in Milan, in English.**
 
 GigoMe is a job discovery platform for international and English-speaking
-university students in Milan. Students create a verified profile, companies
-post English-friendly roles, and the two find each other. It is a
+university students in Milan. Employers list English-friendly roles, students
+log in with their university email and apply directly with the employer. It is a
 student-run, non-profit project built by the GigoMe Venture Studio team.
 
 **Website:** https://gigome.org
@@ -19,14 +19,12 @@ English-speaking student have no simple way to reach them.
 
 ## What GigoMe does
 
-- **For students:** browse part-time jobs, day jobs, tutoring, short projects
-  and internships that don't need Italian, filtered by pay, schedule, area and
-  work mode. Every on-site role shows its area and nearest metro line. Save
-  searches for email alerts, follow employers, track every application and
-  review employers you worked for.
+- **For students:** browse part-time jobs, gigs, tutoring and internships
+  that don't need Italian, filtered by keyword, job type, remote work, Italian
+  level and hours.
 - **For employers:** businesses and private people (a family looking for a
-  tutor, someone who needs a dog walker) post roles for free, accept or
-  reject applicants, and alert their recurring past employees first.
+  tutor, someone who needs a dog walker) list roles for free by writing to
+  hello@gigome.org.
 - **Direct contact:** students apply on the employer's site or by email.
   Contracts and pay are agreed directly between them, outside the platform.
 
@@ -36,22 +34,37 @@ English-speaking student have no simple way to reach them.
   that fit around university life.
 - **Trust-based:** verified student status, reviewed employer profiles and
   transparent role information.
-- **Simple:** focus on discovery, profiles, reviews and direct contact rather
+- **Simple:** focus on discovery and direct contact rather
   than complex integrations.
 - **Non-profit:** build something useful and widely used before any
   discussion of monetisation.
 
 ## Features
 
+What exists today:
+
 | Students | Employers | Platform |
 | --- | --- | --- |
-| Sign-up with university email and a 6-digit code | Accounts for businesses or private people | Review queue for listings, students and employer verification |
-| Profile with languages, availability, experience and skills | Optional verification by the team | Goal tracking (students, companies, live listings) |
-| Role browsing with filters, a map and metro lines | Choice to show or hide their location | Reported listings and feedback |
-| Apply on the employer's site or by email | Contact details on a public employer page | Students and companies overview |
-| Dashboard of applications (applied, accepted, rejected) | Listings with applications, accept or reject | |
-| Saved roles, saved searches with email alerts, followed employers | Past employees, with alerts first for recurring ones | |
-| Ratings and reviews of employers, optionally anonymous | Reviews from students on their dashboard | |
+| Log in with a university email and a 6-digit code, no password | Jobs listed on request: write to hello@gigome.org | The team approves companies and publishes jobs |
+| Browse live jobs, filtered by keyword, job type, remote, Italian level and hours | Company name, description and website shown on each job | Only emails from listed university domains get a student account |
+| See how to apply on each job (employer's website or email) once logged in | Applications go straight to the employer | Jobs disappear from the site when they expire or are closed |
+| Free, always | | "How to apply" clicks are counted per job |
+
+## Planned
+
+- Company sign-up and a company dashboard.
+- A feedback form.
+- Bot protection on login.
+
+## Not built on purpose
+
+- Student profiles visible to employers.
+- Applying through GigoMe.
+- Employer ratings or reviews.
+
+The first two would bring GigoMe under Italian job-intermediation rules, and
+reviews need moderation we can't provide. Anyone who wants to add one of these
+should check with the team's legal person first.
 
 ## Goal
 

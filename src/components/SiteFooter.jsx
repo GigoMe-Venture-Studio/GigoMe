@@ -8,7 +8,7 @@ export default function SiteFooter() {
       <div className="wrap">
         <div className="brand">
           <Link className="wordmark" to="/">GigoMe</Link>
-          <span className="muted">A non-profit student project in Milan</span>
+          <span className="muted">A student project in Milan. Free for students.</span>
         </div>
         <nav aria-label="Footer">
           <Link to="/about">About</Link>
