@@ -60,14 +60,14 @@ function AccountPage({ user, onLeaving }) {
       </dl>
       <p className="auth-small">Your email and university come from the address you log in with and can't be changed here.</p>
 
-      <ProfileForm userId={user.id} account={account} />
+      <ProfileForm userId={user.id} account={account} student={!isCompany} />
 
       <DeleteAccount isCompany={isCompany} onLeaving={onLeaving} />
     </div>
   );
 }
 
-function ProfileForm({ userId, account }) {
+function ProfileForm({ userId, account, student }) {
   const [values, setValues] = useState({
     fullName: account.full_name || '',
     degree: account.degree_level || '',
@@ -83,7 +83,7 @@ function ProfileForm({ userId, account }) {
 
   async function onSubmit(e) {
     e.preventDefault();
-    const { errors: found, fields } = checkProfile(values);
+    const { errors: found, fields } = checkProfile(values, { student });
     setErrors(found);
     if (!fields) return;
     setStatus({ kind: 'busy', message: '' });
@@ -101,7 +101,7 @@ function ProfileForm({ userId, account }) {
     <section className="account-section" aria-labelledby="profile-title">
       <h2 id="profile-title">Your details</h2>
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        <ProfileFields values={values} onChange={onChange} errors={errors} />
+        <ProfileFields values={values} onChange={onChange} errors={errors} student={student} />
         {status.kind === 'error' && <p className="err" role="alert">{status.message}</p>}
         <p className="account-saved" role="status">{status.kind === 'saved' ? status.message : ''}</p>
         <button type="submit" className="btn btn-primary" disabled={status.kind === 'busy'}>
