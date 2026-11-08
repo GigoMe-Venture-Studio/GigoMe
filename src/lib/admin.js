@@ -4,7 +4,7 @@ import { supabase } from './supabase.js';
 
 const JOB_COLUMNS =
   'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, expires_at, ' +
-  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, areas(name), ' +
+  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages, areas(name), ' +
   'companies(id, name, website, description, status)';
 
 export const REVIEW_CHECKLIST = [
@@ -71,16 +71,16 @@ export async function fetchPendingJobs() {
   return Promise.all((data || []).map(withContact));
 }
 
-// Live on-site jobs without an area: published before areas existed (the
-// database now refuses to submit or publish them without one). They don't
-// show on the map or in area searches; ask the employer to add an area.
-export async function fetchLiveJobsWithoutArea() {
+// Live jobs missing what the database now requires to submit or publish: an
+// area (on-site jobs) or a schedule. They were published before those rules.
+// Without an area they don't show on the map or in area searches; without a
+// schedule they don't match the "When" filter. Ask the employer to add them.
+export async function fetchLiveJobsMissingInfo() {
   const { data, error } = await supabase
     .from('jobs')
-    .select('id, title, created_at, companies!inner(name, status)')
+    .select('id, title, created_at, remote, area_id, schedule, companies!inner(name, status)')
     .eq('status', 'published')
-    .eq('remote', false)
-    .is('area_id', null)
+    .or('and(remote.eq.false,area_id.is.null),schedule.eq.{}')
     .gt('expires_at', new Date().toISOString())
     .eq('companies.status', 'approved')
     .order('created_at', { ascending: true });
@@ -88,8 +88,13 @@ export async function fetchLiveJobsWithoutArea() {
   return data || [];
 }
 
-// The database refuses to publish an on-site job without an area.
-export const needsArea = (job) => !job.remote && job.area_id == null;
+// What the database still needs before it lets a job be published.
+export function missingInfo(job) {
+  const out = [];
+  if (!job.remote && job.area_id == null) out.push('area');
+  if (!job.schedule || !job.schedule.length) out.push('schedule');
+  return out;
+}
 
 export async function fetchOpenReports() {
   const { data, error } = await supabase

@@ -5,6 +5,9 @@ import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { fetchCompany, fetchJobs, websiteHref, websiteText } from '../lib/jobs.js';
+import { useSession } from '../lib/useSession.js';
+import { useSavedJobs } from '../lib/saved.js';
+import { isFollowing, setFollowing } from '../lib/student.js';
 
 // The map is only downloaded when this company has jobs to put on it.
 const JobsMap = lazy(() => import('../components/JobsMap.jsx'));
@@ -55,7 +58,10 @@ function CompanyPage() {
   const site = websiteHref(company.website);
   return (
     <article className="company-page">
-      <h1 className="page-title">{company.name}</h1>
+      <div className="company-title-row">
+        <h1 className="page-title">{company.name}</h1>
+        <FollowButton company={company} />
+      </div>
       {company.description && <p className="job-text company-about">{company.description}</p>}
       {site && (
         <p className="company-site">
@@ -82,5 +88,52 @@ function CompanyPage() {
         </div>
       )}
     </article>
+  );
+}
+
+// "Follow": students see this company's new jobs on /saved. In the app only;
+// the company sees how many students follow it, never who.
+function FollowButton({ company }) {
+  const { session, loading } = useSession();
+  const { canSave, loaded } = useSavedJobs(); // students only
+  const [state, setState] = useState({ status: 'loading', following: false, error: '' });
+  useEffect(() => {
+    if (!canSave) return undefined;
+    let active = true;
+    isFollowing(company.id)
+      .then((following) => active && setState({ status: 'ready', following, error: '' }))
+      .catch(() => active && setState({ status: 'ready', following: false, error: '' }));
+    return () => {
+      active = false;
+    };
+  }, [canSave, company.id]);
+
+  if (loading || (session && !loaded)) return null;
+  if (!session) {
+    return (
+      <Link className="btn btn-secondary btn-sm follow-btn" to={'/login?next=' + encodeURIComponent(`/companies/${company.id}`)}>
+        Log in to follow
+      </Link>
+    );
+  }
+  if (!canSave || state.status === 'loading') return null;
+  async function toggle() {
+    const next = !state.following;
+    setState({ status: 'ready', following: next, error: '' });
+    try {
+      await setFollowing(company.id, next);
+    } catch {
+      setState({ status: 'ready', following: !next, error: next ? "We couldn't follow this company. Try again." : "We couldn't unfollow. Try again." });
+    }
+  }
+  return (
+    <div className="follow">
+      <button type="button" className={'btn btn-sm follow-btn ' + (state.following ? 'btn-primary' : 'btn-secondary')}
+        aria-pressed={state.following} onClick={toggle}>
+        {state.following ? 'Following' : 'Follow'}
+      </button>
+      <p className="follow-note muted">{state.following ? 'Its new jobs show on Saved jobs.' : 'See its new jobs on Saved jobs. No emails.'}</p>
+      {state.error && <p className="err" role="alert">{state.error}</p>}
+    </div>
   );
 }

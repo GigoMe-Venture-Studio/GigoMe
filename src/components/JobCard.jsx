@@ -9,7 +9,8 @@ import {
   metroLabel,
   payLabel,
   placeLabel,
-  postedLabel
+  postedLabel,
+  scheduleLabels
 } from '../lib/jobs.js';
 
 // One job in a list (/jobs, "Newest jobs" on the home page, company pages,
@@ -18,6 +19,7 @@ import {
 // out on their device), else null.
 export default function JobCard({ job, distance = null }) {
   const metro = metroLabel(job);
+  const when = scheduleLabels(job);
   return (
     <li className="job-card">
       <Link className="role-row" to={`/jobs/${job.id}`}>
@@ -29,6 +31,7 @@ export default function JobCard({ job, distance = null }) {
             <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>
               {ITALIAN_LABEL[job.italian_level]}
             </span>
+            {when.map((w) => <span key={w} className="tag tag-when">{w}</span>)}
           </div>
           <div className="role-meta">
             <span>{JOB_TYPE_LABEL[job.job_type]}</span>

@@ -47,12 +47,14 @@ domain changes no one.
 | `profiles` | One row per user: account type, university, name, degree level, graduation year | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
-| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
+| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
 | `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from the City of Milan's open data (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
 | `saved_jobs` | Jobs a student saved to come back to: who, which job, when | Only the student who saved them | That student only (save a live job, remove). Deleted with their account and with the job |
+| `saved_searches` | A student's /jobs filters under a name, and when they last opened it (for "N new since your last visit") | Only the student who saved it | That student only, up to 20. Deleted with their account. Nothing is ever emailed |
+| `company_follows` | Which approved companies a student follows, to see their new jobs on /saved | Only the student who follows. The company sees only how many follow it (`my_company_follower_count`), never who | That student only. Deleted with their account and with the company. Nothing is ever emailed |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
-| `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins only | Written automatically by `reveal_job_contact` |
+| `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins; each student sees only their own ("Jobs you opened" on /saved, through `my_opened_jobs`) | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
 | `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
 | `moderation_log` | Every admin decision: company approved or rejected, job reviewed or unpublished, report resolved, with who, when and the note | Admins only | Nobody directly: the admin functions write it |
@@ -93,6 +95,11 @@ A few details worth knowing:
   about 1 km. Jobs that show only their area get no station.
 - **Category** (hospitality, retail, tutoring & education, office & admin,
   marketing & social media, events, tech, other) is chosen by the employer.
+- **When it happens:** at least one of weekday mornings, weekday
+  afternoons, weekday evenings, weekends or flexible is needed to submit or
+  publish a job. Jobs published before this rule have none: they still show,
+  but don't match the "When" filter until the employer adds it (/admin lists
+  them). Languages used at work are optional.
 - **Publication date:** set by the database the first time a job is
   published (editing and republishing keeps it). Jobs published in the last
   3 days get a "New" badge.

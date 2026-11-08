@@ -4,7 +4,7 @@ import PageShell from '../components/PageShell.jsx';
 import NotFound from './NotFound.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, placeLabel, websiteHref, websiteText } from '../lib/jobs.js';
+import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, languageLabels, placeLabel, scheduleLabels, websiteHref, websiteText } from '../lib/jobs.js';
 import { JOB_STATUS, shownStatus } from '../lib/employer.js';
 import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
@@ -17,8 +17,8 @@ import {
   fetchPendingJobs,
   fetchRecentDecisions,
   fetchRecentFeedback,
-  fetchLiveJobsWithoutArea,
-  needsArea,
+  fetchLiveJobsMissingInfo,
+  missingInfo,
   resolveReport,
   reviewJob,
   setCompanyStatus
@@ -65,7 +65,7 @@ function AdminPage() {
     let active = true;
     // Feedback that fails to load doesn't stop the moderation queue.
     const feedback = fetchRecentFeedback().catch(() => null);
-    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions(), feedback, fetchLiveJobsWithoutArea()])
+    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions(), feedback, fetchLiveJobsMissingInfo()])
       .then(([companies, jobs, reports, log, fb, noArea]) =>
         active && setData({ status: 'ready', companies, jobs, reports, log, feedback: fb, noArea }))
       .catch(() => active && setData({ status: 'error' }));
@@ -85,7 +85,7 @@ function AdminPage() {
         <a href="#admin-jobs">{data.jobs.length} {data.jobs.length === 1 ? 'job' : 'jobs'}</a> and{' '}
         <a href="#admin-reports">{data.reports.length} open {data.reports.length === 1 ? 'report' : 'reports'}</a> waiting.{' '}
         {data.noArea.length > 0 && (
-          <><a href="#admin-no-area">{data.noArea.length} live {data.noArea.length === 1 ? 'job has' : 'jobs have'} no area</a>.{' '}</>
+          <><a href="#admin-no-area">{data.noArea.length} live {data.noArea.length === 1 ? 'job is' : 'jobs are'} missing an area or a schedule</a>.{' '}</>
         )}
         <a href="#admin-feedback">Latest feedback</a>.
       </p>
@@ -112,17 +112,18 @@ function AdminPage() {
       </section>
 
       <section className="admin-section" id="admin-no-area" aria-labelledby="no-area-title">
-        <h2 id="no-area-title">Live jobs without an area</h2>
+        <h2 id="no-area-title">Live jobs missing an area or a schedule</h2>
         {data.noArea.length === 0 ? <p className="muted">None.</p> : (
           <>
             <p className="muted">
-              On-site jobs published before areas existed. They don't show on the map or in area searches. Ask the employer to
-              add an area (editing sends the job back for review), or unpublish it.
+              Published before these became required. Without an area a job isn't on the map or in area searches; without a
+              schedule it doesn't match the "When" filter. Ask the employer to add them (editing sends the job back for review).
             </p>
             <ul className="admin-log">
               {data.noArea.map((j) => (
                 <li key={j.id}>
-                  <span className="muted tnum">Created {when(j.created_at)}</span> · <strong>{j.title}</strong>, {j.companies.name} ·{' '}
+                  <span className="muted tnum">Created {when(j.created_at)}</span> · <strong>{j.title}</strong>, {j.companies.name} · no{' '}
+                  {missingInfo(j).join(' or ')} ·{' '}
                   <Link to={`/jobs/${j.id}`}>open its page</Link>
                 </li>
               ))}
@@ -236,6 +237,8 @@ function JobSummary({ job }) {
         <div><dt>Where</dt><dd>{placeLabel(job)}</dd></div>
         <div><dt>Area</dt><dd>{job.areas ? job.areas.name : <span className="muted">Not set</span>}{job.areas && (job.show_exact_location ? (job.latitude != null ? ', exact spot on the map' : ', no pin') : ', area only (private)')}</dd></div>
         <div><dt>Italian</dt><dd>{ITALIAN_LABEL[job.italian_level]}</dd></div>
+        <div><dt>When</dt><dd>{scheduleLabels(job).join(', ') || <span className="muted">Not set</span>}</dd></div>
+        <div><dt>Languages</dt><dd>{languageLabels(job).join(', ') || <span className="muted">Not stated</span>}</dd></div>
         <div><dt>Dates</dt><dd>{job.start_date ? `Starts ${dateLabel(job.start_date)}, ` : ''}shown until {dateLabel(String(job.expires_at).slice(0, 10))}</dd></div>
         <div><dt>How to apply</dt><dd className="auth-email">{[job.apply_url, job.apply_email].filter(Boolean).join(' · ') || <span className="muted">Nothing set</span>}</dd></div>
       </dl>
@@ -252,7 +255,7 @@ function JobItem({ job, onDone }) {
   const [ticks, setTicks] = useState(() => REVIEW_CHECKLIST.map(() => false));
   const [note, setNote] = useState('');
   const allTicked = ticks.every(Boolean);
-  const noArea = needsArea(job);
+  const missing = missingInfo(job);
 
   function decide(status) {
     if ((status === 'changes_requested' || status === 'rejected') && !note.trim()) {
@@ -267,9 +270,10 @@ function JobItem({ job, onDone }) {
     <li className="admin-item">
       <JobSummary job={job} />
       {job.review_note && <p className="muted admin-item-meta">Earlier note: "{job.review_note}"</p>}
-      {noArea && (
+      {missing.length > 0 && (
         <p className="admin-flag" role="note">
-          <strong>No area.</strong> An on-site job can't be published without one. Request changes and ask the employer to choose it.
+          <strong>No {missing.join(' and no ')}.</strong> It can't be published without {missing.length > 1 ? 'them' : 'one'}. Request
+          changes and ask the employer to add {missing.length > 1 ? 'them' : 'it'}.
         </p>
       )}
       <fieldset className="admin-checklist">
@@ -286,7 +290,7 @@ function JobItem({ job, onDone }) {
       </label>
       {error && <p className="err" role="alert">{error}</p>}
       <div className="admin-actions">
-        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy) || !allTicked || noArea} onClick={() => decide('published')}
+        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy) || !allTicked || missing.length > 0} onClick={() => decide('published')}
           aria-describedby={allTicked ? undefined : `checklist-hint-${job.id}`}>
           {busy === 'published' ? 'Publishing…' : 'Publish'}
         </button>
