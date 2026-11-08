@@ -49,7 +49,7 @@ domain changes no one.
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
 | `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
-| `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from OpenStreetMap (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
+| `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from the City of Milan's open data (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
 | `saved_jobs` | Jobs a student saved to come back to: who, which job, when | Only the student who saved them | That student only (save a live job, remove). Deleted with their account and with the job |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins only | Written automatically by `reveal_job_contact` |
@@ -93,21 +93,39 @@ A few details worth knowing:
 
 ## Metro stations
 
-The station list comes from OpenStreetMap:
+The station list comes from the City of Milan's open data portal: dataset
+DS535 "ATM - Fermate linee metropolitane", file `ds535_tpl_metrofermate.csv`,
+https://dati.comune.milano.it/dataset/ds535_atm-fermate-linee-metropolitane
 
-> Data © OpenStreetMap contributors, available under the Open Database
-> License (ODbL): https://www.openstreetmap.org/copyright
+> Data: Comune di Milano, CC BY 4.0
+> (https://creativecommons.org/licenses/by/4.0/)
+
+The credit is shown on every map, next to the OpenStreetMap credit (the map
+tiles are OpenStreetMap's; the stations are the City's). Keep both.
+
+The file has one row per stop. Interchanges are either one row with several
+lines (Centrale FS, Garibaldi FS, San Babila, Zara) or one row per line
+(`DUOMO M1` + `DUOMO M3`, Cadorna FN, Loreto, Lotto, and `S.AMBROGIO` +
+`SAN AMBROGIO` for Sant'Ambrogio): the script joins them into one station
+and writes abbreviated names out in full (`P.TA VENEZIA` becomes Porta
+Venezia). Loaded on 8 November 2026: 125 stations, M1 38, M2 35, M3 21,
+M4 21, M5 19.
 
 To load or refresh it (no terminal needed):
 
 1. On GitHub: **Actions** tab > **Metro stations** (left column) > **Run
    workflow** > branch `main` > **Run workflow**. It runs
-   `scripts/fetch-metro-stations.mjs` on GitHub's servers, which asks
-   OpenStreetMap's Overpass API for the M1–M5 routes.
-2. It fails, and changes nothing, unless it finds between 100 and 130
-   stations with some on every line. Open the finished run: its summary shows
-   the count per line and every station. Look for one station listed twice
-   under two spellings.
+   `scripts/fetch-metro-stations.mjs` on GitHub's servers, which downloads
+   the file.
+2. It fails, and changes nothing, unless every check passes: 115 to 130
+   stations, at least 15 per line, no station twice or under two names (two
+   differently named stations under 200 m apart), no abbreviated name it
+   doesn't know how to write out, and Duomo (M1, M3), Porta Venezia (M1),
+   Garibaldi FS (M2, M5) and Centrale FS (M2, M3) with those lines, in the
+   right place. Open the finished run: its summary shows the count per line,
+   the interchanges it joined and every station. If it fails because the
+   City added or renamed stations, the reason is in the summary; the fix is
+   usually one line in `NAMES` in the script.
 3. If it passed, it pushed `supabase/migrations/<now>_metro_stations_data.sql`
    to a new branch, `data/metro-stations`. Open a pull request from it
    (the summary has the link). Merging it adds or updates the stations (by

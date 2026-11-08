@@ -160,9 +160,12 @@ The font (Schibsted Grotesk) is served from gigome.org itself, so loading a
 page no longer contacts Google. Keep it that way: anything new loaded from
 another server belongs in this table and in the privacy notice.
 
-Map data © OpenStreetMap contributors (ODbL), shown on every map. Metro
-stations come from OpenStreetMap too (see SUPABASE.md). They're fetched by a
-GitHub Actions workflow, not by visitors' browsers.
+Map data © OpenStreetMap contributors (ODbL), shown on every map. The metro
+stations (badges and walking distances) come from the City of Milan's open
+data: "Metro stations: Comune di Milano, CC BY 4.0", also shown on every map
+(see SUPABASE.md, "Metro stations"). They're fetched by a GitHub Actions
+workflow and stored in our database, not by visitors' browsers. CC BY needs
+that credit to stay visible: keep it if the map changes.
 
 ## 8. Not built on purpose
 

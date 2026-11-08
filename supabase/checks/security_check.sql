@@ -1354,15 +1354,17 @@ begin
                            coalesce(v_err, 'none'), v_err is null);
 
     -- Two test stations: one about 300 m from the test point, one further away.
+    -- The test point (45.30, 8.80) is inside the allowed box but far from every
+    -- real station, so the real stations never come nearer than the test ones.
     insert into public.metro_stations (name, lines, latitude, longitude)
-      values ('Check Station Near', array['M1'], 45.47612 + 0.0027, 9.20734) returning id into v_st_a;
+      values ('Check Station Near', array['M1'], 45.30 + 0.0027, 8.80) returning id into v_st_a;
     insert into public.metro_stations (name, lines, latitude, longitude)
-      values ('Check Station Far', array['M2', 'M3'], 45.47612 - 0.0100, 9.20734) returning id into v_st_b;
+      values ('Check Station Far', array['M2', 'M3'], 45.30 - 0.0100, 8.80) returning id into v_st_b;
 
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      update public.jobs set area_id = 3, latitude = 45.47612, longitude = 9.20734, show_exact_location = true, category = 'hospitality'
+      update public.jobs set area_id = 16, latitude = 45.30, longitude = 8.80, show_exact_location = true, category = 'hospitality'
         where id = v_loc_job;
       perform set_config('role', 'none', true);
       v_err := 'updated';

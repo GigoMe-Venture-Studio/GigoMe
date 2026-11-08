@@ -45,7 +45,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   paths on this site.
 - Map: MapLibre GL (`src/lib/maplibre.js` sets its worker URL for Vite,
   `src/lib/map.js`) with OpenFreeMap's "positron" style and the
-  OpenStreetMap attribution always visible. Only ever loaded with `import()` /
+  OpenStreetMap attribution always visible, with the metro stations' credit
+  next to it (`STATIONS_CREDIT`: "Comune di Milano, CC BY 4.0"; keep it).
+  Only ever loaded with `import()` /
   `React.lazy` (`src/components/JobsMap.jsx`, `LocationPicker.jsx`), so list
   pages stay light. `/jobs` has List | Map (desktop: side by side; phone: one
   or the other); the map shows exactly the list's jobs, minus remote jobs and
@@ -278,12 +280,16 @@ Schema rules
   and checks keep points in pairs and inside the Milan metro box (lat
   45.25–45.70, lng 8.70–9.60).
 - `metro_stations` is read-only for everyone; its rows come from
-  `scripts/fetch-metro-stations.mjs` (OpenStreetMap, ODbL) as a data
-  migration, run on GitHub by the hand-started workflow
-  `.github/workflows/metro-stations.yml`: it fails unless it finds 100 to 130
-  stations with some on every line, writes the count per line in the run's
-  summary, and pushes the migration to a new branch `data/metro-stations`
-  (it stops if that branch exists). A pull request from it is a migration
+  `scripts/fetch-metro-stations.mjs` (City of Milan open data, dataset
+  DS535, Comune di Milano, CC BY 4.0) as a data migration, run on GitHub by
+  the hand-started workflow `.github/workflows/metro-stations.yml`: it fails
+  unless every check passes (115 to 130 stations, at least 15 per line, no
+  station twice or under two names, no unknown abbreviation, Duomo, Porta
+  Venezia, Garibaldi FS and Centrale FS with the right lines in the right
+  place), writes the count per line in the run's summary, and pushes the
+  migration to a new branch `data/metro-stations` (it stops if that branch
+  exists). The security check's station test uses its own stations at
+  45.30, 8.80, far from real ones: keep it there. A pull request from it is a migration
   like any other. `job_nearest_station` (runs after `job_location_privacy`: triggers
   fire in name order) stores `nearest_station_id`/`nearest_station_m` for
   exact locations only. `job_published_at` sets `published_at` on the first
