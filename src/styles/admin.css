@@ -24,6 +24,12 @@
 .admin-log li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
 .admin-log-note { display: block; color: var(--muted); }
 
+/* Feedback: time and page, then the message. The page is shown as text, never
+   as a link: it comes from the sender's browser. */
+.admin-feedback { list-style: none; margin-top: var(--s3); }
+.admin-feedback li { padding: var(--s3) 0; border-bottom: 1px solid var(--line); display: grid; gap: var(--s1); }
+.admin-feedback-page { overflow-wrap: anywhere; }
+
 /* Report this job */
 .report-job { margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--line); font-size: 14px; }
 .report-done { font-weight: 600; }
