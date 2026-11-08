@@ -14,6 +14,8 @@ import {
   verifyCode
 } from '../lib/auth.js';
 import { fetchMyCompany } from '../lib/employer.js';
+import { captchaEnabled } from '../lib/captcha.js';
+import Turnstile from './Turnstile.jsx';
 
 // The 6-digit email code login, used by /login (students) and /employers
 // (companies). Same steps for both; what differs is which emails are
@@ -63,6 +65,21 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   const [isStudentEmail, setIsStudentEmail] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [info, setInfo] = useState('');
+  // Turnstile (when VITE_TURNSTILE_SITE_KEY is set): every call to Supabase
+  // Auth sends the current token, then the widget fetches a new one.
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const [captchaFailed, setCaptchaFailed] = useState(false);
+  const newCaptcha = () => setCaptchaReset((n) => n + 1);
+  const captchaProps = {
+    onToken: (t) => {
+      setCaptchaToken(t);
+      if (t) setCaptchaFailed(false);
+    },
+    onError: () => setCaptchaFailed(true),
+    resetSignal: captchaReset
+  };
+  const waitingForCaptcha = captchaEnabled && !captchaToken;
 
   if (loading) return <p className="auth-card muted">Loading…</p>;
   if (finishing) return <p className="auth-card muted" role="status">Logging you in…</p>;
@@ -98,7 +115,8 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         setIsStudentEmail(true);
         return;
       }
-      const sendError = await sendCode(value);
+      const sendError = await sendCode(value, captchaToken);
+      newCaptcha();
       if (sendError) {
         setError(sendError);
         return;
@@ -123,7 +141,8 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
       return;
     }
     setBusy(true);
-    const result = await verifyCode(email, value, sentAt);
+    const result = await verifyCode(email, value, sentAt, captchaToken);
+    newCaptcha();
     if (result.error) {
       setBusy(false);
       setError(result.error);
@@ -145,7 +164,8 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     setError('');
     setInfo('');
     setBusy(true);
-    const sendError = await sendCode(email);
+    const sendError = await sendCode(email, captchaToken);
+    newCaptcha();
     setBusy(false);
     if (sendError) {
       setError(sendError);
@@ -179,6 +199,8 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         onVerify={onVerify}
         onResend={onResend}
         onDifferentEmail={onDifferentEmail}
+        captcha={<CaptchaCheck props={captchaProps} failed={captchaFailed} waiting={waitingForCaptcha} />}
+        waitingForCaptcha={waitingForCaptcha}
       />
     );
   }
@@ -240,7 +262,8 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
             </p>
           </div>
         )}
-        <button type="submit" className="btn btn-primary" disabled={busy}>
+        <CaptchaCheck props={captchaProps} failed={captchaFailed} waiting={waitingForCaptcha} />
+        <button type="submit" className="btn btn-primary" disabled={busy || waitingForCaptcha}>
           {busy ? 'Checking…' : 'Send me a code'}
         </button>
       </form>
@@ -248,7 +271,25 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   );
 }
 
-function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, onResend, onDifferentEmail }) {
+// The Turnstile widget plus what to tell the person while it works or if it
+// can't load. Renders nothing when Turnstile isn't configured.
+function CaptchaCheck({ props, failed, waiting }) {
+  if (!captchaEnabled) return null;
+  return (
+    <div className="captcha-check">
+      <Turnstile {...props} />
+      {failed ? (
+        <p className="err" role="alert">
+          We couldn't load the check that keeps bots out. Reload the page, or try another browser or network.
+        </p>
+      ) : (
+        waiting && <p className="auth-small" role="status">One moment: checking you're not a bot…</p>
+      )}
+    </div>
+  );
+}
+
+function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, onResend, onDifferentEmail, captcha, waitingForCaptcha }) {
   const inputRef = useRef(null);
   const [now, setNow] = useState(Date.now());
   const waitLeft = Math.max(0, Math.ceil((sentAt + RESEND_SECONDS * 1000 - now) / 1000));
@@ -307,12 +348,13 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
         </p>
         {error && <p className="err" role="alert">{error}</p>}
         {info && !error && <p className="auth-small" role="status">{info}</p>}
+        {captcha}
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? 'Checking…' : 'Log in'}
         </button>
       </form>
       <div className="auth-links">
-        <button type="button" className="btn btn-secondary btn-sm" onClick={onResend} disabled={busy || waitLeft > 0}>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={onResend} disabled={busy || waitLeft > 0 || waitingForCaptcha}>
           {waitLeft > 0 ? `Send a new code (${waitLeft}s)` : 'Send a new code'}
         </button>
         <button type="button" className="btn-link" onClick={onDifferentEmail} disabled={busy}>

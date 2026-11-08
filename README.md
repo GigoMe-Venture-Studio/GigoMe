@@ -55,9 +55,6 @@ What exists today:
 | Report a job (scam, illegal, misleading, discriminatory, other) | | `/admin`: review companies and jobs with a checklist, handle reports; every decision logged with who and when |
 | Edit your profile and delete your account on `/account` | | Deleting an account removes the profile and feedback; clicks stay, anonymous |
 
-## Planned
-
-- Bot protection on login.
 
 ## Not built on purpose
 
@@ -117,10 +114,13 @@ companies and a compliant way of operating.
 | [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `jobs.js` (job board queries), `feedback.js` (sends feedback), `useSession.js`, `contact.js`. |
 | [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login pages), `header.css` (the site header), `jobs.css` (the job board), `home.css` (the home and About pages) and `feedback.css` (the feedback button and panel). |
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. Also the favicon, the Apple touch icon, the link preview image (`og-image.png`) and `brand/`: the logo files (the original JPEGs and transparent PNGs). |
-| [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it. |
+| [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it as static assets. |
+| [`worker/index.js`](worker/index.js) | A tiny Worker script for one job: a daily ping to Supabase so the free project never pauses. Pages don't run it. |
+| [`supabase/queries/kpis.sql`](supabase/queries/kpis.sql) | The numbers (students, companies, live jobs, apply clicks per week) to paste into the Supabase SQL Editor. Read-only. |
+| [`HANDOVER.md`](HANDOVER.md) | For the next CTO: every account, how a change goes live, moderation, limits. |
 | [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |
 | [`supabase/checks/security_check.sql`](supabase/checks/security_check.sql) | Security check to paste into the Supabase SQL Editor after a migration. |
-| [`.env.example`](.env.example) | The two build variables the Supabase client needs. |
+| [`.env.example`](.env.example) | The build variables: the two the Supabase client needs, and the optional Turnstile site key for the login form's bot check. |
 | [`SUPABASE.md`](SUPABASE.md) | The database explained in plain English: tables, who can do what, common tasks. |
 | [`CLAUDE.md`](CLAUDE.md) | Rules for AI coding assistants working in this repo. |
 

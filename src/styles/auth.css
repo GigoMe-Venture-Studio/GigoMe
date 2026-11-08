@@ -22,6 +22,9 @@
 }
 
 .auth-small { font-size: 14px; color: var(--muted); }
+/* Turnstile: usually invisible; shown only when Cloudflare asks for a click. */
+.captcha-check > * + * { margin-top: var(--s2); }
+.captcha:empty { display: none; }
 .nowrap { white-space: nowrap; }
 .auth-notice > p + p { margin-top: var(--s2); }
 .auth-notice { color: var(--ink); }

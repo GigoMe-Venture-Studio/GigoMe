@@ -2,12 +2,24 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "gigome",
   "compatibility_date": "2026-10-30",
-  // Static site: no Worker script, only the Vite build output.
+  // A tiny Worker script, only for the daily Supabase ping (worker/index.js).
+  // Pages are still served as static assets without running it.
+  "main": "worker/index.js",
   "assets": {
     "directory": "./dist",
-    // Unknown paths return index.html, so refreshing any page works.
+    // Lets the Worker hand the rare request it does get back to the assets.
+    "binding": "ASSETS",
+    // Unknown paths return index.html, so refreshing any page works. Browser
+    // page loads get it straight from the assets, without the Worker.
     "not_found_handling": "single-page-application"
   },
+  // Every day at 04:17 UTC: the Supabase ping, so the free project never pauses.
+  "triggers": {
+    "crons": ["17 4 * * *"]
+  },
+  // SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are set in the Cloudflare
+  // dashboard (Worker > Settings > Variables and Secrets). Keep them on deploy.
+  "keep_vars": true,
   // Needed for preview builds of PR branches (wrangler preview).
   "previews": {}
 }

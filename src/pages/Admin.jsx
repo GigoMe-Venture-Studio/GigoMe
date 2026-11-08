@@ -284,11 +284,25 @@ function ReportItem({ report, onDone }) {
             {busy === 'unpublish' ? 'Unpublishing…' : 'Unpublish the job'}
           </button>
         )}
+        {job && job.companies && job.companies.status !== 'rejected' && (
+          <button type="button" className="btn btn-secondary btn-sm" disabled={Boolean(busy)}
+            onClick={() =>
+              window.confirm(
+                `Reject ${job.companies.name}? All its jobs disappear from the site at once, and it can't submit new ones. ` +
+                  'Use this for scams and payment demands, not just for one bad job.'
+              ) && run('reject-company', () => setCompanyStatus(job.companies.id, 'rejected'))
+            }>
+            {busy === 'reject-company' ? 'Rejecting…' : 'Reject the company'}
+          </button>
+        )}
         <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy)}
           onClick={() => needNote('resolve the report') && run('resolve', () => resolveReport(report.id, note.trim()))}>
           {busy === 'resolve' ? 'Resolving…' : 'Resolve the report'}
         </button>
       </div>
+      <p className="field-hint">
+        Scam or payment demanded from students: reject the company, not just the job. Then resolve the report.
+      </p>
     </li>
   );
 }

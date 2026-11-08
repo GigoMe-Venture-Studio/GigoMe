@@ -40,6 +40,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `/login` (`audience="student"`: university emails only) and `/employers`
   (`audience="employer"`: any email except a listed university's, which are
   sent to `/login`). Change the flow there, once.
+- Bot check: Cloudflare Turnstile (`src/components/Turnstile.jsx`,
+  `src/lib/captcha.js`) on that same form, checked by Supabase Auth's CAPTCHA
+  protection. Only on when the build variable `VITE_TURNSTILE_SITE_KEY` is
+  set. Every Supabase Auth call (send code, resend, verify) passes the current
+  token, then the widget is reset: tokens work once. The Turnstile secret key
+  lives only in the Supabase dashboard.
 - Student login: `src/pages/Login.jsx` (email, then 6-digit code),
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
@@ -71,8 +77,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `admin_company_contact`), pending jobs (publish/request changes/reject, a
   note required for the last two, Publish only once the five-item review
   checklist is ticked; how to apply from `admin_job_contact`), open reports
-  (unpublish the job = `admin_review_job(..., 'closed', note)`, resolve with
-  a note = `admin_resolve_report`), and recent decisions from
+  (unpublish the job = `admin_review_job(..., 'closed', note)`, reject the
+  job's company = `admin_set_company_status(..., 'rejected')` for scams and
+  payment demands, resolve with a note = `admin_resolve_report`), and recent decisions from
   `moderation_log`. Not linked from the header.
 - "Report this job": `src/components/ReportJob.jsx` at the bottom of each job
   page (logged out: "Log in to report it"); `src/lib/reports.js` inserts
@@ -113,7 +120,16 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   Don't put the logo or other images in auth emails: they get blocked and
   hurt deliverability.
 - `wrangler.jsonc`: assets from `./dist`, `not_found_handling`
-  `"single-page-application"`.
+  `"single-page-application"`, a cron trigger (daily, 04:17 UTC) and
+  `keep_vars: true`. `worker/index.js` is a tiny Worker script for the daily
+  Supabase ping (`scheduled`: one read with the publishable key, from the
+  runtime variables `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` set in the
+  Cloudflare dashboard). Pages and files are served as static assets without
+  running it; its `fetch` only hands the rare unmatched non-page request back
+  to `env.ASSETS`. Never add `run_worker_first` or routing to it: every
+  request that runs the script counts against the free plan.
+- `supabase/queries/kpis.sql`: read-only KPIs for the SQL Editor (one table).
+  `HANDOVER.md`: accounts, how changes go live, moderation, limits.
 - `src/lib/supabase.js`: the only Supabase client (publishable key). If the
   build variables are missing it exports `supabase = null` and
   `supabaseConfigError`; pages then show `ConfigError` instead of crashing
