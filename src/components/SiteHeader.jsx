@@ -2,22 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile, logOut } from '../lib/auth.js';
+import { fetchMyCompany } from '../lib/employer.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
-// phones), Jobs, About, and "Log in", or the logged-in student's name (a link
-// to /account) and "Log out". Under 768px the links move into a
-// Menu panel (site.css).
+// phones), Jobs, About, then
+//   logged out: "For employers" and "Log in";
+//   student: their name (a link to /account) and "Log out";
+//   company account: "Dashboard", the company name (a link to /account) and
+//   "Log out".
+// Under 768px the links move into a Menu panel (site.css).
 export default function SiteHeader() {
   const { pathname } = useLocation();
-  const { session } = useSession();
+  const { session, loading } = useSession();
   const userId = session ? session.user.id : null;
-  const [name, setName] = useState('');
+  const [who, setWho] = useState({ name: '', company: '', isCompany: false });
   const [menuOpen, setMenuOpen] = useState(false);
   const [error, setError] = useState('');
   const menuButton = useRef(null);
 
-  // The name changes on /welcome and /account (they announce it), so load it
-  // again then and on each page change.
+  // The name changes on /welcome, /account and the employer pages (they
+  // announce it), so load it again then and on each page change.
   const [profileVersion, setProfileVersion] = useState(0);
   useEffect(() => {
     const bump = () => setProfileVersion((n) => n + 1);
@@ -27,13 +31,16 @@ export default function SiteHeader() {
 
   useEffect(() => {
     if (!userId) {
-      setName('');
+      setWho({ name: '', company: '', isCompany: false });
       return undefined;
     }
     let active = true;
-    fetchProfile(userId)
-      .then((p) => active && setName((p && p.full_name) || ''))
-      .catch(() => {});
+    (async () => {
+      const p = await fetchProfile(userId);
+      const isCompany = Boolean(p && p.account_type === 'company');
+      const company = isCompany ? await fetchMyCompany(userId, { withEmail: false }) : null;
+      if (active) setWho({ name: (p && p.full_name) || '', company: (company && company.name) || '', isCompany });
+    })().catch(() => {});
     return () => {
       active = false;
     };
@@ -61,7 +68,15 @@ export default function SiteHeader() {
   const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
   const aboutCurrent = pathname === '/about';
   const accountCurrent = pathname === '/account';
-  const label = name || (session ? session.user.email : '');
+  const employersCurrent = pathname === '/employers' || pathname.startsWith('/employers/');
+  const dashboardCurrent = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  const label = (who.isCompany && who.company) || who.name || (session ? session.user.email : '');
+  // Logged out: "For employers". Company accounts: "Dashboard".
+  const extra = !session
+    ? loading ? null : { to: '/employers', text: 'For employers', current: employersCurrent }
+    : who.isCompany
+      ? { to: '/dashboard', text: 'Dashboard', current: dashboardCurrent }
+      : null;
 
   return (
     <header className="site-header">
@@ -75,6 +90,7 @@ export default function SiteHeader() {
         <nav className="main-nav" aria-label="Main">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>Jobs</Link>
           <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined}>About</Link>
+          {extra && <Link to={extra.to} aria-current={extra.current ? 'page' : undefined}>{extra.text}</Link>}
         </nav>
         <div className="header-actions">
           {session ? (
@@ -112,6 +128,11 @@ export default function SiteHeader() {
         <nav className="menu-panel" id="menu-panel" aria-label="Mobile">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>Jobs</Link>
           <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>About</Link>
+          {extra && (
+            <Link to={extra.to} aria-current={extra.current ? 'page' : undefined} onClick={() => setMenuOpen(false)}>
+              {extra.text}
+            </Link>
+          )}
           {session && (
             <>
               <Link

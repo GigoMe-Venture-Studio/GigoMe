@@ -80,11 +80,24 @@ function FeedbackButton({ hidden, onOpen }) {
     if (vv) vv.addEventListener('resize', schedule);
     const observer = new MutationObserver(schedule);
     observer.observe(document.body, { childList: true, subtree: true });
+    // Layout can also move without any DOM change or scroll: the web font
+    // arriving, images loading, the page growing or shrinking.
+    window.addEventListener('load', schedule);
+    const fonts = document.fonts;
+    if (fonts) {
+      fonts.addEventListener('loadingdone', schedule);
+      fonts.ready.then(schedule).catch(() => {});
+    }
+    const sizes = typeof ResizeObserver === 'function' ? new ResizeObserver(schedule) : null;
+    if (sizes) sizes.observe(document.body);
     return () => {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
+      window.removeEventListener('load', schedule);
       if (vv) vv.removeEventListener('resize', schedule);
+      if (fonts) fonts.removeEventListener('loadingdone', schedule);
+      if (sizes) sizes.disconnect();
       observer.disconnect();
     };
   }, []);

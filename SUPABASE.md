@@ -46,8 +46,8 @@ domain changes no one.
 | `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
 | `profiles` | One row per user: account type, university, name, degree level, graduation year | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
-| `companies` | Employers: name, website, description, contact email, and a status (pending, approved or rejected) | Everyone sees approved companies; owners see their own; admins see all | Company accounts create one company and edit its details. Only admins change the status |
-| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date and status (draft, pending, published, closed) | Everyone sees published, unexpired jobs of approved companies; owners see their own; admins see all | Owners create and edit their own jobs, but can only set draft, pending or closed. Only admins publish |
+| `companies` | Employers: name, website, description, contact email, and a status (pending, approved or rejected) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
+| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | One row each time a student reveals how to apply for a job | Admins only | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
@@ -58,6 +58,15 @@ A few details worth knowing:
   another date. Expired jobs disappear from the public list automatically.
 - **Editing a published job** sends it back for review: an owner can't change
   a published job and keep it published, so admins see every change.
+- **Review:** admins publish, request changes or reject a job with
+  `admin_review_job`. Requesting changes or rejecting needs a note, which the
+  owner sees on their dashboard. A job with changes requested can be edited
+  and resubmitted; a rejected job can't be changed by its owner any more.
+- **Pending companies** can prepare drafts, but their jobs can be submitted
+  for review only once the company is approved.
+- **Approved companies keep their name and website:** once a company is
+  approved, its owner can no longer change them (the description and contact
+  email stay editable). To rename a company, change it in the Table Editor.
 - **Owners can delete only drafts.** Anything that went further gets closed
   instead, so the click history is kept.
 - **One company per account.**
@@ -86,7 +95,10 @@ in `feedback` if the person asked for everything to go.
 | `set_job_contact(job_id, apply_url, apply_email)` | The job's owner | Sets how students apply. Two empty values remove it. |
 | `get_own_job_contact(job_id)` | The job's owner | Shows the owner what they set. |
 | `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company. |
-| `admin_set_job_status(job_id, status)` | Admins | Sets any job status, including published. |
+| `admin_review_job(job_id, status, note)` | Admins | Sets a job's status and records the review (note, who, when). A note is required to request changes or reject; publishing clears an old note. |
+| `admin_set_job_status(job_id, status)` | Admins | The same without a note (so it can't request changes or reject). |
+| `my_job_stats()` | Company owners | How many times students opened "How to apply" on each of the caller's own jobs. Never other companies' numbers. |
+| `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |
 

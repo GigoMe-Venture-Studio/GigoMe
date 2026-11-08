@@ -9,6 +9,7 @@ import './styles/jobs.css';
 import './styles/home.css';
 import './styles/feedback.css';
 import './styles/account.css';
+import './styles/employer.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
