@@ -56,6 +56,9 @@
 .dash-saved { margin-bottom: var(--s3); font-weight: 600; }
 .dash-empty { margin-top: var(--s4); }
 .dash-card .company-form { margin-top: var(--s4); }
+.locked-hint { margin-top: calc(-1 * var(--s2)); }
+.locked-hint + .dash-facts { margin-top: var(--s4); }
+.locked-fields .dash-facts { margin: 0 0 var(--s2); }
 
 .dash-jobs { list-style: none; margin-top: var(--s4); border-top: 1px solid var(--line); }
 .dash-job { display: grid; gap: var(--s3); padding: var(--s4) 0; border-bottom: 1px solid var(--line); }

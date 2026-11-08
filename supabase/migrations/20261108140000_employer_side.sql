@@ -9,6 +9,9 @@
 --   * Owners can prepare drafts while their company is pending, but submit
 --     (status 'pending') only once the company is approved.
 --   * my_job_stats(): apply clicks per job, for the caller's own jobs only.
+--   * Once a company is approved, its owner can no longer change its name or
+--     website (admins and the dashboard still can). Description and contact
+--     email stay editable.
 --   * A company's contact_email is for the GigoMe team: nobody reads it
 --     directly through the API any more. get_company_contact_email() returns
 --     it to the company's owner and to admins. Logged-out visitors also no
@@ -49,6 +52,36 @@ grant select (review_note, reviewed_at) on table public.jobs to authenticated;
 revoke select on table public.companies from anon, authenticated;
 grant select (id, name, website, description, status, created_at) on table public.companies to anon;
 grant select (id, owner_id, name, website, description, status, created_at) on table public.companies to authenticated;
+
+
+-- ===========================================================================
+-- Approved companies: name and website are fixed for their owners
+-- ===========================================================================
+
+-- Column grants can't depend on the row, so a trigger does it: API callers
+-- (anon, authenticated) who aren't admins can't change the name or website
+-- of an approved company. The dashboard and the SECURITY DEFINER admin
+-- functions run as other roles and are not affected.
+create function public.lock_approved_company_identity()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if old.status = 'approved'
+     and (new.name is distinct from old.name or new.website is distinct from old.website)
+     and current_user in ('anon', 'authenticated')
+     and not coalesce(public.is_admin(), false) then
+    raise exception 'Once a company is approved, only GigoMe can change its name and website.'
+      using errcode = '42501';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger lock_approved_company_identity
+  before update of name, website on public.companies
+  for each row execute function public.lock_approved_company_identity();
 
 
 -- ===========================================================================
@@ -191,8 +224,10 @@ $$;
 revoke all on function
   public.admin_review_job(uuid, text, text),
   public.my_job_stats(),
-  public.get_company_contact_email(uuid)
+  public.get_company_contact_email(uuid),
+  public.lock_approved_company_identity()
 from public, anon, authenticated;
+-- lock_approved_company_identity: trigger only, no grants.
 
 -- Each checks who is calling.
 grant execute on function public.admin_review_job(uuid, text, text) to authenticated;

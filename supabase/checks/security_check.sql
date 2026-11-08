@@ -55,6 +55,7 @@ declare
   v_emp_draft   uuid;
   v_emp_live    uuid;
   v_emp2_live   uuid;
+  v_count_text  text;
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -639,6 +640,62 @@ begin
     results := pg_temp.res(results, 'get_company_contact_email: the owner and admins get it, other users get nothing',
                            'owner: hiring@check-emp.example; admin: hiring@check-emp.example; other company: nothing; student: nothing; ',
                            v_text, v_text = 'owner: hiring@check-emp.example; admin: hiring@check-emp.example; other company: nothing; student: nothing; ');
+
+    foreach v_text in array array['name', 'website'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        if v_text = 'name' then
+          update public.companies set name = 'Check Emp Renamed' where id = v_co_emp;
+        else
+          update public.companies set website = 'https://elsewhere.example' where id = v_co_emp;
+        end if;
+        get diagnostics v_rows = row_count;
+        perform set_config('role', 'none', true);
+        v_err := 'updated ' || v_rows || ' row(s)';
+      exception when others then v_err := 'error: ' || sqlerrm;
+      end;
+      select name || ', ' || coalesce(website, 'no website') into v_count_text from public.companies where id = v_co_emp;
+      results := pg_temp.res(results, 'Owner of an approved company cannot change its ' || v_text, 'error, unchanged',
+                             case when v_err like 'error:%' then 'error' else v_err end || ', ' ||
+                             case when v_count_text = 'Check Emp, no website' then 'unchanged' else 'now ' || v_count_text end,
+                             v_err like 'error:%' and v_count_text = 'Check Emp, no website');
+    end loop;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set description = 'Check description', contact_email = 'jobs@check-emp.example' where id = v_co_emp;
+      get diagnostics v_rows = row_count;
+      update public.companies set name = 'Check Emp', website = null, description = 'Check description 2' where id = v_co_emp;
+      get diagnostics v_count = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ', unchanged name and website sent: updated ' || v_count;
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Owner of an approved company can still edit its description and contact email (control)',
+                           'updated 1, unchanged name and website sent: updated 1', v_err, v_err = 'updated 1, unchanged name and website sent: updated 1');
+    update public.companies set contact_email = 'hiring@check-emp.example' where id = v_co_emp;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set name = 'Check Co (pending, renamed)', website = 'https://check.example' where id = v_co_own;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Owner of a pending company can still change its name and website (control)', 'updated 1 row(s)', v_err, v_err = 'updated 1 row(s)');
+
+    begin
+      update public.companies set name = 'Check Emp (renamed by the team)' where id = v_co_emp;
+      select name into v_err from public.companies where id = v_co_emp;
+      update public.companies set name = 'Check Emp' where id = v_co_emp;
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'The dashboard (SQL Editor) can still rename an approved company', 'Check Emp (renamed by the team)',
+                           v_err, v_err = 'Check Emp (renamed by the team)');
 
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);

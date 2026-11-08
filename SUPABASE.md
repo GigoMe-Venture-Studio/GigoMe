@@ -64,6 +64,9 @@ A few details worth knowing:
   and resubmitted; a rejected job can't be changed by its owner any more.
 - **Pending companies** can prepare drafts, but their jobs can be submitted
   for review only once the company is approved.
+- **Approved companies keep their name and website:** once a company is
+  approved, its owner can no longer change them (the description and contact
+  email stay editable). To rename a company, change it in the Table Editor.
 - **Owners can delete only drafts.** Anything that went further gets closed
   instead, so the click history is kept.
 - **One company per account.**

@@ -242,7 +242,7 @@ function JobForm({ company, job }) {
             {err('hours')}
             {hours > HOURS_HINT_ABOVE && !errors.hours ? (
               <span className="field-hint hours-warning" id="hours-hint">
-                Non-EU students can work at most {HOURS_HINT_ABOVE} hours a week, so many students can't take this job.
+                Students with a non-EU study permit can usually work up to {HOURS_HINT_ABOVE} hours a week.
               </span>
             ) : (
               <span className="field-hint" id="hours-hint">From 1 to 40.</span>
