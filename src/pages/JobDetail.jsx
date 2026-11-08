@@ -3,12 +3,16 @@ import { Link, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import ReportJob from '../components/ReportJob.jsx';
+import SaveButton from '../components/SaveButton.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile } from '../lib/auth.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import {
+  CATEGORY_LABEL,
   ITALIAN_LABEL,
+  isNew,
+  metroLabel,
   JOB_TYPE_LABEL,
   dateLabel,
   fetchJob,
@@ -85,17 +89,28 @@ function JobPage() {
       <BackLink />
       <div className="detail">
         <article>
-          <h1 className="page-title">{job.title}</h1>
-          <p className="detail-co">{company.name}</p>
+          <div className="detail-title-row">
+            <h1 className="page-title">{job.title}</h1>
+            <SaveButton jobId={job.id} title={job.title} labelled />
+          </div>
+          <p className="detail-co"><Link to={`/companies/${company.id}`}>{company.name}</Link></p>
           <div className="tags">
+            {isNew(job) && <span className="tag tag-new">New</span>}
             <span className="tag">{JOB_TYPE_LABEL[job.job_type]}</span>
+            {job.category && job.category !== 'other' && <span className="tag">{CATEGORY_LABEL[job.category]}</span>}
             <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>{ITALIAN_LABEL[job.italian_level]}</span>
             {job.remote && <span className="tag">Remote</span>}
           </div>
           <dl className="facts">
             <div><dt>Pay</dt><dd>{payLabel(job)}</dd></div>
             <div><dt>Hours</dt><dd className="tnum">{hoursLabel(job)}</dd></div>
-            <div><dt>Location</dt><dd>{placeLabel(job)}</dd></div>
+            <div>
+              <dt>Location</dt>
+              <dd>
+                {placeLabel(job)}
+                {metroLabel(job) && <span className="metro-badge detail-metro">{metroLabel(job)}</span>}
+              </dd>
+            </div>
             <div><dt>Start</dt><dd>{job.start_date ? dateLabel(job.start_date) : 'Flexible'}</dd></div>
           </dl>
           <div className="prose-role">
@@ -114,6 +129,9 @@ function JobPage() {
               </p>
             ) : null}
             {!company.description && !site ? <p className="muted">No company details yet.</p> : null}
+            <p>
+              <Link to={`/companies/${company.id}`}>All jobs from {company.name}</Link>
+            </p>
           </div>
           <ReportJob jobId={job.id} />
         </article>

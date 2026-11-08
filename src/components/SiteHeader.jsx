@@ -7,7 +7,7 @@ import { fetchMyCompany } from '../lib/employer.js';
 // The site header on every page: the GigoMe logo (the G alone on narrow
 // phones), Jobs, then
 //   logged out: "For employers" and "Log in";
-//   student: their name (a link to /account) and "Log out";
+//   student: "Saved jobs", their name (a link to /account) and "Log out";
 //   company account: "Dashboard", the company name (a link to /account) and
 //   "Log out".
 // Under 768px the links move into a Menu panel (site.css).
@@ -69,13 +69,14 @@ export default function SiteHeader() {
   const accountCurrent = pathname === '/account';
   const employersCurrent = pathname === '/employers' || pathname.startsWith('/employers/');
   const dashboardCurrent = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  const savedCurrent = pathname === '/saved';
   const label = (who.isCompany && who.company) || who.name || (session ? session.user.email : '');
   // Logged out: "For employers". Company accounts: "Dashboard".
   const extra = !session
     ? loading ? null : { to: '/employers', text: 'For employers', current: employersCurrent }
     : who.isCompany
       ? { to: '/dashboard', text: 'Dashboard', current: dashboardCurrent }
-      : null;
+      : { to: '/saved', text: 'Saved jobs', current: savedCurrent };
 
   return (
     <header className="site-header">

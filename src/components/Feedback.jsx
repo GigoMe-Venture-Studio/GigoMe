@@ -41,7 +41,9 @@ const KEEP_CLEAR = [
   '.site-footer a',
   '.site-footer button:not(.footer-link-btn)',
   '.menu-panel a',
-  '.menu-panel button'
+  '.menu-panel button',
+  // The map's credits (OpenStreetMap, OpenFreeMap) must stay readable.
+  '.maplibregl-ctrl-attrib'
 ].join(',');
 
 const overlaps = (a, b, pad) =>

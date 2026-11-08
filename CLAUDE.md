@@ -11,7 +11,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
+  `/jobs`, `/jobs/:id`, `/companies/:id`, `/saved`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
   `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
   redirects to `/`: there is no About page, and no team names, biographies or
@@ -19,7 +19,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
-  `?q=&type=&remote=yes|no&italian=none|basic&hours=`; `q` matches title and
+  `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=`, plus `view=map`
+  for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
   numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
   `or()` filter), `src/pages/JobDetail.jsx`
@@ -36,6 +37,31 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   never "applications": GigoMe doesn't see whether anyone applied. Logged-out visitors go
   to `/login?next=/jobs/<id>`; `safeNext()` in `src/lib/auth.js` only accepts
   paths on this site.
+- Map: MapLibre GL (`src/lib/maplibre.js` sets its worker URL for Vite,
+  `src/lib/map.js`) with OpenFreeMap's "positron" style and the
+  OpenStreetMap attribution always visible. Only ever loaded with `import()` /
+  `React.lazy` (`src/components/JobsMap.jsx`, `LocationPicker.jsx`), so list
+  pages stay light. `/jobs` has List | Map (desktop: side by side; phone: one
+  or the other); the map shows exactly the list's jobs, minus remote jobs and
+  jobs without coordinates, clustered when zoomed out. Areas come from
+  `src/lib/areas.js` (the `areas` table). The job form picks the area, then an
+  optional pin (tap, drag, or "Find address": one Nominatim request per press
+  from `src/lib/geocode.js`, bounded to Milan, never autocomplete, credited
+  on the form), or "Only show the area".
+- Badges on job cards and job pages: "New" (`isNew()`: published in the last
+  3 days, gold), the category, and the metro badge (`metroLabel()`: only for
+  an exact location within 1000 m of a station, at 80 m a minute walking).
+  Company pages: `src/pages/Company.jsx` (`/companies/:id`): approved
+  companies only (asked for explicitly), name, description, website and open
+  jobs with the map when some have a location; never the contact email.
+  Linked from job pages.
+- Saved jobs: `src/lib/saved.js` (one shared list of the student's saved job
+  ids, loaded once per login; `useSavedJobs()`, `setSaved()`),
+  `src/components/SaveButton.jsx` (the bookmark on job cards, next to the
+  card's link, not inside it, and on job pages; students only),
+  `src/pages/Saved.jsx` (`/saved`, "Saved jobs" in the header for students;
+  jobs that closed or expired show as "No longer available" from
+  `my_saved_jobs()`).
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
   the home page. `src/components/SiteFooter.jsx`: the footer on every page
   (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
@@ -101,7 +127,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
   (`/jobs`), then: logged out, "For employers" and "Log in"; a
-  student, their name (a link to `/account`, truncated when it doesn't fit)
+  student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
   and "Log out"; a company account, "Dashboard", the company name (a link to
   `/account`) and "Log out". The footer shows "For employers" when logged
   out. Under 768px the links move into a Menu panel. Don't add links for
@@ -237,6 +263,24 @@ Schema rules
   nobody reads `reviewed_by` through the API (jobs have column-level SELECT
   grants: list columns explicitly, never `select=*`).
 - `my_job_stats()` returns apply clicks (not applications) for the caller's own jobs only.
+- `areas` is read-only for `anon` and `authenticated`, changed only in the
+  dashboard. Jobs have `area_id`, `latitude`, `longitude` and
+  `show_exact_location`; the `job_location_privacy` trigger replaces the point
+  with the area's centre (or null) whenever `show_exact_location` is false,
+  and checks keep points in pairs and inside the Milan metro box (lat
+  45.25–45.70, lng 8.70–9.60).
+- `metro_stations` is read-only for everyone; its rows come from
+  `scripts/fetch-metro-stations.mjs` (OpenStreetMap, ODbL) as a data
+  migration. `job_nearest_station` (runs after `job_location_privacy`: triggers
+  fire in name order) stores `nearest_station_id`/`nearest_station_m` for
+  exact locations only. `job_published_at` sets `published_at` on the first
+  publication. Neither column has insert or update grants. `category` is one
+  of the eight values in `CATEGORIES` (`src/lib/jobs.js`).
+- `saved_jobs`: students insert only `job_id` (`user_id` is the caller, by
+  default and by policy) for a job they can see; they read and delete only
+  their own rows; no updates. Rows go with the account (`auth.users`, on
+  delete cascade) and with the job. `my_saved_jobs()` lists the caller's own
+  only.
 - `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
   job they can see (RLS), one open report per user per job (unique index);
   only admins read them, and only `admin_resolve_report(id, note)` resolves
@@ -248,7 +292,7 @@ Schema rules
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
 - `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
   their feedback explicitly, then the `auth.users` row, which cascades to the
-  profile and, for a company account, its company, jobs, job contacts and
+  profile, their saved jobs and, for a company account, its company, jobs, job contacts and
   those jobs' clicks (and reports on those jobs). Their own clicks and the
   reports they filed stay, with `user_id` / `reporter_id` set to null. Keep
   it that way if you add a table that points at a user: decide whether it is

@@ -4,6 +4,7 @@ import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { cleanKeyword, fetchJobs, filtersToParams } from '../lib/jobs.js';
+import { fetchAreas } from '../lib/areas.js';
 
 export default function Home() {
   return (
@@ -63,16 +64,21 @@ function DeletedNotice() {
   );
 }
 
-// Opens /jobs with the keyword and "No Italian needed" applied.
+// Opens /jobs with the keyword, area and "No Italian needed" applied.
 function HeroSearch() {
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState('');
   const [noItalian, setNoItalian] = useState(true);
+  const [area, setArea] = useState('');
+  const [areas, setAreas] = useState([]);
+  useEffect(() => {
+    fetchAreas().then(setAreas).catch(() => setAreas([]));
+  }, []);
 
   function onSubmit(e) {
     e.preventDefault();
     const params = new URLSearchParams(
-      filtersToParams({ q: cleanKeyword(keyword), italian: noItalian ? 'none' : '' })
+      filtersToParams({ q: cleanKeyword(keyword), area, italian: noItalian ? 'none' : '' })
     ).toString();
     navigate('/jobs' + (params ? '?' + params : ''));
   }
@@ -89,6 +95,17 @@ function HeroSearch() {
         onChange={(e) => setKeyword(e.target.value)}
         enterKeyHint="search"
       />
+      {areas.length > 0 && (
+        <>
+          <label className="sr-only" htmlFor="home-area">Area</label>
+          <select className="select area" id="home-area" value={area} onChange={(e) => setArea(e.target.value)}>
+            <option value="">Anywhere in Milan</option>
+            {areas.map((a) => (
+              <option key={a.id} value={String(a.id)}>{a.name}</option>
+            ))}
+          </select>
+        </>
+      )}
       <label className="check">
         <input type="checkbox" checked={noItalian} onChange={(e) => setNoItalian(e.target.checked)} /> No Italian needed
       </label>
