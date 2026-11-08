@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
@@ -8,6 +8,12 @@ import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
 import { ITALIAN_LABEL, JOB_TYPES } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
+import { fetchAreas } from '../lib/areas.js';
+import { findAddress } from '../lib/geocode.js';
+
+// The pin map is only downloaded when it is shown.
+const LocationPicker = lazy(() => import('../components/LocationPicker.jsx'));
+const MILAN = [9.19, 45.4642];
 
 // /dashboard/jobs/new and /dashboard/jobs/:id/edit
 export default function JobEditor() {
@@ -95,8 +101,37 @@ function JobForm({ company, job }) {
     startDate: job && job.start_date ? job.start_date : '',
     endDate: job ? toDateInput(job.expires_at) : '',
     applyUrl: job ? job.apply_url : '',
-    applyEmail: job ? job.apply_email : ''
+    applyEmail: job ? job.apply_email : '',
+    area: job && job.area_id ? String(job.area_id) : '',
+    onlyArea: job ? !job.show_exact_location : false
   }));
+  // The exact spot: only when the job shows it (otherwise the database holds
+  // the area's centre, which isn't a pin).
+  const [pin, setPin] = useState(() =>
+    job && job.show_exact_location && job.latitude != null ? { lat: job.latitude, lon: job.longitude } : null
+  );
+  const [areas, setAreas] = useState([]);
+  useEffect(() => {
+    fetchAreas().then(setAreas).catch(() => setAreas([]));
+  }, []);
+  const [geo, setGeo] = useState({ busy: false, message: '' });
+  const areaRow = areas.find((a) => String(a.id) === v.area);
+  const areaCentre = areaRow && areaRow.latitude != null ? [areaRow.longitude, areaRow.latitude] : MILAN;
+
+  async function onFindAddress() {
+    setGeo({ busy: true, message: '' });
+    try {
+      const hit = await findAddress(v.location);
+      if (hit) {
+        setPin({ lat: Math.round(hit.lat * 1e5) / 1e5, lon: Math.round(hit.lon * 1e5) / 1e5 });
+        setGeo({ busy: false, message: 'Found it. Check the pin and drag it if needed.' });
+      } else {
+        setGeo({ busy: false, message: "We couldn't find that address in Milan. Place the pin on the map instead." });
+      }
+    } catch {
+      setGeo({ busy: false, message: "The address search isn't working right now. Place the pin on the map instead." });
+    }
+  }
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
   const [busy, setBusy] = useState('');
@@ -119,6 +154,7 @@ function JobForm({ company, job }) {
     else if (!Number.isInteger(hours) || hours < 1 || hours > 40) found.hours = 'Hours per week must be a whole number from 1 to 40.';
     if (v.pay.trim().length > 200) found.pay = 'Keep the pay under 200 characters.';
     if (v.endDate && v.endDate < today()) found.endDate = 'Choose today or a later date.';
+    if (submitting && !v.remote && !v.area) found.area = 'Choose the area (or "Elsewhere in Milan").';
     const url = normalizeUrl(v.applyUrl);
     const email = normalizeEmail(v.applyEmail);
     if (url === null || (url && url.length > 500)) found.applyUrl = 'Enter a web address like www.yourcompany.it/jobs.';
@@ -135,7 +171,12 @@ function JobForm({ company, job }) {
       hours_per_week: hours,
       pay: v.pay.trim() || null,
       italian_level: v.italian,
-      start_date: v.startDate || null
+      start_date: v.startDate || null,
+      area_id: v.area ? Number(v.area) : null,
+      show_exact_location: !v.onlyArea,
+      // Area only: the database stores the area's centre, whatever is sent.
+      latitude: !v.onlyArea && pin ? pin.lat : null,
+      longitude: !v.onlyArea && pin ? pin.lon : null
     };
     if (v.endDate) fields.expires_at = endOfDay(v.endDate);
     else if (job) fields.expires_at = new Date(Date.now() + 60 * 86400000).toISOString();
@@ -235,6 +276,42 @@ function JobForm({ company, job }) {
           <label className="check">
             <input type="checkbox" name="remote" checked={v.remote} onChange={set('remote')} /> Can be done remotely
           </label>
+          <label className="field">
+            <span>Area {v.remote && <span className="field-optional">(optional for remote jobs)</span>}</span>
+            <select className="select" name="area_id" value={v.area} onChange={set('area')} aria-invalid={Boolean(errors.area)}>
+              <option value="">Choose…</option>
+              {areas.map((a) => <option key={a.id} value={String(a.id)}>{a.name}</option>)}
+            </select>
+            {err('area')}
+          </label>
+          {v.area && (
+            <label className="check">
+              <input type="checkbox" name="only_area" checked={v.onlyArea} onChange={set('onlyArea')} /> Only show the area, not the
+              exact spot (e.g. jobs at a private home)
+            </label>
+          )}
+          {v.area && v.onlyArea && (
+            <p className="field-hint">Students see only the area. We store its centre, never the address.</p>
+          )}
+          {v.area && !v.onlyArea && (
+            <div className="field">
+              <span>Exact spot <span className="field-optional">(optional, shown on the map)</span></span>
+              <span className="field-hint">Tap the map to place the pin, then drag it to adjust.</span>
+              <div className="location-tools">
+                <button type="button" className="btn btn-secondary btn-sm" onClick={onFindAddress}
+                  disabled={geo.busy || !v.location.trim()} aria-describedby="find-hint">
+                  {geo.busy ? 'Searching…' : 'Find address'}
+                </button>
+                {pin && <button type="button" className="btn btn-tertiary btn-sm" onClick={() => setPin(null)}>Remove pin</button>}
+              </div>
+              <span className="field-hint" id="find-hint">"Find address" looks up the location written above, once per press.</span>
+              {geo.message && <span className="field-hint geo-message" role="status">{geo.message}</span>}
+              <Suspense fallback={<div className="picker-map jobs-map-loading" role="status">Loading the map…</div>}>
+                <LocationPicker value={pin} centre={areaCentre} onChange={setPin} />
+              </Suspense>
+              <span className="osm-credit">Address search by Nominatim, © OpenStreetMap contributors</span>
+            </div>
+          )}
           <label className="field">
             Hours per week
             <input className="input hours-input" type="number" name="hours_per_week" inputMode="numeric" min={1} max={40} step={1}

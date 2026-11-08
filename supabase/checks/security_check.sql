@@ -56,6 +56,8 @@ declare
   v_emp_live    uuid;
   v_emp2_live   uuid;
   v_count_text  text;
+  -- areas and job locations
+  v_loc_job     uuid;
   -- moderation and reports
   v_report      uuid;
   v_log_before  bigint;
@@ -1200,6 +1202,127 @@ begin
     results := pg_temp.res(results, 'admin_company_contact (with the owner''s login email): admins only',
                            'admin: owner@check-emp.example; owner: error; student: error; ', v_text,
                            v_text = 'admin: owner@check-emp.example; owner: error; student: error; ');
+
+    -- ----------------------------------------------------------------------
+    -- Areas and job locations
+    -- ----------------------------------------------------------------------
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p from unnest(array['anon', 'authenticated']) r,
+             unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER']) p
+      where has_table_privilege(r, 'public.areas', p)
+      union all
+      select r || ':column ' || p from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p
+      where has_any_column_privilege(r, 'public.areas', p)
+    ) s(x);
+    results := pg_temp.res(results, 'anon and authenticated can only read public.areas', 'SELECT only',
+                           coalesce('also: ' || v_err, 'SELECT only'), v_err is null);
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      select count(*) || ' areas, Elsewhere ' || coalesce(max(case when name = 'Elsewhere in Milan' then
+               case when latitude is null then 'without a centre' else 'with a centre' end end), 'missing')
+        into v_text from public.areas;
+      perform set_config('role', 'none', true);
+      v_err := v_text;
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon can read the areas (seeded, "Elsewhere in Milan" has no centre)', '16 areas, Elsewhere without a centre',
+                           v_err, v_err like '16 areas, Elsewhere without a centre');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.areas set latitude = 45.0 where id = 1;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Nobody changes an area through the API (not even an admin)', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, latitude, longitude, show_exact_location)
+        values (v_co_emp, 'Check private home job', 'other', 4, 'draft', 2, 45.47321, 9.18911, false)
+        returning id into v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', stored ' || coalesce(j.latitude::text || ',' || j.longitude::text, 'nothing')
+           || case when j.latitude = a.latitude and j.longitude = a.longitude then ' (the area''s centre)' else ' (not the centre)' end
+      into v_text from public.jobs j join public.areas a on a.id = 2 where j.id = v_loc_job;
+    results := pg_temp.res(results, '"Only show the area": the exact point sent is replaced by the area''s centre',
+                           'inserted, stored 45.472,9.1868 (the area''s centre)', coalesce(v_text, v_err),
+                           v_text = 'inserted, stored 45.472,9.1868 (the area''s centre)');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set area_id = 16, latitude = 45.5011, longitude = 9.1022 where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', stored ' || coalesce(latitude::text || ',' || longitude::text, 'nothing') into v_text from public.jobs where id = v_loc_job;
+    results := pg_temp.res(results, '"Only show the area" with "Elsewhere in Milan": no point is stored at all',
+                           'updated, stored nothing', v_text, v_text = 'updated, stored nothing');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set area_id = 3, latitude = 45.47612, longitude = 9.20734, show_exact_location = true where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', stored ' || coalesce(latitude::text || ',' || longitude::text, 'nothing') into v_text from public.jobs where id = v_loc_job;
+    results := pg_temp.res(results, 'An exact location is stored as sent (control)', 'updated, stored 45.47612,9.20734', v_text,
+                           v_text = 'updated, stored 45.47612,9.20734');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set show_exact_location = false where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', stored ' || coalesce(latitude::text || ',' || longitude::text, 'nothing') into v_text from public.jobs where id = v_loc_job;
+    results := pg_temp.res(results, 'Switching a job to "only show the area" also replaces the point already stored',
+                           'updated, stored 45.4745,9.205', v_text, v_text = 'updated, stored 45.4745,9.205');
+
+    foreach v_text in array array['Rome', 'half a pair'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        if v_text = 'Rome' then
+          update public.jobs set show_exact_location = true, latitude = 41.9028, longitude = 12.4964 where id = v_loc_job;
+        else
+          update public.jobs set show_exact_location = true, latitude = 45.47, longitude = null where id = v_loc_job;
+        end if;
+        perform set_config('role', 'none', true);
+        v_err := 'updated';
+      exception when others then v_err := 'error: ' || sqlerrm;
+      end;
+      results := pg_temp.res(results, 'Coordinates are refused: ' || case when v_text = 'Rome' then 'outside the Milan metro area' else 'latitude without longitude' end,
+                             'error', v_err, v_err like 'error:%');
+    end loop;
+
+    update public.jobs set area_id = 3, latitude = 45.47612, longitude = 9.20734, show_exact_location = true where id = v_emp_live;
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      select a.name || ' ' || j.latitude || ',' || j.longitude || ' exact ' || j.show_exact_location into v_text
+      from public.jobs j join public.areas a on a.id = j.area_id where j.id = v_emp_live;
+      perform set_config('role', 'none', true);
+      v_err := coalesce(v_text, 'nothing');
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon can read a live job''s area and location (the map needs them)', 'Porta Venezia 45.47612,9.20734 exact true',
+                           v_err, v_err = 'Porta Venezia 45.47612,9.20734 exact true');
 
     -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)

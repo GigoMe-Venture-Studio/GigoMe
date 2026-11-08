@@ -38,3 +38,37 @@
   .jobs-main { padding-top: var(--s6); padding-bottom: var(--s8); }
   .job-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+/* List | Map (aria-pressed buttons) */
+.view-toggle { display: inline-flex; border: 1px solid var(--ink); border-radius: var(--r-sm); overflow: hidden; margin-left: auto; }
+.view-toggle button { height: 36px; padding: 0 var(--s4); border: 0; background: var(--white); font-weight: 600; font-size: 14px; color: var(--ink); }
+.view-toggle button + button { border-left: 1px solid var(--ink); }
+.view-toggle button[aria-pressed=true] { background: var(--ink); color: var(--white); }
+.view-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+/* The map: on phones it replaces the list; from 900px it sits next to it and
+   stays in view while the list scrolls. */
+.jobs-map-wrap { position: relative; }
+.jobs-map { height: 70vh; min-height: 360px; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--paper); }
+.jobs-map-loading { display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.jobs-map-note { position: absolute; left: var(--s3); right: var(--s3); top: var(--s3); padding: var(--s2) var(--s3); background: var(--white); border-radius: var(--r-sm); box-shadow: var(--float); font-size: 14px; }
+.jobs-map-aside { margin-top: var(--s2); font-size: 14px; }
+.jobs-results.with-map .jobs-list-col { display: none; }
+@media (min-width: 900px) {
+  .jobs-results.with-map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s5); align-items: start; }
+  .jobs-results.with-map .jobs-list-col { display: block; }
+  .jobs-map-col { position: sticky; top: var(--s4); }
+  .jobs-map { height: calc(100vh - 2 * var(--s5)); max-height: 760px; }
+}
+
+/* The card inside a map popup */
+.maplibregl-popup-content { padding: var(--s3) var(--s4); border-radius: var(--r-md); box-shadow: var(--float); font-family: var(--font); }
+.map-card + .map-card { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--line); }
+.map-card-list { max-height: 260px; overflow: auto; }
+.map-card-title { font-weight: 600; font-size: 15px; }
+.map-card-co, .map-card-meta { margin-top: 2px; font-size: 13px; color: var(--muted); }
+
+/* The pin picker on the job form */
+.picker-map { height: 280px; border: 1px solid var(--control); border-radius: var(--r-md); overflow: hidden; background: var(--paper); }
+.location-tools { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.osm-credit { font-size: 12px; color: var(--muted); }

@@ -48,6 +48,7 @@ domain changes no one.
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
 | `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
+| `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins only | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
@@ -72,6 +73,37 @@ A few details worth knowing:
 - **Owners can delete only drafts.** Anything that went further gets closed
   instead, so the click history is kept.
 - **One company per account.**
+- **Job locations:** a job has an area and, optionally, an exact point
+  (latitude and longitude) for the map. If the employer ticks "Only show the
+  area" (`show_exact_location` false), the database stores the area's centre
+  instead of the point they sent, so a private address is never saved. Points
+  must lie inside the Milan metro area.
+
+## Areas
+
+Set up by the migration with these approximate centres. Change names or
+centres in Table Editor > `areas` (keep "Elsewhere in Milan" without a
+centre). Jobs keep their area when it is renamed. A job that shows only its
+area keeps the centre it had when it was saved.
+
+| id | Area | Centre (lat, lng) |
+| --- | --- | --- |
+| 1 | Duomo / Centro | 45.4642, 9.1900 |
+| 2 | Brera | 45.4720, 9.1868 |
+| 3 | Porta Venezia | 45.4745, 9.2050 |
+| 4 | Centrale / Loreto | 45.4850, 9.2050 |
+| 5 | Porta Nuova / Garibaldi | 45.4818, 9.1870 |
+| 6 | Isola | 45.4885, 9.1895 |
+| 7 | Sempione / Arco della Pace | 45.4760, 9.1730 |
+| 8 | CityLife | 45.4775, 9.1560 |
+| 9 | Navigli | 45.4510, 9.1760 |
+| 10 | Porta Genova / Tortona | 45.4520, 9.1680 |
+| 11 | Porta Romana / Bocconi | 45.4505, 9.1960 |
+| 12 | Città Studi | 45.4780, 9.2270 |
+| 13 | Lambrate | 45.4840, 9.2380 |
+| 14 | NoLo | 45.4960, 9.2160 |
+| 15 | Bicocca | 45.5150, 9.2110 |
+| 16 | Elsewhere in Milan | (none) |
 
 ## When someone deletes their account
 

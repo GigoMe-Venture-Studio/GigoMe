@@ -19,7 +19,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
-  `?q=&type=&remote=yes|no&italian=none|basic&hours=`; `q` matches title and
+  `?q=&area=&type=&remote=yes|no&italian=none|basic&hours=`, plus `view=map`
+  for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
   numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
   `or()` filter), `src/pages/JobDetail.jsx`
@@ -36,6 +37,17 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   never "applications": GigoMe doesn't see whether anyone applied. Logged-out visitors go
   to `/login?next=/jobs/<id>`; `safeNext()` in `src/lib/auth.js` only accepts
   paths on this site.
+- Map: MapLibre GL (`src/lib/maplibre.js` sets its worker URL for Vite,
+  `src/lib/map.js`) with OpenFreeMap's "positron" style and the
+  OpenStreetMap attribution always visible. Only ever loaded with `import()` /
+  `React.lazy` (`src/components/JobsMap.jsx`, `LocationPicker.jsx`), so list
+  pages stay light. `/jobs` has List | Map (desktop: side by side; phone: one
+  or the other); the map shows exactly the list's jobs, minus remote jobs and
+  jobs without coordinates, clustered when zoomed out. Areas come from
+  `src/lib/areas.js` (the `areas` table). The job form picks the area, then an
+  optional pin (tap, drag, or "Find address": one Nominatim request per press
+  from `src/lib/geocode.js`, bounded to Milan, never autocomplete, credited
+  on the form), or "Only show the area".
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
   the home page. `src/components/SiteFooter.jsx`: the footer on every page
   (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
@@ -237,6 +249,12 @@ Schema rules
   nobody reads `reviewed_by` through the API (jobs have column-level SELECT
   grants: list columns explicitly, never `select=*`).
 - `my_job_stats()` returns apply clicks (not applications) for the caller's own jobs only.
+- `areas` is read-only for `anon` and `authenticated`, changed only in the
+  dashboard. Jobs have `area_id`, `latitude`, `longitude` and
+  `show_exact_location`; the `job_location_privacy` trigger replaces the point
+  with the area's centre (or null) whenever `show_exact_location` is false,
+  and checks keep points in pairs and inside the Milan metro box (lat
+  45.25–45.70, lng 8.70–9.60).
 - `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
   job they can see (RLS), one open report per user per job (unique index);
   only admins read them, and only `admin_resolve_report(id, note)` resolves

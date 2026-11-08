@@ -47,9 +47,9 @@ What exists today:
 | Students | Employers | Platform |
 | --- | --- | --- |
 | Log in with a university email and a 6-digit code, no password | Log in at `/employers` with a work email and a 6-digit code, set up the company | The team approves companies and reviews every job (publish, request changes, reject) |
-| Browse live jobs, filtered by keyword, job type, remote, Italian level and hours | Company name, description and website shown on each job | Only emails from listed university domains get a student account |
+| Browse live jobs by keyword, area, job type, remote, Italian level and hours, as a list or on a map | Company name, description and website shown on each job | Only emails from listed university domains get a student account |
 | "Apply" on each job once logged in: opens the employer's application page or an email to them | Dashboard: company status, jobs with their status and reviewer notes, apply clicks on live jobs | Jobs disappear from the site when they expire or are closed |
-| | Write jobs (drafts while the company is in review), submit, edit, close, delete drafts | |
+| | Write jobs (drafts while the company is in review), with the area and a pin on the map (or the area only, for a private home), submit, edit, close, delete drafts | |
 | Free, always | | Apply clicks are counted per job (never "applications": GigoMe doesn't see whether anyone applied) |
 | Send feedback from any page (logged-in users) | | Feedback is readable only by admins |
 | Report a job (scam, illegal, misleading, discriminatory, other) | | `/admin`: review companies and jobs with a checklist, handle reports; every decision logged with who and when |

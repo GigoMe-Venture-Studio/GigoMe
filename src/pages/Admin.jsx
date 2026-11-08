@@ -179,6 +179,7 @@ function JobSummary({ job }) {
         <div><dt>Hours</dt><dd className="tnum">{job.hours_per_week} h/week{job.hours_per_week > 20 ? ' (over 20)' : ''}</dd></div>
         <div><dt>Pay</dt><dd>{job.pay || <span className="muted">Not stated</span>}</dd></div>
         <div><dt>Where</dt><dd>{placeLabel(job)}</dd></div>
+        <div><dt>Area</dt><dd>{job.areas ? job.areas.name : <span className="muted">Not set</span>}{job.areas && (job.show_exact_location ? (job.latitude != null ? ', exact spot on the map' : ', no pin') : ', area only (private)')}</dd></div>
         <div><dt>Italian</dt><dd>{ITALIAN_LABEL[job.italian_level]}</dd></div>
         <div><dt>Dates</dt><dd>{job.start_date ? `Starts ${dateLabel(job.start_date)}, ` : ''}shown until {dateLabel(String(job.expires_at).slice(0, 10))}</dd></div>
         <div><dt>How to apply</dt><dd className="auth-email">{[job.apply_url, job.apply_email].filter(Boolean).join(' · ') || <span className="muted">Nothing set</span>}</dd></div>

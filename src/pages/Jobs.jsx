@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import JobCard from '../components/JobCard.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import { fetchAreas } from '../lib/areas.js';
 import {
   JOB_TYPES,
   MAX_HOURS_OPTIONS,
@@ -14,6 +15,10 @@ import {
   hasFilters,
   readFilters
 } from '../lib/jobs.js';
+
+// MapLibre is only downloaded when the map is shown.
+const JobsMap = lazy(() => import('../components/JobsMap.jsx'));
+const isMappable = (j) => !j.remote && j.latitude != null && j.longitude != null;
 
 export default function Jobs() {
   return (
@@ -25,7 +30,15 @@ export default function Jobs() {
 
 function JobBoard() {
   const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
   const filters = readFilters(params);
+  // List or map: in the URL too, but not a filter.
+  const view = params.get('view') === 'map' ? 'map' : 'list';
+  const withView = (p) => (view === 'map' ? { ...p, view: 'map' } : p);
+  const [areas, setAreas] = useState([]);
+  useEffect(() => {
+    fetchAreas().then(setAreas).catch(() => setAreas([]));
+  }, []);
   const key = JSON.stringify(filters);
   const [state, setState] = useState({ status: 'loading', jobs: [] });
   const [retry, setRetry] = useState(0);
@@ -42,7 +55,11 @@ function JobBoard() {
   }, [key, retry]);
 
   function setFilter(name, value) {
-    setParams(filtersToParams({ ...filters, [name]: value }), { replace: true });
+    setParams(withView(filtersToParams({ ...filters, [name]: value })), { replace: true });
+  }
+  function setView(next) {
+    const p = filtersToParams(filters);
+    setParams(next === 'map' ? { ...p, view: 'map' } : p, { replace: true });
   }
 
   // The keyword updates the list 300 ms after typing stops (Enter applies it
@@ -60,7 +77,7 @@ function JobBoard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword]);
   function clearFilters() {
-    setParams({}, { replace: true });
+    setParams(withView({}), { replace: true });
   }
 
   const filtered = hasFilters(filters);
@@ -92,8 +109,20 @@ function JobBoard() {
           />
         </label>
         <label className="field">
+          Area
+          <select className="select" name="area" value={filters.area} onChange={(e) => setFilter('area', e.target.value)}>
+            <option value="">All areas</option>
+            {areas.map((a) => (
+              <option key={a.id} value={String(a.id)}>{a.name}</option>
+            ))}
+            {filters.area && !areas.some((a) => String(a.id) === filters.area) && (
+              <option value={filters.area}>Chosen area</option>
+            )}
+          </select>
+        </label>
+        <label className="field">
           Type of job
-          <select className="select" value={filters.type} onChange={(e) => setFilter('type', e.target.value)}>
+          <select className="select" name="type" value={filters.type} onChange={(e) => setFilter('type', e.target.value)}>
             <option value="">Any type</option>
             {JOB_TYPES.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
@@ -102,7 +131,7 @@ function JobBoard() {
         </label>
         <label className="field">
           Italian
-          <select className="select" value={filters.italian} onChange={(e) => setFilter('italian', e.target.value)}>
+          <select className="select" name="italian" value={filters.italian} onChange={(e) => setFilter('italian', e.target.value)}>
             <option value="">Any level</option>
             <option value="none">No Italian needed</option>
             <option value="basic">Basic Italian at most</option>
@@ -110,7 +139,7 @@ function JobBoard() {
         </label>
         <label className="field">
           Remote
-          <select className="select" value={filters.remote} onChange={(e) => setFilter('remote', e.target.value)}>
+          <select className="select" name="remote" value={filters.remote} onChange={(e) => setFilter('remote', e.target.value)}>
             <option value="">Remote or on site</option>
             <option value="yes">Remote</option>
             <option value="no">On site</option>
@@ -118,7 +147,7 @@ function JobBoard() {
         </label>
         <label className="field">
           Hours per week
-          <select className="select" value={filters.hours} onChange={(e) => setFilter('hours', e.target.value)}>
+          <select className="select" name="hours" value={filters.hours} onChange={(e) => setFilter('hours', e.target.value)}>
             <option value="">Any hours</option>
             {MAX_HOURS_OPTIONS.map((h) => (
               <option key={h} value={String(h)}>Up to {h} hours</option>
@@ -134,7 +163,14 @@ function JobBoard() {
         {filtered && (
           <button type="button" className="btn-link" onClick={clearFilters}>Clear filters</button>
         )}
+        <div className="view-toggle" role="group" aria-label="Show jobs as">
+          <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>List</button>
+          <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>Map</button>
+        </div>
       </div>
+
+      <div className={'jobs-results' + (view === 'map' ? ' with-map' : '')}>
+      <div className="jobs-list-col">
 
       {status === 'error' && (
         <div className="empty-state" role="alert">
@@ -169,6 +205,21 @@ function JobBoard() {
           ))}
         </ul>
       )}
+      </div>
+      {view === 'map' && status !== 'error' && (
+        <div className="jobs-map-col">
+          <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">Loading the map…</div>}>
+            <JobsMap jobs={jobs} onOpenJob={(id) => navigate(`/jobs/${id}`)} />
+          </Suspense>
+          {status === 'ready' && jobs.length > 0 && jobs.some((j) => !isMappable(j)) && (
+            <p className="jobs-map-aside muted">
+              {jobs.filter((j) => !isMappable(j)).length} of these jobs {jobs.filter((j) => !isMappable(j)).length === 1 ? 'is' : 'are'} remote or
+              without a place on the map; {jobs.filter((j) => !isMappable(j)).length === 1 ? 'it is' : 'they are'} in the list.
+            </p>
+          )}
+        </div>
+      )}
+      </div>
     </>
   );
 }

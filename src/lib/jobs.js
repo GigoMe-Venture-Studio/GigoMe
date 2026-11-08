@@ -24,15 +24,18 @@ export function cleanKeyword(raw) {
     .slice(0, 60);
 }
 
-// Filters live in the URL (?q=barista&type=part_time&remote=yes&italian=none&hours=20)
-// so a filtered list can be shared. Unknown values are ignored.
+// Filters live in the URL (?q=barista&area=3&type=part_time&remote=yes&italian=none&hours=20)
+// so a filtered list can be shared. Unknown values are ignored. area is an
+// areas.id (see src/lib/areas.js).
 export function readFilters(params) {
+  const area = Number(params.get('area'));
   const type = params.get('type');
   const remote = params.get('remote');
   const italian = params.get('italian');
   const hours = Number(params.get('hours'));
   return {
     q: cleanKeyword(params.get('q')),
+    area: Number.isInteger(area) && area >= 1 && area <= 32767 ? String(area) : '',
     type: JOB_TYPE_LABEL[type] ? type : '',
     remote: remote === 'yes' || remote === 'no' ? remote : '',
     italian: italian === 'none' || italian === 'basic' ? italian : '',
@@ -42,6 +45,7 @@ export function readFilters(params) {
 export function filtersToParams(filters) {
   const out = {};
   if (filters.q) out.q = filters.q;
+  if (filters.area) out.area = filters.area;
   if (filters.type) out.type = filters.type;
   if (filters.remote) out.remote = filters.remote;
   if (filters.italian) out.italian = filters.italian;
@@ -49,7 +53,7 @@ export function filtersToParams(filters) {
   return out;
 }
 export function hasFilters(filters) {
-  return Boolean(filters.q || filters.type || filters.remote || filters.italian || filters.hours);
+  return Boolean(filters.q || filters.area || filters.type || filters.remote || filters.italian || filters.hours);
 }
 
 // The database already limits visitors and students to live jobs, but a
@@ -67,11 +71,13 @@ function liveJobs(columns) {
 
 export async function fetchJobs(filters, { limit = 200 } = {}) {
   let query = liveJobs(
-    'id, title, job_type, location, remote, hours_per_week, pay, italian_level, created_at, companies!inner(name, status)'
+    'id, title, job_type, location, remote, hours_per_week, pay, italian_level, created_at, ' +
+      'area_id, latitude, longitude, show_exact_location, areas(name), companies!inner(name, status)'
   );
   // Keyword: matches the title or the description, ignoring case.
   const q = cleanKeyword(filters.q);
   if (q) query = query.or(`title.ilike."*${q}*",description.ilike."*${q}*"`);
+  if (filters.area) query = query.eq('area_id', Number(filters.area));
   if (filters.type) query = query.eq('job_type', filters.type);
   if (filters.remote === 'yes') query = query.eq('remote', true);
   if (filters.remote === 'no') query = query.eq('remote', false);
@@ -90,7 +96,7 @@ export async function fetchJob(id) {
   if (!UUID.test(id || '')) return null;
   const { data, error } = await liveJobs(
     'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, created_at, ' +
-      'companies!inner(name, website, description, status)'
+      'area_id, latitude, longitude, show_exact_location, areas(name), companies!inner(name, website, description, status)'
   )
     .eq('id', id)
     .maybeSingle();
@@ -111,9 +117,11 @@ export async function revealContact(jobId) {
   return { url: row.apply_url || null, email: row.apply_email || null };
 }
 
+// The place as written by the employer, or else the area's name.
 export function placeLabel(job) {
-  if (job.remote) return job.location ? `Remote or ${job.location}` : 'Remote';
-  return job.location || 'Location not listed';
+  const place = job.location || (job.areas && job.areas.name) || '';
+  if (job.remote) return place ? `Remote or ${place}` : 'Remote';
+  return place || 'Location not listed';
 }
 export function hoursLabel(job) {
   return `${job.hours_per_week} h/week`;
