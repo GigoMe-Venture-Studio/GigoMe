@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { fetchAreas } from '../lib/areas.js';
 import {
+  CATEGORIES,
   JOB_TYPES,
   MAX_HOURS_OPTIONS,
   cleanKeyword,
@@ -118,6 +119,15 @@ function JobBoard() {
             {filters.area && !areas.some((a) => String(a.id) === filters.area) && (
               <option value={filters.area}>Chosen area</option>
             )}
+          </select>
+        </label>
+        <label className="field">
+          Category
+          <select className="select" name="category" value={filters.category} onChange={(e) => setFilter('category', e.target.value)}>
+            <option value="">Any category</option>
+            {CATEGORIES.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </select>
         </label>
         <label className="field">

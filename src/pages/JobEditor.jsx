@@ -6,7 +6,7 @@ import EmployerGate from '../components/EmployerGate.jsx';
 import { supabase } from '../lib/supabase.js';
 import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
-import { ITALIAN_LABEL, JOB_TYPES } from '../lib/jobs.js';
+import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
 import { fetchAreas } from '../lib/areas.js';
 import { findAddress } from '../lib/geocode.js';
@@ -92,6 +92,7 @@ function JobForm({ company, job }) {
   const [v, setV] = useState(() => ({
     title: job ? job.title : '',
     jobType: job ? job.job_type : '',
+    category: job ? job.category || 'other' : '',
     description: job ? job.description || '' : '',
     location: job ? job.location || '' : '',
     remote: job ? job.remote : false,
@@ -148,6 +149,7 @@ function JobForm({ company, job }) {
     if (!title) found.title = 'Add a job title.';
     else if (title.length > 120) found.title = 'Keep the title under 120 characters.';
     if (!v.jobType) found.jobType = 'Choose the type of job.';
+    if (submitting && !v.category) found.category = 'Choose the category.';
     if (v.description.trim().length > 10000) found.description = 'Keep the description under 10,000 characters.';
     if (v.location.trim().length > 200) found.location = 'Keep the location under 200 characters.';
     if (!v.hours) found.hours = 'Add the hours per week.';
@@ -165,6 +167,7 @@ function JobForm({ company, job }) {
     const fields = {
       title,
       job_type: v.jobType,
+      category: v.category || 'other',
       description: v.description.trim() || null,
       location: v.location.trim() || null,
       remote: Boolean(v.remote),
@@ -249,6 +252,14 @@ function JobForm({ company, job }) {
               {JOB_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
             {err('jobType')}
+          </label>
+          <label className="field">
+            Category
+            <select className="select" name="category" value={v.category} onChange={set('category')} aria-invalid={Boolean(errors.category)}>
+              <option value="">Choose…</option>
+              {CATEGORIES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+            {err('category')}
           </label>
           <label className="field">
             <span>Description <span className="field-optional">(optional)</span></span>

@@ -11,7 +11,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
+  `/jobs`, `/jobs/:id`, `/companies/:id`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
   `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
   redirects to `/`: there is no About page, and no team names, biographies or
@@ -19,7 +19,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
-  `?q=&area=&type=&remote=yes|no&italian=none|basic&hours=`, plus `view=map`
+  `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=`, plus `view=map`
   for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
   numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
@@ -48,6 +48,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   optional pin (tap, drag, or "Find address": one Nominatim request per press
   from `src/lib/geocode.js`, bounded to Milan, never autocomplete, credited
   on the form), or "Only show the area".
+- Badges on job cards and job pages: "New" (`isNew()`: published in the last
+  3 days, gold), the category, and the metro badge (`metroLabel()`: only for
+  an exact location within 1000 m of a station, at 80 m a minute walking).
+  Company pages: `src/pages/Company.jsx` (`/companies/:id`): approved
+  companies only (asked for explicitly), name, description, website and open
+  jobs with the map when some have a location; never the contact email.
+  Linked from job pages.
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
   the home page. `src/components/SiteFooter.jsx`: the footer on every page
   (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
@@ -255,6 +262,13 @@ Schema rules
   with the area's centre (or null) whenever `show_exact_location` is false,
   and checks keep points in pairs and inside the Milan metro box (lat
   45.25–45.70, lng 8.70–9.60).
+- `metro_stations` is read-only for everyone; its rows come from
+  `scripts/fetch-metro-stations.mjs` (OpenStreetMap, ODbL) as a data
+  migration. `job_nearest_station` (runs after `job_location_privacy`: triggers
+  fire in name order) stores `nearest_station_id`/`nearest_station_m` for
+  exact locations only. `job_published_at` sets `published_at` on the first
+  publication. Neither column has insert or update grants. `category` is one
+  of the eight values in `CATEGORIES` (`src/lib/jobs.js`).
 - `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
   job they can see (RLS), one open report per user per job (unique index);
   only admins read them, and only `admin_resolve_report(id, note)` resolves

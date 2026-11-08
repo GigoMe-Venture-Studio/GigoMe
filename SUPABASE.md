@@ -49,6 +49,7 @@ domain changes no one.
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
 | `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
+| `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from OpenStreetMap (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins only | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
@@ -78,6 +79,36 @@ A few details worth knowing:
   area" (`show_exact_location` false), the database stores the area's centre
   instead of the point they sent, so a private address is never saved. Points
   must lie inside the Milan metro area.
+
+- **Nearest station:** when a job is saved with an exact location, the
+  database stores its nearest metro station and the distance in metres. The
+  site shows a badge like "M1 Porta Venezia · 4 min walk" when it is within
+  about 1 km. Jobs that show only their area get no station.
+- **Category** (hospitality, retail, tutoring & education, office & admin,
+  marketing & social media, events, tech, other) is chosen by the employer.
+- **Publication date:** set by the database the first time a job is
+  published (editing and republishing keeps it). Jobs published in the last
+  3 days get a "New" badge.
+
+## Metro stations
+
+The station list comes from OpenStreetMap:
+
+> Data © OpenStreetMap contributors, available under the Open Database
+> License (ODbL): https://www.openstreetmap.org/copyright
+
+To load or refresh it, on any computer with Node 20 or newer and internet:
+
+1. `node scripts/fetch-metro-stations.mjs` in the repository. It asks
+   OpenStreetMap's Overpass API for the M1–M5 routes and writes
+   `supabase/migrations/<now>_metro_stations_data.sql`.
+2. Check the station count it prints (about 110 to 120) and skim the file.
+3. Commit it and open a pull request. Merging it adds or updates the stations
+   (by name) and recomputes every job's nearest station.
+
+Until it has run once, the table is empty and no job shows a metro badge.
+Adding or moving a station in the dashboard doesn't update existing jobs:
+rerun the script instead.
 
 ## Areas
 

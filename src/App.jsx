@@ -7,6 +7,7 @@ import Home from './pages/Home.jsx';
 import Jobs from './pages/Jobs.jsx';
 import JobDetail from './pages/JobDetail.jsx';
 import Terms from './pages/Terms.jsx';
+import Company from './pages/Company.jsx';
 import Account from './pages/Account.jsx';
 import Employers from './pages/Employers.jsx';
 import EmployerSetup from './pages/EmployerSetup.jsx';
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:id" element={<JobDetail />} />
+        <Route path="/companies/:id" element={<Company />} />
         {/* The About page was removed; old links land on the home page. */}
         <Route path="/about" element={<Navigate to="/" replace />} />
         <Route path="/account" element={<Account />} />

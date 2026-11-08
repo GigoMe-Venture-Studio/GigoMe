@@ -4,7 +4,7 @@ import { supabase } from './supabase.js';
 
 const JOB_COLUMNS =
   'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, expires_at, ' +
-  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, areas(name), ' +
+  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, areas(name), ' +
   'companies(id, name, website, description, status)';
 
 export const REVIEW_CHECKLIST = [

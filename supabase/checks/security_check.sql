@@ -53,11 +53,16 @@ declare
   v_co_emp      uuid;
   v_co_emp2     uuid;
   v_emp_draft   uuid;
+  v_emp_draft2  uuid;
   v_emp_live    uuid;
   v_emp2_live   uuid;
   v_count_text  text;
   -- areas and job locations
   v_loc_job     uuid;
+  -- metro, categories, publication date
+  v_st_a        smallint;
+  v_st_b        smallint;
+  v_pub         timestamptz;
   -- moderation and reports
   v_report      uuid;
   v_log_before  bigint;
@@ -784,6 +789,8 @@ begin
       perform set_config('role', 'authenticated', true);
       insert into public.jobs (company_id, title, job_type, hours_per_week, status)
         values (v_co_emp, 'Check emp draft', 'part_time', 12, 'draft') returning id into v_emp_draft;
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+        values (v_co_emp, 'Check emp draft 2', 'gig', 6, 'pending') returning id into v_emp_draft2;
       update public.jobs set status = 'pending' where id = v_emp_draft;
       get diagnostics v_rows = row_count;
       perform set_config('role', 'none', true);
@@ -1323,6 +1330,123 @@ begin
     end;
     results := pg_temp.res(results, 'anon can read a live job''s area and location (the map needs them)', 'Porta Venezia 45.47612,9.20734 exact true',
                            v_err, v_err = 'Porta Venezia 45.47612,9.20734 exact true');
+
+    -- ----------------------------------------------------------------------
+    -- Metro stations, categories, publication date
+    -- ----------------------------------------------------------------------
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p from unnest(array['anon', 'authenticated']) r,
+             unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER']) p
+      where has_table_privilege(r, 'public.metro_stations', p)
+      union all
+      select r || ':column ' || p from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p
+      where has_any_column_privilege(r, 'public.metro_stations', p)
+    ) s(x);
+    results := pg_temp.res(results, 'anon and authenticated can only read public.metro_stations', 'SELECT only',
+                           coalesce('also: ' || v_err, 'SELECT only'), v_err is null);
+
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p || ' ' || c from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p,
+             unnest(array['nearest_station_id', 'nearest_station_m', 'published_at']) c
+      where has_column_privilege(r, 'public.jobs', c, p)
+    ) s(x);
+    results := pg_temp.res(results, 'Only the database sets a job''s nearest station and publication date (no write grants)', 'none',
+                           coalesce(v_err, 'none'), v_err is null);
+
+    -- Two test stations: one about 300 m from the test point, one further away.
+    insert into public.metro_stations (name, lines, latitude, longitude)
+      values ('Check Station Near', array['M1'], 45.47612 + 0.0027, 9.20734) returning id into v_st_a;
+    insert into public.metro_stations (name, lines, latitude, longitude)
+      values ('Check Station Far', array['M2', 'M3'], 45.47612 - 0.0100, 9.20734) returning id into v_st_b;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set area_id = 3, latitude = 45.47612, longitude = 9.20734, show_exact_location = true, category = 'hospitality'
+        where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || coalesce((select name from public.metro_stations where id = nearest_station_id), 'no station')
+           || ' ' || case when nearest_station_m between 290 and 310 then 'about 300 m' else coalesce(nearest_station_m::text, '?') || ' m' end
+      into v_text from public.jobs where id = v_loc_job;
+    results := pg_temp.res(results, 'An exact location gets its nearest station and the distance', 'updated, Check Station Near about 300 m',
+                           v_text, v_text = 'updated, Check Station Near about 300 m');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set show_exact_location = false where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || coalesce(nearest_station_id::text, 'no station') || ', ' || coalesce(nearest_station_m::text, 'no distance')
+      into v_text from public.jobs where id = v_loc_job;
+    results := pg_temp.res(results, 'A job that shows only its area gets no station', 'updated, no station, no distance', v_text,
+                           v_text = 'updated, no station, no distance');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set nearest_station_id = v_st_b, nearest_station_m = 5 where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An owner cannot set the nearest station themselves', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set category = 'gambling' where id = v_loc_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A job category outside the list is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_draft2, 'published', null);
+      perform set_config('role', 'none', true);
+      v_err := 'published';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select published_at into v_pub from public.jobs where id = v_emp_draft2;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay = '€15/h', status = 'pending' where id = v_emp_draft2;
+      perform set_config('role', 'none', true);
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_draft2, 'published', null);
+      perform set_config('role', 'none', true);
+    exception when others then v_err := v_err || ' then error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || case when v_pub is null then 'no date' when published_at = v_pub then 'first date kept after republishing' else 'date changed' end
+      into v_text from public.jobs where id = v_emp_draft2;
+    results := pg_temp.res(results, 'Publishing sets published_at once; republishing after an edit keeps the first date',
+                           'published, first date kept after republishing', v_text, v_text = 'published, first date kept after republishing');
+
+    update public.jobs set nearest_station_id = v_st_a, nearest_station_m = 300, category = 'tutoring_education' where id = v_emp_live;
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      select j.category || ', ' || s.name || ' (' || array_to_string(s.lines, ' ') || ') ' || j.nearest_station_m || ' m, '
+             || case when j.published_at is not null then 'published date' else 'no date' end
+        into v_text
+      from public.jobs j join public.metro_stations s on s.id = j.nearest_station_id where j.id = v_emp_live;
+      perform set_config('role', 'none', true);
+      v_err := coalesce(v_text, 'nothing');
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon can read a live job''s category, station and publication date',
+                           'tutoring_education, Check Station Near (M1) 300 m, published date', v_err,
+                           v_err = 'tutoring_education, Check Station Near (M1) 300 m, published date');
 
     -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)

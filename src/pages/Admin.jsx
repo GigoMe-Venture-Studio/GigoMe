@@ -4,7 +4,7 @@ import PageShell from '../components/PageShell.jsx';
 import NotFound from './NotFound.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, placeLabel, websiteHref, websiteText } from '../lib/jobs.js';
+import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, placeLabel, websiteHref, websiteText } from '../lib/jobs.js';
 import { JOB_STATUS, shownStatus } from '../lib/employer.js';
 import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
@@ -175,7 +175,7 @@ function JobSummary({ job }) {
         {c.name || 'Unknown company'} (company {c.status || 'unknown'}) · created {when(job.created_at)}
       </p>
       <dl className="dash-facts admin-job-facts">
-        <div><dt>Type</dt><dd>{JOB_TYPE_LABEL[job.job_type]}</dd></div>
+        <div><dt>Type</dt><dd>{JOB_TYPE_LABEL[job.job_type]}{job.category ? `, ${CATEGORY_LABEL[job.category]}` : ''}</dd></div>
         <div><dt>Hours</dt><dd className="tnum">{job.hours_per_week} h/week{job.hours_per_week > 20 ? ' (over 20)' : ''}</dd></div>
         <div><dt>Pay</dt><dd>{job.pay || <span className="muted">Not stated</span>}</dd></div>
         <div><dt>Where</dt><dd>{placeLabel(job)}</dd></div>
