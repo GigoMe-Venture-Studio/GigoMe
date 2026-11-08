@@ -44,3 +44,8 @@
   .auth-card h1 { font-size: 32px; }
   .auth-buttons { flex-direction: row; }
 }
+
+/* /privacy and /terms */
+.legal-page h2 { margin-top: var(--s6); font-size: 20px; font-weight: 600; }
+.legal-page h2 + * { margin-top: var(--s3); }
+.legal-page .placeholder-text { margin-top: var(--s3); }

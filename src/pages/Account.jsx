@@ -114,8 +114,12 @@ function ProfileForm({ userId, account, student }) {
 
 const CONFIRM_WORD = 'DELETE';
 
+// Two steps: first a reminder with "Keep my account" and "Delete my account"
+// side by side, then the explanation and the typed DELETE confirmation.
 function DeleteAccount({ isCompany, onLeaving }) {
   const navigate = useNavigate();
+  const [step, setStep] = useState('ask');
+  const [kept, setKept] = useState(false);
   const [typed, setTyped] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -137,6 +141,32 @@ function DeleteAccount({ isCompany, onLeaving }) {
     endDeletedSession();
   }
 
+  function keep() {
+    setStep('ask');
+    setTyped('');
+    setError('');
+    setKept(true);
+  }
+
+  if (step === 'ask') {
+    return (
+      <section className="account-section account-danger" aria-labelledby="delete-title">
+        <h2 id="delete-title">Delete my account</h2>
+        <p className="account-danger-text">
+          Before you go, remember that new opportunities are added regularly. You can keep your profile ready for the
+          next role whenever the time is right. Still want to leave? You can delete your account below.
+        </p>
+        {kept && <p className="account-kept" role="status">Good, your account stays as it is.</p>}
+        <div className="account-choice">
+          <button type="button" className="btn btn-secondary" onClick={keep}>Keep my account</button>
+          <button type="button" className="btn btn-secondary" onClick={() => { setKept(false); setStep('confirm'); }}>
+            Delete my account
+          </button>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="account-section account-danger" aria-labelledby="delete-title">
       <h2 id="delete-title">Delete my account</h2>
@@ -147,7 +177,7 @@ function DeleteAccount({ isCompany, onLeaving }) {
           <strong>It can't be undone.</strong>
         </p>
         <p className="muted">
-          GigoMe keeps a count of how often each job's "How to apply" was opened. Your clicks stay in those counts, but
+          GigoMe counts apply clicks on each job (how often students pressed "Apply"). Yours stay in those counts, but
           are no longer linked to you.
         </p>
       </div>
@@ -163,12 +193,16 @@ function DeleteAccount({ isCompany, onLeaving }) {
             spellCheck={false}
             value={typed}
             onChange={(e) => setTyped(e.target.value)}
+            autoFocus
           />
         </label>
         {error && <p className="err" role="alert">{error}</p>}
-        <button type="submit" className="btn btn-secondary account-delete-btn" disabled={!confirmed || busy}>
-          {busy ? 'Deleting…' : 'Delete my account'}
-        </button>
+        <div className="account-choice">
+          <button type="button" className="btn btn-secondary" onClick={keep} disabled={busy}>Keep my account</button>
+          <button type="submit" className="btn btn-secondary account-delete-btn" disabled={!confirmed || busy}>
+            {busy ? 'Deleting…' : 'Delete my account'}
+          </button>
+        </div>
       </form>
     </section>
   );

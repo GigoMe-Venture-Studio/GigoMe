@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router';
+import { Navigate, Routes, Route } from 'react-router';
 import SiteHeader from './components/SiteHeader.jsx';
 import SiteFooter from './components/SiteFooter.jsx';
 import { FeedbackProvider } from './components/Feedback.jsx';
@@ -6,7 +6,7 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import Home from './pages/Home.jsx';
 import Jobs from './pages/Jobs.jsx';
 import JobDetail from './pages/JobDetail.jsx';
-import About from './pages/About.jsx';
+import Terms from './pages/Terms.jsx';
 import Account from './pages/Account.jsx';
 import Employers from './pages/Employers.jsx';
 import EmployerSetup from './pages/EmployerSetup.jsx';
@@ -27,7 +27,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:id" element={<JobDetail />} />
-        <Route path="/about" element={<About />} />
+        {/* The About page was removed; old links land on the home page. */}
+        <Route path="/about" element={<Navigate to="/" replace />} />
         <Route path="/account" element={<Account />} />
         <Route path="/employers" element={<Employers />} />
         <Route path="/employers/setup" element={<EmployerSetup />} />
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <SiteFooter />

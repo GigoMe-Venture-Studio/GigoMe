@@ -5,7 +5,7 @@ import { fetchProfile, logOut } from '../lib/auth.js';
 import { fetchMyCompany } from '../lib/employer.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
-// phones), Jobs, About, then
+// phones), Jobs, then
 //   logged out: "For employers" and "Log in";
 //   student: their name (a link to /account) and "Log out";
 //   company account: "Dashboard", the company name (a link to /account) and
@@ -66,7 +66,6 @@ export default function SiteHeader() {
   }
 
   const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
-  const aboutCurrent = pathname === '/about';
   const accountCurrent = pathname === '/account';
   const employersCurrent = pathname === '/employers' || pathname.startsWith('/employers/');
   const dashboardCurrent = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
@@ -89,7 +88,6 @@ export default function SiteHeader() {
         </Link>
         <nav className="main-nav" aria-label="Main">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>Jobs</Link>
-          <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined}>About</Link>
           {extra && <Link to={extra.to} aria-current={extra.current ? 'page' : undefined}>{extra.text}</Link>}
         </nav>
         <div className="header-actions">
@@ -127,7 +125,6 @@ export default function SiteHeader() {
       {menuOpen && (
         <nav className="menu-panel" id="menu-panel" aria-label="Mobile">
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>Jobs</Link>
-          <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>About</Link>
           {extra && (
             <Link to={extra.to} aria-current={extra.current ? 'page' : undefined} onClick={() => setMenuOpen(false)}>
               {extra.text}

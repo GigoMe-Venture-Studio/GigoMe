@@ -119,7 +119,7 @@ function JobPage() {
         </article>
         <aside aria-label="How to apply">
           <div className="apply">
-            <HowToApply jobId={job.id} />
+            <HowToApply jobId={job.id} jobTitle={job.title} />
           </div>
         </aside>
       </div>
@@ -127,7 +127,12 @@ function JobPage() {
   );
 }
 
-function HowToApply({ jobId }) {
+// The email students send from the "Apply" button.
+function mailtoFor(email, title) {
+  return `mailto:${email}?subject=${encodeURIComponent(`Application: ${title} (via GigoMe)`)}`;
+}
+
+function HowToApply({ jobId, jobTitle }) {
   const { session, loading } = useSession();
   const userId = session ? session.user.id : null;
   const [accountType, setAccountType] = useState(null);
@@ -164,11 +169,51 @@ function HowToApply({ jobId }) {
     return <p className="apply-note apply-company">Only students can apply for jobs on GigoMe. You're logged in with a company account.</p>;
   }
 
-  // Called only when the student presses the button: each call counts a click.
-  async function onReveal() {
+  // Called only when the student presses "Apply": each call counts an apply
+  // click. The new tab is opened right away, while the browser still treats
+  // it as the student's click: a tab opened after waiting for the database is
+  // blocked by Safari and most phones. It's pointed at the application page
+  // once that's known, or closed again for an email-only job.
+  async function onApply() {
+    let tab = null;
+    try {
+      tab = window.open('', '_blank');
+    } catch {
+      tab = null;
+    }
+    if (tab) {
+      try {
+        tab.opener = null;
+        tab.document.title = 'Opening…';
+        tab.document.body.textContent = 'Opening the application page…';
+      } catch {
+        /* the tab still works without the message */
+      }
+    }
     setReveal({ status: 'busy' });
     const result = await revealContact(jobId);
-    setReveal(result.error ? { status: 'error', message: result.error } : { status: 'done', ...result });
+    if (result.error) {
+      if (tab) tab.close();
+      setReveal({ status: 'error', message: result.error });
+      return;
+    }
+    let opened = 'none';
+    if (result.url) {
+      if (tab) {
+        tab.location.href = result.url;
+        opened = 'tab';
+      } else {
+        window.open(result.url, '_blank', 'noopener,noreferrer');
+        opened = 'maybe';
+      }
+    } else {
+      if (tab) tab.close();
+      if (result.email) {
+        window.location.href = mailtoFor(result.email, jobTitle);
+        opened = 'mail';
+      }
+    }
+    setReveal({ status: 'done', ...result, opened });
   }
 
   if (reveal.status === 'done') {
@@ -183,14 +228,19 @@ function HowToApply({ jobId }) {
     return (
       <div className="apply-contact">
         <p className="apply-heading">How to apply</p>
+        <p className="apply-note apply-opened" role="status">
+          {reveal.url
+            ? "The application page should have opened in a new tab. If it didn't, use the link below."
+            : 'Your email app should have opened with the subject filled in. If it didn\'t, write to the address below.'}
+        </p>
         {reveal.url && (
           <a className="btn btn-primary" href={reveal.url} target="_blank" rel="noopener noreferrer">
-            Apply on the employer's site
+            Open the application page
           </a>
         )}
         {reveal.email && (
           <p>
-            Email: <a className="apply-email" href={`mailto:${reveal.email}`}>{reveal.email}</a>
+            Email: <a className="apply-email" href={mailtoFor(reveal.email, jobTitle)}>{reveal.email}</a>
           </p>
         )}
         <p className="apply-note">Applications go straight to the employer.</p>
@@ -200,8 +250,8 @@ function HowToApply({ jobId }) {
 
   return (
     <>
-      <button type="button" className="btn btn-primary" onClick={onReveal} disabled={reveal.status === 'busy'}>
-        {reveal.status === 'busy' ? 'Loading…' : 'How to apply'}
+      <button type="button" className="btn btn-primary" onClick={onApply} disabled={reveal.status === 'busy'}>
+        {reveal.status === 'busy' ? 'Opening…' : 'Apply'}
       </button>
       {reveal.status === 'error' && <p className="err" role="alert">{reveal.message}</p>}
       <p className="apply-note">Applications go straight to the employer.</p>

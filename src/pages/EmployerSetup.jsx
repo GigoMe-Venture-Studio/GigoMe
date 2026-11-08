@@ -45,7 +45,7 @@ function Setup() {
     <div className="auth-card">
       <h1>Tell us about your company</h1>
       <p className="lead">We review every company before its jobs go live. This takes a minute.</p>
-      <CompanyForm defaultEmail={account.session.user.email} submitLabel="Save company" onSave={onSave} />
+      <CompanyForm defaultEmail={account.session.user.email} submitLabel="Save company" onSave={onSave} requireTerms />
     </div>
   );
 }

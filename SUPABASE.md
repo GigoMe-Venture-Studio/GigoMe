@@ -46,10 +46,10 @@ domain changes no one.
 | `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
 | `profiles` | One row per user: account type, university, name, degree level, graduation year | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
-| `companies` | Employers: name, website, description, contact email, and a status (pending, approved or rejected) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
+| `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
 | `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
-| `job_clicks` | One row each time a student reveals how to apply for a job | Admins only | Written automatically by `reveal_job_contact` |
+| `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins only | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
 | `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
 | `moderation_log` | Every admin decision: company approved or rejected, job reviewed or unpublished, report resolved, with who, when and the note | Admins only | Nobody directly: the admin functions write it |
@@ -81,7 +81,7 @@ Users delete their own account on `/account`, which calls
 - **Deleted:** their login, their profile, and the feedback they sent.
 - **Company accounts:** their company, its jobs, how to apply for those jobs,
   and the clicks on those jobs are deleted too.
-- **Kept, but anonymous:** the clicks they made on "How to apply" stay in
+- **Kept, but anonymous:** the apply clicks they made stay in
   `job_clicks` with `user_id` empty, so each job's click count stays right
   without pointing to a person. Reports they filed stay in `job_reports`
   with `reporter_id` empty, so a report about a bad job isn't lost.
@@ -94,7 +94,7 @@ in `feedback` if the person asked for everything to go.
 
 | Function | Who can call it | What it does |
 | --- | --- | --- |
-| `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records a click. Anyone else gets an error. The job page calls it only when a student presses "How to apply". |
+| `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records an apply click. Anyone else gets an error. The job page calls it only when a student presses "Apply". |
 | `set_job_contact(job_id, apply_url, apply_email)` | The job's owner | Sets how students apply. Two empty values remove it. |
 | `get_own_job_contact(job_id)` | The job's owner | Shows the owner what they set. |
 | `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company, and logs it. |
@@ -103,7 +103,7 @@ in `feedback` if the person asked for everything to go.
 | `admin_job_contact(job_id)` | Admins | How to apply for any job, to check it during review. |
 | `admin_company_contact(company_id)` | Admins | A company's contact email and the email its owner logs in with. |
 | `admin_set_job_status(job_id, status)` | Admins | The same without a note (so it can't request changes or reject). |
-| `my_job_stats()` | Company owners | How many times students opened "How to apply" on each of the caller's own jobs. Never other companies' numbers. |
+| `my_job_stats()` | Company owners | Apply clicks on each of the caller's own jobs (how often students pressed "Apply"). Never other companies' numbers. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |

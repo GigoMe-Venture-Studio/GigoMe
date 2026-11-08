@@ -11,9 +11,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/about`, `/account`, `/login`, `/welcome`, `/privacy`,
+  `/jobs`, `/jobs/:id`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
-  `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `ScrollToTop` (in `App.jsx`) starts each new path at the
+  `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
+  redirects to `/`: there is no About page, and no team names, biographies or
+  anything suggesting a university's endorsement or affiliation anywhere. `ScrollToTop` (in `App.jsx`) starts each new path at the
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
@@ -24,8 +26,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (job, company, "How to apply"), logic in `src/lib/jobs.js`. Queries ask for
   live jobs explicitly (published, not expired, approved company), because
   company owners and admins can also read jobs that aren't live.
-  `reveal_job_contact` counts a click on every call: call it only when a
-  student presses "How to apply", never on page load. Logged-out visitors go
+  One "Apply" button: for a logged-in student it calls `reveal_job_contact`
+  and opens the destination at once (the application page in a new tab,
+  opened during the click so pop-up blockers allow it, or the email app with
+  the subject "Application: <title> (via GigoMe)"; a link wins over an
+  email), and shows the contact underneath in case nothing opened.
+  `reveal_job_contact` counts an apply click on every call: call it only when
+  a student presses "Apply", never on page load. We count "apply clicks",
+  never "applications": GigoMe doesn't see whether anyone applied. Logged-out visitors go
   to `/login?next=/jobs/<id>`; `safeNext()` in `src/lib/auth.js` only accepts
   paths on this site.
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
@@ -50,12 +58,17 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the header shows the new name.
 - Account: `src/pages/Account.jsx` (`/account`, reached from the name in the
   header and the phone menu; logged out goes to `/login?next=/account`).
-  Email and university are read-only. "Delete my account" needs DELETE typed,
+  Email and university are read-only. "Delete my account" first shows a
+  reminder with "Keep my account" and "Delete my account" side by side, then
+  needs DELETE typed,
   calls `delete_my_account()` (`src/lib/account.js`), goes to `/` with "Your
-  account has been deleted" and then clears the session on this device. `/privacy` is a placeholder until the owner supplies the text.
+  account has been deleted" and then clears the session on this device.
+  `/privacy` and `/terms` are placeholders until the owner supplies the text;
+  each has a marked "Who operates GigoMe" section. Both are in the footer.
 - Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
   login), `EmployerSetup.jsx` (`/employers/setup`: a company account without
-  a company creates it, status pending), `Dashboard.jsx` (`/dashboard`:
+  a company creates it, status pending; "I accept the terms" must be ticked,
+  and the database stores `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
   company details and status, jobs with status, review notes and apply
   clicks from `my_job_stats()`), `JobEditor.jsx` (new/edit job and how to
   apply). Logic in `src/lib/employer.js`, account state in
@@ -80,7 +93,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
-  (`/jobs`), About, then: logged out, "For employers" and "Log in"; a
+  (`/jobs`), then: logged out, "For employers" and "Log in"; a
   student, their name (a link to `/account`, truncated when it doesn't fit)
   and "Log out"; a company account, "Dashboard", the company name (a link to
   `/account`) and "Log out". The footer shows "For employers" when logged
@@ -94,13 +107,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `user_id`. Logged-out visitors get "Log in ... or write to" instead, since
   the database refuses their feedback. The button fades out whenever it would
   overlap a button, link or field (`KEEP_CLEAR`, except the footer's "Give
-  feedback", which opens the same panel), so it never covers "How to apply"
-  or "Search jobs" on a phone: keep that working when adding pages.
+  feedback", which opens the same panel), so it never covers "Apply" or
+  "Search jobs" on a phone: keep that working when adding pages.
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
   that opens `/jobs` with those filters), the 5 newest live jobs, "How it
-  works". `src/pages/About.jsx`: `/about`, with one placeholder paragraph
-  ("Who runs GigoMe") that the owner will write. Show only real data: no
-  sample listings, ratings, numbers or features that don't exist.
+  works". Show only real data: no sample listings, ratings, numbers or
+  features that don't exist.
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
   `account.css`, `employer.css`, `admin.css`).
@@ -188,7 +200,10 @@ Schema rules
 - `universities` is read-only for `anon` and `authenticated` (no write grants,
   no write policies). It is changed only in the dashboard.
 - Company accounts create and edit their own company (one per account) but
-  never its `status`. Once it is approved, its owner can't change `name` or
+  never its `status`. Creating it requires `terms_accepted_at` (the owner
+  ticked "I accept the terms"); a trigger replaces whatever time is sent with
+  the database's `now()`, and there is no update grant, so it is set only on
+  creation. Once it is approved, its owner can't change `name` or
   `website` any more (trigger `lock_approved_company_identity`: API callers
   who aren't admins are refused; the dashboard and admin functions are not);
   `description` and `contact_email` stay editable, and the dashboard shows
@@ -205,7 +220,7 @@ Schema rules
   `reviewed_at` have no insert or update grants; anon can't read them and
   nobody reads `reviewed_by` through the API (jobs have column-level SELECT
   grants: list columns explicitly, never `select=*`).
-- `my_job_stats()` returns apply clicks for the caller's own jobs only.
+- `my_job_stats()` returns apply clicks (not applications) for the caller's own jobs only.
 - `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
   job they can see (RLS), one open report per user per job (unique index);
   only admins read them, and only `admin_resolve_report(id, note)` resolves
