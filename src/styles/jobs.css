@@ -12,6 +12,18 @@
 .job-filters .select, .job-filters .input { height: 44px; }
 .job-keyword { grid-column: 1 / -1; }
 
+/* When / Languages: toggle chips (several can be on), full width. */
+.chip-filter { grid-column: 1 / -1; margin: 0; padding: 0; border: 0; min-width: 0; }
+.chip-filter legend { padding: 0; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+.chip-filter-note { font-weight: 400; color: var(--muted); font-size: 13px; margin-left: var(--s1); }
+.chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.chip {
+  height: 36px; padding: 0 var(--s3); border: 1px solid var(--control); border-radius: 18px;
+  background: var(--white); color: var(--ink); font: 500 14px/1 var(--font); cursor: pointer;
+}
+.chip[aria-pressed=true] { background: var(--ink); border-color: var(--ink); color: var(--white); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 /* Phones: the keyword with a "Filters" button next to it; the other filters
    open below. From 768px they are all shown and the button is hidden. */
 .job-filters-toggle { display: none; }
@@ -102,10 +114,16 @@
    the metro badge is neutral: no line colours outside our palette. */
 .tag-new { background: var(--warn); color: var(--on-warn); }
 .role-metro { margin-top: 6px; }
+/* When the job happens: plain outlined tags (gold is for "New"). */
+.tag-when { background: var(--white); border: 1px solid var(--line); font-weight: 500; }
 .metro-badge { display: inline-flex; align-items: center; gap: var(--s1); padding: 2px var(--s2); border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 13px; color: var(--ink); background: var(--white); white-space: nowrap; }
 .detail-metro { margin-left: var(--s2); }
 
 /* Company pages */
+.company-title-row { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
+.follow { display: grid; justify-items: end; gap: 4px; }
+.follow-note { font-size: 13px; text-align: right; max-width: 220px; }
+@media (max-width: 559px) { .follow { justify-items: start; } .follow-note { text-align: left; } }
 .company-about { margin-top: var(--s3); max-width: 70ch; }
 .company-site { margin-top: var(--s3); }
 .company-jobs-title { margin: var(--s6) 0 var(--s3); }
@@ -129,11 +147,40 @@
 .save-labelled { border-color: var(--ink); font-weight: 600; font-size: 14px; padding: 0 var(--s3); }
 .save-err { display: block; margin-top: var(--s1); }
 .detail-title-row { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
+.detail-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--s2); }
+/* Share: looks like the labelled Save button next to it. */
+.share-wrap { display: inline-flex; flex-direction: column; align-items: flex-end; gap: var(--s1); }
+.share-btn {
+  display: inline-flex; align-items: center; gap: var(--s2); height: 40px; padding: 0 var(--s3);
+  border: 1px solid var(--ink); border-radius: var(--r-sm); background: none; color: var(--ink); font-weight: 600; font-size: 14px;
+}
+.share-btn:hover { background: var(--paper); }
+.share-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.share-btn .icon { width: 18px; height: 18px; }
+.share-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.share-field { width: min(320px, 80vw); height: 36px; font-size: 14px; }
+.save-btn:disabled, .share-btn:disabled { cursor: default; }
+/* In the employer's preview, links that would leave the page look like links but do nothing. */
+.link-like { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+
 .saved-list { margin-top: var(--s5); }
 .saved-gone { margin-top: var(--s6); }
 .saved-gone-list { list-style: none; margin-top: var(--s3); border-top: 1px solid var(--line); }
 .saved-gone-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
 .saved-gone-row .role-title { color: var(--muted); }
+.saved-loading { margin-top: var(--s4); }
+/* /saved: saved searches, companies you follow, jobs you opened */
+.saved-section { margin-top: var(--s7); padding-top: var(--s5); border-top: 1px solid var(--line); scroll-margin-top: var(--s4); }
+.saved-section .job-list { margin-top: var(--s3); }
+.saved-section-note { margin-top: var(--s1); font-size: 14px; }
+.saved-section > p.muted { margin-top: var(--s2); }
+.saved-subtitle { margin-top: var(--s5); font-size: 16px; font-weight: 600; }
+.saved-rows { list-style: none; margin-top: var(--s3); border-top: 1px solid var(--line); }
+.saved-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
+.saved-row > div { min-width: 0; }
+.saved-row-title { font-weight: 600; }
+.saved-row-meta { margin-top: 2px; font-size: 14px; overflow-wrap: anywhere; }
+.saved-row-new { margin-top: 6px; font-size: 14px; }
 
 /* ---- Map controls: "Metro" (every map), "Search as I move the map"
    (desktop), "Search this area" (phones) */
@@ -209,3 +256,19 @@
 }
 .station-marker::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--white); border: 2px solid var(--ink); }
 @media (min-width: 768px) { .job-map { height: 280px; } }
+
+/* "Save this search" on /jobs (students) */
+.save-search-open, .save-search-done { margin: calc(-1 * var(--s1)) 0 var(--s3); font-size: 14px; }
+.save-search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s2) var(--s3); margin: 0 0 var(--s4); padding: var(--s3) var(--s4); background: var(--paper); border-radius: var(--r-md); }
+.save-search-name { flex: 1 1 240px; }
+.save-search-buttons { display: flex; gap: var(--s2); }
+.save-search-hint, .save-search .err { flex-basis: 100%; }
+
+/* In the job page's facts the column can be narrow (phones): let the metro badge wrap. */
+.facts .metro-badge { white-space: normal; max-width: 100%; }
+/* A fifth fact (Languages at work) starts a new row: no divider before it,
+   and a gap between the rows. */
+@media (min-width: 768px) {
+  .facts { row-gap: var(--s4); }
+  .facts > div:nth-child(4n+1)::before { display: none; }
+}

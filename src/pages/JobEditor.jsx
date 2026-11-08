@@ -3,17 +3,42 @@ import { Link, useNavigate, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import EmployerGate from '../components/EmployerGate.jsx';
+import JobView from '../components/JobView.jsx';
 import { supabase } from '../lib/supabase.js';
 import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
-import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES } from '../lib/jobs.js';
+import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES, LANGUAGES, SCHEDULES } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
 import { fetchAreas } from '../lib/areas.js';
 import { findAddress } from '../lib/geocode.js';
+import { metresBetween } from '../lib/geo.js';
 
 // The pin map is only downloaded when it is shown.
 const LocationPicker = lazy(() => import('../components/LocationPicker.jsx'));
 const MILAN = [9.19, 45.4642];
+
+// The metro stations, for the preview's "M1 Porta Venezia · 4 min walk" badge
+// (the database works it out the same way once the job is saved). Read once.
+let stations = null;
+async function nearestStation(lat, lon) {
+  try {
+    if (!stations) {
+      const res = await fetch('/metro/milan-metro.geojson');
+      const geo = await res.json();
+      stations = geo.features.filter((f) => f.properties.kind === 'station');
+    }
+  } catch {
+    return null;
+  }
+  let best = null;
+  for (const f of stations) {
+    const m = metresBetween([lon, lat], f.geometry.coordinates);
+    if (!best || m < best.m) best = { m, f };
+  }
+  if (!best) return null;
+  const [longitude, latitude] = best.f.geometry.coordinates;
+  return { m: Math.round(best.m), station: { name: best.f.properties.name, lines: best.f.properties.lines.split(' '), latitude, longitude } };
+}
 
 // /dashboard/jobs/new and /dashboard/jobs/:id/edit
 export default function JobEditor() {
@@ -104,8 +129,12 @@ function JobForm({ company, job }) {
     applyUrl: job ? job.apply_url : '',
     applyEmail: job ? job.apply_email : '',
     area: job && job.area_id ? String(job.area_id) : '',
-    onlyArea: job ? !job.show_exact_location : false
+    onlyArea: job ? !job.show_exact_location : false,
+    schedule: job ? job.schedule || [] : [],
+    languages: job ? job.languages || [] : []
   }));
+  const toggle = (key, value) => (e) =>
+    setV((x) => ({ ...x, [key]: e.target.checked ? [...new Set([...x[key], value])] : x[key].filter((y) => y !== value) }));
   // The exact spot: only when the job shows it (otherwise the database holds
   // the area's centre, which isn't a pin).
   const [pin, setPin] = useState(() =>
@@ -157,6 +186,7 @@ function JobForm({ company, job }) {
     if (v.pay.trim().length > 200) found.pay = 'Keep the pay under 200 characters.';
     if (v.endDate && v.endDate < today()) found.endDate = 'Choose today or a later date.';
     if (submitting && !v.remote && !v.area) found.area = 'Choose the area (or "Elsewhere in Milan").';
+    if (submitting && !v.schedule.length) found.schedule = 'Choose when the job happens (at least one).';
     const url = normalizeUrl(v.applyUrl);
     const email = normalizeEmail(v.applyEmail);
     if (url === null || (url && url.length > 500)) found.applyUrl = 'Enter a web address like www.yourcompany.it/jobs.';
@@ -179,7 +209,9 @@ function JobForm({ company, job }) {
       show_exact_location: !v.onlyArea,
       // Area only: the database stores the area's centre, whatever is sent.
       latitude: !v.onlyArea && pin ? pin.lat : null,
-      longitude: !v.onlyArea && pin ? pin.lon : null
+      longitude: !v.onlyArea && pin ? pin.lon : null,
+      schedule: SCHEDULES.map(([x]) => x).filter((x) => v.schedule.includes(x)),
+      languages: LANGUAGES.map(([x]) => x).filter((x) => v.languages.includes(x))
     };
     if (v.endDate) fields.expires_at = endOfDay(v.endDate);
     else if (job) fields.expires_at = new Date(Date.now() + 60 * 86400000).toISOString();
@@ -214,6 +246,68 @@ function JobForm({ company, job }) {
   }
 
   const err = (k) => errors[k] && <span className="err">{errors[k]}</span>;
+
+  // "Preview": the job page exactly as students will see it once published,
+  // built from the form as it is now. Nothing is saved.
+  const [preview, setPreview] = useState(null);
+  async function openPreview() {
+    const { fields } = check(false);
+    const exactPoint = fields.show_exact_location && fields.latitude != null;
+    // Area only: the database stores the area's centre, so the preview does too.
+    const point = exactPoint
+      ? [fields.longitude, fields.latitude]
+      : areaRow && areaRow.latitude != null && fields.area_id
+        ? [areaRow.longitude, areaRow.latitude]
+        : null;
+    const near = exactPoint ? await nearestStation(fields.latitude, fields.longitude) : null;
+    const now = new Date().toISOString();
+    setPreview({
+      ...fields,
+      id: job ? job.id : 'preview',
+      title: fields.title,
+      hours_per_week: Number.isInteger(hours) ? hours : '?',
+      created_at: now,
+      published_at: now,
+      areas: areaRow ? { name: areaRow.name } : null,
+      latitude: point ? point[1] : null,
+      longitude: point ? point[0] : null,
+      metro_stations: near ? near.station : null,
+      nearest_station_m: near ? near.m : null,
+      companies: company
+    });
+    window.scrollTo(0, 0);
+  }
+  function closePreview() {
+    setPreview(null);
+    window.scrollTo(0, 0);
+  }
+
+  if (preview) {
+    return (
+      <div className="editor-preview">
+        <div className="preview-banner" role="note">
+          <p>
+            <strong>Preview.</strong> This is how students will see the job once it's published. Nothing is saved yet. Students
+            press "Apply" to open your application page or email.
+          </p>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={closePreview}>Back to editing</button>
+        </div>
+        <JobView
+          preview
+          job={preview}
+          apply={
+            <>
+              <button type="button" className="btn btn-primary" disabled>Apply</button>
+              <p className="apply-note">Applications go straight to the employer.</p>
+            </>
+          }
+        />
+        <p className="preview-back">
+          <button type="button" className="btn btn-secondary" onClick={closePreview}>Back to editing</button>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="job-editor">
@@ -274,6 +368,16 @@ function JobForm({ company, job }) {
               {Object.entries(ITALIAN_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
           </label>
+          <fieldset className="check-group">
+            <legend>Languages used at work <span className="field-optional">(optional)</span></legend>
+            <div className="check-grid">
+              {LANGUAGES.map(([value, label]) => (
+                <label key={value} className="check">
+                  <input type="checkbox" name="languages" value={value} checked={v.languages.includes(value)} onChange={toggle('languages', value)} /> {label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
         </fieldset>
 
         <fieldset className="form-group">
@@ -323,6 +427,17 @@ function JobForm({ company, job }) {
               <span className="osm-credit">Address search by Nominatim, © OpenStreetMap contributors</span>
             </div>
           )}
+          <fieldset className="check-group" aria-invalid={Boolean(errors.schedule)}>
+            <legend>When <span className="field-optional">(at least one, to submit)</span></legend>
+            <div className="check-grid">
+              {SCHEDULES.map(([value, label]) => (
+                <label key={value} className="check">
+                  <input type="checkbox" name="schedule" value={value} checked={v.schedule.includes(value)} onChange={toggle('schedule', value)} /> {label}
+                </label>
+              ))}
+            </div>
+            {err('schedule')}
+          </fieldset>
           <label className="field">
             Hours per week
             <input className="input hours-input" type="number" name="hours_per_week" inputMode="numeric" min={1} max={40} step={1}
@@ -392,6 +507,7 @@ function JobForm({ company, job }) {
           <button type="button" className="btn btn-secondary" onClick={() => save('draft')} disabled={Boolean(busy)}>
             {busy === 'draft' ? 'Saving…' : isLive ? 'Save as draft (takes it offline)' : 'Save as draft'}
           </button>
+          <button type="button" className="btn btn-tertiary" onClick={openPreview} disabled={Boolean(busy)}>Preview</button>
         </div>
       </form>
     </div>

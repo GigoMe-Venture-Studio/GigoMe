@@ -7,7 +7,7 @@ import { CONTACT_EMAIL } from './contact.js';
 const COMPANY_COLUMNS = 'id, name, website, description, status';
 const JOB_COLUMNS =
   'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, expires_at, ' +
-  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category';
+  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages';
 
 export const COMPANY_STATUS = {
   pending: {
@@ -152,4 +152,11 @@ export function normalizeUrl(raw) {
   } catch {
     return null;
   }
+}
+
+// How many students follow the caller's company: a number, never who.
+export async function fetchFollowerCount() {
+  const { data, error } = await supabase.rpc('my_company_follower_count');
+  if (error) throw error;
+  return Number(data) || 0;
 }

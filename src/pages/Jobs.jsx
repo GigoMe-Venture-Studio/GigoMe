@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import JobCard from '../components/JobCard.jsx';
 import ConfigError from '../components/ConfigError.jsx';
@@ -7,10 +7,14 @@ import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { fetchAreas } from '../lib/areas.js';
 import { distanceLabel, inBounds, inLimits, mapParam, metresBetween, readMapParam } from '../lib/geo.js';
+import { useSavedJobs } from '../lib/saved.js';
+import { saveSearch, searchParamsText, searchSummary } from '../lib/student.js';
 import {
   CATEGORIES,
   JOB_TYPES,
+  LANGUAGES,
   MAX_HOURS_OPTIONS,
+  SCHEDULES,
   cleanKeyword,
   fetchJobs,
   filtersToParams,
@@ -21,7 +25,7 @@ import {
 // MapLibre is only downloaded when the map is shown.
 const JobsMap = lazy(() => import('../components/JobsMap.jsx'));
 const isMappable = (j) => !j.remote && j.latitude != null && j.longitude != null;
-const FOLDED_FILTERS = ['area', 'category', 'type', 'italian', 'remote', 'hours'];
+const FOLDED_FILTERS = ['area', 'category', 'type', 'italian', 'remote', 'hours', 'when', 'lang'];
 const DESKTOP = '(min-width: 900px)'; // list and map side by side
 
 function useMedia(query) {
@@ -108,8 +112,11 @@ function JobBoard() {
   // so the first job shows without scrolling. The button shows how many of
   // them are set.
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const folded = FOLDED_FILTERS.filter((name) => filters[name]).length;
+  const folded = FOLDED_FILTERS.filter((name) => (Array.isArray(filters[name]) ? filters[name].length : filters[name])).length;
+  const toggleIn = (name, value) =>
+    setFilter(name, filters[name].includes(value) ? filters[name].filter((x) => x !== value) : [...filters[name], value]);
   const { status, jobs } = state;
+  const { canSave } = useSavedJobs(); // students only
 
   // ---- The map: where it looks, and searching the area it shows.
   const desktop = useMedia(DESKTOP);
@@ -290,6 +297,26 @@ function JobBoard() {
             ))}
           </select>
         </label>
+        <fieldset className="chip-filter">
+          <legend>When <span className="chip-filter-note">flexible jobs always match</span></legend>
+          <div className="chips">
+            {SCHEDULES.filter(([v]) => v !== 'flexible').map(([value, label]) => (
+              <button key={value} type="button" className="chip" aria-pressed={filters.when.includes(value)} onClick={() => toggleIn('when', value)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset className="chip-filter">
+          <legend>Languages at work</legend>
+          <div className="chips">
+            {LANGUAGES.map(([value, label]) => (
+              <button key={value} type="button" className="chip" aria-pressed={filters.lang.includes(value)} onClick={() => toggleIn('lang', value)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
         </div>
       </form>
 
@@ -313,6 +340,8 @@ function JobBoard() {
           <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>Map</button>
         </div>
       </div>
+
+      {canSave && filtered && <SaveSearch key={searchParamsText(filters)} filters={filters} areas={areas} />}
 
       {(view === 'map' || you) && (
         <div className="locate-row">
@@ -418,5 +447,56 @@ function JobBoard() {
       )}
       </div>
     </>
+  );
+}
+
+// "Save this search": students keep the current filters under a name, on
+// /saved. Only they can see it; nothing is emailed.
+function SaveSearch({ filters, areas }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [state, setState] = useState({ busy: false, error: '', done: false });
+  if (state.done) {
+    return (
+      <p className="save-search-done" role="status">
+        Search saved. Find it on <Link to="/saved#saved-searches">Saved jobs</Link>.
+      </p>
+    );
+  }
+  if (!open) {
+    return (
+      <p className="save-search-open">
+        <button type="button" className="btn-link" onClick={() => { setName(searchSummary(filters, areas).slice(0, 60)); setOpen(true); }}>
+          Save this search
+        </button>
+      </p>
+    );
+  }
+  return (
+    <form className="save-search" onSubmit={async (e) => {
+      e.preventDefault();
+      if (!name.trim()) {
+        setState({ busy: false, error: 'Give the search a name.', done: false });
+        return;
+      }
+      setState({ busy: true, error: '', done: false });
+      try {
+        await saveSearch(name, filters);
+        setState({ busy: false, error: '', done: true });
+      } catch (err) {
+        setState({ busy: false, error: err.message, done: false });
+      }
+    }}>
+      <label className="field save-search-name">
+        Name this search
+        <input className="input" name="search_name" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <div className="save-search-buttons">
+        <button type="submit" className="btn btn-primary btn-sm" disabled={state.busy}>{state.busy ? 'Saving…' : 'Save'}</button>
+        <button type="button" className="btn btn-tertiary btn-sm" onClick={() => setOpen(false)}>Cancel</button>
+      </div>
+      <p className="field-hint save-search-hint">Shown only to you, on Saved jobs, with how many jobs are new since you last opened it. No emails.</p>
+      {state.error && <p className="err" role="alert">{state.error}</p>}
+    </form>
   );
 }

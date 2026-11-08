@@ -23,11 +23,36 @@ export const CATEGORIES = [
   ['other', 'Other']
 ];
 export const CATEGORY_LABEL = Object.fromEntries(CATEGORIES);
+// Values allowed by jobs.schedule (when the job happens). A "flexible" job
+// matches any "When" filter.
+export const SCHEDULES = [
+  ['weekday_mornings', 'Weekday mornings'],
+  ['weekday_afternoons', 'Weekday afternoons'],
+  ['weekday_evenings', 'Weekday evenings'],
+  ['weekends', 'Weekends'],
+  ['flexible', 'Flexible']
+];
+export const SCHEDULE_LABEL = Object.fromEntries(SCHEDULES);
+// Values allowed by jobs.languages (languages used at work; optional).
+export const LANGUAGES = [
+  ['en', 'English'],
+  ['it', 'Italian'],
+  ['es', 'Spanish'],
+  ['fr', 'French'],
+  ['de', 'German'],
+  ['zh', 'Chinese'],
+  ['ar', 'Arabic'],
+  ['other', 'Other']
+];
+export const LANGUAGE_LABEL = Object.fromEntries(LANGUAGES);
+// In the order of the list, so labels always read the same way.
+export const scheduleLabels = (job) => SCHEDULES.filter(([v]) => (job.schedule || []).includes(v)).map(([, l]) => l);
+export const languageLabels = (job) => LANGUAGES.filter(([v]) => (job.languages || []).includes(v)).map(([, l]) => l);
 
 // Columns every job list and page reads (jobs have column-level grants: list
 // them, never select *).
 const LIST_COLUMNS =
-  'id, title, job_type, location, remote, hours_per_week, pay, italian_level, created_at, category, published_at, ' +
+  'id, title, job_type, location, remote, hours_per_week, pay, italian_level, created_at, category, published_at, schedule, languages, ' +
   'area_id, latitude, longitude, show_exact_location, nearest_station_m, areas(name), metro_stations(name, lines)';
 
 // A search keyword, reduced to letters, numbers, spaces, hyphens and
@@ -42,7 +67,15 @@ export function cleanKeyword(raw) {
     .slice(0, 60);
 }
 
-// Filters live in the URL (?q=barista&area=3&type=part_time&remote=yes&italian=none&hours=20)
+// A comma-separated list in the URL, keeping only allowed values, in the
+// list's order.
+function readList(value, allowed) {
+  const asked = String(value || '').split(',');
+  return allowed.filter(([v]) => asked.includes(v)).map(([v]) => v);
+}
+
+// Filters live in the URL (?q=barista&area=3&type=part_time&remote=yes&italian=none&hours=20
+// &when=weekends,weekday_evenings&lang=en,es)
 // so a filtered list can be shared. Unknown values are ignored. area is an
 // areas.id (see src/lib/areas.js).
 export function readFilters(params) {
@@ -59,7 +92,9 @@ export function readFilters(params) {
     type: JOB_TYPE_LABEL[type] ? type : '',
     remote: remote === 'yes' || remote === 'no' ? remote : '',
     italian: italian === 'none' || italian === 'basic' ? italian : '',
-    hours: Number.isInteger(hours) && hours >= 1 && hours <= 40 ? String(hours) : ''
+    hours: Number.isInteger(hours) && hours >= 1 && hours <= 40 ? String(hours) : '',
+    when: readList(params.get('when'), SCHEDULES),
+    lang: readList(params.get('lang'), LANGUAGES)
   };
 }
 export function filtersToParams(filters) {
@@ -71,10 +106,16 @@ export function filtersToParams(filters) {
   if (filters.remote) out.remote = filters.remote;
   if (filters.italian) out.italian = filters.italian;
   if (filters.hours) out.hours = filters.hours;
+  // In the list's order, so the same choice always gives the same link.
+  if (filters.when && filters.when.length) out.when = SCHEDULES.map(([v]) => v).filter((v) => filters.when.includes(v)).join(',');
+  if (filters.lang && filters.lang.length) out.lang = LANGUAGES.map(([v]) => v).filter((v) => filters.lang.includes(v)).join(',');
   return out;
 }
 export function hasFilters(filters) {
-  return Boolean(filters.q || filters.area || filters.category || filters.type || filters.remote || filters.italian || filters.hours);
+  return Boolean(
+    filters.q || filters.area || filters.category || filters.type || filters.remote || filters.italian || filters.hours ||
+      (filters.when && filters.when.length) || (filters.lang && filters.lang.length)
+  );
 }
 
 // The database already limits visitors and students to live jobs, but a
@@ -98,6 +139,10 @@ export async function fetchJobs(filters, { limit = 200 } = {}) {
   if (filters.area) query = query.eq('area_id', Number(filters.area));
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.companyId) query = query.eq('company_id', filters.companyId);
+  if (filters.companyIds) query = query.in('company_id', filters.companyIds);
+  // When: any chosen time, and flexible jobs always fit.
+  if (filters.when && filters.when.length) query = query.overlaps('schedule', [...new Set([...filters.when, 'flexible'])]);
+  if (filters.lang && filters.lang.length) query = query.overlaps('languages', filters.lang);
   if (filters.ids) query = query.in('id', filters.ids);
   if (filters.type) query = query.eq('job_type', filters.type);
   if (filters.remote === 'yes') query = query.eq('remote', true);

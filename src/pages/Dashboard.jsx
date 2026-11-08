@@ -13,6 +13,7 @@ import {
   COMPANY_STATUS,
   JOB_STATUS,
   deleteDraft,
+  fetchFollowerCount,
   fetchMyJobStats,
   fetchMyJobs,
   setJobStatus,
@@ -91,6 +92,7 @@ function CompanySection({ company, onSaved }) {
           <dl className="dash-facts">
             <div><dt>Description</dt><dd>{company.description || <span className="muted">Not added</span>}</dd></div>
             <div><dt>Contact email</dt><dd className="auth-email">{company.contact_email}</dd></div>
+            {company.status === 'approved' && <Followers />}
           </dl>
           {saved && <p className="dash-saved" role="status">Your company details are saved.</p>}
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setSaved(false); setEditing(true); }}>
@@ -209,5 +211,27 @@ function JobRow({ job, clicks, onAct }) {
         )}
       </div>
     </li>
+  );
+}
+
+// How many students follow the company: a number only. GigoMe never shows
+// companies who follows them.
+function Followers() {
+  const [count, setCount] = useState(null);
+  useEffect(() => {
+    let active = true;
+    fetchFollowerCount().then((n) => active && setCount(n)).catch(() => active && setCount(-1));
+    return () => {
+      active = false;
+    };
+  }, []);
+  return (
+    <div>
+      <dt>Followers</dt>
+      <dd className="tnum">
+        {count === null ? '…' : count < 0 ? <span className="muted">Couldn't load</span> : `${count} ${count === 1 ? 'student follows' : 'students follow'} your company`}
+        <span className="field-hint dash-followers-hint">Students see your new jobs on their Saved jobs page. You see how many, never who.</span>
+      </dd>
+    </div>
   );
 }
