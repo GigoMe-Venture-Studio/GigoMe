@@ -20,6 +20,7 @@ import {
 // MapLibre is only downloaded when the map is shown.
 const JobsMap = lazy(() => import('../components/JobsMap.jsx'));
 const isMappable = (j) => !j.remote && j.latitude != null && j.longitude != null;
+const FOLDED_FILTERS = ['area', 'category', 'type', 'italian', 'remote', 'hours'];
 
 export default function Jobs() {
   return (
@@ -82,6 +83,11 @@ function JobBoard() {
   }
 
   const filtered = hasFilters(filters);
+  // On phones the filters other than the keyword are folded behind "Filters",
+  // so the first job shows without scrolling. The button shows how many of
+  // them are set.
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const folded = FOLDED_FILTERS.filter((name) => filters[name]).length;
   const { status, jobs } = state;
 
   return (
@@ -90,7 +96,7 @@ function JobBoard() {
       <p className="muted jobs-lead">Part-time work, gigs and internships for students, in English.</p>
 
       <form
-        className="job-filters"
+        className={'job-filters' + (filtersOpen ? ' is-open' : '')}
         aria-label="Filter jobs"
         onSubmit={(e) => {
           e.preventDefault();
@@ -109,6 +115,22 @@ function JobBoard() {
             enterKeyHint="search"
           />
         </label>
+        <button
+          type="button"
+          className="btn btn-secondary job-filters-toggle"
+          aria-expanded={filtersOpen}
+          aria-controls="job-filters-more"
+          onClick={() => setFiltersOpen((open) => !open)}
+        >
+          Filters
+          {folded > 0 && (
+            <>
+              <span className="filter-count" aria-hidden="true">{folded}</span>
+              <span className="sr-only">, {folded} active</span>
+            </>
+          )}
+        </button>
+        <div className="job-filters-more" id="job-filters-more">
         <label className="field">
           Area
           <select className="select" name="area" value={filters.area} onChange={(e) => setFilter('area', e.target.value)}>
@@ -164,6 +186,7 @@ function JobBoard() {
             ))}
           </select>
         </label>
+        </div>
       </form>
 
       <div className="jobs-status">
