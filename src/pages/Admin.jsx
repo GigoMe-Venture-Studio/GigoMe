@@ -8,6 +8,7 @@ import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, placeLabel, w
 import { JOB_STATUS, shownStatus } from '../lib/employer.js';
 import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
+  FEEDBACK_SHOWN,
   LOG_ACTION_LABEL,
   REVIEW_CHECKLIST,
   checkIsAdmin,
@@ -15,6 +16,7 @@ import {
   fetchPendingCompanies,
   fetchPendingJobs,
   fetchRecentDecisions,
+  fetchRecentFeedback,
   resolveReport,
   reviewJob,
   setCompanyStatus
@@ -59,8 +61,10 @@ function AdminPage() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions()])
-      .then(([companies, jobs, reports, log]) => active && setData({ status: 'ready', companies, jobs, reports, log }))
+    // Feedback that fails to load doesn't stop the moderation queue.
+    const feedback = fetchRecentFeedback().catch(() => null);
+    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions(), feedback])
+      .then(([companies, jobs, reports, log, fb]) => active && setData({ status: 'ready', companies, jobs, reports, log, feedback: fb }))
       .catch(() => active && setData({ status: 'error' }));
     return () => {
       active = false;
@@ -76,7 +80,8 @@ function AdminPage() {
       <p className="admin-summary">
         <a href="#admin-companies">{data.companies.length} {data.companies.length === 1 ? 'company' : 'companies'}</a>,{' '}
         <a href="#admin-jobs">{data.jobs.length} {data.jobs.length === 1 ? 'job' : 'jobs'}</a> and{' '}
-        <a href="#admin-reports">{data.reports.length} open {data.reports.length === 1 ? 'report' : 'reports'}</a> waiting.
+        <a href="#admin-reports">{data.reports.length} open {data.reports.length === 1 ? 'report' : 'reports'}</a> waiting.{' '}
+        <a href="#admin-feedback">Latest feedback</a>.
       </p>
 
       <section className="admin-section" id="admin-companies" aria-labelledby="companies-title">
@@ -97,6 +102,30 @@ function AdminPage() {
         <h2 id="reports-title">Open reports</h2>
         {data.reports.length === 0 ? <p className="muted">None.</p> : (
           <ul className="admin-list">{data.reports.map((r) => <ReportItem key={r.id} report={r} onDone={reload} />)}</ul>
+        )}
+      </section>
+
+      <section className="admin-section" id="admin-feedback" aria-labelledby="feedback-title">
+        <h2 id="feedback-title">Feedback</h2>
+        {data.feedback === null ? (
+          <p className="err" role="alert">We couldn't load the feedback. Reload the page.</p>
+        ) : data.feedback.length === 0 ? (
+          <p className="muted">None yet.</p>
+        ) : (
+          <>
+            <p className="muted">The newest {FEEDBACK_SHOWN} messages, newest first. Senders aren't shown.</p>
+            <ul className="admin-feedback">
+              {data.feedback.map((f) => (
+                <li key={f.id}>
+                  <p className="muted admin-item-meta">
+                    <span className="tnum">{when(f.created_at)}</span>
+                    {f.page ? <> · on <span className="admin-feedback-page">{f.page}</span></> : ''}
+                  </p>
+                  <p className="job-text">{f.message}</p>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </section>
 

@@ -109,3 +109,15 @@ export async function resolveReport(id, note) {
   const { error } = await supabase.rpc('admin_resolve_report', { p_report_id: id, p_note: note });
   if (error) throw error;
 }
+
+// The newest feedback messages: page and time only, never who sent them.
+export const FEEDBACK_SHOWN = 50;
+export async function fetchRecentFeedback() {
+  const { data, error } = await supabase
+    .from('feedback')
+    .select('id, page, message, created_at')
+    .order('created_at', { ascending: false })
+    .limit(FEEDBACK_SHOWN);
+  if (error) throw error;
+  return data || [];
+}

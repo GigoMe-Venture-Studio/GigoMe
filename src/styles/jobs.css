@@ -12,6 +12,31 @@
 .job-filters .select, .job-filters .input { height: 44px; }
 .job-keyword { grid-column: 1 / -1; }
 
+/* Phones: the keyword with a "Filters" button next to it; the other filters
+   open below. From 768px they are all shown and the button is hidden. */
+.job-filters-toggle { display: none; }
+.job-filters-more { display: contents; }
+@media (max-width: 767px) {
+  .job-filters { grid-template-columns: minmax(0, 1fr) auto; }
+  .job-keyword { grid-column: auto; }
+  .job-filters-toggle { display: inline-flex; align-self: end; height: 44px; }
+  .job-filters-toggle::after {
+    content: ''; width: 7px; height: 7px; margin: -3px 0 0 2px;
+    border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .job-filters-toggle[aria-expanded=true]::after { margin-top: 3px; transform: rotate(-135deg); }
+  .job-filters-more {
+    display: grid; grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3);
+  }
+  .job-filters:not(.is-open) .job-filters-more { display: none; }
+}
+.filter-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+  background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 700;
+}
+
 .jobs-status {
   display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
   gap: var(--s2) var(--s4); margin: var(--s5) 0 var(--s3); font-size: 14px;

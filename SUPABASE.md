@@ -98,14 +98,25 @@ The station list comes from OpenStreetMap:
 > Data © OpenStreetMap contributors, available under the Open Database
 > License (ODbL): https://www.openstreetmap.org/copyright
 
-To load or refresh it, on any computer with Node 20 or newer and internet:
+To load or refresh it (no terminal needed):
 
-1. `node scripts/fetch-metro-stations.mjs` in the repository. It asks
-   OpenStreetMap's Overpass API for the M1–M5 routes and writes
-   `supabase/migrations/<now>_metro_stations_data.sql`.
-2. Check the station count it prints (about 110 to 120) and skim the file.
-3. Commit it and open a pull request. Merging it adds or updates the stations
-   (by name) and recomputes every job's nearest station.
+1. On GitHub: **Actions** tab > **Metro stations** (left column) > **Run
+   workflow** > branch `main` > **Run workflow**. It runs
+   `scripts/fetch-metro-stations.mjs` on GitHub's servers, which asks
+   OpenStreetMap's Overpass API for the M1–M5 routes.
+2. It fails, and changes nothing, unless it finds between 100 and 130
+   stations with some on every line. Open the finished run: its summary shows
+   the count per line and every station. Look for one station listed twice
+   under two spellings.
+3. If it passed, it pushed `supabase/migrations/<now>_metro_stations_data.sql`
+   to a new branch, `data/metro-stations`. Open a pull request from it
+   (the summary has the link). Merging it adds or updates the stations (by
+   name) and recomputes every job's nearest station: it changes the live
+   database, so the usual rules apply. Then delete the branch; the workflow
+   stops if `data/metro-stations` already exists.
+
+The script also runs on any computer with Node 20 or newer:
+`node scripts/fetch-metro-stations.mjs` writes the same file.
 
 Until it has run once, the table is empty and no job shows a metro badge.
 Adding or moving a station in the dashboard doesn't update existing jobs:

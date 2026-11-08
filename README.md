@@ -108,7 +108,7 @@ companies and a compliant way of operating.
 
 | Path | What it is |
 | --- | --- |
-| [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
+| [`index.html`](index.html) | The page shell: `<head>` (title, link previews) and the `#root` element React mounts into. The font is self-hosted (`@fontsource-variable/schibsted-grotesk`, imported in `src/main.jsx`). |
 | [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/companies/:id`, `/saved`, `/account`, `/employers`, `/employers/setup`, `/dashboard` (and its job form), `/admin`, `/login`, `/welcome`, `/privacy`, `/terms`, and a 404 page for any other path. `/about` redirects to the home page. |
 | [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `Jobs.jsx` and `JobDetail.jsx` (the job board), `Company.jsx` (public company pages), `Saved.jsx` (saved jobs), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Account.jsx` (edit your profile, delete your account), `Employers.jsx`, `EmployerSetup.jsx`, `Dashboard.jsx` and `JobEditor.jsx` (the employer side), `Admin.jsx` (moderation, admins only), `Privacy.jsx` and `Terms.jsx` (placeholders) and `NotFound.jsx`. |
 | [`src/components/`](src/components) | Shared React parts: the site header and footer (every page), the feedback button and panel (every page), the page frame, the job card used on the home page and `/jobs`, the configuration error message. |
@@ -117,7 +117,7 @@ companies and a compliant way of operating.
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. Also the favicon, the Apple touch icon, the link preview image (`og-image.png`) and `brand/`: the logo files (the original JPEGs and transparent PNGs). |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it as static assets. |
 | [`worker/index.js`](worker/index.js) | A tiny Worker script for one job: a daily ping to Supabase so the free project never pauses. Pages don't run it. |
-| [`scripts/fetch-metro-stations.mjs`](scripts/fetch-metro-stations.mjs) | Builds the metro station data migration from OpenStreetMap (ODbL). See SUPABASE.md. |
+| [`scripts/fetch-metro-stations.mjs`](scripts/fetch-metro-stations.mjs), [`.github/workflows/metro-stations.yml`](.github/workflows/metro-stations.yml) | Builds the metro station data migration from OpenStreetMap (ODbL). The workflow runs it on GitHub when started by hand from the Actions tab. See SUPABASE.md. |
 | [`supabase/queries/kpis.sql`](supabase/queries/kpis.sql) | The numbers (students, companies, live jobs, apply clicks per week) to paste into the Supabase SQL Editor. Read-only. |
 | [`HANDOVER.md`](HANDOVER.md) | For the next CTO: every account, how a change goes live, moderation, limits. |
 | [`supabase/migrations/`](supabase/migrations) | The database schema. Supabase applies new files here when they are merged into `main`. |

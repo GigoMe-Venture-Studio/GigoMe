@@ -14,6 +14,7 @@
     "wrangler": "4.156.0"
   },
   "dependencies": {
+    "@fontsource-variable/schibsted-grotesk": "5.2.8",
     "@supabase/supabase-js": "2.118.0",
     "maplibre-gl": "6.15.0",
     "react": "19.3.1",

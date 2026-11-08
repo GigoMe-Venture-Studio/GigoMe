@@ -9,7 +9,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - `npm install`, then `npm run dev` (local server), `npm run build` (writes
   `dist/`), `npm run preview` or `npx wrangler dev` (serves `dist/`, the second
   the way Cloudflare does).
-- `index.html`: page shell only (`<head>`, fonts, `#root`).
+- `index.html`: page shell only (`<head>`, `#root`). The font (Schibsted
+  Grotesk) is self-hosted: `@fontsource-variable/schibsted-grotesk`, imported
+  in `src/main.jsx` and bundled into `/assets/`. Don't load fonts or other
+  files from third-party servers (no Google Fonts): each one is another
+  service visitors' browsers talk to (HANDOVER.md, section 7b).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
   `/jobs`, `/jobs/:id`, `/companies/:id`, `/saved`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
@@ -23,7 +27,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
   numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
-  `or()` filter), `src/pages/JobDetail.jsx`
+  `or()` filter; on phones, under 768px, every filter except the keyword is
+  folded behind a "Filters" button that shows how many are set, so the first
+  job is visible without scrolling), `src/pages/JobDetail.jsx`
   (job, company, "How to apply"), logic in `src/lib/jobs.js`. Queries ask for
   live jobs explicitly (published, not expired, approved company), because
   company owners and admins can also read jobs that aren't live.
@@ -118,7 +124,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   checklist is ticked; how to apply from `admin_job_contact`), open reports
   (unpublish the job = `admin_review_job(..., 'closed', note)`, reject the
   job's company = `admin_set_company_status(..., 'rejected')` for scams and
-  payment demands, resolve with a note = `admin_resolve_report`), and recent decisions from
+  payment demands, resolve with a note = `admin_resolve_report`), the newest
+  50 feedback messages (time, page and message only, never the sender; the
+  page is shown as text, not a link), and recent decisions from
   `moderation_log`. Not linked from the header.
 - "Report this job": `src/components/ReportJob.jsx` at the bottom of each job
   page (logged out: "Log in to report it"); `src/lib/reports.js` inserts
@@ -271,7 +279,12 @@ Schema rules
   45.25–45.70, lng 8.70–9.60).
 - `metro_stations` is read-only for everyone; its rows come from
   `scripts/fetch-metro-stations.mjs` (OpenStreetMap, ODbL) as a data
-  migration. `job_nearest_station` (runs after `job_location_privacy`: triggers
+  migration, run on GitHub by the hand-started workflow
+  `.github/workflows/metro-stations.yml`: it fails unless it finds 100 to 130
+  stations with some on every line, writes the count per line in the run's
+  summary, and pushes the migration to a new branch `data/metro-stations`
+  (it stops if that branch exists). A pull request from it is a migration
+  like any other. `job_nearest_station` (runs after `job_location_privacy`: triggers
   fire in name order) stores `nearest_station_id`/`nearest_station_m` for
   exact locations only. `job_published_at` sets `published_at` on the first
   publication. Neither column has insert or update grants. `category` is one
