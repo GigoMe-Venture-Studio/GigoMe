@@ -48,7 +48,7 @@ const overlaps = (a, b, pad) =>
   a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + pad && a.bottom > b.top - pad;
 
 // Fixed at the bottom right. It steps out of the way (fades out) whenever it
-// would overlap a button, link or field, e.g. "How to apply" or "Search jobs"
+// would overlap a button, link or field, e.g. "Apply" or "Search jobs"
 // on a phone, and comes back once that has scrolled past.
 function FeedbackButton({ hidden, onOpen }) {
   const ref = useRef(null);

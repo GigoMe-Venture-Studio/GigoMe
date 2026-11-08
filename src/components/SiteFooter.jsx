@@ -15,9 +15,9 @@ export default function SiteFooter() {
           <span className="muted">A student project in Milan. Free for students.</span>
         </div>
         <nav aria-label="Footer">
-          <Link to="/about">About</Link>
           {!session && !loading && <Link to="/employers">For employers</Link>}
           <Link to="/privacy">Privacy notice</Link>
+          <Link to="/terms">Terms</Link>
           <button type="button" className="footer-link-btn" onClick={openFeedback}>Give feedback</button>
         </nav>
         <p className="footer-help">

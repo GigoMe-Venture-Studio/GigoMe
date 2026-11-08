@@ -48,12 +48,12 @@ What exists today:
 | --- | --- | --- |
 | Log in with a university email and a 6-digit code, no password | Log in at `/employers` with a work email and a 6-digit code, set up the company | The team approves companies and reviews every job (publish, request changes, reject) |
 | Browse live jobs, filtered by keyword, job type, remote, Italian level and hours | Company name, description and website shown on each job | Only emails from listed university domains get a student account |
-| See how to apply on each job (employer's website or email) once logged in | Dashboard: company status, jobs with their status and reviewer notes, apply clicks on live jobs | Jobs disappear from the site when they expire or are closed |
+| "Apply" on each job once logged in: opens the employer's application page or an email to them | Dashboard: company status, jobs with their status and reviewer notes, apply clicks on live jobs | Jobs disappear from the site when they expire or are closed |
 | | Write jobs (drafts while the company is in review), submit, edit, close, delete drafts | |
-| Free, always | | "How to apply" clicks are counted per job |
+| Free, always | | Apply clicks are counted per job (never "applications": GigoMe doesn't see whether anyone applied) |
 | Send feedback from any page (logged-in users) | | Feedback is readable only by admins |
 | Report a job (scam, illegal, misleading, discriminatory, other) | | `/admin`: review companies and jobs with a checklist, handle reports; every decision logged with who and when |
-| Edit your profile and delete your account on `/account` | | Deleting an account removes the profile and feedback; clicks stay, anonymous |
+| Edit your profile and delete your account on `/account` | | Deleting an account removes the profile and feedback; apply clicks stay, anonymous |
 
 
 ## Not built on purpose
@@ -108,11 +108,11 @@ companies and a compliant way of operating.
 | Path | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
-| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/about`, `/account`, `/employers`, `/employers/setup`, `/dashboard` (and its job form), `/admin`, `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
-| [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `About.jsx`, `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Account.jsx` (edit your profile, delete your account), `Employers.jsx`, `EmployerSetup.jsx`, `Dashboard.jsx` and `JobEditor.jsx` (the employer side), `Admin.jsx` (moderation, admins only), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
+| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/account`, `/employers`, `/employers/setup`, `/dashboard` (and its job form), `/admin`, `/login`, `/welcome`, `/privacy`, `/terms`, and a 404 page for any other path. `/about` redirects to the home page. |
+| [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Account.jsx` (edit your profile, delete your account), `Employers.jsx`, `EmployerSetup.jsx`, `Dashboard.jsx` and `JobEditor.jsx` (the employer side), `Admin.jsx` (moderation, admins only), `Privacy.jsx` and `Terms.jsx` (placeholders) and `NotFound.jsx`. |
 | [`src/components/`](src/components) | Shared React parts: the site header and footer (every page), the feedback button and panel (every page), the page frame, the job card used on the home page and `/jobs`, the configuration error message. |
 | [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `jobs.js` (job board queries), `feedback.js` (sends feedback), `useSession.js`, `contact.js`. |
-| [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login pages), `header.css` (the site header), `jobs.css` (the job board), `home.css` (the home and About pages) and `feedback.css` (the feedback button and panel). |
+| [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login, privacy and terms pages), `header.css` (the site header), `jobs.css` (the job board), `home.css` (the home page), `feedback.css` (the feedback button and panel), `account.css` (the account page), `employer.css` (the employer side) and `admin.css` (moderation and job reports). |
 | [`public/`](public) | Copied into `dist/` as is. `_headers` holds the cache rules: pages are always checked for a new version, hashed files in `/assets/` are cached for a year. Also the favicon, the Apple touch icon, the link preview image (`og-image.png`) and `brand/`: the logo files (the original JPEGs and transparent PNGs). |
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it as static assets. |
 | [`worker/index.js`](worker/index.js) | A tiny Worker script for one job: a daily ping to Supabase so the free project never pauses. Pages don't run it. |
@@ -144,5 +144,5 @@ environment variables, but jobs and login only work when the two in
 those pages show a clear error instead of crashing.
 
 Everything on the site comes from the database: there is no sample data.
-Jobs are added by the team for now; employers who want to list one write to
-hello@gigome.org.
+Employers sign up at `/employers`, and every company and job is reviewed on
+`/admin` before students see it.

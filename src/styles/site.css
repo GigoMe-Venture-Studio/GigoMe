@@ -193,16 +193,6 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
   .apply{position:static}
 }
 
-/* ---- About ---- */
-.about{max-width:70ch;padding-top:var(--s7);padding-bottom:var(--s8);font-size:18px;line-height:1.6}
-.about h1{font-size:clamp(2rem,4vw,2.5rem);font-weight:700;letter-spacing:-0.02em;line-height:1.15;text-wrap:balance}
-.about .lead{margin-top:var(--s4);color:var(--muted)}
-.about h2{font-size:24px;font-weight:600;margin-top:var(--s7)}
-.about h2 + *{margin-top:var(--s3)}
-.about p + p{margin-top:var(--s3)}
-.team{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s4) var(--s5);margin-top:var(--s4);font-size:16px}
-.team li{display:flex;align-items:center;gap:var(--s3)}
-.team .role{display:block;font-size:14px;color:var(--muted)}
 
 /* ---- Shared small parts ---- */
 .menu-panel button{display:flex;align-items:center;width:100%;min-height:48px;padding:var(--s2) var(--s3);border:0;border-radius:var(--r-sm);background:none;font-weight:500;text-align:left}
@@ -213,8 +203,6 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
 .input[aria-invalid=true],.select[aria-invalid=true]{border-color:var(--error)}
 .note{padding:var(--s3) var(--s4);border-radius:var(--r-md);background:var(--paper);font-size:14px}
 
-/* ---- About ---- */
-.about [id]{scroll-margin-top:var(--s5)}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition:none!important;animation:none!important}

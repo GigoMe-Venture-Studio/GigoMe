@@ -181,7 +181,7 @@ function JobRow({ job, clicks, onAct }) {
         </p>
         {live && clicks !== null && (
           <p className="dash-clicks">
-            <strong className="tnum">{clicks}</strong> {clicks === 1 ? 'click' : 'clicks'} on "How to apply"
+            <strong className="tnum">{clicks}</strong> {clicks === 1 ? 'apply click' : 'apply clicks'}
           </p>
         )}
         {['changes_requested', 'rejected', 'closed'].includes(status) && job.review_note && (

@@ -99,7 +99,7 @@ export async function fetchJob(id) {
 }
 
 // Students only. Returns { url, email } (either may be null), or { error }.
-// The database records a click every time this is called.
+// The database records an apply click every time this is called.
 export async function revealContact(jobId) {
   const { data, error } = await supabase.rpc('reveal_job_contact', { p_job_id: jobId });
   if (error) {

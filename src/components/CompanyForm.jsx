@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { normalizeUrl } from '../lib/employer.js';
@@ -11,13 +12,16 @@ const DESCRIPTION_MAX = 1000;
 // failure; the form shows the error. Once the company is approved
 // (identityLocked), name and website are shown but not sent: only GigoMe can
 // change them (the database refuses it too).
-export default function CompanyForm({ initial, defaultEmail = '', submitLabel, busyLabel = 'Saving…', onSave, onCancel, identityLocked = false }) {
+// requireTerms (setup only): an "I accept the terms" box that must be ticked;
+// the database records when, on creation only.
+export default function CompanyForm({ initial, defaultEmail = '', submitLabel, busyLabel = 'Saving…', onSave, onCancel, identityLocked = false, requireTerms = false }) {
   const [values, setValues] = useState({
     name: (initial && initial.name) || '',
     website: (initial && initial.website) || '',
     description: (initial && initial.description) || '',
     contactEmail: (initial && initial.contact_email) || defaultEmail
   });
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -37,6 +41,7 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
       if (website === null || website.length > 300) found.website = 'Enter a web address like www.yourcompany.it, or leave it empty.';
     }
     if (description.length > DESCRIPTION_MAX) found.description = `Keep it under ${DESCRIPTION_MAX} characters.`;
+    if (requireTerms && !termsAccepted) found.terms = 'Accept the terms to continue.';
     if (!email) found.contactEmail = 'Add an email address we can reach you at.';
     else if (!looksLikeEmail(email) || email.length > 254) found.contactEmail = "That email address doesn't look right.";
     setErrors(found);
@@ -44,7 +49,10 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
     setBusy(true);
     try {
       const editable = { description: description || null, contact_email: email };
-      await onSave(identityLocked ? editable : { name, website: website || null, ...editable });
+      const fields = identityLocked ? editable : { name, website: website || null, ...editable };
+      // Any value means "accepted": the database stores its own time.
+      if (requireTerms) fields.terms_accepted_at = new Date().toISOString();
+      await onSave(fields);
     } catch {
       setSaveError("We couldn't save your company. Check your connection and try again.");
       setBusy(false);
@@ -94,6 +102,18 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
         <span className="field-hint" id="contact-email-hint">Only the GigoMe team sees this. Students apply the way you set on each job.</span>
         {errors.contactEmail && <span className="err">{errors.contactEmail}</span>}
       </label>
+      {requireTerms && (
+        <div className="field terms-field">
+          <label className="check">
+            <input type="checkbox" name="accept_terms" checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)} aria-invalid={Boolean(errors.terms)} />{' '}
+            <span>
+              I accept the <Link to="/terms" target="_blank" rel="noopener noreferrer">terms</Link>
+            </span>
+          </label>
+          {errors.terms && <span className="err">{errors.terms}</span>}
+        </div>
+      )}
       {saveError && <p className="err" role="alert">{saveError}</p>}
       <div className="form-buttons">
         <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? busyLabel : submitLabel}</button>
