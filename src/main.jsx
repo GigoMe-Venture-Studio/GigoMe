@@ -10,6 +10,7 @@ import './styles/home.css';
 import './styles/feedback.css';
 import './styles/account.css';
 import './styles/employer.css';
+import './styles/admin.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

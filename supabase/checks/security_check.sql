@@ -55,6 +55,9 @@ declare
   v_emp_draft   uuid;
   v_emp_live    uuid;
   v_emp2_live   uuid;
+  -- moderation and reports
+  v_report      uuid;
+  v_log_before  bigint;
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -219,7 +222,7 @@ begin
     -- ----------------------------------------------------------------------
     -- Logged-out visitor (anon)
     -- ----------------------------------------------------------------------
-    foreach v_text in array array['job_contacts', 'admins', 'feedback', 'job_clicks', 'profiles'] loop
+    foreach v_text in array array['job_contacts', 'admins', 'feedback', 'job_clicks', 'profiles', 'job_reports', 'moderation_log'] loop
       begin
         perform set_config('request.jwt.claims', '{"role":"anon"}', true);
         perform set_config('role', 'anon', true);
@@ -884,6 +887,219 @@ begin
     results := pg_temp.res(results, 'Publishing clears an earlier review note', 'published, note (none)', v_text, v_text = 'published, note (none)');
 
     -- ----------------------------------------------------------------------
+    -- Moderation: job reports, admin decisions and the moderation log
+    -- ----------------------------------------------------------------------
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p from unnest(array['anon', 'authenticated']) r,
+             unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER']) p
+      where has_table_privilege(r, 'public.moderation_log', p)
+      union all
+      select r || ':column ' || p from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p
+      where has_any_column_privilege(r, 'public.moderation_log', p)
+    ) s(x);
+    results := pg_temp.res(results, 'Nobody writes moderation_log through the API (only the admin functions do)', 'none',
+                           coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p from unnest(array['anon', 'authenticated']) r, unnest(array['UPDATE', 'DELETE', 'TRUNCATE']) p
+      where has_table_privilege(r, 'public.job_reports', p) or (p = 'UPDATE' and has_any_column_privilege(r, 'public.job_reports', p))
+      union all
+      select 'anon:INSERT' where has_any_column_privilege('anon', 'public.job_reports', 'INSERT')
+      union all
+      select 'authenticated:INSERT ' || c from unnest(array['reporter_id', 'status', 'resolution_note', 'resolved_by', 'resolved_at', 'created_at']) c
+      where has_column_privilege('authenticated', 'public.job_reports', c, 'INSERT')
+    ) s(x);
+    results := pg_temp.res(results, 'job_reports: logged-in users insert only job, reason and details; nobody updates or deletes',
+                           'none', coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(f || ' ' || coalesce(nullif(g, ''), 'nobody'), '; ' order by f) into v_text from (
+      select f, (select string_agg(case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end, ',' order by 1)
+                 from pg_proc p, aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+                 where p.oid = f::regprocedure and a.privilege_type = 'EXECUTE'
+                   and (a.grantee = 0 or a.grantee::regrole::text in ('anon', 'authenticated'))) g
+      from unnest(array['public.admin_resolve_report(uuid,text)', 'public.admin_job_contact(uuid)', 'public.admin_company_contact(uuid)']) f
+    ) s;
+    results := pg_temp.res(results, 'admin_resolve_report, admin_job_contact, admin_company_contact: only authenticated can execute them',
+                           'public.admin_company_contact(uuid) authenticated; public.admin_job_contact(uuid) authenticated; public.admin_resolve_report(uuid,text) authenticated',
+                           v_text, v_text = 'public.admin_company_contact(uuid) authenticated; public.admin_job_contact(uuid) authenticated; public.admin_resolve_report(uuid,text) authenticated');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      insert into public.job_reports (job_id, reason) values (v_job_live, 'scam');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot report a job', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason, details) values (v_job_live, 'scam', 'They asked me for a €50 registration fee.');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select id into v_report from public.job_reports where job_id = v_job_live and reporter_id = v_student and status = 'open';
+    results := pg_temp.res(results, 'Student can report a live job (control), recorded as theirs and open', 'inserted, theirs',
+                           v_err || case when v_report is not null then ', theirs' else ', not found' end, v_err = 'inserted' and v_report is not null);
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason) values (v_job_live, 'other');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A user cannot open a second report on the same job while one is open', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason, status) values (v_emp2_live, 'other', 'resolved');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A user cannot file a report as already resolved', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason) values (v_job_draft, 'other');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A user cannot report a job they can''t see (a draft)', 'error', v_err, v_err like 'error:%');
+
+    foreach v_err in array array['student', 'company'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub', case v_err when 'student' then v_student else v_emp end, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        select count(*) into v_count from public.job_reports;
+        select count(*) into v_rows from public.moderation_log;
+        perform set_config('role', 'none', true);
+        v_text := v_count || ' reports, ' || v_rows || ' log rows visible';
+      exception when others then v_text := 'error: ' || sqlerrm;
+      end;
+      results := pg_temp.res(results, 'A ' || v_err || ' cannot read reports (not even their own) or the moderation log',
+                             '0 reports, 0 log rows visible', v_text, v_text = '0 reports, 0 log rows visible' or v_text like 'error:%');
+    end loop;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_resolve_report(v_report, 'Not a problem');
+      perform set_config('role', 'none', true);
+      v_err := 'resolved';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status into v_text from public.job_reports where id = v_report;
+    results := pg_temp.res(results, 'A non-admin cannot resolve a report', 'error, still open', v_err || ', still ' || v_text,
+                           v_err like 'error:%' and v_text = 'open');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select count(*) into v_count from public.job_reports where id = v_report;
+      perform public.admin_resolve_report(v_report, '  ');
+      perform set_config('role', 'none', true);
+      v_err := 'resolved';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Admin reads reports, but cannot resolve one without a note', 'reads 1, error',
+                           'reads ' || v_count || ', ' || case when v_err like 'error:%' then 'error' else v_err end,
+                           v_count = 1 and v_err like 'error:%');
+
+    select coalesce(max(id), 0) into v_log_before from public.moderation_log;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_job_live, 'closed', 'Unpublished after a report: asks for a fee.');
+      perform public.admin_resolve_report(v_report, 'Job unpublished; asked for a fee.');
+      perform set_config('role', 'none', true);
+      v_err := 'done';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', job ' || (select status from public.jobs where id = v_job_live)
+           || ', report ' || r.status || ', by ' || case when r.resolved_by = v_other then 'the admin' else coalesce(r.resolved_by::text, 'nobody') end
+           || ', ' || case when r.resolved_at is not null then 'dated' else 'no date' end
+      into v_text from public.job_reports r where r.id = v_report;
+    results := pg_temp.res(results, 'Admin unpublishes the job and resolves the report: who and when recorded',
+                           'done, job closed, report resolved, by the admin, dated', v_text,
+                           v_text = 'done, job closed, report resolved, by the admin, dated');
+
+    select string_agg(action || ' by ' || case when admin_id = v_other then 'the admin' else coalesce(admin_id::text, 'nobody') end
+                      || case when created_at is not null then ' (dated)' else '' end, ', ' order by id) into v_text
+    from public.moderation_log where id > v_log_before;
+    results := pg_temp.res(results, 'Both decisions are in the moderation log with who and when',
+                           'job_closed by the admin (dated), report_resolved by the admin (dated)', v_text,
+                           v_text = 'job_closed by the admin (dated), report_resolved by the admin (dated)');
+
+    select coalesce(max(id), 0), count(*) into v_log_before, v_rows from public.moderation_log;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_set_company_status(v_co_own, 'approved');
+      perform public.admin_set_company_status(v_co_own, 'rejected');
+      select count(*) into v_count from public.moderation_log;
+      perform set_config('role', 'none', true);
+      v_err := 'done, admin reads ' || v_count || ' log rows';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || '; ' || string_agg(action, ', ' order by id) into v_text from public.moderation_log where id > v_log_before;
+    results := pg_temp.res(results, 'Company decisions are logged too, and admins can read the log',
+                           'done, admin reads ' || (v_rows + 2) || ' log rows; company_approved, company_rejected', v_text,
+                           v_text = 'done, admin reads ' || (v_rows + 2) || ' log rows; company_approved, company_rejected');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason) values (v_emp_live, 'misleading');
+      insert into public.job_reports (job_id, reason) values (v_job_closed, 'other');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A user can report another live job, but not a closed one', 'error',
+                           v_err, v_err like 'error:%' and exists (select 1 from public.job_reports where job_id = v_emp_live and reporter_id = v_student) is false);
+
+    insert into public.job_contacts (job_id, apply_url, apply_email) values (v_emp_live, 'https://check-emp.example/jobs', null)
+      on conflict (job_id) do nothing;
+    v_text := '';
+    foreach v_err in array array['admin', 'owner', 'student'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub',
+          case v_err when 'admin' then v_other when 'owner' then v_emp else v_student end, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        v_text := v_text || v_err || ': ' || coalesce((select apply_url from public.admin_job_contact(v_emp_live)), 'nothing') || '; ';
+        perform set_config('role', 'none', true);
+      exception when others then v_text := v_text || v_err || ': error; ';
+      end;
+    end loop;
+    results := pg_temp.res(results, 'admin_job_contact: admins only (not even the job''s owner)',
+                           'admin: https://check-emp.example/jobs; owner: error; student: error; ', v_text,
+                           v_text = 'admin: https://check-emp.example/jobs; owner: error; student: error; ');
+
+    v_text := '';
+    foreach v_err in array array['admin', 'owner', 'student'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub',
+          case v_err when 'admin' then v_other when 'owner' then v_emp else v_student end, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        v_text := v_text || v_err || ': ' || coalesce((select login_email from public.admin_company_contact(v_co_emp)), 'nothing') || '; ';
+        perform set_config('role', 'none', true);
+      exception when others then v_text := v_text || v_err || ': error; ';
+      end;
+    end loop;
+    results := pg_temp.res(results, 'admin_company_contact (with the owner''s login email): admins only',
+                           'admin: owner@check-emp.example; owner: error; student: error; ', v_text,
+                           v_text = 'admin: owner@check-emp.example; owner: error; student: error; ');
+
+    -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)
     -- ----------------------------------------------------------------------
     select coalesce(string_agg(case when grantee = 0 then 'PUBLIC' else grantee::regrole::text end, ', ' order by 1), 'nobody')
@@ -908,6 +1124,7 @@ begin
       (v_leaver,    'leaver@studbocconi.it'),
       (v_leaver_co, 'owner@check-leaving.example');
     insert into public.feedback (user_id, page, message) values (v_leaver, '/check', 'leaver feedback 1'), (v_leaver, '/check', 'leaver feedback 2');
+    insert into public.job_reports (job_id, reporter_id, reason, details) values (v_emp2_live, v_leaver, 'other', 'check leaver report');
     with c as (
       insert into public.job_clicks (job_id, user_id) values (v_job_live, v_leaver), (v_job_live, v_leaver) returning id
     ) select array_agg(id) into v_clicks from c;
@@ -952,6 +1169,11 @@ begin
     select count(*) into v_rows from public.feedback where user_id = v_other;
     results := pg_temp.res(results, 'delete_my_account deletes the caller''s feedback, not anyone else''s',
                            '0 of theirs left, 1 other kept', v_count || ' of theirs left, ' || v_rows || ' other kept', v_count = 0 and v_rows = 1);
+
+    select count(*) || ' kept, ' || count(reporter_id) || ' with a reporter' into v_text
+    from public.job_reports where details = 'check leaver report';
+    results := pg_temp.res(results, 'delete_my_account keeps the caller''s job reports, without a reporter',
+                           '1 kept, 0 with a reporter', v_text, v_text = '1 kept, 0 with a reporter');
 
     select count(*) || ' kept, ' || count(user_id) || ' with a user_id' into v_text
     from public.job_clicks where id = any (v_clicks);

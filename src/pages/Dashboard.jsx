@@ -174,7 +174,7 @@ function JobRow({ job, clicks, onAct }) {
             <strong className="tnum">{clicks}</strong> {clicks === 1 ? 'click' : 'clicks'} on "How to apply"
           </p>
         )}
-        {(status === 'changes_requested' || status === 'rejected') && job.review_note && (
+        {['changes_requested', 'rejected', 'closed'].includes(status) && job.review_note && (
           <div className="review-note">
             <p className="review-note-label">Note from the reviewer</p>
             <p className="job-text">{job.review_note}</p>

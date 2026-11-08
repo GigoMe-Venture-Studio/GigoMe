@@ -13,7 +13,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
   `/jobs`, `/jobs/:id`, `/about`, `/account`, `/login`, `/welcome`, `/privacy`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
-  `/dashboard/jobs/:id/edit` and `*` (404). `ScrollToTop` (in `App.jsx`) starts each new path at the
+  `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `ScrollToTop` (in `App.jsx`) starts each new path at the
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
@@ -64,6 +64,19 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   status, so it is never submitted without a contact; a published job is
   edited in one update that sends it back to `pending`. Contact email is read
   only through `get_company_contact_email()`. Styles in `employer.css`.
+- Moderation: `src/pages/Admin.jsx` (`/admin`, logic in `src/lib/admin.js`,
+  styles in `admin.css`). Only admins (`is_admin()`); everyone else, logged
+  out included, gets the 404 page, and the database refuses them anyway.
+  Pending companies (approve/reject, with contact and login email from
+  `admin_company_contact`), pending jobs (publish/request changes/reject, a
+  note required for the last two, Publish only once the five-item review
+  checklist is ticked; how to apply from `admin_job_contact`), open reports
+  (unpublish the job = `admin_review_job(..., 'closed', note)`, resolve with
+  a note = `admin_resolve_report`), and recent decisions from
+  `moderation_log`. Not linked from the header.
+- "Report this job": `src/components/ReportJob.jsx` at the bottom of each job
+  page (logged out: "Log in to report it"); `src/lib/reports.js` inserts
+  into `job_reports`.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
@@ -80,8 +93,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   through `sendFeedback()` in `src/lib/feedback.js`; the database sets
   `user_id`. Logged-out visitors get "Log in ... or write to" instead, since
   the database refuses their feedback. The button fades out whenever it would
-  overlap a button, link or field (`KEEP_CLEAR`), so it never covers "How to
-  apply" or "Search jobs" on a phone: keep that working when adding pages.
+  overlap a button, link or field (`KEEP_CLEAR`, except the footer's "Give
+  feedback", which opens the same panel), so it never covers "How to apply"
+  or "Search jobs" on a phone: keep that working when adding pages.
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
   that opens `/jobs` with those filters), the 5 newest live jobs, "How it
   works". `src/pages/About.jsx`: `/about`, with one placeholder paragraph
@@ -89,7 +103,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   sample listings, ratings, numbers or features that don't exist.
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
-  `account.css`, `employer.css`).
+  `account.css`, `employer.css`, `admin.css`).
   No CSS framework.
 - `public/`: copied into `dist/` as is: `_headers` (cache rules),
   `favicon.ico` (16 and 32 px, flat purple on a white tile),
@@ -188,12 +202,20 @@ Schema rules
   nobody reads `reviewed_by` through the API (jobs have column-level SELECT
   grants: list columns explicitly, never `select=*`).
 - `my_job_stats()` returns apply clicks for the caller's own jobs only.
+- `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
+  job they can see (RLS), one open report per user per job (unique index);
+  only admins read them, and only `admin_resolve_report(id, note)` resolves
+  them. `moderation_log`: every admin decision (who, when, what, note),
+  written only by the admin functions (`admin_set_company_status`,
+  `admin_review_job`, `admin_resolve_report`), read only by admins. A new
+  admin action must write to it too.
 - Job contacts are only revealed to logged-in students by
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
 - `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
   their feedback explicitly, then the `auth.users` row, which cascades to the
   profile and, for a company account, its company, jobs, job contacts and
-  those jobs' clicks. Their own clicks stay with `user_id` set to null. Keep
+  those jobs' clicks (and reports on those jobs). Their own clicks and the
+  reports they filed stay, with `user_id` / `reporter_id` set to null. Keep
   it that way if you add a table that points at a user: decide whether it is
   deleted or kept anonymous, and add a check.
 

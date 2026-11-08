@@ -51,6 +51,8 @@ domain changes no one.
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | One row each time a student reveals how to apply for a job | Admins only | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
+| `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
+| `moderation_log` | Every admin decision: company approved or rejected, job reviewed or unpublished, report resolved, with who, when and the note | Admins only | Nobody directly: the admin functions write it |
 
 A few details worth knowing:
 
@@ -78,7 +80,8 @@ Users delete their own account on `/account`, which calls
   and the clicks on those jobs are deleted too.
 - **Kept, but anonymous:** the clicks they made on "How to apply" stay in
   `job_clicks` with `user_id` empty, so each job's click count stays right
-  without pointing to a person.
+  without pointing to a person. Reports they filed stay in `job_reports`
+  with `reporter_id` empty, so a report about a bad job isn't lost.
 
 Deleting a user in the dashboard (Authentication → Users) does the same,
 except that their feedback is kept with `user_id` empty. Delete it by hand
@@ -91,8 +94,11 @@ in `feedback` if the person asked for everything to go.
 | `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records a click. Anyone else gets an error. The job page calls it only when a student presses "How to apply". |
 | `set_job_contact(job_id, apply_url, apply_email)` | The job's owner | Sets how students apply. Two empty values remove it. |
 | `get_own_job_contact(job_id)` | The job's owner | Shows the owner what they set. |
-| `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company. |
-| `admin_review_job(job_id, status, note)` | Admins | Sets a job's status and records the review (note, who, when). A note is required to request changes or reject; publishing clears an old note. |
+| `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company, and logs it. |
+| `admin_review_job(job_id, status, note)` | Admins | Sets a job's status and records the review (note, who, when) in the job and in `moderation_log`. A note is required to request changes or reject; publishing clears an old note. Unpublishing a job is this with `closed`. |
+| `admin_resolve_report(report_id, note)` | Admins | Resolves an open report with a note, and logs it. |
+| `admin_job_contact(job_id)` | Admins | How to apply for any job, to check it during review. |
+| `admin_company_contact(company_id)` | Admins | A company's contact email and the email its owner logs in with. |
 | `admin_set_job_status(job_id, status)` | Admins | The same without a note (so it can't request changes or reject). |
 | `my_job_stats()` | Company owners | How many times students opened "How to apply" on each of the caller's own jobs. Never other companies' numbers. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
@@ -130,7 +136,9 @@ get one row per check; every row should say `passed = true`. If any says
   in the Table Editor.
 - **Make someone an admin:** find their user ID under Authentication → Users,
   then insert it into the `admins` table.
-- **Approve a company or publish a job:** change its `status` in the Table
-  Editor, or use the admin functions above from an admin page.
+- **Approve a company, review a job, handle a report:** log in on the site
+  with an admin account and open `/admin` (it isn't linked anywhere). Every
+  decision there is recorded in `moderation_log`. Changing a status in the
+  Table Editor works too, but isn't logged.
 - **Change the structure:** write a new migration file and open a pull
   request. Update the security check if you add a table, rule or function.
