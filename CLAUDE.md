@@ -23,7 +23,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
-  `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=`, plus `view=map`
+  `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=&when=&lang=`
+  (`when` and `lang`: comma lists from `SCHEDULES` and `LANGUAGES` in
+  `src/lib/jobs.js`, written in list order, matched with PostgREST `ov`;
+  flexible jobs always match a `when` filter), plus `view=map`
   for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
   numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
@@ -90,7 +93,24 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   card's link, not inside it, and on job pages; students only),
   `src/pages/Saved.jsx` (`/saved`, "Saved jobs" in the header for students;
   jobs that closed or expired show as "No longer available" from
-  `my_saved_jobs()`).
+  `my_saved_jobs()`). `/saved` also holds, from `src/lib/student.js`: saved
+  searches ("Save this search" on `/jobs` when filters are set, students
+  only; "N new since your last visit" = live matches published after
+  `last_seen_at`, which opening the search resets), "New from companies you
+  follow" (live jobs of followed companies from the last 14 days; "Follow"
+  on company pages, students only) and "Jobs you opened" from
+  `my_opened_jobs()`, labelled exactly "You opened the application on
+  <date>": never "applied" anywhere. All in the app only: nothing is
+  emailed.
+- Job page body: `src/components/JobView.jsx`, used by `/jobs/:id` and by
+  the job form's "Preview" (same component, so the preview is exactly what
+  students see; in a preview Save, Share, Report and Apply are shown but do
+  nothing, nothing is saved, and the metro badge is worked out from
+  `public/metro/milan-metro.geojson` as the database will). "Share"
+  (`ShareButton.jsx`): the phone's share sheet on touch screens with
+  `navigator.share`, else "Copy link" with a confirmation (or the link shown
+  to copy by hand). Schedule tags sit next to the Italian tag on cards so the
+  first job still fits on a 320×568 screen.
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
   the home page. `src/components/SiteFooter.jsx`: the footer on every page
   (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
@@ -321,6 +341,25 @@ Schema rules
   exact locations only. `job_published_at` sets `published_at` on the first
   publication. Neither column has insert or update grants. `category` is one
   of the eight values in `CATEGORIES` (`src/lib/jobs.js`).
+- `jobs.schedule` (weekday_mornings, weekday_afternoons, weekday_evenings,
+  weekends, flexible) is required to submit or publish (trigger
+  `job_schedule_required`, admins included; fires only when status or
+  schedule change, so older live jobs keep working and /admin lists them);
+  `jobs.languages` (en, it, es, fr, de, zh, ar, other) is optional. Both are
+  stored sorted without repeats and readable like the rest of a job. The
+  security check gives every test job a schedule (and an area): keep doing
+  that for new test jobs.
+- `saved_searches` (name, `params` = the /jobs query string, last_seen_at)
+  and `company_follows` (company_id): students only, for themselves only
+  (`user_id` has no insert grant), read and deleted only by their owner,
+  deleted with the account (and follows with the company). At most 20
+  saved searches (trigger `saved_searches_limit`); `last_seen_at` is always
+  the database's now() (trigger `saved_search_seen_now`). Only approved
+  companies can be followed. Companies never see who follows them, only
+  `my_company_follower_count()` on their dashboard.
+- Students read their own `job_clicks` rows (and nobody else's);
+  `my_opened_jobs()` returns them per job with title, company and whether
+  it's still live.
 - `saved_jobs`: students insert only `job_id` (`user_id` is the caller, by
   default and by policy) for a job they can see; they read and delete only
   their own rows; no updates. Rows go with the account (`auth.users`, on
@@ -337,7 +376,7 @@ Schema rules
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
 - `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
   their feedback explicitly, then the `auth.users` row, which cascades to the
-  profile, their saved jobs and, for a company account, its company, jobs, job contacts and
+  profile, their saved jobs, saved searches and follows and, for a company account, its company, jobs, job contacts and
   those jobs' clicks (and reports on those jobs). Their own clicks and the
   reports they filed stay, with `user_id` / `reporter_id` set to null. Keep
   it that way if you add a table that points at a user: decide whether it is

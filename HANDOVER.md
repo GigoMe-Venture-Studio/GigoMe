@@ -170,6 +170,25 @@ workflow into our database and our own site
 (`public/metro/milan-metro.geojson`), not by visitors' browsers. CC BY
 needs that credit to stay visible: keep it if the map changes.
 
+## 7c. What GigoMe stores about each student
+
+Also for the privacy notice. Everything is in Supabase (Frankfurt), visible
+only to that student (and admins where noted), and nothing is ever emailed.
+
+| What | Kept until |
+| --- | --- |
+| Profile: email, university, name, degree level, graduation year | The account is deleted |
+| Saved jobs | Removed, or the account is deleted |
+| Saved searches: a name, the filters, when last opened | Deleted, or the account is deleted |
+| Companies followed (the company sees only a count) | Unfollowed, the company is deleted, or the account is deleted |
+| Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | Kept after the account is deleted, without the user (anonymous) |
+| Job reports they filed (admins only) | Kept after the account is deleted, without the reporter |
+| Feedback they sent (admins only) | The account is deleted |
+
+"Share" on a job page hands the job's link to the phone's own share sheet
+(the student picks the app) or copies it; GigoMe sees nothing. "Use my
+location" is never stored (section 7b).
+
 ## 8. Not built on purpose
 
 These come up again and again. Don't add them without checking with the
