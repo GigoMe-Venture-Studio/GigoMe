@@ -54,18 +54,31 @@ export async function findUniversity(email) {
   );
 }
 
-export async function sendCode(email) {
+// captchaToken: from Turnstile, when it's configured (see src/lib/captcha.js).
+// Supabase ignores it until CAPTCHA protection is turned on in its dashboard.
+export async function sendCode(email, captchaToken) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { shouldCreateUser: true }
+    options: { shouldCreateUser: true, ...(captchaToken ? { captchaToken } : {}) }
   });
   return error ? sendErrorMessage(error) : null;
 }
 
-export async function verifyCode(email, code, sentAt) {
-  const { data, error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
+export async function verifyCode(email, code, sentAt, captchaToken) {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: code,
+    type: 'email',
+    ...(captchaToken ? { options: { captchaToken } } : {})
+  });
   return error ? { error: verifyErrorMessage(error, sentAt) } : { user: data.user };
 }
+
+// Supabase refused the Turnstile token (missing, used twice or expired).
+function isCaptchaError(error) {
+  return error.code === 'captcha_failed' || /captcha/i.test(error.message || '');
+}
+const CAPTCHA_MESSAGE = "We couldn't confirm you're not a bot. Please try again.";
 
 function isRateLimited(error) {
   return error.status === 429 || /rate limit|too many/i.test(error.message || '');
@@ -73,6 +86,7 @@ function isRateLimited(error) {
 
 export function sendErrorMessage(error) {
   const code = error.code || '';
+  if (isCaptchaError(error)) return CAPTCHA_MESSAGE;
   if (code === 'over_email_send_rate_limit') {
     return "We're sending a lot of login emails right now. Please try again in a few minutes.";
   }
@@ -89,6 +103,7 @@ export function sendErrorMessage(error) {
 }
 
 export function verifyErrorMessage(error, sentAt) {
+  if (isCaptchaError(error)) return CAPTCHA_MESSAGE;
   if (isRateLimited(error)) {
     return 'Too many attempts. Please wait a few minutes, then try again or ask for a new code.';
   }

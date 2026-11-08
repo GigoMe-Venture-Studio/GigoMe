@@ -145,3 +145,9 @@ get one row per check; every row should say `passed = true`. If any says
   Table Editor works too, but isn't logged.
 - **Change the structure:** write a new migration file and open a pull
   request. Update the security check if you add a table, rule or function.
+- **See the numbers:** paste `supabase/queries/kpis.sql` into the SQL Editor
+  (read-only).
+- **Bot check on login:** Authentication > Attack Protection ("Bot and Abuse
+  Protection" in some dashboard versions) > CAPTCHA, with
+  Cloudflare Turnstile's secret key. See `HANDOVER.md` before changing it:
+  turning it on before the site sends Turnstile tokens breaks every login.
