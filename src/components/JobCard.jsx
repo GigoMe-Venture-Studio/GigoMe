@@ -14,7 +14,9 @@ import {
 
 // One job in a list (/jobs, "Newest jobs" on the home page, company pages,
 // saved jobs). The save button sits next to the link, not inside it.
-export default function JobCard({ job }) {
+// distance: "1.2 km away" when the person chose "Use my location" (worked
+// out on their device), else null.
+export default function JobCard({ job, distance = null }) {
   const metro = metroLabel(job);
   return (
     <li className="job-card">
@@ -40,6 +42,12 @@ export default function JobCard({ job }) {
             <span>{placeLabel(job)}</span>
             <span className="sep" aria-hidden="true">·</span>
             <span className="tnum">{hoursLabel(job)}</span>
+            {distance && (
+              <>
+                <span className="sep" aria-hidden="true">·</span>
+                <span className="tnum job-distance">{distance}</span>
+              </>
+            )}
           </div>
           {metro && <div className="role-metro"><span className="metro-badge">{metro}</span></div>}
         </div>

@@ -115,9 +115,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 // One live job, or null when it doesn't exist or isn't live.
 export async function fetchJob(id) {
   if (!UUID.test(id || '')) return null;
-  const { data, error } = await liveJobs(
-    LIST_COLUMNS + ', description, start_date, companies!inner(id, name, website, description, status)'
-  )
+  // The job page also needs the station's position, for its small map.
+  const columns = LIST_COLUMNS.replace('metro_stations(name, lines)', 'metro_stations(name, lines, latitude, longitude)');
+  const { data, error } = await liveJobs(columns + ', description, start_date, companies!inner(id, name, website, description, status)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
@@ -161,6 +161,15 @@ export function isNew(job) {
 export function hoursLabel(job) {
   return `${job.hours_per_week} h/week`;
 }
+// "€11/h" for a map marker: the first amount in the pay text (with its "/h",
+// "/day", "per month"...) when there is one, else the text, shortened.
+export function shortPay(pay) {
+  const s = String(pay || '').trim().replace(/\s+/g, ' ');
+  if (!s) return '';
+  const m = s.match(/(€\s?\d[\d.,]*(?:\s?(?:\/|per |a |an |al )\s?(?:h|hr|hour|ora|day|giorno|week|month|mese|shift|turno))?)/i);
+  const out = m ? m[1].replace(/€\s/, '€').replace(/ per | a | an | al /i, '/') : s;
+  return out.length > 12 ? out.slice(0, 11).trimEnd() + '…' : out;
+}
 export function payLabel(job) {
   return job.pay || 'Pay not listed';
 }
@@ -198,4 +207,10 @@ export async function fetchCompany(id) {
     .maybeSingle();
   if (error) throw error;
   return data;
+}
+
+// "Open in Google Maps": a plain link, so nothing is sent to Google unless
+// the person clicks it.
+export function googleMapsHref(job) {
+  return `https://www.google.com/maps/search/?api=1&query=${job.latitude},${job.longitude}`;
 }

@@ -134,3 +134,78 @@
 .saved-gone-list { list-style: none; margin-top: var(--s3); border-top: 1px solid var(--line); }
 .saved-gone-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
 .saved-gone-row .role-title { color: var(--muted); }
+
+/* ---- Map controls: "Metro" (every map), "Search as I move the map"
+   (desktop), "Search this area" (phones) */
+.metro-toggle-btn { width: auto !important; padding: 0 10px !important; font: 600 13px/29px var(--font); color: var(--ink); }
+.metro-toggle-btn[aria-pressed=true] { background: var(--ink) !important; color: var(--white); }
+.metro-toggle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.map-follow {
+  position: absolute; left: var(--s3); top: var(--s3); z-index: 2;
+  display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3);
+  background: var(--white); border-radius: var(--r-sm); box-shadow: var(--float); font-size: 14px; font-weight: 500;
+}
+.map-follow input { width: 16px; height: 16px; accent-color: var(--ink); }
+.map-search-area {
+  position: absolute; left: 50%; top: var(--s3); transform: translateX(-50%); z-index: 2;
+  height: 40px; padding: 0 var(--s4); border: 0; border-radius: 20px;
+  background: var(--ink); color: var(--white); font-weight: 600; font-size: 14px; box-shadow: var(--float);
+}
+.map-search-area:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- Job markers: a dot; zoomed in, the dot with the pay. Buttons, so
+   they work with a keyboard too. */
+.job-marker {
+  display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 700 12px/1 var(--font); color: var(--ink);
+}
+.job-marker-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid #A67CBA; box-sizing: border-box; flex: none; }
+.job-marker-pay { display: none; }
+.jobs-map.show-pay .job-marker { padding: 3px 8px 3px 3px; background: var(--white); border-radius: 12px; box-shadow: var(--float); }
+.jobs-map.show-pay .job-marker-pay { display: inline; white-space: nowrap; }
+.job-marker:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 12px; }
+.job-marker:hover .job-marker-dot { border-color: var(--ink); }
+
+/* "You are here": only drawn on this device. */
+.you-dot { width: 18px; height: 18px; border-radius: 50%; background: #2F6FED; border: 3px solid var(--white); box-shadow: 0 0 0 6px rgba(47,111,237,.2); }
+
+/* Phones: the job card at the bottom of the map. */
+.map-sheet {
+  position: absolute; left: var(--s2); right: var(--s2); bottom: var(--s2); z-index: 3;
+  max-height: 55%; overflow: auto; padding: var(--s3) var(--s7) var(--s3) var(--s4);
+  background: var(--white); border-radius: var(--r-md); box-shadow: var(--float);
+}
+.map-sheet-list { list-style: none; }
+.map-sheet-list li + li { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--line); }
+.map-sheet .map-card-title { font-size: 16px; }
+.map-sheet-close {
+  position: absolute; right: var(--s1); top: var(--s1); width: 40px; height: 40px;
+  border: 0; background: none; font-size: 24px; line-height: 1; color: var(--ink);
+}
+
+/* "Use my location" and its promise. */
+.locate-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); margin: 0 0 var(--s3); font-size: 14px; }
+.locate-row .btn .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+.locate-note { flex: 1 1 160px; font-size: 13px; line-height: 1.35; }
+.locate-msg { flex-basis: 100%; }
+.locate-sort { font-weight: 500; }
+
+/* With the list limited to the map area: the jobs that can't be on the map. */
+.jobs-elsewhere { margin-top: var(--s6); }
+.jobs-elsewhere-title { font-size: 18px; font-weight: 600; }
+.jobs-elsewhere-note { margin-top: var(--s1); font-size: 14px; }
+.jobs-elsewhere .job-list { margin-top: var(--s3); }
+
+/* ---- The job page's small map */
+.job-place { margin-top: var(--s3); }
+.job-map { height: 240px; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--paper); }
+.job-map-loading { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
+.job-map-wrap { position: relative; }
+.job-place-note { font-size: 14px; }
+.job-place-link { margin-top: var(--s2); font-size: 14px; }
+.station-marker {
+  display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px 2px 4px;
+  background: var(--white); border-radius: 10px; box-shadow: var(--float); font: 600 12px/1.4 var(--font); color: var(--ink); white-space: nowrap;
+}
+.station-marker::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--white); border: 2px solid var(--ink); }
+@media (min-width: 768px) { .job-map { height: 280px; } }
