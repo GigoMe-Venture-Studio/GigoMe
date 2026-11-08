@@ -47,6 +47,14 @@ declare
   v_leaver_company uuid;
   v_leaver_job  uuid;
   v_clicks      bigint[];
+  -- employer side
+  v_emp         uuid := gen_random_uuid();   -- owner of an approved company (not an admin)
+  v_emp2        uuid := gen_random_uuid();   -- owner of another approved company
+  v_co_emp      uuid;
+  v_co_emp2     uuid;
+  v_emp_draft   uuid;
+  v_emp_live    uuid;
+  v_emp2_live   uuid;
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -401,7 +409,9 @@ begin
       v_err := 'updated ' || v_rows || ' row(s)';
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
-    results := pg_temp.res(results, 'Company user can submit their own job for review (control)', 'updated 1 row(s)', v_err, v_err = 'updated 1 row(s)');
+    select status into v_text from public.jobs where id = v_job_own_draft;
+    results := pg_temp.res(results, 'Company user cannot submit a job while their company is pending', 'error, still draft',
+                           v_err || ', now ' || v_text, v_err like 'error:%' and v_text = 'draft');
 
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
@@ -562,6 +572,316 @@ begin
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
     results := pg_temp.res(results, 'Student can send feedback but not read it', 'sent, 0 feedback rows readable', v_err, v_err = 'sent, 0 feedback rows readable');
+
+    -- ----------------------------------------------------------------------
+    -- Employer side: job review, owner rules, apply-click numbers
+    -- ----------------------------------------------------------------------
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || c from unnest(array['anon', 'authenticated']) r, unnest(array['reviewed_by']) c
+      where has_column_privilege(r, 'public.jobs', c, 'SELECT')
+      union all
+      select 'anon:' || c from unnest(array['review_note', 'reviewed_at']) c
+      where has_column_privilege('anon', 'public.jobs', c, 'SELECT')
+    ) s(x);
+    results := pg_temp.res(results, 'Review fields: nobody reads reviewed_by through the API, anon reads no review field', 'none',
+                           coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(x, ', ') into v_err from (
+      select r || ':' || p || ' ' || c from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p,
+             unnest(array['review_note', 'reviewed_by', 'reviewed_at', 'status']) c
+      where has_column_privilege(r, 'public.jobs', c, p) and not (r = 'authenticated' and c = 'status')
+    ) s(x);
+    results := pg_temp.res(results, 'Review fields: only admin_review_job writes them (no insert or update grants)', 'none',
+                           coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(x, ', ') into v_err from (
+      select r || ':contact_email' from unnest(array['anon', 'authenticated']) r
+      where has_column_privilege(r, 'public.companies', 'contact_email', 'SELECT')
+      union all
+      select 'anon:owner_id' where has_column_privilege('anon', 'public.companies', 'owner_id', 'SELECT')
+    ) s(x);
+    results := pg_temp.res(results, 'Nobody reads companies.contact_email directly; anon doesn''t read owner_id either', 'none', coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(f || ' ' || coalesce(nullif(g, ''), 'nobody'), '; ' order by f) into v_text from (
+      select f, (select string_agg(case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end, ',' order by 1)
+                 from pg_proc p, aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+                 where p.oid = f::regprocedure and a.privilege_type = 'EXECUTE'
+                   and (a.grantee = 0 or a.grantee::regrole::text in ('anon', 'authenticated'))) g
+      from unnest(array['public.admin_review_job(uuid,text,text)', 'public.my_job_stats()', 'public.get_company_contact_email(uuid)']) f
+    ) s;
+    results := pg_temp.res(results, 'admin_review_job, my_job_stats, get_company_contact_email: only authenticated can execute them',
+                           'public.admin_review_job(uuid,text,text) authenticated; public.get_company_contact_email(uuid) authenticated; public.my_job_stats() authenticated', v_text,
+                           v_text = 'public.admin_review_job(uuid,text,text) authenticated; public.get_company_contact_email(uuid) authenticated; public.my_job_stats() authenticated');
+
+    -- Two owners of approved companies, neither an admin.
+    insert into auth.users (id, email) values (v_emp, 'owner@check-emp.example'), (v_emp2, 'owner@check-emp2.example');
+    insert into public.companies (owner_id, name, status) values (v_emp, 'Check Emp', 'approved') returning id into v_co_emp;
+    insert into public.companies (owner_id, name, status) values (v_emp2, 'Check Emp Two', 'approved') returning id into v_co_emp2;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+      values (v_co_emp, 'Check emp live', 'gig', 10, 'published') returning id into v_emp_live;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+      values (v_co_emp2, 'Check emp2 live', 'gig', 10, 'published') returning id into v_emp2_live;
+    insert into public.job_clicks (job_id, user_id) values (v_emp_live, v_student), (v_emp_live, v_student), (v_emp2_live, v_student);
+
+    update public.companies set contact_email = 'hiring@check-emp.example' where id = v_co_emp;
+    v_text := '';
+    foreach v_err in array array['owner', 'admin', 'other company', 'student'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub',
+          case v_err when 'owner' then v_emp when 'admin' then v_other when 'other company' then v_emp2 else v_student end,
+          'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        v_text := v_text || v_err || ': ' || coalesce(public.get_company_contact_email(v_co_emp), 'nothing') || '; ';
+        perform set_config('role', 'none', true);
+      exception when others then v_text := v_text || v_err || ': error; ';
+      end;
+    end loop;
+    results := pg_temp.res(results, 'get_company_contact_email: the owner and admins get it, other users get nothing',
+                           'owner: hiring@check-emp.example; admin: hiring@check-emp.example; other company: nothing; student: nothing; ',
+                           v_text, v_text = 'owner: hiring@check-emp.example; admin: hiring@check-emp.example; other company: nothing; student: nothing; ');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select contact_email into v_text from public.companies where id = v_co_emp;
+      perform set_config('role', 'none', true);
+      v_err := 'read ' || coalesce(v_text, '(null)');
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A student cannot read an approved company''s contact email directly', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+        values (v_co_own, 'Check draft of a pending company', 'gig', 5, 'draft');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Company user with a pending company can still prepare a draft (control)', 'inserted', v_err, v_err = 'inserted');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+        values (v_co_own, 'Check submitted by a pending company', 'gig', 5, 'pending');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Company user with a pending company cannot create a job as submitted', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+        values (v_co_emp, 'Check emp draft', 'part_time', 12, 'draft') returning id into v_emp_draft;
+      update public.jobs set status = 'pending' where id = v_emp_draft;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Owner of an approved company can submit a draft for review (control)', 'updated 1 row(s)', v_err, v_err = 'updated 1 row(s)');
+
+    foreach v_text in array array['changes_requested', 'rejected', 'published'] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        update public.jobs set status = v_text where id = v_emp_draft;
+        get diagnostics v_rows = row_count;
+        perform set_config('role', 'none', true);
+        v_err := 'updated ' || v_rows || ' row(s)';
+      exception when others then v_err := 'error: ' || sqlerrm;
+      end;
+      results := pg_temp.res(results, 'Owner cannot set their own job to ' || v_text, 'error', v_err, v_err like 'error:%');
+    end loop;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set review_note = 'looks great', reviewed_at = now() where id = v_emp_draft;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Owner cannot write the review note or date', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_draft, 'published', null);
+      perform set_config('role', 'none', true);
+      v_err := 'reviewed';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status into v_text from public.jobs where id = v_emp_draft;
+    results := pg_temp.res(results, 'A non-admin cannot call admin_review_job (not even on their own job)', 'error, still pending',
+                           v_err || ', now ' || v_text, v_err like 'error:%' and v_text = 'pending');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_draft, 'changes_requested', '   ');
+      perform set_config('role', 'none', true);
+      v_err := 'reviewed';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Admin cannot request changes without a note', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_draft, 'changes_requested', 'Please state the pay.');
+      perform set_config('role', 'none', true);
+      v_err := 'reviewed';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || status || ', note ' || coalesce(review_note, '(none)') || ', by '
+           || case when reviewed_by = v_other then 'the admin' else coalesce(reviewed_by::text, 'nobody') end
+           || ', ' || case when reviewed_at is not null then 'dated' else 'no date' end
+      into v_text from public.jobs where id = v_emp_draft;
+    results := pg_temp.res(results, 'Admin requests changes with a note: status, note, reviewer and date recorded',
+                           'reviewed, changes_requested, note Please state the pay., by the admin, dated', v_text,
+                           v_text = 'reviewed, changes_requested, note Please state the pay., by the admin, dated');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select review_note into v_text from public.jobs where id = v_emp_draft;
+      perform set_config('role', 'none', true);
+      v_err := coalesce(v_text, '(no note)');
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Owner sees the reviewer''s note on their own job', 'Please state the pay.', v_err, v_err = 'Please state the pay.');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp2, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select count(*) into v_count from public.jobs where id = v_emp_draft;
+      perform set_config('role', 'none', true);
+      v_err := v_count || ' visible';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Another company cannot see a job (or its note) that isn''t live', '0 visible', v_err, v_err = '0 visible');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay = '€12/h', status = 'pending' where id = v_emp_draft;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status into v_text from public.jobs where id = v_emp_draft;
+    results := pg_temp.res(results, 'Owner can edit a job with changes requested and resubmit it', 'updated 1 row(s), now pending',
+                           v_err || ', now ' || v_text, v_err = 'updated 1 row(s)' and v_text = 'pending');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_draft, 'rejected', 'Asks students for a deposit.');
+      perform set_config('role', 'none', true);
+    exception when others then null;
+    end;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set title = 'Check emp resubmitted', status = 'pending' where id = v_emp_draft;
+      get diagnostics v_rows = row_count;
+      delete from public.jobs where id = v_emp_draft;
+      get diagnostics v_count = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ', deleted ' || v_count;
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status into v_text from public.jobs where id = v_emp_draft;
+    results := pg_temp.res(results, 'Owner cannot edit, resubmit or delete a rejected job', 'updated 0, deleted 0, still rejected',
+                           v_err || ', still ' || coalesce(v_text, '(gone)'), v_err in ('updated 0, deleted 0') and v_text = 'rejected');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay = '€14/h' where id = v_emp_live;
+      get diagnostics v_rows = row_count;
+      perform set_config('role', 'none', true);
+      v_err := 'updated ' || v_rows || ' row(s)';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status || ', ' || coalesce(pay, 'no pay') into v_text from public.jobs where id = v_emp_live;
+    results := pg_temp.res(results, 'Owner cannot edit a published job and keep it published', 'error, still published, no pay',
+                           v_err || ', still ' || v_text, v_err like 'error:%' and v_text = 'published, no pay');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select coalesce(sum(apply_clicks), -1) || ' clicks on ' || count(*) || ' job(s), '
+             || count(*) filter (where job_id not in (select id from public.jobs j where j.company_id = v_co_emp)) || ' not theirs'
+        into v_text from public.my_job_stats() where job_id = v_emp_live or job_id = v_emp2_live;
+      perform set_config('role', 'none', true);
+      v_err := v_text;
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_job_stats: an owner gets their own job''s apply clicks', '2 clicks on 1 job(s), 0 not theirs', v_err,
+                           v_err = '2 clicks on 1 job(s), 0 not theirs');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp2, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select count(*) into v_count from public.my_job_stats() where job_id in (v_emp_live, v_emp_draft, v_job_live);
+      select count(*) into v_rows from public.my_job_stats();
+      perform set_config('role', 'none', true);
+      v_err := v_count || ' rows of other companies, ' || v_rows || ' row(s) in total';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_job_stats: another company sees none of these numbers, only its own job', '0 rows of other companies, 1 row(s) in total',
+                           v_err, v_err = '0 rows of other companies, 1 row(s) in total');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select count(*) into v_count from public.my_job_stats();
+      perform set_config('role', 'none', true);
+      v_err := v_count || ' rows';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_job_stats: a student gets no numbers', '0 rows', v_err, v_err = '0 rows');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      select count(*) into v_count from public.my_job_stats();
+      perform set_config('role', 'none', true);
+      v_err := v_count || ' rows';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_job_stats: anon cannot call it', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      select j.title || ' by ' || c.name || coalesce(', ' || c.website, '') into v_text
+      from public.jobs j join public.companies c on c.id = j.company_id
+      where j.id = v_job_live and j.status = 'published' and c.status = 'approved';
+      perform set_config('role', 'none', true);
+      v_err := coalesce(v_text, 'nothing');
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon can still read a live job with its company (what the job board needs)', 'Check live job by Check Co (approved)',
+                           v_err, v_err = 'Check live job by Check Co (approved)');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_emp_live, 'changes_requested', 'Old note');
+      perform public.admin_review_job(v_emp_live, 'published', null);
+      perform set_config('role', 'none', true);
+    exception when others then null;
+    end;
+    select status || ', note ' || coalesce(review_note, '(none)') into v_text from public.jobs where id = v_emp_live;
+    results := pg_temp.res(results, 'Publishing clears an earlier review note', 'published, note (none)', v_text, v_text = 'published, note (none)');
 
     -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)

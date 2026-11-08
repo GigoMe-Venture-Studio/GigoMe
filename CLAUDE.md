@@ -11,8 +11,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/about`, `/account`, `/login`, `/welcome`, `/privacy`
-  and `*` (404). `ScrollToTop` (in `App.jsx`) starts each new path at the
+  `/jobs`, `/jobs/:id`, `/about`, `/account`, `/login`, `/welcome`, `/privacy`,
+  `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
+  `/dashboard/jobs/:id/edit` and `*` (404). `ScrollToTop` (in `App.jsx`) starts each new path at the
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
@@ -35,6 +36,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/components/`). Styles for them go in their own file (e.g.
   `src/styles/auth.css`) and reuse the tokens and classes in `site.css`.
   Check new class names don't clash with existing ones (`grep src/styles/`).
+- The 6-digit code login lives in `src/components/CodeLogin.jsx`, used by
+  `/login` (`audience="student"`: university emails only) and `/employers`
+  (`audience="employer"`: any email except a listed university's, which are
+  sent to `/login`). Change the flow there, once.
 - Student login: `src/pages/Login.jsx` (email, then 6-digit code),
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
@@ -48,13 +53,26 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   Email and university are read-only. "Delete my account" needs DELETE typed,
   calls `delete_my_account()` (`src/lib/account.js`), goes to `/` with "Your
   account has been deleted" and then clears the session on this device. `/privacy` is a placeholder until the owner supplies the text.
+- Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
+  login), `EmployerSetup.jsx` (`/employers/setup`: a company account without
+  a company creates it, status pending), `Dashboard.jsx` (`/dashboard`:
+  company details and status, jobs with status, review notes and apply
+  clicks from `my_job_stats()`), `JobEditor.jsx` (new/edit job and how to
+  apply). Logic in `src/lib/employer.js`, account state in
+  `src/lib/useCompanyAccount.js`, gate in `src/components/EmployerGate.jsx`.
+  A job is saved as a draft, then its contact (`set_job_contact`), then its
+  status, so it is never submitted without a contact; a published job is
+  edited in one update that sends it back to `pending`. Contact email is read
+  only through `get_company_contact_email()`. Styles in `employer.css`.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
-  (`/jobs`), About, and "Log in" or the student's name (a link to
-  `/account`, truncated when it doesn't fit) and "Log out". Under 768px the links move into a Menu panel. Don't
-  add links for features that don't exist yet (no "For employers", "Create
-  profile" or "Post a role").
+  (`/jobs`), About, then: logged out, "For employers" and "Log in"; a
+  student, their name (a link to `/account`, truncated when it doesn't fit)
+  and "Log out"; a company account, "Dashboard", the company name (a link to
+  `/account`) and "Log out". The footer shows "For employers" when logged
+  out. Under 768px the links move into a Menu panel. Don't add links for
+  features that don't exist yet (no "Create profile" or "Post a role").
 - Feedback: `src/components/Feedback.jsx` (`FeedbackProvider` in `App.jsx`)
   puts a fixed "Feedback" button at the bottom right of every page and opens
   a panel (native `<dialog>`); the footer's "Give feedback" opens it too via
@@ -71,7 +89,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   sample listings, ratings, numbers or features that don't exist.
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
-  `account.css`).
+  `account.css`, `employer.css`).
   No CSS framework.
 - `public/`: copied into `dist/` as is: `_headers` (cache rules),
   `favicon.ico` (16 and 32 px, flat purple on a white tile),
@@ -156,9 +174,20 @@ Schema rules
 - `universities` is read-only for `anon` and `authenticated` (no write grants,
   no write policies). It is changed only in the dashboard.
 - Company accounts create and edit their own company (one per account) but
-  never its `status`. Owners manage their own jobs and can set only `draft`,
-  `pending` or `closed`. Only admins approve companies and publish jobs (with
-  `admin_set_company_status` / `admin_set_job_status`, or in the dashboard).
+  never its `status`. Nobody reads `companies.contact_email` directly:
+  `get_company_contact_email(company_id)` returns it to the owner and admins.
+- Job statuses: `draft`, `pending` (in review), `published`, `closed`,
+  `changes_requested`, `rejected`. Owners can set only `draft`, `closed` or
+  `pending`, and `pending` only once their company is approved. They can't
+  edit `rejected` jobs at all, delete only drafts, and can't keep a published
+  job published while editing it. Only admins publish, request changes or
+  reject, with `admin_review_job(job_id, status, note)` (a note is required
+  for `changes_requested` and `rejected`; publishing clears it), which also
+  sets `reviewed_by` and `reviewed_at`. `review_note`, `reviewed_by` and
+  `reviewed_at` have no insert or update grants; anon can't read them and
+  nobody reads `reviewed_by` through the API (jobs have column-level SELECT
+  grants: list columns explicitly, never `select=*`).
+- `my_job_stats()` returns apply clicks for the caller's own jobs only.
 - Job contacts are only revealed to logged-in students by
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
 - `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
