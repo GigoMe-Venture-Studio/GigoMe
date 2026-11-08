@@ -67,6 +67,7 @@ declare
   v_report      uuid;
   -- schedule, languages, saved searches, follows, opened jobs
   v_sched_job   uuid;
+  v_pay_job     uuid;
   v_ss          uuid;
   v_n           int;
   -- on-site jobs need an area
@@ -211,20 +212,20 @@ begin
     select string_agg(account_type, ',' order by account_type) into v_text from public.profiles where id in (v_late, v_late_alt);
     results := pg_temp.res(results, 'Removing domains never downgrades a student', 'student,student', v_text, v_text = 'student,student');
 
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_approved, 'Check live job', 'gig', 10, 'published', 1, array['flexible']) returning id into v_job_live;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_approved, 'Check draft job', 'gig', 10, 'draft', 1, array['flexible']) returning id into v_job_draft;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_approved, 'Check pending job', 'gig', 10, 'pending', 1, array['flexible']) returning id into v_job_pending;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_approved, 'Check closed job', 'gig', 10, 'closed', 1, array['flexible']) returning id into v_job_closed;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, expires_at, area_id, schedule)
-      values (v_co_approved, 'Check expired job', 'gig', 10, 'published', now() - interval '1 day', 1, array['flexible']) returning id into v_job_expired;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_own, 'Check job of a pending company', 'gig', 10, 'published', 1, array['flexible']) returning id into v_job_unapproved;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_own, 'Check own draft', 'part_time', 10, 'draft', 1, array['flexible']) returning id into v_job_own_draft;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check live job', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10) returning id into v_job_live;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check draft job', 'gig', 10, 'draft', 1, array['flexible'], 'hour', 10) returning id into v_job_draft;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check pending job', 'gig', 10, 'pending', 1, array['flexible'], 'hour', 10) returning id into v_job_pending;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check closed job', 'gig', 10, 'closed', 1, array['flexible'], 'hour', 10) returning id into v_job_closed;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, expires_at, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check expired job', 'gig', 10, 'published', now() - interval '1 day', 1, array['flexible'], 'hour', 10) returning id into v_job_expired;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_own, 'Check job of a pending company', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10) returning id into v_job_unapproved;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_own, 'Check own draft', 'part_time', 10, 'draft', 1, array['flexible'], 'hour', 10) returning id into v_job_own_draft;
     test_jobs := array[v_job_live, v_job_draft, v_job_pending, v_job_closed, v_job_expired, v_job_unapproved, v_job_own_draft];
 
     insert into public.job_contacts (job_id, apply_url, apply_email) values
@@ -410,8 +411,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-        values (v_co_own, 'Check sneaky job', 'gig', 5, 'published', 1, array['flexible']);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_own, 'Check sneaky job', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -635,10 +636,10 @@ begin
     insert into auth.users (id, email) values (v_emp, 'owner@check-emp.example'), (v_emp2, 'owner@check-emp2.example');
     insert into public.companies (owner_id, name, status) values (v_emp, 'Check Emp', 'approved') returning id into v_co_emp;
     insert into public.companies (owner_id, name, status) values (v_emp2, 'Check Emp Two', 'approved') returning id into v_co_emp2;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_emp, 'Check emp live', 'gig', 10, 'published', 1, array['flexible']) returning id into v_emp_live;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_co_emp2, 'Check emp2 live', 'gig', 10, 'published', 1, array['flexible']) returning id into v_emp2_live;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_emp, 'Check emp live', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10) returning id into v_emp_live;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_emp2, 'Check emp2 live', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10) returning id into v_emp2_live;
     insert into public.job_clicks (job_id, user_id) values (v_emp_live, v_student), (v_emp_live, v_student), (v_emp2_live, v_student);
 
     update public.companies set contact_email = 'hiring@check-emp.example' where id = v_co_emp;
@@ -772,8 +773,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-        values (v_co_own, 'Check draft of a pending company', 'gig', 5, 'draft', 1, array['flexible']);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_own, 'Check draft of a pending company', 'gig', 5, 'draft', 1, array['flexible'], 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -783,8 +784,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-        values (v_co_own, 'Check submitted by a pending company', 'gig', 5, 'pending', 1, array['flexible']);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_own, 'Check submitted by a pending company', 'gig', 5, 'pending', 1, array['flexible'], 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -794,10 +795,10 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-        values (v_co_emp, 'Check emp draft', 'part_time', 12, 'draft', 1, array['flexible']) returning id into v_emp_draft;
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-        values (v_co_emp, 'Check emp draft 2', 'gig', 6, 'pending', 1, array['flexible']) returning id into v_emp_draft2;
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check emp draft', 'part_time', 12, 'draft', 1, array['flexible'], 'hour', 10) returning id into v_emp_draft;
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check emp draft 2', 'gig', 6, 'pending', 1, array['flexible'], 'hour', 10) returning id into v_emp_draft2;
       update public.jobs set status = 'pending' where id = v_emp_draft;
       get diagnostics v_rows = row_count;
       perform set_config('role', 'none', true);
@@ -1258,8 +1259,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, latitude, longitude, show_exact_location, schedule)
-        values (v_co_emp, 'Check private home job', 'other', 4, 'draft', 2, 45.47321, 9.18911, false, array['flexible'])
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, latitude, longitude, show_exact_location, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check private home job', 'other', 4, 'draft', 2, 45.47321, 9.18911, false, array['flexible'], 'hour', 10)
         returning id into v_loc_job;
       perform set_config('role', 'none', true);
       v_err := 'inserted';
@@ -1575,8 +1576,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, remote, schedule)
-        values (v_co_emp, 'Check on-site, submitted without an area', 'gig', 5, 'pending', false, array['flexible']);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, remote, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check on-site, submitted without an area', 'gig', 5, 'pending', false, array['flexible'], 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1586,8 +1587,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, remote, schedule)
-        values (v_co_emp, 'Check on-site draft without an area', 'gig', 5, 'draft', false, array['flexible']) returning id into v_area_job;
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, remote, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check on-site draft without an area', 'gig', 5, 'draft', false, array['flexible'], 'hour', 10) returning id into v_area_job;
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1645,8 +1646,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, remote, schedule)
-        values (v_co_emp, 'Check remote job without an area', 'other', 5, 'pending', true, array['flexible']) returning id into v_remote_job;
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, remote, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check remote job without an area', 'other', 5, 'pending', true, array['flexible'], 'hour', 10) returning id into v_remote_job;
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1678,8 +1679,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-        values (v_co_emp, 'Check bad schedule', 'gig', 5, 'draft', 1, array['brunch']);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check bad schedule', 'gig', 5, 'draft', 1, array['brunch'], 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1689,8 +1690,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, languages)
-        values (v_co_emp, 'Check bad language', 'gig', 5, 'draft', 1, array['klingon']);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, languages, pay_unit, pay_min)
+        values (v_co_emp, 'Check bad language', 'gig', 5, 'draft', 1, array['klingon'], 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1700,8 +1701,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id)
-        values (v_co_emp, 'Check submitted without a schedule', 'gig', 5, 'pending', 1);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, pay_unit, pay_min)
+        values (v_co_emp, 'Check submitted without a schedule', 'gig', 5, 'pending', 1, 'hour', 10);
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1711,8 +1712,8 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, languages)
-        values (v_co_emp, 'Check draft without a schedule', 'gig', 5, 'draft', 1, array['it', 'en', 'it']) returning id into v_sched_job;
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, languages, pay_unit, pay_min)
+        values (v_co_emp, 'Check draft without a schedule', 'gig', 5, 'draft', 1, array['it', 'en', 'it'], 'hour', 10) returning id into v_sched_job;
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -1773,6 +1774,225 @@ begin
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
     results := pg_temp.res(results, 'anon can read a live job''s schedule', 'read, flexible', v_err || ', ' || coalesce(v_text, 'nothing'), v_err = 'read' and v_text = 'flexible');
+
+    -- ----------------------------------------------------------------------
+    -- Structured pay
+    -- ----------------------------------------------------------------------
+
+    select string_agg(r || ' ' || p || ' ' || c, '; ' order by r, c, p) into v_text from (
+      select r, p, c from unnest(array['anon', 'authenticated']) r, unnest(array['SELECT', 'INSERT', 'UPDATE']) p,
+        unnest(array['pay_unit', 'pay_min', 'pay_max', 'pay_hourly']) c
+      where has_column_privilege(r, 'public.jobs', c, p)
+    ) x;
+    results := pg_temp.res(results, 'Structured pay: everyone reads it; owners write unit and amounts, nobody writes pay_hourly', 'anon SELECT pay_hourly; anon SELECT pay_max; anon SELECT pay_min; anon SELECT pay_unit; authenticated SELECT pay_hourly; authenticated INSERT pay_max; authenticated SELECT pay_max; authenticated UPDATE pay_max; authenticated INSERT pay_min; authenticated SELECT pay_min; authenticated UPDATE pay_min; authenticated INSERT pay_unit; authenticated SELECT pay_unit; authenticated UPDATE pay_unit', coalesce(v_text, 'none'), v_text = 'anon SELECT pay_hourly; anon SELECT pay_max; anon SELECT pay_min; anon SELECT pay_unit; authenticated SELECT pay_hourly; authenticated INSERT pay_max; authenticated SELECT pay_max; authenticated UPDATE pay_max; authenticated INSERT pay_min; authenticated SELECT pay_min; authenticated UPDATE pay_min; authenticated INSERT pay_unit; authenticated SELECT pay_unit; authenticated UPDATE pay_unit');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
+        values (v_co_emp, 'Check submitted without pay', 'gig', 12, 'pending', 1, array['flexible']);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An owner cannot submit a job without structured pay', 'error', v_err, v_err like 'error:%Set the pay%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
+        values (v_co_emp, 'Check draft without pay', 'gig', 12, 'draft', 1, array['flexible']) returning id into v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A draft can be saved without pay (control)', 'inserted', v_err, v_err = 'inserted');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set status = 'pending' where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, 'That draft cannot be submitted until it has pay', 'error, still draft', v_err || ', still ' || v_text, v_err like 'error:%' and v_text = 'draft');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.admin_review_job(v_pay_job, 'published', null);
+      perform set_config('role', 'none', true);
+      v_err := 'published';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, 'An admin cannot publish a job without pay either', 'error, still draft', v_err || ', still ' || v_text, v_err like 'error:%' and v_text = 'draft');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, pay_max)
+        values (v_co_emp, 'Check max below min', 'gig', 12, 'draft', 1, array['flexible'], 'hour', 13, 11);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'The maximum can''t be below the minimum', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check zero pay', 'gig', 12, 'draft', 1, array['flexible'], 'hour', 0);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Pay must be above €0', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit)
+        values (v_co_emp, 'Check unit without amount', 'gig', 12, 'draft', 1, array['flexible'], 'hour');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A paid unit needs an amount', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_min)
+        values (v_co_emp, 'Check amount without unit', 'gig', 12, 'draft', 1, array['flexible'], 12);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An amount needs a unit', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check odd unit', 'gig', 12, 'draft', 1, array['flexible'], 'week', 100);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Only per hour, month, project, or a curricular internship', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit)
+        values (v_co_emp, 'Check unpaid gig', 'gig', 12, 'draft', 1, array['flexible'], 'unpaid_curricular');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Unpaid is refused for anything but an internship', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check unpaid with an amount', 'internship', 12, 'draft', 1, array['flexible'], 'unpaid_curricular', 5);
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A curricular internship has no amount', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit)
+        values (v_co_emp, 'Check curricular internship', 'internship', 12, 'pending', 1, array['flexible'], 'unpaid_curricular');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select coalesce(pay_hourly::text, 'none') into v_text from public.jobs where title = 'Check curricular internship';
+    results := pg_temp.res(results, 'A curricular internship (unpaid) can be submitted, with no hourly equivalent', 'inserted, none', v_err || ', ' || coalesce(v_text, '?'), v_err = 'inserted' and v_text = 'none');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay_unit = 'hour', pay_min = 12, pay_max = 14, status = 'pending' where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || status || ', ' || coalesce(pay_hourly::text, 'none') into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, '€12–14/h: submitted; hourly equivalent is the lower end', 'updated, pending, 12.00', coalesce(v_text, v_err), v_text = 'updated, pending, 12.00');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay_unit = 'month', pay_min = 600, pay_max = null where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || coalesce(pay_hourly::text, 'none') into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, '€600/month at 12 h/week: ≈ €11.54/h (600 / (12 × 52 / 12))', 'updated, 11.54', coalesce(v_text, v_err), v_text = 'updated, 11.54');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set hours_per_week = 24 where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || coalesce(pay_hourly::text, 'none') into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, 'Changing the hours recomputes it (24 h/week: ≈ €5.77/h)', 'updated, 5.77', coalesce(v_text, v_err), v_text = 'updated, 5.77');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay_unit = 'project', pay_min = 500 where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || coalesce(pay_hourly::text, 'none') into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, 'Per-project pay has no hourly equivalent', 'updated, none', coalesce(v_text, v_err), v_text = 'updated, none');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay_hourly = 99 where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Nobody writes the hourly equivalent', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay_unit = null, pay_min = null where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select coalesce(pay_unit, 'none') into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, 'A submitted job cannot lose its pay', 'error, project', v_err || ', ' || v_text, v_err like 'error:%' and v_text = 'project');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      select pay_unit || ' ' || pay_min || ' ' || coalesce(pay_hourly::text, 'none') into v_text from public.jobs where id = v_emp2_live;
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon can read a live job''s structured pay', 'read, hour 10.00 10.00', v_err || ', ' || coalesce(v_text, 'nothing'), v_err = 'read' and v_text = 'hour 10.00 10.00');
 
     -- ----------------------------------------------------------------------
     -- Saved searches
@@ -2101,8 +2321,8 @@ begin
       insert into public.job_clicks (job_id, user_id) values (v_job_live, v_leaver), (v_job_live, v_leaver) returning id
     ) select array_agg(id) into v_clicks from c;
     insert into public.companies (owner_id, name, status) values (v_leaver_co, 'Check Co (leaving)', 'approved') returning id into v_leaver_company;
-    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule)
-      values (v_leaver_company, 'Check job of a leaving company', 'gig', 5, 'published', 1, array['flexible']) returning id into v_leaver_job;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_leaver_company, 'Check job of a leaving company', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10) returning id into v_leaver_job;
     insert into public.job_contacts (job_id, apply_url) values (v_leaver_job, 'https://check.example/leaving');
     insert into public.company_follows (user_id, company_id) values (v_student, v_leaver_company);
     insert into public.job_clicks (job_id, user_id) values (v_leaver_job, v_student);

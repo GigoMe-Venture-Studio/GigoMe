@@ -53,7 +53,7 @@ What exists today:
 | Free, always | | Apply clicks are counted per job (never "applications": GigoMe doesn't see whether anyone applied) |
 | Send feedback from any page (logged-in users) | | Feedback is readable only by admins |
 | Save jobs, save searches (with "N new since your last visit"), follow companies, and see the jobs you opened, all under "Saved jobs" and only for you; no emails | Follower count on the dashboard (never who) | |
-| Filter by when the job happens and the languages used at work; share a job (the phone's share sheet, or "Copy link") | Preview a job exactly as students will see it before submitting | |
+| Filter by minimum pay (€/h, with monthly pay counted by its hourly equivalent) and sort by highest pay; filter by when the job happens and the languages used at work; share a job (the phone's share sheet, or "Copy link") | Preview a job exactly as students will see it before submitting | |
 | Report a job (scam, illegal, misleading, discriminatory, other) | | `/admin`: review companies and jobs with a checklist, handle reports; every decision logged with who and when |
 | Edit your profile and delete your account on `/account` | | Deleting an account removes the profile and feedback; apply clicks stay, anonymous |
 

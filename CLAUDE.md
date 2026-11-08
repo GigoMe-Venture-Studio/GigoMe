@@ -26,7 +26,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=&when=&lang=`
   (`when` and `lang`: comma lists from `SCHEDULES` and `LANGUAGES` in
   `src/lib/jobs.js`, written in list order, matched with PostgREST `ov`;
-  flexible jobs always match a `when` filter), plus `view=map`
+  flexible jobs always match a `when` filter; `minpay` = 1–30 €/h on
+  `pay_hourly` (a slider, `MinPay` in `Jobs.jsx`, in the folded panel on
+  phones), which hides per-project, unpaid and unstructured jobs: the page
+  says "N project-paid jobs hidden" (`countProjectPaid()`, a count-only
+  query) with "Show them" = `projects=yes`; `sort=pay` = "Highest pay", by
+  `pay_hourly`, nulls last; sorting isn't a filter), plus `view=map`
   for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
   numbers, spaces, hyphens and apostrophes so it can't break the PostgREST
@@ -102,6 +107,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `my_opened_jobs()`, labelled exactly "You opened the application on
   <date>": never "applied" anywhere. All in the app only: nothing is
   emailed.
+- Pay: `payLabel()` in `src/lib/jobs.js` everywhere ("€11–13/h",
+  "€600/month (≈ €12/h)", "€500 per project", "Curricular internship
+  (unpaid)"; jobs from before structured pay show their pay text);
+  `payNote()` shows the free-text `pay` as a note once pay is structured;
+  `markerPay()` for map markers. The job form asks how it's paid
+  (`PAY_UNITS`), the amount(s), shows the hourly equivalent live for monthly
+  pay, and keeps "Pay note". Keep `monthlyHours()` the same formula as the
+  database.
 - Job page body: `src/components/JobView.jsx`, used by `/jobs/:id` and by
   the job form's "Preview" (same component, so the preview is exactly what
   students see; in a preview Save, Share, Report and Apply are shown but do
@@ -349,6 +362,14 @@ Schema rules
   stored sorted without repeats and readable like the rest of a job. The
   security check gives every test job a schedule (and an area): keep doing
   that for new test jobs.
+- Structured pay: `pay_unit` (hour, month, project, unpaid_curricular),
+  `pay_min` (> 0) and `pay_max` (optional, never below min), none for
+  unpaid, and unpaid only when `job_type` is internship (checks). Required
+  to submit or publish (trigger `job_pay_required`, admins included; fires
+  only when status or pay_unit change). `pay_hourly` is a generated column
+  (hour: pay_min; month: pay_min ÷ (hours × 52 ÷ 12); none otherwise): a
+  range counts as its lower end; nobody writes it. The free-text `pay` stays
+  as an optional note. The security check gives every test job €10/h.
 - `saved_searches` (name, `params` = the /jobs query string, last_seen_at)
   and `company_follows` (company_id): students only, for themselves only
   (`user_id` has no insert grant), read and deleted only by their owner,

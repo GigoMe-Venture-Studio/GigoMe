@@ -14,8 +14,10 @@ import {
   JOB_TYPES,
   LANGUAGES,
   MAX_HOURS_OPTIONS,
+  MAX_MIN_PAY,
   SCHEDULES,
   cleanKeyword,
+  countProjectPaid,
   fetchJobs,
   filtersToParams,
   hasFilters,
@@ -25,7 +27,7 @@ import {
 // MapLibre is only downloaded when the map is shown.
 const JobsMap = lazy(() => import('../components/JobsMap.jsx'));
 const isMappable = (j) => !j.remote && j.latitude != null && j.longitude != null;
-const FOLDED_FILTERS = ['area', 'category', 'type', 'italian', 'remote', 'hours', 'when', 'lang'];
+const FOLDED_FILTERS = ['area', 'category', 'type', 'italian', 'remote', 'hours', 'when', 'lang', 'minpay'];
 const DESKTOP = '(min-width: 900px)'; // list and map side by side
 
 function useMedia(query) {
@@ -116,6 +118,21 @@ function JobBoard() {
   const toggleIn = (name, value) =>
     setFilter(name, filters[name].includes(value) ? filters[name].filter((x) => x !== value) : [...filters[name], value]);
   const { status, jobs } = state;
+
+  // "Minimum pay" hides project-paid jobs: say how many, with a way back.
+  const [projectCount, setProjectCount] = useState(0);
+  useEffect(() => {
+    if (!filters.minpay || filters.projects) {
+      setProjectCount(0);
+      return undefined;
+    }
+    let active = true;
+    countProjectPaid(JSON.parse(key)).then((n) => active && setProjectCount(n)).catch(() => active && setProjectCount(0));
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
   const { canSave } = useSavedJobs(); // students only
 
   // ---- The map: where it looks, and searching the area it shows.
@@ -297,6 +314,7 @@ function JobBoard() {
             ))}
           </select>
         </label>
+        <MinPay value={filters.minpay} onChange={(v) => setFilter('minpay', v)} />
         <fieldset className="chip-filter">
           <legend>When <span className="chip-filter-note">flexible jobs always match</span></legend>
           <div className="chips">
@@ -335,11 +353,31 @@ function JobBoard() {
         {filtered && (
           <button type="button" className="btn-link" onClick={clearFilters}>Clear filters</button>
         )}
+        <label className="sort-select">
+          <span className="muted sort-word">Sort</span>
+          <select className="select" name="sort" value={filters.sort} onChange={(e) => setFilter('sort', e.target.value)}>
+            <option value="">Newest</option>
+            <option value="pay">Highest pay</option>
+          </select>
+        </label>
         <div className="view-toggle" role="group" aria-label="Show jobs as">
           <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>List</button>
           <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>Map</button>
         </div>
       </div>
+
+      {filters.minpay && !filters.projects && projectCount > 0 && (
+        <p className="pay-note-hidden" role="status">
+          {projectCount} project-paid {projectCount === 1 ? 'job' : 'jobs'} hidden.{' '}
+          <button type="button" className="btn-link" onClick={() => setFilter('projects', 'yes')}>Show them</button>
+        </p>
+      )}
+      {filters.minpay && filters.projects && (
+        <p className="pay-note-hidden">
+          Including project-paid jobs.{' '}
+          <button type="button" className="btn-link" onClick={() => setFilter('projects', '')}>Hide them</button>
+        </p>
+      )}
 
       {canSave && filtered && <SaveSearch key={searchParamsText(filters)} filters={filters} areas={areas} />}
 
@@ -498,5 +536,29 @@ function SaveSearch({ filters, areas }) {
       <p className="field-hint save-search-hint">Shown only to you, on Saved jobs, with how many jobs are new since you last opened it. No emails.</p>
       {state.error && <p className="err" role="alert">{state.error}</p>}
     </form>
+  );
+}
+
+// "Minimum pay": a slider in € an hour (by the hourly equivalent, which
+// hourly and monthly pay have). The list follows once the slider rests.
+function MinPay({ value, onChange }) {
+  const [v, setV] = useState(Number(value) || 0);
+  useEffect(() => setV(Number(value) || 0), [value]);
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  function move(next) {
+    setV(next);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => onChange(next > 0 ? String(next) : ''), 350);
+  }
+  return (
+    <label className="field min-pay">
+      <span className="min-pay-label">
+        Minimum pay <output className="min-pay-value tnum" htmlFor="min-pay">{v > 0 ? `€${v}/h` : 'Any'}</output>
+      </span>
+      <input id="min-pay" className="min-pay-range" type="range" name="minpay" min={0} max={MAX_MIN_PAY} step={1} value={v}
+        onChange={(e) => move(Number(e.target.value))} aria-valuetext={v > 0 ? `${v} euros an hour or more` : 'Any pay'} />
+      <span className="field-hint min-pay-hint">Monthly pay counts by its hourly equivalent.</span>
+    </label>
   );
 }

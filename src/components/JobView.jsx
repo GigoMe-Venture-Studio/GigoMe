@@ -14,6 +14,7 @@ import {
   languageLabels,
   metroLabel,
   payLabel,
+  payNote,
   placeLabel,
   postedLabel,
   scheduleLabels,
@@ -66,7 +67,7 @@ export default function JobView({ job, apply, preview = false }) {
           {scheduleLabels(job).map((w) => <span key={w} className="tag tag-when">{w}</span>)}
         </div>
         <dl className="facts">
-          <div><dt>Pay</dt><dd>{payLabel(job)}</dd></div>
+          <div><dt>Pay</dt><dd>{payLabel(job)}{payNote(job) && <span className="pay-note">{payNote(job)}</span>}</dd></div>
           <div><dt>Hours</dt><dd className="tnum">{hoursLabel(job)}</dd></div>
           <div>
             <dt>Location</dt>

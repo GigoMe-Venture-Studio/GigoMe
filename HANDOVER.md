@@ -96,6 +96,11 @@ the `moderation_log` table).
 - **Jobs waiting:** tick the five checklist items honestly; Publish stays off
   until all five are ticked. Request changes or reject with a note: the
   employer sees it on their dashboard.
+- **Live jobs missing an area, a schedule or structured pay:** published
+  before those became required. They stay live, but don't show up in the
+  map, "When" or "Minimum pay" searches. Ask the employer to edit the job
+  (it goes back to review). Pending jobs missing any of them are flagged and
+  can't be published.
 - **Open reports:** read the report and the job.
   - **Scam, or payment demanded from students** (registration fee, deposit,
     training paid by the student, documents up front): press **Reject the

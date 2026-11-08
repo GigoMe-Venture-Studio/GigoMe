@@ -7,7 +7,8 @@ import { CONTACT_EMAIL } from './contact.js';
 const COMPANY_COLUMNS = 'id, name, website, description, status';
 const JOB_COLUMNS =
   'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, expires_at, ' +
-  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages';
+  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages, ' +
+  'pay_unit, pay_min, pay_max, pay_hourly';
 
 export const COMPANY_STATUS = {
   pending: {

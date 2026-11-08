@@ -4,7 +4,7 @@ import PageShell from '../components/PageShell.jsx';
 import NotFound from './NotFound.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, languageLabels, placeLabel, scheduleLabels, websiteHref, websiteText } from '../lib/jobs.js';
+import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, languageLabels, payLabel, payNote, placeLabel, scheduleLabels, websiteHref, websiteText } from '../lib/jobs.js';
 import { JOB_STATUS, shownStatus } from '../lib/employer.js';
 import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
@@ -85,7 +85,7 @@ function AdminPage() {
         <a href="#admin-jobs">{data.jobs.length} {data.jobs.length === 1 ? 'job' : 'jobs'}</a> and{' '}
         <a href="#admin-reports">{data.reports.length} open {data.reports.length === 1 ? 'report' : 'reports'}</a> waiting.{' '}
         {data.noArea.length > 0 && (
-          <><a href="#admin-no-area">{data.noArea.length} live {data.noArea.length === 1 ? 'job is' : 'jobs are'} missing an area or a schedule</a>.{' '}</>
+          <><a href="#admin-no-area">{data.noArea.length} live {data.noArea.length === 1 ? 'job is' : 'jobs are'} missing an area, a schedule or structured pay</a>.{' '}</>
         )}
         <a href="#admin-feedback">Latest feedback</a>.
       </p>
@@ -112,18 +112,19 @@ function AdminPage() {
       </section>
 
       <section className="admin-section" id="admin-no-area" aria-labelledby="no-area-title">
-        <h2 id="no-area-title">Live jobs missing an area or a schedule</h2>
+        <h2 id="no-area-title">Live jobs missing an area, a schedule or structured pay</h2>
         {data.noArea.length === 0 ? <p className="muted">None.</p> : (
           <>
             <p className="muted">
               Published before these became required. Without an area a job isn't on the map or in area searches; without a
-              schedule it doesn't match the "When" filter. Ask the employer to add them (editing sends the job back for review).
+              schedule it doesn't match the "When" filter; without structured pay it doesn't match "Minimum pay". Ask the employer
+              to add them (editing sends the job back for review).
             </p>
             <ul className="admin-log">
               {data.noArea.map((j) => (
                 <li key={j.id}>
                   <span className="muted tnum">Created {when(j.created_at)}</span> · <strong>{j.title}</strong>, {j.companies.name} · no{' '}
-                  {missingInfo(j).join(' or ')} ·{' '}
+                  {missingInfo(j).join(', no ')} ·{' '}
                   <Link to={`/jobs/${j.id}`}>open its page</Link>
                 </li>
               ))}
@@ -233,7 +234,7 @@ function JobSummary({ job }) {
       <dl className="dash-facts admin-job-facts">
         <div><dt>Type</dt><dd>{JOB_TYPE_LABEL[job.job_type]}{job.category ? `, ${CATEGORY_LABEL[job.category]}` : ''}</dd></div>
         <div><dt>Hours</dt><dd className="tnum">{job.hours_per_week} h/week{job.hours_per_week > 20 ? ' (over 20)' : ''}</dd></div>
-        <div><dt>Pay</dt><dd>{job.pay || <span className="muted">Not stated</span>}</dd></div>
+        <div><dt>Pay</dt><dd>{job.pay_unit ? payLabel(job) : <span className="muted">Not structured{job.pay ? `: "${job.pay}"` : ''}</span>}{payNote(job) ? ` · ${payNote(job)}` : ''}</dd></div>
         <div><dt>Where</dt><dd>{placeLabel(job)}</dd></div>
         <div><dt>Area</dt><dd>{job.areas ? job.areas.name : <span className="muted">Not set</span>}{job.areas && (job.show_exact_location ? (job.latitude != null ? ', exact spot on the map' : ', no pin') : ', area only (private)')}</dd></div>
         <div><dt>Italian</dt><dd>{ITALIAN_LABEL[job.italian_level]}</dd></div>
@@ -272,7 +273,7 @@ function JobItem({ job, onDone }) {
       {job.review_note && <p className="muted admin-item-meta">Earlier note: "{job.review_note}"</p>}
       {missing.length > 0 && (
         <p className="admin-flag" role="note">
-          <strong>No {missing.join(' and no ')}.</strong> It can't be published without {missing.length > 1 ? 'them' : 'one'}. Request
+          <strong>No {missing.join(', no ')}.</strong> It can't be published without {missing.length > 1 ? 'them' : 'one'}. Request
           changes and ask the employer to add {missing.length > 1 ? 'them' : 'it'}.
         </p>
       )}

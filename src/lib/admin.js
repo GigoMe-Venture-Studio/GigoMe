@@ -4,7 +4,8 @@ import { supabase } from './supabase.js';
 
 const JOB_COLUMNS =
   'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, expires_at, ' +
-  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages, areas(name), ' +
+  'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages, ' +
+  'pay_unit, pay_min, pay_max, pay_hourly, areas(name), ' +
   'companies(id, name, website, description, status)';
 
 export const REVIEW_CHECKLIST = [
@@ -72,15 +73,16 @@ export async function fetchPendingJobs() {
 }
 
 // Live jobs missing what the database now requires to submit or publish: an
-// area (on-site jobs) or a schedule. They were published before those rules.
-// Without an area they don't show on the map or in area searches; without a
-// schedule they don't match the "When" filter. Ask the employer to add them.
+// area (on-site jobs), a schedule or structured pay. They were published
+// before those rules. Without an area they don't show on the map or in area
+// searches; without a schedule they don't match the "When" filter; without
+// structured pay they don't match "Minimum pay". Ask the employer to add them.
 export async function fetchLiveJobsMissingInfo() {
   const { data, error } = await supabase
     .from('jobs')
-    .select('id, title, created_at, remote, area_id, schedule, companies!inner(name, status)')
+    .select('id, title, created_at, remote, area_id, schedule, pay_unit, companies!inner(name, status)')
     .eq('status', 'published')
-    .or('and(remote.eq.false,area_id.is.null),schedule.eq.{}')
+    .or('and(remote.eq.false,area_id.is.null),schedule.eq.{},pay_unit.is.null')
     .gt('expires_at', new Date().toISOString())
     .eq('companies.status', 'approved')
     .order('created_at', { ascending: true });
@@ -93,6 +95,7 @@ export function missingInfo(job) {
   const out = [];
   if (!job.remote && job.area_id == null) out.push('area');
   if (!job.schedule || !job.schedule.length) out.push('schedule');
+  if (!job.pay_unit) out.push('structured pay');
   return out;
 }
 

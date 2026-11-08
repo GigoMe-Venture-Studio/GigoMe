@@ -7,7 +7,7 @@ import JobView from '../components/JobView.jsx';
 import { supabase } from '../lib/supabase.js';
 import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
-import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES, LANGUAGES, SCHEDULES } from '../lib/jobs.js';
+import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES, LANGUAGES, PAY_UNITS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
 import { fetchAreas } from '../lib/areas.js';
 import { findAddress } from '../lib/geocode.js';
@@ -130,6 +130,9 @@ function JobForm({ company, job }) {
     applyEmail: job ? job.apply_email : '',
     area: job && job.area_id ? String(job.area_id) : '',
     onlyArea: job ? !job.show_exact_location : false,
+    payUnit: job ? job.pay_unit || '' : '',
+    payMin: job && job.pay_min != null ? String(Number(job.pay_min)) : '',
+    payMax: job && job.pay_max != null ? String(Number(job.pay_max)) : '',
     schedule: job ? job.schedule || [] : [],
     languages: job ? job.languages || [] : []
   }));
@@ -183,7 +186,18 @@ function JobForm({ company, job }) {
     if (v.location.trim().length > 200) found.location = 'Keep the location under 200 characters.';
     if (!v.hours) found.hours = 'Add the hours per week.';
     else if (!Number.isInteger(hours) || hours < 1 || hours > 40) found.hours = 'Hours per week must be a whole number from 1 to 40.';
-    if (v.pay.trim().length > 200) found.pay = 'Keep the pay under 200 characters.';
+    if (v.pay.trim().length > 200) found.pay = 'Keep the pay note under 200 characters.';
+    // Structured pay: a unit and an amount (or a curricular internship).
+    const paid = v.payUnit && v.payUnit !== 'unpaid_curricular';
+    const payMin = amount(v.payMin), payMax = amount(v.payMax);
+    if (submitting && !v.payUnit) found.payUnit = 'Choose how the job is paid.';
+    if (v.payUnit === 'unpaid_curricular' && v.jobType !== 'internship') {
+      found.payUnit = 'Unpaid is possible only for an internship with university credits: choose "Internship" as the type.';
+    }
+    if (paid && v.payMin.trim() === '' && submitting) found.payMin = 'Add the amount in euros.';
+    else if (paid && v.payMin.trim() !== '' && !(payMin > 0 && payMin <= 100000)) found.payMin = 'Enter an amount in euros, like 11 or 11.50.';
+    if (paid && v.payMax.trim() !== '' && !(payMax > 0 && payMax <= 100000)) found.payMax = 'Enter an amount in euros, like 13 or 13.50.';
+    else if (paid && payMax != null && payMin != null && payMax < payMin) found.payMax = "The maximum can't be less than the minimum.";
     if (v.endDate && v.endDate < today()) found.endDate = 'Choose today or a later date.';
     if (submitting && !v.remote && !v.area) found.area = 'Choose the area (or "Elsewhere in Milan").';
     if (submitting && !v.schedule.length) found.schedule = 'Choose when the job happens (at least one).';
@@ -203,6 +217,10 @@ function JobForm({ company, job }) {
       remote: Boolean(v.remote),
       hours_per_week: hours,
       pay: v.pay.trim() || null,
+      // A unit only with its amount (a half-filled draft keeps neither).
+      pay_unit: v.payUnit === 'unpaid_curricular' || (paid && payMin > 0) ? v.payUnit : null,
+      pay_min: paid && payMin > 0 ? payMin : null,
+      pay_max: paid && payMin > 0 && payMax > 0 && payMax !== payMin ? payMax : null,
       italian_level: v.italian,
       start_date: v.startDate || null,
       area_id: v.area ? Number(v.area) : null,
@@ -451,12 +469,43 @@ function JobForm({ company, job }) {
               <span className="field-hint" id="hours-hint">From 1 to 40.</span>
             )}
           </label>
-          <label className="field">
-            <span>Pay <span className="field-optional">(optional, but students look for it)</span></span>
-            <input className="input" type="text" name="pay" maxLength={200} value={v.pay} onChange={set('pay')}
-              placeholder="e.g. €11 an hour" aria-invalid={Boolean(errors.pay)} />
-            {err('pay')}
-          </label>
+          <fieldset className="check-group pay-group">
+            <legend>Pay <span className="field-optional">(required to submit)</span></legend>
+            <label className="field">
+              How it's paid
+              <select className="select" name="pay_unit" value={v.payUnit} onChange={set('payUnit')} aria-invalid={Boolean(errors.payUnit)}>
+                <option value="">Choose…</option>
+                {PAY_UNITS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+              {err('payUnit')}
+            </label>
+            {v.payUnit && v.payUnit !== 'unpaid_curricular' && (
+              <div className="form-row pay-amounts">
+                <label className="field">
+                  <span>{v.payUnit === 'hour' ? '€ an hour' : v.payUnit === 'month' ? '€ a month' : '€ for the project'}</span>
+                  <input className="input" type="text" inputMode="decimal" name="pay_min" value={v.payMin} onChange={set('payMin')}
+                    placeholder="e.g. 11" aria-invalid={Boolean(errors.payMin)} />
+                  {err('payMin')}
+                </label>
+                <label className="field">
+                  <span>Up to € <span className="field-optional">(optional, for a range)</span></span>
+                  <input className="input" type="text" inputMode="decimal" name="pay_max" value={v.payMax} onChange={set('payMax')}
+                    placeholder="e.g. 13" aria-invalid={Boolean(errors.payMax)} />
+                  {err('payMax')}
+                </label>
+              </div>
+            )}
+            {v.payUnit === 'month' && <HourlyEquivalent min={amount(v.payMin)} max={amount(v.payMax)} hours={hours} />}
+            {v.payUnit === 'unpaid_curricular' && (
+              <p className="field-hint">Shown to students as "Curricular internship (unpaid)". Only for internships that give university credits.</p>
+            )}
+            <label className="field">
+              <span>Pay note <span className="field-optional">(optional)</span></span>
+              <input className="input" type="text" name="pay" maxLength={200} value={v.pay} onChange={set('pay')}
+                placeholder="e.g. + tips, meals included" aria-invalid={Boolean(errors.pay)} />
+              {err('pay')}
+            </label>
+          </fieldset>
           <div className="form-row">
             <label className="field">
               <span>Start date <span className="field-optional">(optional)</span></span>
@@ -511,5 +560,26 @@ function JobForm({ company, job }) {
         </div>
       </form>
     </div>
+  );
+}
+
+// "11", "11.50" or "11,50" as a number of euros; null when empty or not a number.
+function amount(text) {
+  const t = String(text || '').trim().replace(/^€\s*/, '').replace(',', '.');
+  if (!t || !/^\d+(\.\d{1,2})?$/.test(t)) return t ? NaN : null;
+  return Number(t);
+}
+
+// Monthly pay: the hourly equivalent, worked out the way the database does
+// (monthly ÷ (hours per week × 52 ÷ 12)).
+function HourlyEquivalent({ min, max, hours }) {
+  if (!(min > 0) || !Number.isInteger(hours) || hours < 1 || hours > 40) {
+    return <p className="field-hint pay-hourly">Add the amount and the hours per week to see the hourly equivalent.</p>;
+  }
+  const per = (x) => (Math.round((x / monthlyHours(hours)) * 100) / 100).toFixed(2);
+  return (
+    <p className="field-hint pay-hourly" role="status">
+      ≈ €{per(min)}{max > min ? `–${per(max)}` : ''} an hour at {hours} h/week. The "Minimum pay" filter and "Highest pay" use €{per(min)}/h.
+    </p>
   );
 }
