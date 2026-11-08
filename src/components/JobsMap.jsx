@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { createMap, maplibregl } from '../lib/map.js';
-import { metroLabel, payLabel, placeLabel, shortPay } from '../lib/jobs.js';
+import { markerPay, metroLabel, payLabel, placeLabel } from '../lib/jobs.js';
 import { mapParam } from '../lib/geo.js';
 
 // The map on /jobs and on company pages. Loaded with React.lazy, so MapLibre
@@ -140,8 +140,8 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
         el.type = 'button';
         el.className = 'job-marker';
         el.dataset.id = id;
-        const pay = shortPay(job.pay);
-        el.setAttribute('aria-label', `${job.title}${job.companies ? `, ${job.companies.name}` : ''}${job.pay ? `, ${job.pay}` : ''}`);
+        const pay = markerPay(job);
+        el.setAttribute('aria-label', `${job.title}${job.companies ? `, ${job.companies.name}` : ''}${pay ? `, ${payLabel(job)}` : ''}`);
         const dot = document.createElement('span');
         dot.className = 'job-marker-dot';
         el.append(dot);

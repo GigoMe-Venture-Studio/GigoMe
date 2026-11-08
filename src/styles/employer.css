@@ -106,3 +106,5 @@
 .preview-banner p { flex: 1 1 280px; }
 .preview-back { margin-top: var(--s6); }
 .editor-preview .btn-primary:disabled { background: var(--accent); color: var(--on-accent); opacity: .85; }
+.pay-group .pay-amounts { margin: 0; }
+.pay-hourly { margin-top: calc(-1 * var(--s1)); }
