@@ -47,7 +47,7 @@ domain changes no one.
 | `profiles` | One row per user: account type, university, name, degree level, graduation year | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
-| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
+| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay (per hour, per month, per project, or a curricular internship that is unpaid; an amount or a range; an hourly equivalent worked out by the database; an optional pay note), Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
 | `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from the City of Milan's open data (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
 | `saved_jobs` | Jobs a student saved to come back to: who, which job, when | Only the student who saved them | That student only (save a live job, remove). Deleted with their account and with the job |
@@ -95,6 +95,15 @@ A few details worth knowing:
   about 1 km. Jobs that show only their area get no station.
 - **Category** (hospitality, retail, tutoring & education, office & admin,
   marketing & social media, events, tech, other) is chosen by the employer.
+- **Pay:** required to submit or publish: how it's paid (per hour, per
+  month or per project) and the amount, or a range; unpaid only as a
+  "Curricular internship (university credits)", and only for internships.
+  The database works out an hourly equivalent for hourly and monthly pay
+  (monthly ÷ (hours per week × 52 ÷ 12)), from the lower end of a range;
+  per-project and unpaid jobs have none. It drives the "Minimum pay" filter
+  and "Highest pay". The old free-text pay stays as an optional note ("+
+  tips"). Jobs published before this rule keep their text and don't match
+  "Minimum pay" until the employer sets it (/admin lists them).
 - **When it happens:** at least one of weekday mornings, weekday
   afternoons, weekday evenings, weekends or flexible is needed to submit or
   publish a job. Jobs published before this rule have none: they still show,
