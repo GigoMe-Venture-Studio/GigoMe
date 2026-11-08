@@ -12,15 +12,16 @@ export function yearOptions(saved) {
 }
 
 // Checks the form values. Returns { errors } (by field) or { fields } ready
-// for saveProfile().
-export function checkProfile({ fullName, degree, year }) {
+// for saveProfile(). Company accounts only have a name to fill in.
+export function checkProfile({ fullName, degree, year }, { student = true } = {}) {
   const name = String(fullName || '').trim().replace(/\s+/g, ' ');
   const errors = {};
   if (!name) errors.fullName = 'Add your full name.';
   else if (name.length > 120) errors.fullName = 'Keep your name under 120 characters.';
-  if (!degree) errors.degree = 'Choose what you are studying.';
-  if (!year) errors.year = 'Choose the year you expect to graduate.';
+  if (student && !degree) errors.degree = 'Choose what you are studying.';
+  if (student && !year) errors.year = 'Choose the year you expect to graduate.';
   if (Object.keys(errors).length) return { errors };
+  if (!student) return { errors: {}, fields: { full_name: name } };
   return { errors: {}, fields: { full_name: name, degree_level: degree, graduation_year: Number(year) } };
 }
 
