@@ -77,6 +77,9 @@ week. It only reads.
   `university_id`.
 - **Make someone an admin:** find their user ID under Authentication > Users,
   insert it into the `admins` table.
+- **Load or refresh the metro stations:** GitHub > Actions > Metro stations >
+  Run workflow, then a pull request from `data/metro-stations` (SUPABASE.md,
+  "Metro stations", has the steps). Merging it changes the live database.
 - **Rename an approved company:** only in the Table Editor (owners can't, by
   design). It isn't recorded in the moderation log, so add a note somewhere.
 
@@ -149,13 +152,17 @@ and browser details when it is used.
 | Service | When | What it gets |
 | --- | --- | --- |
 | Supabase (Frankfurt) | Every page with jobs, every login | Everything the site stores (see SUPABASE.md) |
-| Google Fonts | Every page | The page request for the font files |
 | Cloudflare (hosting, Turnstile) | Every page; Turnstile on the login form | Page requests; Turnstile checks the browser to tell people from bots |
 | OpenFreeMap (tiles.openfreemap.org) | Only when a map is shown (`/jobs` map view, company pages, the job form) | Which map tiles are viewed, so roughly which part of Milan |
 | OpenStreetMap Nominatim | Only when an employer presses "Find address" | The address typed in the job's Location field |
 
+The font (Schibsted Grotesk) is served from gigome.org itself, so loading a
+page no longer contacts Google. Keep it that way: anything new loaded from
+another server belongs in this table and in the privacy notice.
+
 Map data © OpenStreetMap contributors (ODbL), shown on every map. Metro
-stations come from OpenStreetMap too (see SUPABASE.md).
+stations come from OpenStreetMap too (see SUPABASE.md). They're fetched by a
+GitHub Actions workflow, not by visitors' browsers.
 
 ## 8. Not built on purpose
 
