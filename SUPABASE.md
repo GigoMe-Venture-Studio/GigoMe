@@ -80,6 +80,12 @@ A few details worth knowing:
   area" (`show_exact_location` false), the database stores the area's centre
   instead of the point they sent, so a private address is never saved. Points
   must lie inside the Milan metro area.
+- **On-site jobs need an area:** a job that isn't remote can be saved as a
+  draft without an area, but it can't be submitted for review or published
+  until it has one (admins can't publish it either). The exact pin stays
+  optional. Jobs that were already live before this rule keep working;
+  /admin lists them under "Live jobs without an area" so you can ask the
+  employer to add one.
 
 - **Nearest station:** when a job is saved with an exact location, the
   database stores its nearest metro station and the distance in metres. The
@@ -135,6 +141,13 @@ To load or refresh it (no terminal needed):
 
 The script also runs on any computer with Node 20 or newer:
 `node scripts/fetch-metro-stations.mjs` writes the same file.
+
+The same workflow also rebuilds the metro map drawn on every map,
+`public/metro/milan-metro.geojson`, with `scripts/build-metro-map.mjs`: the
+stations above plus the stop order of each route from dataset DS533 "ATM -
+Composizione percorsi linee metropolitane" (also Comune di Milano, CC BY
+4.0). Each line is drawn as straight segments between its stations. That
+file is part of the website, not the database.
 
 Until it has run once, the table is empty and no job shows a metro badge.
 Adding or moving a station in the dashboard doesn't update existing jobs:

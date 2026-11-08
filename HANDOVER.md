@@ -155,17 +155,20 @@ and browser details when it is used.
 | Cloudflare (hosting, Turnstile) | Every page; Turnstile on the login form | Page requests; Turnstile checks the browser to tell people from bots |
 | OpenFreeMap (tiles.openfreemap.org) | Only when a map is shown (`/jobs` map view, company pages, the job form) | Which map tiles are viewed, so roughly which part of Milan |
 | OpenStreetMap Nominatim | Only when an employer presses "Find address" | The address typed in the job's Location field |
+| Google Maps | Only when someone clicks "Open in Google Maps" on a job page (a plain link, opened without telling Google which page it came from) | The job's point (or its area's centre), as for any Google Maps visit |
+| The browser's own location service | Only when someone presses "Use my location" on `/jobs` and allows it | Up to the browser (Chrome, Safari...): it may ask its maker's location service. GigoMe never receives or stores the position: it stays in the open tab, and the map then loads OpenFreeMap tiles around it, like any area someone looks at |
 
 The font (Schibsted Grotesk) is served from gigome.org itself, so loading a
 page no longer contacts Google. Keep it that way: anything new loaded from
 another server belongs in this table and in the privacy notice.
 
 Map data © OpenStreetMap contributors (ODbL), shown on every map. The metro
-stations (badges and walking distances) come from the City of Milan's open
-data: "Metro stations: Comune di Milano, CC BY 4.0", also shown on every map
+lines, stations, badges and walking distances come from the City of Milan's
+open data: "Metro: Comune di Milano, CC BY 4.0", also shown on every map
 (see SUPABASE.md, "Metro stations"). They're fetched by a GitHub Actions
-workflow and stored in our database, not by visitors' browsers. CC BY needs
-that credit to stay visible: keep it if the map changes.
+workflow into our database and our own site
+(`public/metro/milan-metro.geojson`), not by visitors' browsers. CC BY
+needs that credit to stay visible: keep it if the map changes.
 
 ## 8. Not built on purpose
 

@@ -45,13 +45,34 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   paths on this site.
 - Map: MapLibre GL (`src/lib/maplibre.js` sets its worker URL for Vite,
   `src/lib/map.js`) with OpenFreeMap's "positron" style and the
-  OpenStreetMap attribution always visible, with the metro stations' credit
-  next to it (`STATIONS_CREDIT`: "Comune di Milano, CC BY 4.0"; keep it).
-  Only ever loaded with `import()` /
-  `React.lazy` (`src/components/JobsMap.jsx`, `LocationPicker.jsx`), so list
-  pages stay light. `/jobs` has List | Map (desktop: side by side; phone: one
-  or the other); the map shows exactly the list's jobs, minus remote jobs and
-  jobs without coordinates, clustered when zoomed out. Areas come from
+  OpenStreetMap attribution always visible, with the metro credit next to it
+  (`STATIONS_CREDIT`: "Metro: Comune di Milano, CC BY 4.0"; keep it).
+  Every map (`createMap()`) draws M1–M5 in their colours (`LINE_COLOURS`),
+  station dots from zoom 12 and names from 13.5, from the static file
+  `public/metro/milan-metro.geojson` (built by `scripts/build-metro-map.mjs`
+  from DS535 + DS533; no database), with a "Metro" button to hide them
+  (remembered in localStorage only). Only ever loaded with `import()` /
+  `React.lazy` (`src/components/JobsMap.jsx`, `LocationPicker.jsx`,
+  `JobPlaceMap.jsx`), so list pages stay light; helpers a page needs without
+  a map (distances, the `?map=` param) live in `src/lib/geo.js`, never in
+  `map.js`. `/jobs` has List | Map (desktop, from 900px: side by side; phone:
+  one or the other); the map shows exactly the list's jobs, minus remote jobs
+  and jobs without coordinates, clustered with counts when zoomed out; single
+  jobs are button markers that show `shortPay()` from zoom 13 and open a
+  popup (desktop) or a bottom card (phones, `.map-sheet`). The map position
+  is in the URL (`?map=zoom/lat/lng`), and filters don't move a map the
+  person chose. Desktop: "Search as I move the map" (on by default) limits
+  the list to the visible area; phones: "Search this area" after moving it.
+  Either way remote and unlocated jobs stay listed under "Remote / no
+  location". "Use my location" asks the browser only when pressed; the
+  position stays in React state (never in the URL, storage, or any request:
+  `?map=` isn't written while it is shown), centres the map with a "You are
+  here" dot and offers "Sort by distance"; keep the line "Stays on your
+  device: never sent to GigoMe or saved." next to the button. Job pages
+  (`JobPlaceMap.jsx`, loaded when within 300px of the screen) show the pin
+  and nearest station, or a dashed circle for area-only jobs, and a plain
+  "Open in Google Maps" link (`googleMapsHref()`, rel noreferrer; nothing is
+  sent to Google unless clicked). Areas come from
   `src/lib/areas.js` (the `areas` table). The job form picks the area, then an
   optional pin (tap, drag, or "Find address": one Nominatim request per press
   from `src/lib/geocode.js`, bounded to Milan, never autocomplete, credited
@@ -261,6 +282,11 @@ Schema rules
   `description` and `contact_email` stay editable, and the dashboard shows
   name and website read-only with "To change these, write to hello@gigome.org.". Nobody reads `companies.contact_email` directly:
   `get_company_contact_email(company_id)` returns it to the owner and admins.
+- An on-site job (`remote` false) needs an `area_id` to be submitted or
+  published (trigger `job_area_required`, admins included); drafts and remote
+  jobs don't, the pin stays optional. It only fires when status, remote or
+  area_id change, so old live jobs without an area keep working; /admin lists
+  them ("Live jobs without an area") and flags pending ones (Publish off).
 - Job statuses: `draft`, `pending` (in review), `published`, `closed`,
   `changes_requested`, `rejected`. Owners can set only `draft`, `closed` or
   `pending`, and `pending` only once their company is approved. They can't
