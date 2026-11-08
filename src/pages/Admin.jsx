@@ -17,6 +17,8 @@ import {
   fetchPendingJobs,
   fetchRecentDecisions,
   fetchRecentFeedback,
+  fetchLiveJobsWithoutArea,
+  needsArea,
   resolveReport,
   reviewJob,
   setCompanyStatus
@@ -63,8 +65,9 @@ function AdminPage() {
     let active = true;
     // Feedback that fails to load doesn't stop the moderation queue.
     const feedback = fetchRecentFeedback().catch(() => null);
-    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions(), feedback])
-      .then(([companies, jobs, reports, log, fb]) => active && setData({ status: 'ready', companies, jobs, reports, log, feedback: fb }))
+    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions(), feedback, fetchLiveJobsWithoutArea()])
+      .then(([companies, jobs, reports, log, fb, noArea]) =>
+        active && setData({ status: 'ready', companies, jobs, reports, log, feedback: fb, noArea }))
       .catch(() => active && setData({ status: 'error' }));
     return () => {
       active = false;
@@ -81,6 +84,9 @@ function AdminPage() {
         <a href="#admin-companies">{data.companies.length} {data.companies.length === 1 ? 'company' : 'companies'}</a>,{' '}
         <a href="#admin-jobs">{data.jobs.length} {data.jobs.length === 1 ? 'job' : 'jobs'}</a> and{' '}
         <a href="#admin-reports">{data.reports.length} open {data.reports.length === 1 ? 'report' : 'reports'}</a> waiting.{' '}
+        {data.noArea.length > 0 && (
+          <><a href="#admin-no-area">{data.noArea.length} live {data.noArea.length === 1 ? 'job has' : 'jobs have'} no area</a>.{' '}</>
+        )}
         <a href="#admin-feedback">Latest feedback</a>.
       </p>
 
@@ -102,6 +108,26 @@ function AdminPage() {
         <h2 id="reports-title">Open reports</h2>
         {data.reports.length === 0 ? <p className="muted">None.</p> : (
           <ul className="admin-list">{data.reports.map((r) => <ReportItem key={r.id} report={r} onDone={reload} />)}</ul>
+        )}
+      </section>
+
+      <section className="admin-section" id="admin-no-area" aria-labelledby="no-area-title">
+        <h2 id="no-area-title">Live jobs without an area</h2>
+        {data.noArea.length === 0 ? <p className="muted">None.</p> : (
+          <>
+            <p className="muted">
+              On-site jobs published before areas existed. They don't show on the map or in area searches. Ask the employer to
+              add an area (editing sends the job back for review), or unpublish it.
+            </p>
+            <ul className="admin-log">
+              {data.noArea.map((j) => (
+                <li key={j.id}>
+                  <span className="muted tnum">Created {when(j.created_at)}</span> · <strong>{j.title}</strong>, {j.companies.name} ·{' '}
+                  <Link to={`/jobs/${j.id}`}>open its page</Link>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </section>
 
@@ -226,6 +252,7 @@ function JobItem({ job, onDone }) {
   const [ticks, setTicks] = useState(() => REVIEW_CHECKLIST.map(() => false));
   const [note, setNote] = useState('');
   const allTicked = ticks.every(Boolean);
+  const noArea = needsArea(job);
 
   function decide(status) {
     if ((status === 'changes_requested' || status === 'rejected') && !note.trim()) {
@@ -240,6 +267,11 @@ function JobItem({ job, onDone }) {
     <li className="admin-item">
       <JobSummary job={job} />
       {job.review_note && <p className="muted admin-item-meta">Earlier note: "{job.review_note}"</p>}
+      {noArea && (
+        <p className="admin-flag" role="note">
+          <strong>No area.</strong> An on-site job can't be published without one. Request changes and ask the employer to choose it.
+        </p>
+      )}
       <fieldset className="admin-checklist">
         <legend>Review checklist</legend>
         {REVIEW_CHECKLIST.map((item, i) => (
@@ -254,7 +286,7 @@ function JobItem({ job, onDone }) {
       </label>
       {error && <p className="err" role="alert">{error}</p>}
       <div className="admin-actions">
-        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy) || !allTicked} onClick={() => decide('published')}
+        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy) || !allTicked || noArea} onClick={() => decide('published')}
           aria-describedby={allTicked ? undefined : `checklist-hint-${job.id}`}>
           {busy === 'published' ? 'Publishing…' : 'Publish'}
         </button>
