@@ -2,13 +2,20 @@
 // Fetches Milan's metro stations (M1–M5) from OpenStreetMap and writes a
 // migration that loads them into public.metro_stations.
 //
+// Normally run by the "Metro stations" GitHub Actions workflow
+// (.github/workflows/metro-stations.yml), started by hand from the Actions
+// tab: it runs this script and pushes the migration to the branch
+// data/metro-stations, ready for a pull request. Locally:
+//
 //   node scripts/fetch-metro-stations.mjs            # fetch from Overpass
 //   node scripts/fetch-metro-stations.mjs data.json  # use a saved Overpass answer
 //
-// It writes supabase/migrations/<now>_metro_stations_data.sql. Check the
-// station count it prints (about 110 to 120), commit the file and open a pull
-// request. Merging it loads the stations and recomputes every job's nearest
-// station.
+// It writes supabase/migrations/<now>_metro_stations_data.sql, but only when
+// it finds between 100 and 130 stations and every line M1 to M5 has some;
+// otherwise it writes nothing and fails. The counts (and, in GitHub Actions,
+// the full list of stations) are printed so they can be checked before the
+// pull request is merged. Merging it loads the stations and recomputes every
+// job's nearest station.
 //
 // Data © OpenStreetMap contributors, available under the Open Database
 // License (ODbL): https://www.openstreetmap.org/copyright
@@ -16,7 +23,19 @@
 // How: the M1–M5 route relations in OpenStreetMap list their stops (one stop
 // position per track). Stops with the same name are one station: its lines
 // are the routes that stop there, its point is the middle of its stops.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+
+export const MIN_STATIONS = 100;
+export const MAX_STATIONS = 130;
+export const LINES = ['M1', 'M2', 'M3', 'M4', 'M5'];
+
+// Public Overpass servers, tried in this order until one answers.
+const SERVERS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter'
+];
 
 const QUERY = `[out:json][timeout:90];
 rel["route"="subway"]["ref"~"^M[1-5]$"](45.25,8.70,45.70,9.60)->.routes;
@@ -29,13 +48,68 @@ const SAME = new Map([]);
 
 async function load(file) {
   if (file) return JSON.parse(readFileSync(file, 'utf8'));
-  const res = await fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'GigoMe metro import (hello@gigome.org)' },
-    body: 'data=' + encodeURIComponent(QUERY)
-  });
-  if (!res.ok) throw new Error(`Overpass answered ${res.status}`);
-  return res.json();
+  const problems = [];
+  for (const url of SERVERS) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'GigoMe metro import (hello@gigome.org)' },
+        body: 'data=' + encodeURIComponent(QUERY),
+        signal: AbortSignal.timeout(120_000)
+      });
+      if (!res.ok) throw new Error(`answered ${res.status}`);
+      const data = await res.json();
+      // A query that ran out of time or memory still answers 200, with a remark.
+      if (data.remark) throw new Error(`remark: ${data.remark}`);
+      console.log(`Data from ${url}`);
+      return data;
+    } catch (e) {
+      problems.push(`${url}: ${e.message}`);
+      console.log(`${url} failed (${e.message}), trying the next server`);
+    }
+  }
+  throw new Error('No Overpass server answered:\n' + problems.join('\n'));
+}
+
+export function countByLine(stations) {
+  const byLine = Object.fromEntries(LINES.map((l) => [l, 0]));
+  for (const s of stations) for (const l of s.lines) byLine[l] += 1;
+  return byLine;
+}
+
+// Why these stations can't be used, or '' when they can.
+export function problemWith(stations) {
+  const byLine = countByLine(stations);
+  const empty = LINES.filter((l) => byLine[l] === 0);
+  if (stations.length < MIN_STATIONS || stations.length > MAX_STATIONS)
+    return `${stations.length} stations found, expected between ${MIN_STATIONS} and ${MAX_STATIONS}.`;
+  if (empty.length) return `No stations found for ${empty.join(', ')}.`;
+  return '';
+}
+
+// Markdown for the GitHub Actions run summary.
+export function summary(stations, problem, file) {
+  const byLine = countByLine(stations);
+  const list = stations.map((s) => `| ${s.name.replace(/\|/g, '\\|')} | ${s.lines.join(', ')} |`);
+  return [
+    '## Metro stations from OpenStreetMap',
+    '',
+    problem ? `**Failed:** ${problem} Nothing was written.` : `**${stations.length} stations**, written to \`${file}\`.`,
+    '',
+    '| Line | Stations |',
+    '| --- | ---: |',
+    ...LINES.map((l) => `| ${l} | ${byLine[l]} |`),
+    `| **All lines** (a station on two lines counts once) | **${stations.length}** |`,
+    '',
+    '<details><summary>Every station</summary>',
+    '',
+    '| Station | Lines |',
+    '| --- | --- |',
+    ...list,
+    '',
+    '</details>',
+    ''
+  ].join('\n');
 }
 
 export function stationsFrom(data) {
@@ -93,15 +167,19 @@ update public.jobs set latitude = latitude where latitude is not null;
 `;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const data = await load(process.argv[2]);
   const stations = stationsFrom(data);
-  if (stations.length < 80) throw new Error(`Only ${stations.length} stations found: check the Overpass answer before using it.`);
+  const problem = problemWith(stations);
   const now = new Date();
   const stamp = now.toISOString().replace(/[-:T]/g, '').slice(0, 14);
   const file = `supabase/migrations/${stamp}_metro_stations_data.sql`;
-  writeFileSync(file, toSql(stations, now.toISOString().slice(0, 10)));
-  const byLine = {};
-  for (const s of stations) for (const l of s.lines) byLine[l] = (byLine[l] || 0) + 1;
-  console.log(`Wrote ${file}: ${stations.length} stations`, byLine);
+  if (!problem) writeFileSync(file, toSql(stations, now.toISOString().slice(0, 10)));
+  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(stations, problem, file));
+  for (const [line, n] of Object.entries(countByLine(stations))) console.log(`${line}: ${n} stations`);
+  if (problem) {
+    console.error(`Failed: ${problem} Nothing was written.`);
+    process.exit(1);
+  }
+  console.log(`Wrote ${file}: ${stations.length} stations`);
 }
