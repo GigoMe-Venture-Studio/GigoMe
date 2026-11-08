@@ -559,7 +559,7 @@ begin
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
-      insert into public.companies (name) values ('Check student company');
+      insert into public.companies (name, terms_accepted_at) values ('Check student company', now());
       perform set_config('role', 'none', true);
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
@@ -699,6 +699,51 @@ begin
     end;
     results := pg_temp.res(results, 'The dashboard (SQL Editor) can still rename an approved company', 'Check Emp (renamed by the team)',
                            v_err, v_err = 'Check Emp (renamed by the team)');
+
+    -- Terms of use: accepted on creation, stamped by the database, never changed through the API.
+    select string_agg(r || ':' || p, ', ') into v_err
+    from unnest(array['anon', 'authenticated']) r, unnest(array['UPDATE']) p
+    where has_column_privilege(r, 'public.companies', 'terms_accepted_at', p)
+       or (r = 'anon' and has_column_privilege(r, 'public.companies', 'terms_accepted_at', 'INSERT'));
+    results := pg_temp.res(results, 'terms_accepted_at: nobody updates it through the API (logged-in users only set it on creation)',
+                           'none', coalesce(v_err, 'none'), v_err is null);
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_lookalike, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.companies (name, contact_email) values ('Check Co (no terms)', 'x@check.example');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A company account cannot create its company without accepting the terms', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_lookalike, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.companies (name, contact_email, terms_accepted_at)
+        values ('Check Co (terms)', 'x@check.example', '2000-01-01T00:00:00Z');
+      perform set_config('role', 'none', true);
+      v_err := 'inserted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || case when terms_accepted_at = now() then 'stamped now' else coalesce(terms_accepted_at::text, 'empty') end
+      into v_text from public.companies where owner_id = v_lookalike;
+    results := pg_temp.res(results, 'Accepting the terms on creation stores the database''s time, not the one sent',
+                           'inserted, stamped now', coalesce(v_text, v_err), v_text = 'inserted, stamped now');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_lookalike, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set terms_accepted_at = null where owner_id = v_lookalike;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select case when terms_accepted_at = now() then 'unchanged' else 'changed' end into v_text from public.companies where owner_id = v_lookalike;
+    results := pg_temp.res(results, 'The owner cannot change when the terms were accepted', 'error, unchanged',
+                           case when v_err like 'error:%' then 'error' else v_err end || ', ' || coalesce(v_text, 'no company'),
+                           v_err like 'error:%' and v_text = 'unchanged');
 
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);

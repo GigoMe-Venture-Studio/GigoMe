@@ -17,3 +17,9 @@
 .account-danger-text { margin-top: var(--s3); }
 .account-danger-text p + p { margin-top: var(--s2); }
 .account-delete-btn:disabled { border-color: var(--line); color: var(--muted); background: var(--white); cursor: default; }
+
+/* "Keep my account" and "Delete my account": same style, same size. */
+.account-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); margin-top: var(--s4); }
+.auth-form .account-choice .btn, .account-choice .btn { width: 100%; height: auto; min-height: 48px; padding: var(--s2) var(--s3); white-space: normal; text-align: center; line-height: 1.25; }
+.account-kept { margin-top: var(--s3); font-weight: 600; }
+@media (max-width: 359px) { .account-choice { grid-template-columns: 1fr; } }

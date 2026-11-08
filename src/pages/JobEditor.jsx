@@ -271,7 +271,7 @@ function JobForm({ company, job }) {
 
         <fieldset className="form-group">
           <legend>How students apply</legend>
-          <p className="field-hint">A link, an email address, or both. Students see them after they log in and press "How to apply".</p>
+          <p className="field-hint">A link, an email address, or both. Students are sent there when they log in and press "Apply".</p>
           <label className="field">
             Application link
             <input className="input" type="text" name="apply_url" inputMode="url" autoCapitalize="none" spellCheck="false"
