@@ -141,6 +141,22 @@ this section.
   variables (Worker > Settings > Variables and Secrets). Check that it runs:
   Worker > Logs or the cron events show "Supabase ping OK".
 
+## 7b. Outside services a visitor's browser talks to
+
+The privacy notice has to name these. Each one sees the visitor's IP address
+and browser details when it is used.
+
+| Service | When | What it gets |
+| --- | --- | --- |
+| Supabase (Frankfurt) | Every page with jobs, every login | Everything the site stores (see SUPABASE.md) |
+| Google Fonts | Every page | The page request for the font files |
+| Cloudflare (hosting, Turnstile) | Every page; Turnstile on the login form | Page requests; Turnstile checks the browser to tell people from bots |
+| OpenFreeMap (tiles.openfreemap.org) | Only when a map is shown (`/jobs` map view, company pages, the job form) | Which map tiles are viewed, so roughly which part of Milan |
+| OpenStreetMap Nominatim | Only when an employer presses "Find address" | The address typed in the job's Location field |
+
+Map data © OpenStreetMap contributors (ODbL), shown on every map. Metro
+stations come from OpenStreetMap too (see SUPABASE.md).
+
 ## 8. Not built on purpose
 
 These come up again and again. Don't add them without checking with the
