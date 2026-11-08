@@ -71,6 +71,26 @@ export async function fetchPendingJobs() {
   return Promise.all((data || []).map(withContact));
 }
 
+// Live on-site jobs without an area: published before areas existed (the
+// database now refuses to submit or publish them without one). They don't
+// show on the map or in area searches; ask the employer to add an area.
+export async function fetchLiveJobsWithoutArea() {
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('id, title, created_at, companies!inner(name, status)')
+    .eq('status', 'published')
+    .eq('remote', false)
+    .is('area_id', null)
+    .gt('expires_at', new Date().toISOString())
+    .eq('companies.status', 'approved')
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+// The database refuses to publish an on-site job without an area.
+export const needsArea = (job) => !job.remote && job.area_id == null;
+
 export async function fetchOpenReports() {
   const { data, error } = await supabase
     .from('job_reports')

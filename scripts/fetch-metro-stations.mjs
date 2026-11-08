@@ -26,11 +26,15 @@
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-const API = 'https://dati.comune.milano.it/api/3/action/package_show?id=ds535_atm-fermate-linee-metropolitane';
-// Used if the catalogue can't be read. The catalogue is asked first because
-// this link changes whenever the city uploads a new version of the file.
-const FALLBACK_CSV =
-  'https://dati.comune.milano.it/dataset/b7344a8f-0ef5-424b-a902-f7f06e32dd67/resource/0f4d4d05-b379-45a4-9a10-412a34708484/download/tpl_metrofermate.csv';
+// The City's catalogue (CKAN) gives each file's current link; the links below
+// are used if the catalogue can't be read (they change whenever the city
+// uploads a new version of a file).
+export const STATIONS_DATASET = {
+  id: 'ds535_atm-fermate-linee-metropolitane',
+  match: /metrofermate/i,
+  fallback:
+    'https://dati.comune.milano.it/dataset/b7344a8f-0ef5-424b-a902-f7f06e32dd67/resource/0f4d4d05-b379-45a4-9a10-412a34708484/download/tpl_metrofermate.csv'
+};
 const HEADERS = { 'User-Agent': 'GigoMe metro import (hello@gigome.org)' };
 
 export const MIN_STATIONS = 115;
@@ -89,20 +93,33 @@ export function displayName(raw) {
     .join(' ');
 }
 
-async function get(url) {
-  const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(60_000) });
-  if (!res.ok) throw new Error(`${url} answered ${res.status}`);
-  return res;
+// The portal is sometimes slow or briefly down (502): three tries, with a
+// pause before each retry. A 404 isn't retried.
+async function get(url, tries = 3) {
+  for (let i = 1; ; i++) {
+    try {
+      const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(60_000) });
+      if (res.ok) return res;
+      const err = new Error(`${url} answered ${res.status}`);
+      err.final = res.status < 500;
+      throw err;
+    } catch (e) {
+      if (e.final || i >= tries) throw e;
+      console.log(`${e.message}; trying again in ${15 * i} s`);
+      await new Promise((r) => setTimeout(r, 15000 * i));
+    }
+  }
 }
 
-async function load(file) {
+// Downloads a dataset's CSV (or reads a saved copy).
+export async function loadDataset(dataset, file) {
   if (file) return readFileSync(file, 'utf8');
-  let url = FALLBACK_CSV;
+  let url = dataset.fallback;
   try {
-    const meta = await (await get(API)).json();
-    const csv = meta.result.resources.find((r) => /csv/i.test(r.format) && /metrofermate/i.test(r.url));
+    const meta = await (await get(`https://dati.comune.milano.it/api/3/action/package_show?id=${dataset.id}`)).json();
+    const csv = meta.result.resources.find((r) => /csv/i.test(r.format) && dataset.match.test(r.url));
     if (csv) url = csv.url;
-    else console.log('No CSV in the catalogue entry, using the known link');
+    else console.log(`No CSV in the catalogue entry for ${dataset.id}, using the known link`);
   } catch (e) {
     console.log(`Couldn't read the catalogue (${e.message}), using the known link`);
   }
@@ -111,7 +128,7 @@ async function load(file) {
 }
 
 // The file: semicolons between fields, double quotes around some of them.
-export function parseCsv(text) {
+export function readCsv(text) {
   const rows = [];
   let row = [], field = '', quoted = false;
   const src = text.replace(/^﻿/, '');
@@ -133,13 +150,19 @@ export function parseCsv(text) {
   row.push(field);
   if (row.some((f) => f.trim())) rows.push(row);
   const head = rows.shift().map((h) => h.trim().toLowerCase());
+  return { head, rows };
+}
+
+export function parseCsv(text) {
+  const { head, rows } = readCsv(text);
   const col = (...names) => {
     const i = head.findIndex((h) => names.includes(h));
     if (i < 0) throw new Error(`The file has no ${names.join(' or ')} column (columns: ${head.join(', ')}).`);
     return i;
   };
-  const name = col('nome', 'ubicazione'), lines = col('linee'), lon = col('long_x_4326'), lat = col('lat_y_4326');
+  const id = col('id_amat', 'id'), name = col('nome', 'ubicazione'), lines = col('linee'), lon = col('long_x_4326'), lat = col('lat_y_4326');
   return rows.map((r) => ({
+    id: r[id].trim(),
     raw: r[name].trim(),
     lines: (r[lines].match(/[1-5]/g) || []).map((n) => 'M' + n),
     lat: Number(r[lat]),
@@ -275,7 +298,7 @@ update public.jobs set latitude = latitude where latitude is not null;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const stations = stationsFrom(parseCsv(await load(process.argv[2])));
+  const stations = stationsFrom(parseCsv(await loadDataset(STATIONS_DATASET, process.argv[2])));
   const problems = problemsWith(stations);
   const now = new Date();
   const stamp = now.toISOString().replace(/[-:T]/g, '').slice(0, 14);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
@@ -16,6 +16,7 @@ import {
   JOB_TYPE_LABEL,
   dateLabel,
   fetchJob,
+  googleMapsHref,
   hoursLabel,
   payLabel,
   placeLabel,
@@ -24,6 +25,9 @@ import {
   websiteHref,
   websiteText
 } from '../lib/jobs.js';
+
+// MapLibre is only downloaded when the job's map is about to be seen.
+const JobPlaceMap = lazy(() => import('../components/JobPlaceMap.jsx'));
 
 export default function JobDetail() {
   return (
@@ -121,6 +125,7 @@ function JobPage() {
               <p className="muted">The employer hasn't added a description yet.</p>
             )}
             <p className="muted job-posted">Posted {postedLabel(job.created_at).toLowerCase()}.</p>
+            {job.latitude != null && job.longitude != null && <JobPlace job={job} />}
             <h2>About {company.name}</h2>
             {company.description ? <p className="job-text">{company.description}</p> : null}
             {site ? (
@@ -273,6 +278,47 @@ function HowToApply({ jobId, jobTitle }) {
       </button>
       {reveal.status === 'error' && <p className="err" role="alert">{reveal.message}</p>}
       <p className="apply-note">Applications go straight to the employer.</p>
+    </>
+  );
+}
+
+// "Where": the small map (loaded when it is about to scroll into view) and a
+// link to Google Maps that only opens when clicked.
+function JobPlace({ job }) {
+  const exact = Boolean(job.show_exact_location);
+  const station = exact && metroLabel(job) && job.metro_stations && job.metro_stations.latitude != null ? job.metro_stations : null;
+  const spot = useRef(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    if (near || !spot.current) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setNear(true);
+      return undefined;
+    }
+    const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setNear(true), { rootMargin: '300px' });
+    io.observe(spot.current);
+    return () => io.disconnect();
+  }, [near]);
+  return (
+    <>
+      <h2>Where</h2>
+      <p className="muted job-place-note">
+        {exact ? placeLabel(job) : `${(job.areas && job.areas.name) || placeLabel(job)}: the employer shows only the area, not the exact address.`}
+      </p>
+      <div ref={spot} className="job-place">
+        {near ? (
+          <Suspense fallback={<div className="job-map job-map-loading" role="status">Loading the map…</div>}>
+            <JobPlaceMap point={[job.longitude, job.latitude]} exact={exact} station={station} title={job.title} />
+          </Suspense>
+        ) : (
+          <div className="job-map job-map-loading" aria-hidden="true" />
+        )}
+      </div>
+      <p className="job-place-link">
+        <a href={googleMapsHref(job)} target="_blank" rel="noopener noreferrer">
+          {exact ? 'Open in Google Maps' : 'Open the area in Google Maps'}
+        </a>
+      </p>
     </>
   );
 }

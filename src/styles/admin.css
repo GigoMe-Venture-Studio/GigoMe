@@ -23,6 +23,8 @@
 .admin-log { list-style: none; margin-top: var(--s3); font-size: 14px; }
 .admin-log li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
 .admin-log-note { display: block; color: var(--muted); }
+/* A pending job the database won't let us publish yet (no area). */
+.admin-flag { padding: var(--s2) var(--s3); border-left: 3px solid var(--warn); background: var(--paper); font-size: 14px; }
 
 /* Feedback: time and page, then the message. The page is shown as text, never
    as a link: it comes from the sender's browser. */
