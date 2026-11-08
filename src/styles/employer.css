@@ -26,7 +26,7 @@
 .field-optional { font-weight: 400; color: var(--muted); }
 .field-hint { font-size: 14px; font-weight: 400; color: var(--muted); }
 .hours-warning { color: var(--ink); font-weight: 600; }
-.textarea { height: auto; min-height: 120px; padding: var(--s3); line-height: 1.5; resize: vertical; font: inherit; }
+.textarea { height: auto; min-height: 120px; padding: var(--s3); line-height: 1.5; resize: vertical; font: inherit; font-weight: 400; }
 .textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--ink); }
 .form-buttons { display: flex; flex-direction: column; gap: var(--s3); }
 .auth-form .form-buttons .btn { width: 100%; }
