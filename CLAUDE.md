@@ -11,7 +11,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/companies/:id`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
+  `/jobs`, `/jobs/:id`, `/companies/:id`, `/saved`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
   `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
   redirects to `/`: there is no About page, and no team names, biographies or
@@ -55,6 +55,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   companies only (asked for explicitly), name, description, website and open
   jobs with the map when some have a location; never the contact email.
   Linked from job pages.
+- Saved jobs: `src/lib/saved.js` (one shared list of the student's saved job
+  ids, loaded once per login; `useSavedJobs()`, `setSaved()`),
+  `src/components/SaveButton.jsx` (the bookmark on job cards, next to the
+  card's link, not inside it, and on job pages; students only),
+  `src/pages/Saved.jsx` (`/saved`, "Saved jobs" in the header for students;
+  jobs that closed or expired show as "No longer available" from
+  `my_saved_jobs()`).
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
   the home page. `src/components/SiteFooter.jsx`: the footer on every page
   (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
@@ -120,7 +127,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
   (`/jobs`), then: logged out, "For employers" and "Log in"; a
-  student, their name (a link to `/account`, truncated when it doesn't fit)
+  student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
   and "Log out"; a company account, "Dashboard", the company name (a link to
   `/account`) and "Log out". The footer shows "For employers" when logged
   out. Under 768px the links move into a Menu panel. Don't add links for
@@ -269,6 +276,11 @@ Schema rules
   exact locations only. `job_published_at` sets `published_at` on the first
   publication. Neither column has insert or update grants. `category` is one
   of the eight values in `CATEGORIES` (`src/lib/jobs.js`).
+- `saved_jobs`: students insert only `job_id` (`user_id` is the caller, by
+  default and by policy) for a job they can see; they read and delete only
+  their own rows; no updates. Rows go with the account (`auth.users`, on
+  delete cascade) and with the job. `my_saved_jobs()` lists the caller's own
+  only.
 - `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
   job they can see (RLS), one open report per user per job (unique index);
   only admins read them, and only `admin_resolve_report(id, note)` resolves
@@ -280,7 +292,7 @@ Schema rules
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
 - `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
   their feedback explicitly, then the `auth.users` row, which cascades to the
-  profile and, for a company account, its company, jobs, job contacts and
+  profile, their saved jobs and, for a company account, its company, jobs, job contacts and
   those jobs' clicks (and reports on those jobs). Their own clicks and the
   reports they filed stay, with `user_id` / `reporter_id` set to null. Keep
   it that way if you add a table that points at a user: decide whether it is

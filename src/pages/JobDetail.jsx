@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import ReportJob from '../components/ReportJob.jsx';
+import SaveButton from '../components/SaveButton.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile } from '../lib/auth.js';
@@ -88,7 +89,10 @@ function JobPage() {
       <BackLink />
       <div className="detail">
         <article>
-          <h1 className="page-title">{job.title}</h1>
+          <div className="detail-title-row">
+            <h1 className="page-title">{job.title}</h1>
+            <SaveButton jobId={job.id} title={job.title} labelled />
+          </div>
           <p className="detail-co"><Link to={`/companies/${company.id}`}>{company.name}</Link></p>
           <div className="tags">
             {isNew(job) && <span className="tag tag-new">New</span>}

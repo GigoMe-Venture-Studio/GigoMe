@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import SaveButton from './SaveButton.jsx';
 import {
   CATEGORY_LABEL,
   ITALIAN_LABEL,
@@ -11,11 +12,12 @@ import {
   postedLabel
 } from '../lib/jobs.js';
 
-// One job in a list (/jobs, "Newest jobs" on the home page, company pages).
+// One job in a list (/jobs, "Newest jobs" on the home page, company pages,
+// saved jobs). The save button sits next to the link, not inside it.
 export default function JobCard({ job }) {
   const metro = metroLabel(job);
   return (
-    <li>
+    <li className="job-card">
       <Link className="role-row" to={`/jobs/${job.id}`}>
         <div>
           <div className="role-l1">
@@ -46,6 +48,7 @@ export default function JobCard({ job }) {
           <span className="posted tnum">{postedLabel(job.created_at)}</span>
         </div>
       </Link>
+      <SaveButton jobId={job.id} title={job.title} className="card-save" />
     </li>
   );
 }

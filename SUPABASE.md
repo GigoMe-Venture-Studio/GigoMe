@@ -50,6 +50,7 @@ domain changes no one.
 | `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay, Italian level, start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
 | `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from OpenStreetMap (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
+| `saved_jobs` | Jobs a student saved to come back to: who, which job, when | Only the student who saved them | That student only (save a live job, remove). Deleted with their account and with the job |
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins only | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
@@ -141,7 +142,8 @@ area keeps the centre it had when it was saved.
 Users delete their own account on `/account`, which calls
 `delete_my_account()`. This happens to their data:
 
-- **Deleted:** their login, their profile, and the feedback they sent.
+- **Deleted:** their login, their profile, the feedback they sent and the
+  jobs they saved.
 - **Company accounts:** their company, its jobs, how to apply for those jobs,
   and the clicks on those jobs are deleted too.
 - **Kept, but anonymous:** the apply clicks they made stay in
@@ -167,6 +169,7 @@ in `feedback` if the person asked for everything to go.
 | `admin_company_contact(company_id)` | Admins | A company's contact email and the email its owner logs in with. |
 | `admin_set_job_status(job_id, status)` | Admins | The same without a note (so it can't request changes or reject). |
 | `my_job_stats()` | Company owners | Apply clicks on each of the caller's own jobs (how often students pressed "Apply"). Never other companies' numbers. |
+| `my_saved_jobs()` | Logged-in users | The caller's saved jobs with title, company and whether each is still live (so a closed job can show "No longer available"). Never anyone else's. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |

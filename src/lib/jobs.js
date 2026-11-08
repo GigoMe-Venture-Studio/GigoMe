@@ -98,6 +98,7 @@ export async function fetchJobs(filters, { limit = 200 } = {}) {
   if (filters.area) query = query.eq('area_id', Number(filters.area));
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.companyId) query = query.eq('company_id', filters.companyId);
+  if (filters.ids) query = query.in('id', filters.ids);
   if (filters.type) query = query.eq('job_type', filters.type);
   if (filters.remote === 'yes') query = query.eq('remote', true);
   if (filters.remote === 'no') query = query.eq('remote', false);
