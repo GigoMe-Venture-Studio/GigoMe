@@ -1,0 +1,294 @@
+import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import PageShell from '../components/PageShell.jsx';
+import NotFound from './NotFound.jsx';
+import { supabase } from '../lib/supabase.js';
+import { useSession } from '../lib/useSession.js';
+import { ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, placeLabel, websiteHref, websiteText } from '../lib/jobs.js';
+import { JOB_STATUS, shownStatus } from '../lib/employer.js';
+import { REPORT_REASON_LABEL } from '../lib/reports.js';
+import {
+  LOG_ACTION_LABEL,
+  REVIEW_CHECKLIST,
+  checkIsAdmin,
+  fetchOpenReports,
+  fetchPendingCompanies,
+  fetchPendingJobs,
+  fetchRecentDecisions,
+  resolveReport,
+  reviewJob,
+  setCompanyStatus
+} from '../lib/admin.js';
+
+// /admin: admins only. Everyone else (logged out included) gets the 404 page,
+// and the database refuses them anyway.
+export default function Admin() {
+  const { session, loading } = useSession();
+  const [admin, setAdmin] = useState(null);
+  const userId = session ? session.user.id : null;
+
+  useEffect(() => {
+    if (loading) return undefined;
+    if (!supabase || !userId) {
+      setAdmin(false);
+      return undefined;
+    }
+    let active = true;
+    checkIsAdmin().then((yes) => active && setAdmin(yes));
+    return () => {
+      active = false;
+    };
+  }, [userId, loading]);
+
+  if (admin === null) return <PageShell className="admin-main"><p className="muted">Loading…</p></PageShell>;
+  if (!admin) return <NotFound />;
+  return (
+    <PageShell className="admin-main">
+      <AdminPage />
+    </PageShell>
+  );
+}
+
+const when = (iso) =>
+  new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+function AdminPage() {
+  const [data, setData] = useState({ status: 'loading' });
+  const [version, setVersion] = useState(0);
+  const reload = useCallback(() => setVersion((n) => n + 1), []);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([fetchPendingCompanies(), fetchPendingJobs(), fetchOpenReports(), fetchRecentDecisions()])
+      .then(([companies, jobs, reports, log]) => active && setData({ status: 'ready', companies, jobs, reports, log }))
+      .catch(() => active && setData({ status: 'error' }));
+    return () => {
+      active = false;
+    };
+  }, [version]);
+
+  if (data.status === 'loading') return <p className="muted">Loading the moderation queue…</p>;
+  if (data.status === 'error') return <p className="err" role="alert">We couldn't load the moderation queue. Reload the page.</p>;
+
+  return (
+    <div className="admin">
+      <h1 className="page-title">Moderation</h1>
+      <p className="admin-summary">
+        <a href="#admin-companies">{data.companies.length} {data.companies.length === 1 ? 'company' : 'companies'}</a>,{' '}
+        <a href="#admin-jobs">{data.jobs.length} {data.jobs.length === 1 ? 'job' : 'jobs'}</a> and{' '}
+        <a href="#admin-reports">{data.reports.length} open {data.reports.length === 1 ? 'report' : 'reports'}</a> waiting.
+      </p>
+
+      <section className="admin-section" id="admin-companies" aria-labelledby="companies-title">
+        <h2 id="companies-title">Companies waiting for review</h2>
+        {data.companies.length === 0 ? <p className="muted">None.</p> : (
+          <ul className="admin-list">{data.companies.map((c) => <CompanyItem key={c.id} company={c} onDone={reload} />)}</ul>
+        )}
+      </section>
+
+      <section className="admin-section" id="admin-jobs" aria-labelledby="jobs-title">
+        <h2 id="jobs-title">Jobs waiting for review</h2>
+        {data.jobs.length === 0 ? <p className="muted">None.</p> : (
+          <ul className="admin-list">{data.jobs.map((j) => <JobItem key={j.id} job={j} onDone={reload} />)}</ul>
+        )}
+      </section>
+
+      <section className="admin-section" id="admin-reports" aria-labelledby="reports-title">
+        <h2 id="reports-title">Open reports</h2>
+        {data.reports.length === 0 ? <p className="muted">None.</p> : (
+          <ul className="admin-list">{data.reports.map((r) => <ReportItem key={r.id} report={r} onDone={reload} />)}</ul>
+        )}
+      </section>
+
+      <section className="admin-section" aria-labelledby="log-title">
+        <h2 id="log-title">Recent decisions</h2>
+        {data.log.length === 0 ? <p className="muted">None yet.</p> : (
+          <ul className="admin-log">
+            {data.log.map((e) => (
+              <li key={e.id}>
+                <span className="muted tnum">{when(e.created_at)}</span> · {(e.admin && e.admin.full_name) || 'An admin'} ·{' '}
+                <strong>{LOG_ACTION_LABEL[e.action] || e.action}</strong>
+                {e.jobs ? `: ${e.jobs.title}` : e.companies ? `: ${e.companies.name}` : ''}
+                {e.note && <span className="admin-log-note">"{e.note}"</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// Runs an admin action, shows its error, reloads the queue when done.
+function useAction(onDone) {
+  const [busy, setBusy] = useState('');
+  const [error, setError] = useState('');
+  async function run(name, fn) {
+    setBusy(name);
+    setError('');
+    try {
+      await fn();
+      setBusy('');
+      onDone();
+    } catch (e) {
+      setBusy('');
+      setError((e && e.message) || "That didn't work. Try again.");
+    }
+  }
+  return { busy, error, setError, run };
+}
+
+function CompanyItem({ company, onDone }) {
+  const { busy, error, run } = useAction(onDone);
+  const site = websiteHref(company.website);
+  return (
+    <li className="admin-item">
+      <p className="admin-item-title">{company.name}</p>
+      <p className="muted admin-item-meta">Signed up {when(company.created_at)}</p>
+      <dl className="dash-facts">
+        <div><dt>Website</dt><dd>{site ? <a href={site} target="_blank" rel="noopener noreferrer">{websiteText(company.website)}</a> : <span className="muted">None given</span>}</dd></div>
+        <div><dt>Description</dt><dd className="job-text">{company.description || <span className="muted">None given</span>}</dd></div>
+        <div><dt>Contact email</dt><dd className="auth-email">{company.contact_email}</dd></div>
+        <div><dt>Logs in with</dt><dd className="auth-email">{company.login_email}</dd></div>
+      </dl>
+      {error && <p className="err" role="alert">{error}</p>}
+      <div className="admin-actions">
+        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy)}
+          onClick={() => run('approve', () => setCompanyStatus(company.id, 'approved'))}>
+          {busy === 'approve' ? 'Approving…' : 'Approve'}
+        </button>
+        <button type="button" className="btn btn-secondary btn-sm" disabled={Boolean(busy)}
+          onClick={() => window.confirm(`Reject ${company.name}? Its jobs can't be submitted.`) && run('reject', () => setCompanyStatus(company.id, 'rejected'))}>
+          {busy === 'reject' ? 'Rejecting…' : 'Reject'}
+        </button>
+      </div>
+    </li>
+  );
+}
+
+function JobSummary({ job }) {
+  const c = job.companies || {};
+  return (
+    <>
+      <p className="admin-item-title">{job.title}</p>
+      <p className="muted admin-item-meta">
+        {c.name || 'Unknown company'} (company {c.status || 'unknown'}) · created {when(job.created_at)}
+      </p>
+      <dl className="dash-facts admin-job-facts">
+        <div><dt>Type</dt><dd>{JOB_TYPE_LABEL[job.job_type]}</dd></div>
+        <div><dt>Hours</dt><dd className="tnum">{job.hours_per_week} h/week{job.hours_per_week > 20 ? ' (over 20)' : ''}</dd></div>
+        <div><dt>Pay</dt><dd>{job.pay || <span className="muted">Not stated</span>}</dd></div>
+        <div><dt>Where</dt><dd>{placeLabel(job)}</dd></div>
+        <div><dt>Italian</dt><dd>{ITALIAN_LABEL[job.italian_level]}</dd></div>
+        <div><dt>Dates</dt><dd>{job.start_date ? `Starts ${dateLabel(job.start_date)}, ` : ''}shown until {dateLabel(String(job.expires_at).slice(0, 10))}</dd></div>
+        <div><dt>How to apply</dt><dd className="auth-email">{[job.apply_url, job.apply_email].filter(Boolean).join(' · ') || <span className="muted">Nothing set</span>}</dd></div>
+      </dl>
+      <div className="admin-description">
+        <p className="review-note-label">Description</p>
+        <p className="job-text">{job.description || <span className="muted">None</span>}</p>
+      </div>
+    </>
+  );
+}
+
+function JobItem({ job, onDone }) {
+  const { busy, error, setError, run } = useAction(onDone);
+  const [ticks, setTicks] = useState(() => REVIEW_CHECKLIST.map(() => false));
+  const [note, setNote] = useState('');
+  const allTicked = ticks.every(Boolean);
+
+  function decide(status) {
+    if ((status === 'changes_requested' || status === 'rejected') && !note.trim()) {
+      setError('Write a note for the employer first: it is required to request changes or reject.');
+      return;
+    }
+    if (status === 'rejected' && !window.confirm(`Reject "${job.title}"? The employer can't resubmit it.`)) return;
+    run(status, () => reviewJob(job.id, status, status === 'published' ? null : note.trim()));
+  }
+
+  return (
+    <li className="admin-item">
+      <JobSummary job={job} />
+      {job.review_note && <p className="muted admin-item-meta">Earlier note: "{job.review_note}"</p>}
+      <fieldset className="admin-checklist">
+        <legend>Review checklist</legend>
+        {REVIEW_CHECKLIST.map((item, i) => (
+          <label key={item} className="check">
+            <input type="checkbox" checked={ticks[i]} onChange={(e) => setTicks((t) => t.map((x, k) => (k === i ? e.target.checked : x)))} /> {item}
+          </label>
+        ))}
+      </fieldset>
+      <label className="field">
+        <span>Note for the employer <span className="field-optional">(required to request changes or reject)</span></span>
+        <textarea className="input textarea" rows={3} maxLength={2000} value={note} onChange={(e) => setNote(e.target.value)} />
+      </label>
+      {error && <p className="err" role="alert">{error}</p>}
+      <div className="admin-actions">
+        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy) || !allTicked} onClick={() => decide('published')}
+          aria-describedby={allTicked ? undefined : `checklist-hint-${job.id}`}>
+          {busy === 'published' ? 'Publishing…' : 'Publish'}
+        </button>
+        <button type="button" className="btn btn-secondary btn-sm" disabled={Boolean(busy)} onClick={() => decide('changes_requested')}>
+          {busy === 'changes_requested' ? 'Sending…' : 'Request changes'}
+        </button>
+        <button type="button" className="btn btn-secondary btn-sm" disabled={Boolean(busy)} onClick={() => decide('rejected')}>
+          {busy === 'rejected' ? 'Rejecting…' : 'Reject'}
+        </button>
+      </div>
+      {!allTicked && <p className="field-hint" id={`checklist-hint-${job.id}`}>Tick every item on the checklist to publish.</p>}
+    </li>
+  );
+}
+
+function ReportItem({ report, onDone }) {
+  const { busy, error, setError, run } = useAction(onDone);
+  const [note, setNote] = useState('');
+  const job = report.jobs;
+  const status = job ? shownStatus(job) : null;
+  const reporter = report.reporter
+    ? `${report.reporter.full_name || 'No name'} (${report.reporter.account_type === 'company' ? 'company account' : 'student'})`
+    : 'A deleted account';
+
+  function needNote(action) {
+    if (!note.trim()) {
+      setError(`Write a note first: it is required to ${action}.`);
+      return false;
+    }
+    return true;
+  }
+
+  return (
+    <li className="admin-item">
+      <p className="admin-item-title">{REPORT_REASON_LABEL[report.reason]}</p>
+      <p className="muted admin-item-meta">Reported {when(report.created_at)} by {reporter}</p>
+      {report.details && <p className="job-text admin-report-details">{report.details}</p>}
+      {job ? (
+        <div className="admin-reported-job">
+          <p className="review-note-label">
+            The job ({JOB_STATUS[status].label}){status === 'published' && <> · <Link to={`/jobs/${job.id}`}>open its page</Link></>}
+          </p>
+          <JobSummary job={job} />
+        </div>
+      ) : (
+        <p className="muted">The job no longer exists.</p>
+      )}
+      <label className="field">
+        <span>Note <span className="field-optional">(required; the employer sees it if you unpublish)</span></span>
+        <textarea className="input textarea" rows={3} maxLength={2000} value={note} onChange={(e) => setNote(e.target.value)} />
+      </label>
+      {error && <p className="err" role="alert">{error}</p>}
+      <div className="admin-actions">
+        {job && job.status === 'published' && (
+          <button type="button" className="btn btn-secondary btn-sm" disabled={Boolean(busy)}
+            onClick={() => needNote('unpublish the job') && window.confirm(`Unpublish "${job.title}"?`) && run('unpublish', () => reviewJob(job.id, 'closed', note.trim()))}>
+            {busy === 'unpublish' ? 'Unpublishing…' : 'Unpublish the job'}
+          </button>
+        )}
+        <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy)}
+          onClick={() => needNote('resolve the report') && run('resolve', () => resolveReport(report.id, note.trim()))}>
+          {busy === 'resolve' ? 'Resolving…' : 'Resolve the report'}
+        </button>
+      </div>
+    </li>
+  );
+}

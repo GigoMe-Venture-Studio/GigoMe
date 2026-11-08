@@ -1,0 +1,35 @@
+/* /admin (moderation) and "Report this job" on job pages. Builds on the
+   dashboard styles in employer.css. */
+
+.admin-main { padding-top: var(--s5); padding-bottom: var(--s8); }
+.admin { max-width: 820px; }
+.admin-summary { margin-top: var(--s2); color: var(--muted); }
+.admin-section { margin-top: var(--s7); padding-top: var(--s5); border-top: 1px solid var(--line); scroll-margin-top: var(--s4); }
+.admin-section h2 { font-size: 20px; font-weight: 600; }
+.admin-section > p.muted { margin-top: var(--s3); }
+.admin-list { list-style: none; }
+.admin-item { padding: var(--s5) 0; border-bottom: 1px solid var(--line); display: grid; gap: var(--s3); }
+.admin-item .dash-facts { margin: 0; }
+.admin-item-title { font-size: 18px; font-weight: 600; }
+.admin-item-meta { font-size: 14px; }
+.admin-job-facts { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.admin-description, .admin-reported-job { padding: var(--s3) var(--s4); background: var(--paper); border-radius: var(--r-md); display: grid; gap: var(--s3); }
+.admin-report-details { padding-left: var(--s3); border-left: 3px solid var(--ink); }
+.admin-checklist { margin: 0; padding: var(--s3) var(--s4); border: 1px solid var(--line); border-radius: var(--r-md); min-width: 0; }
+.admin-checklist legend { padding: 0 var(--s1); font-weight: 600; font-size: 14px; }
+.admin-checklist .check { align-items: flex-start; }
+.admin-checklist .check input { margin-top: 4px; }
+.admin-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.admin-log { list-style: none; margin-top: var(--s3); font-size: 14px; }
+.admin-log li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+.admin-log-note { display: block; color: var(--muted); }
+
+/* Report this job */
+.report-job { margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--line); font-size: 14px; }
+.report-done { font-weight: 600; }
+.report-form { display: grid; gap: var(--s4); font-size: 16px; }
+.report-title { font-size: 18px; font-weight: 600; }
+.report-reasons { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: var(--s1); }
+.report-reasons legend { padding: 0; margin-bottom: var(--s2); font-size: 14px; font-weight: 600; }
+.report-form .form-buttons .btn { width: auto; }
+@media (max-width: 599px) { .report-form .form-buttons .btn { width: 100%; } }

@@ -31,6 +31,7 @@ export function FeedbackProvider({ children }) {
 
 // Everything the floating button must never cover. Whole job cards are left
 // out: the button can sit over a card's edge, the rest of the card still works.
+// So is the footer's "Give feedback": it opens the same panel as the button.
 const KEEP_CLEAR = [
   'main a:not(.role-row)',
   'main button',
@@ -38,7 +39,7 @@ const KEEP_CLEAR = [
   'main select',
   'main textarea',
   '.site-footer a',
-  '.site-footer button',
+  '.site-footer button:not(.footer-link-btn)',
   '.menu-panel a',
   '.menu-panel button'
 ].join(',');

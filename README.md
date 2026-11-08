@@ -52,6 +52,7 @@ What exists today:
 | | Write jobs (drafts while the company is in review), submit, edit, close, delete drafts | |
 | Free, always | | "How to apply" clicks are counted per job |
 | Send feedback from any page (logged-in users) | | Feedback is readable only by admins |
+| Report a job (scam, illegal, misleading, discriminatory, other) | | `/admin`: review companies and jobs with a checklist, handle reports; every decision logged with who and when |
 | Edit your profile and delete your account on `/account` | | Deleting an account removes the profile and feedback; clicks stay, anonymous |
 
 ## Planned
@@ -110,8 +111,8 @@ companies and a compliant way of operating.
 | Path | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The page shell: `<head>` (title, fonts) and the `#root` element React mounts into. |
-| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/about`, `/account`, `/employers`, `/employers/setup`, `/dashboard` (and its job form), `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
-| [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `About.jsx`, `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Account.jsx` (edit your profile, delete your account), `Employers.jsx`, `EmployerSetup.jsx`, `Dashboard.jsx` and `JobEditor.jsx` (the employer side), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
+| [`src/main.jsx`](src/main.jsx), [`src/App.jsx`](src/App.jsx) | React entry point and router: `/` (home), `/jobs`, `/jobs/:id`, `/about`, `/account`, `/employers`, `/employers/setup`, `/dashboard` (and its job form), `/admin`, `/login`, `/welcome`, `/privacy`, and a 404 page for any other path. |
+| [`src/pages/`](src/pages) | `Home.jsx` (hero search, the newest jobs, how it works), `About.jsx`, `Jobs.jsx` and `JobDetail.jsx` (the job board), `Login.jsx` (student login with a 6-digit email code), `Welcome.jsx` (first-time profile details), `Account.jsx` (edit your profile, delete your account), `Employers.jsx`, `EmployerSetup.jsx`, `Dashboard.jsx` and `JobEditor.jsx` (the employer side), `Admin.jsx` (moderation, admins only), `Privacy.jsx` (placeholder) and `NotFound.jsx`. |
 | [`src/components/`](src/components) | Shared React parts: the site header and footer (every page), the feedback button and panel (every page), the page frame, the job card used on the home page and `/jobs`, the configuration error message. |
 | [`src/lib/`](src/lib) | `supabase.js` (the Supabase client), `auth.js` (login logic), `jobs.js` (job board queries), `feedback.js` (sends feedback), `useSession.js`, `contact.js`. |
 | [`src/styles/`](src/styles) | `site.css` (tokens, base styles and shared components), `auth.css` (login pages), `header.css` (the site header), `jobs.css` (the job board), `home.css` (the home and About pages) and `feedback.css` (the feedback button and panel). |

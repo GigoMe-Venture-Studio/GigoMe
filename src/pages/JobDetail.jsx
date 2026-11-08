@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
+import ReportJob from '../components/ReportJob.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile } from '../lib/auth.js';
@@ -114,6 +115,7 @@ function JobPage() {
             ) : null}
             {!company.description && !site ? <p className="muted">No company details yet.</p> : null}
           </div>
+          <ReportJob jobId={job.id} />
         </article>
         <aside aria-label="How to apply">
           <div className="apply">

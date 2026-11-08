@@ -12,6 +12,7 @@ import Employers from './pages/Employers.jsx';
 import EmployerSetup from './pages/EmployerSetup.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import JobEditor from './pages/JobEditor.jsx';
+import Admin from './pages/Admin.jsx';
 import Login from './pages/Login.jsx';
 import Welcome from './pages/Welcome.jsx';
 import Privacy from './pages/Privacy.jsx';
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/jobs/new" element={<JobEditor />} />
         <Route path="/dashboard/jobs/:id/edit" element={<JobEditor />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/privacy" element={<Privacy />} />
