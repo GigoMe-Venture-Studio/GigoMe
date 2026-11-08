@@ -11,8 +11,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the way Cloudflare does).
 - `index.html`: page shell only (`<head>`, fonts, `#root`).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
-  `/jobs`, `/jobs/:id`, `/about`, `/login`, `/welcome`, `/privacy` and `*`
-  (404). Don't
+  `/jobs`, `/jobs/:id`, `/about`, `/account`, `/login`, `/welcome`, `/privacy`
+  and `*` (404). `ScrollToTop` (in `App.jsx`) starts each new path at the
+  top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
   `?q=&type=&remote=yes|no&italian=none|basic&hours=`; `q` matches title and
@@ -38,12 +39,20 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
-  a code. `/privacy` is a placeholder until the owner supplies the text.
+  a code. `/welcome` and `/account` share the profile fields and their rules
+  (`src/components/ProfileFields.jsx`, `checkProfile()` in
+  `src/lib/profile.js`); after saving they call `announceProfileChange()` so
+  the header shows the new name.
+- Account: `src/pages/Account.jsx` (`/account`, reached from the name in the
+  header and the phone menu; logged out goes to `/login?next=/account`).
+  Email and university are read-only. "Delete my account" needs DELETE typed,
+  calls `delete_my_account()` (`src/lib/account.js`), goes to `/` with "Your
+  account has been deleted" and then clears the session on this device. `/privacy` is a placeholder until the owner supplies the text.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
-  (`/jobs`), About, and "Log in" or the student's name (truncated when it
-  doesn't fit) and "Log out". Under 768px the links move into a Menu panel. Don't
+  (`/jobs`), About, and "Log in" or the student's name (a link to
+  `/account`, truncated when it doesn't fit) and "Log out". Under 768px the links move into a Menu panel. Don't
   add links for features that don't exist yet (no "For employers", "Create
   profile" or "Post a role").
 - Feedback: `src/components/Feedback.jsx` (`FeedbackProvider` in `App.jsx`)
@@ -61,7 +70,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   ("Who runs GigoMe") that the owner will write. Show only real data: no
   sample listings, ratings, numbers or features that don't exist.
 - `src/styles/site.css`: tokens, base styles and shared components; page
-  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`).
+  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
+  `account.css`).
   No CSS framework.
 - `public/`: copied into `dist/` as is: `_headers` (cache rules),
   `favicon.ico` (16 and 32 px, flat purple on a white tile),
@@ -151,6 +161,12 @@ Schema rules
   `admin_set_company_status` / `admin_set_job_status`, or in the dashboard).
 - Job contacts are only revealed to logged-in students by
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
+- `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
+  their feedback explicitly, then the `auth.users` row, which cascades to the
+  profile and, for a company account, its company, jobs, job contacts and
+  those jobs' clicks. Their own clicks stay with `user_id` set to null. Keep
+  it that way if you add a table that points at a user: decide whether it is
+  deleted or kept anonymous, and add a check.
 
 Security check
 - `supabase/checks/security_check.sql` is pasted into the SQL Editor after a

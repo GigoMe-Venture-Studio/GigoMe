@@ -4,7 +4,9 @@ import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { DEGREE_LEVELS, fetchProfile, logOut, safeNext, saveProfile } from '../lib/auth.js';
+import ProfileFields from '../components/ProfileFields.jsx';
+import { fetchProfile, logOut, safeNext, saveProfile } from '../lib/auth.js';
+import { announceProfileChange, checkProfile } from '../lib/profile.js';
 
 export default function Welcome() {
   return <PageShell>{supabase ? <WelcomeGate /> : <ConfigError />}</PageShell>;
@@ -17,16 +19,6 @@ function WelcomeGate() {
   if (loading) return <p className="auth-card muted">Loading…</p>;
   if (!session) return <Navigate to={'/login' + (next ? '?next=' + encodeURIComponent(next) : '')} replace />;
   return <WelcomeForm user={session.user} next={next} />;
-}
-
-// Graduation years on offer: last year to eight years from now (the database
-// accepts 1990 to 2100; a saved value outside this range is still shown).
-function yearOptions(saved) {
-  const now = new Date().getFullYear();
-  const years = [];
-  for (let y = now - 1; y <= now + 8; y++) years.push(y);
-  if (saved && !years.includes(saved)) years.unshift(saved);
-  return years;
 }
 
 function WelcomeForm({ user, next }) {
@@ -61,17 +53,13 @@ function WelcomeForm({ user, next }) {
   async function onSubmit(e) {
     e.preventDefault();
     setSaveError('');
-    const name = fullName.trim().replace(/\s+/g, ' ');
-    const found = {};
-    if (!name) found.fullName = 'Add your full name.';
-    else if (name.length > 120) found.fullName = 'Keep your name under 120 characters.';
-    if (!degree) found.degree = 'Choose what you are studying.';
-    if (!year) found.year = 'Choose the year you expect to graduate.';
+    const { errors: found, fields } = checkProfile({ fullName, degree, year });
     setErrors(found);
-    if (Object.keys(found).length) return;
+    if (!fields) return;
     setBusy(true);
     try {
-      await saveProfile(user.id, { full_name: name, degree_level: degree, graduation_year: Number(year) });
+      await saveProfile(user.id, fields);
+      announceProfileChange();
       navigate(next || '/', { replace: true });
     } catch {
       setSaveError("We couldn't save your details. Check your connection and try again.");
@@ -93,55 +81,11 @@ function WelcomeForm({ user, next }) {
       <h1 className="auth-title-gap">Welcome to GigoMe</h1>
       <p className="lead">Tell us a little about yourself. You can change this later.</p>
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        <label className="field">
-          Full name
-          <input
-            className="input"
-            type="text"
-            name="full_name"
-            autoComplete="name"
-            maxLength={120}
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            aria-invalid={Boolean(errors.fullName)}
-            required
-          />
-          {errors.fullName && <span className="err">{errors.fullName}</span>}
-        </label>
-        <label className="field">
-          What are you studying?
-          <select
-            className="select"
-            name="degree_level"
-            value={degree}
-            onChange={(e) => setDegree(e.target.value)}
-            aria-invalid={Boolean(errors.degree)}
-            required
-          >
-            <option value="">Choose…</option>
-            {DEGREE_LEVELS.map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-          {errors.degree && <span className="err">{errors.degree}</span>}
-        </label>
-        <label className="field">
-          Expected graduation year
-          <select
-            className="select"
-            name="graduation_year"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            aria-invalid={Boolean(errors.year)}
-            required
-          >
-            <option value="">Choose…</option>
-            {yearOptions(Number(year) || null).map((y) => (
-              <option key={y} value={String(y)}>{y}</option>
-            ))}
-          </select>
-          {errors.year && <span className="err">{errors.year}</span>}
-        </label>
+        <ProfileFields
+          values={{ fullName, degree, year }}
+          onChange={(key, value) => ({ fullName: setFullName, degree: setDegree, year: setYear })[key](value)}
+          errors={errors}
+        />
         {saveError && <p className="err" role="alert">{saveError}</p>}
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? 'Saving…' : 'Save and continue'}

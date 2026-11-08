@@ -4,7 +4,13 @@
 .header-user {
   max-width: 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   font-size: 14px; font-weight: 600; color: var(--ink);
+  text-decoration: underline; text-decoration-color: transparent;
+  text-decoration-thickness: 1.5px; text-underline-offset: 3px;
+  padding: var(--s1) 0;
 }
+/* The name links to /account: underlined on hover and while on that page. */
+.header-user:hover, .header-user[aria-current=page] { text-decoration-color: var(--accent); }
+.menu-panel .menu-user { display: block; line-height: 32px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 767px) {
   .header-user { max-width: 40vw; }
 }
