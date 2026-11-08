@@ -188,7 +188,11 @@ Schema rules
 - `universities` is read-only for `anon` and `authenticated` (no write grants,
   no write policies). It is changed only in the dashboard.
 - Company accounts create and edit their own company (one per account) but
-  never its `status`. Nobody reads `companies.contact_email` directly:
+  never its `status`. Once it is approved, its owner can't change `name` or
+  `website` any more (trigger `lock_approved_company_identity`: API callers
+  who aren't admins are refused; the dashboard and admin functions are not);
+  `description` and `contact_email` stay editable, and the dashboard shows
+  name and website read-only with "To change these, write to hello@gigome.org.". Nobody reads `companies.contact_email` directly:
   `get_company_contact_email(company_id)` returns it to the owner and admins.
 - Job statuses: `draft`, `pending` (in review), `published`, `closed`,
   `changes_requested`, `rejected`. Owners can set only `draft`, `closed` or

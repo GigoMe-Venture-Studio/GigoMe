@@ -5,6 +5,7 @@ import ConfigError from '../components/ConfigError.jsx';
 import CompanyForm from '../components/CompanyForm.jsx';
 import EmployerGate from '../components/EmployerGate.jsx';
 import { supabase } from '../lib/supabase.js';
+import { CONTACT_EMAIL } from '../lib/contact.js';
 import { announceProfileChange } from '../lib/profile.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
 import { JOB_TYPE_LABEL, dateLabel, websiteHref, websiteText } from '../lib/jobs.js';
@@ -56,6 +57,8 @@ function CompanySection({ company, onSaved }) {
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
   const site = websiteHref(company.website);
+  // Once approved, only GigoMe changes the name and website.
+  const locked = company.status === 'approved';
 
   async function onSave(fields) {
     const updated = await updateCompany(company.id, fields);
@@ -73,18 +76,25 @@ function CompanySection({ company, onSaved }) {
       </div>
       <p className="dash-status-text">{COMPANY_STATUS[company.status].text}</p>
       {editing ? (
-        <CompanyForm initial={company} submitLabel="Save changes" onSave={onSave} onCancel={() => setEditing(false)} />
+        <CompanyForm initial={company} identityLocked={locked} submitLabel="Save changes" onSave={onSave} onCancel={() => setEditing(false)} />
       ) : (
         <>
           <dl className="dash-facts">
             <div><dt>Name</dt><dd>{company.name}</dd></div>
             <div><dt>Website</dt><dd>{site ? <a href={site} target="_blank" rel="noopener noreferrer">{websiteText(company.website)}</a> : <span className="muted">Not added</span>}</dd></div>
+          </dl>
+          {locked && (
+            <p className="field-hint locked-hint">
+              To change these, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            </p>
+          )}
+          <dl className="dash-facts">
             <div><dt>Description</dt><dd>{company.description || <span className="muted">Not added</span>}</dd></div>
             <div><dt>Contact email</dt><dd className="auth-email">{company.contact_email}</dd></div>
           </dl>
           {saved && <p className="dash-saved" role="status">Your company details are saved.</p>}
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setSaved(false); setEditing(true); }}>
-            Edit company details
+            {locked ? 'Edit description and contact email' : 'Edit company details'}
           </button>
         </>
       )}
