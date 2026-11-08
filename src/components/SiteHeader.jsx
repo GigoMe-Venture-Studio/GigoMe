@@ -4,8 +4,8 @@ import { useSession } from '../lib/useSession.js';
 import { fetchProfile, logOut } from '../lib/auth.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
-// phones), Jobs, About, and "Log in", or the
-// logged-in student's name and "Log out". Under 768px the links move into a
+// phones), Jobs, About, and "Log in", or the logged-in student's name (a link
+// to /account) and "Log out". Under 768px the links move into a
 // Menu panel (site.css).
 export default function SiteHeader() {
   const { pathname } = useLocation();
@@ -16,7 +16,15 @@ export default function SiteHeader() {
   const [error, setError] = useState('');
   const menuButton = useRef(null);
 
-  // The name can change on /welcome, so load it again on each page change.
+  // The name changes on /welcome and /account (they announce it), so load it
+  // again then and on each page change.
+  const [profileVersion, setProfileVersion] = useState(0);
+  useEffect(() => {
+    const bump = () => setProfileVersion((n) => n + 1);
+    window.addEventListener('gigome:profile-changed', bump);
+    return () => window.removeEventListener('gigome:profile-changed', bump);
+  }, []);
+
   useEffect(() => {
     if (!userId) {
       setName('');
@@ -29,7 +37,7 @@ export default function SiteHeader() {
     return () => {
       active = false;
     };
-  }, [userId, pathname]);
+  }, [userId, pathname, profileVersion]);
 
   useEffect(() => setMenuOpen(false), [pathname]);
 
@@ -52,6 +60,7 @@ export default function SiteHeader() {
 
   const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
   const aboutCurrent = pathname === '/about';
+  const accountCurrent = pathname === '/account';
   const label = name || (session ? session.user.email : '');
 
   return (
@@ -70,7 +79,15 @@ export default function SiteHeader() {
         <div className="header-actions">
           {session ? (
             <>
-              <span className="header-user" title={label}>{label}</span>
+              <Link
+                className="header-user"
+                to="/account"
+                title={`${label}: your account`}
+                aria-label={`Your account (${label})`}
+                aria-current={accountCurrent ? 'page' : undefined}
+              >
+                {label}
+              </Link>
               <button type="button" className="btn btn-tertiary btn-sm signin" onClick={onLogOut}>
                 Log out
               </button>
@@ -96,7 +113,18 @@ export default function SiteHeader() {
           <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>Jobs</Link>
           <Link to="/about" aria-current={aboutCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>About</Link>
           {session && (
-            <button type="button" onClick={onLogOut}>Log out</button>
+            <>
+              <Link
+                className="menu-user"
+                to="/account"
+                aria-label={`Your account (${label})`}
+                aria-current={accountCurrent ? 'page' : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+              <button type="button" onClick={onLogOut}>Log out</button>
+            </>
           )}
         </nav>
       )}

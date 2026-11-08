@@ -41,6 +41,12 @@ declare
   v_late_owner  uuid := gen_random_uuid();   -- matches, but owns a company
   v_late_sub    uuid := gen_random_uuid();   -- sub.check-uni.example: no exact match
   v_new_uni     uuid;
+  -- account deletion
+  v_leaver      uuid := gen_random_uuid();   -- student who deletes their account
+  v_leaver_co   uuid := gen_random_uuid();   -- company account that deletes itself
+  v_leaver_company uuid;
+  v_leaver_job  uuid;
+  v_clicks      bigint[];
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -556,6 +562,104 @@ begin
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
     results := pg_temp.res(results, 'Student can send feedback but not read it', 'sent, 0 feedback rows readable', v_err, v_err = 'sent, 0 feedback rows readable');
+
+    -- ----------------------------------------------------------------------
+    -- Deleting your own account (delete_my_account)
+    -- ----------------------------------------------------------------------
+    select coalesce(string_agg(case when grantee = 0 then 'PUBLIC' else grantee::regrole::text end, ', ' order by 1), 'nobody')
+      into v_text
+    from pg_proc p, aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+    where p.oid = 'public.delete_my_account()'::regprocedure and a.privilege_type = 'EXECUTE'
+      and (a.grantee = 0 or a.grantee::regrole::text in ('anon', 'authenticated'));
+    results := pg_temp.res(results, 'delete_my_account: only authenticated can execute it (not anon, not PUBLIC)',
+                           'authenticated', v_text, v_text = 'authenticated');
+
+    select case when p.prosecdef then 'security definer' else 'security invoker' end || ', '
+           || coalesce((select c from unnest(p.proconfig) c where c like 'search_path=%'), 'no search_path') || ', '
+           || p.pronargs || ' arguments'
+      into v_text
+    from pg_proc p where p.oid = 'public.delete_my_account()'::regprocedure;
+    results := pg_temp.res(results, 'delete_my_account: SECURITY DEFINER, empty search_path, no arguments (it can only act on the caller)',
+                           'security definer, search_path="", 0 arguments', v_text,
+                           v_text = 'security definer, search_path="", 0 arguments');
+
+    -- A student with feedback and clicks, and a company account with a company, a job, a contact.
+    insert into auth.users (id, email) values
+      (v_leaver,    'leaver@studbocconi.it'),
+      (v_leaver_co, 'owner@check-leaving.example');
+    insert into public.feedback (user_id, page, message) values (v_leaver, '/check', 'leaver feedback 1'), (v_leaver, '/check', 'leaver feedback 2');
+    with c as (
+      insert into public.job_clicks (job_id, user_id) values (v_job_live, v_leaver), (v_job_live, v_leaver) returning id
+    ) select array_agg(id) into v_clicks from c;
+    insert into public.companies (owner_id, name, status) values (v_leaver_co, 'Check Co (leaving)', 'approved') returning id into v_leaver_company;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status)
+      values (v_leaver_company, 'Check job of a leaving company', 'gig', 5, 'published') returning id into v_leaver_job;
+    insert into public.job_contacts (job_id, apply_url) values (v_leaver_job, 'https://check.example/leaving');
+    insert into public.job_clicks (job_id, user_id) values (v_leaver_job, v_student);
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform public.delete_my_account();
+      perform set_config('role', 'none', true);
+      v_err := 'ran';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select count(*) into v_count from auth.users where id in (v_student, v_company, v_other, v_leaver, v_leaver_co);
+    results := pg_temp.res(results, 'anon cannot call delete_my_account', 'error, nobody deleted',
+                           v_err || ', ' || (5 - v_count) || ' test user(s) deleted', v_err like 'error:%' and v_count = 5);
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_leaver, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.delete_my_account();
+      perform set_config('role', 'none', true);
+      v_err := 'ran';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', user ' || case when exists (select 1 from auth.users where id = v_leaver) then 'still there' else 'gone' end
+           || ', profile ' || case when exists (select 1 from public.profiles where id = v_leaver) then 'still there' else 'gone' end
+      into v_text;
+    results := pg_temp.res(results, 'Student can delete their own account: user and profile are gone',
+                           'ran, user gone, profile gone', v_text, v_text = 'ran, user gone, profile gone');
+
+    select count(*) into v_count from auth.users where id in (v_student, v_company, v_other, v_lookalike, v_leaver_co);
+    select count(*) into v_rows from public.profiles where id in (v_student, v_company, v_other, v_lookalike, v_leaver_co);
+    results := pg_temp.res(results, 'delete_my_account deletes only the caller: every other test user and profile is still there',
+                           '5 users, 5 profiles', v_count || ' users, ' || v_rows || ' profiles', v_count = 5 and v_rows = 5);
+
+    select count(*) into v_count from public.feedback where message like 'leaver feedback%';
+    select count(*) into v_rows from public.feedback where user_id = v_other;
+    results := pg_temp.res(results, 'delete_my_account deletes the caller''s feedback, not anyone else''s',
+                           '0 of theirs left, 1 other kept', v_count || ' of theirs left, ' || v_rows || ' other kept', v_count = 0 and v_rows = 1);
+
+    select count(*) || ' kept, ' || count(user_id) || ' with a user_id' into v_text
+    from public.job_clicks where id = any (v_clicks);
+    results := pg_temp.res(results, 'delete_my_account keeps the caller''s clicks, without a user_id',
+                           '2 kept, 0 with a user_id', v_text, v_text = '2 kept, 0 with a user_id');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_leaver_co, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.delete_my_account();
+      perform set_config('role', 'none', true);
+      v_err := 'ran';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', '
+           || (select count(*) from auth.users where id = v_leaver_co) + (select count(*) from public.profiles where id = v_leaver_co) || ' user/profile, '
+           || (select count(*) from public.companies where id = v_leaver_company) || ' company, '
+           || (select count(*) from public.jobs where id = v_leaver_job) || ' job, '
+           || (select count(*) from public.job_contacts where job_id = v_leaver_job) || ' contact left'
+      into v_text;
+    results := pg_temp.res(results, 'Company account can delete itself: its company, jobs and job contacts go with it',
+                           'ran, 0 user/profile, 0 company, 0 job, 0 contact left', v_text,
+                           v_text = 'ran, 0 user/profile, 0 company, 0 job, 0 contact left');
+
+    select count(*) into v_count from public.companies where id in (v_co_own, v_co_approved);
+    select count(*) into v_rows from public.jobs where id = any (test_jobs);
+    results := pg_temp.res(results, 'Deleting a company account leaves other companies and jobs alone',
+                           '2 companies, 7 jobs', v_count || ' companies, ' || v_rows || ' jobs', v_count = 2 and v_rows = 7);
 
     -- ----------------------------------------------------------------------
     -- Undo everything above

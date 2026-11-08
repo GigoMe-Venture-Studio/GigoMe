@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
@@ -8,6 +8,7 @@ import { cleanKeyword, fetchJobs, filtersToParams } from '../lib/jobs.js';
 export default function Home() {
   return (
     <main>
+      <DeletedNotice />
       <section className="wrap hero" aria-labelledby="home-title">
         <h1 id="home-title">Part-time work and internships in Milan, in English.</h1>
         <p className="hero-lead">For international students who don't speak fluent Italian. Free for students, always.</p>
@@ -39,6 +40,26 @@ export default function Home() {
         </div>
       </section>
     </main>
+  );
+}
+
+// "Your account has been deleted", once, after /account deleted it. The flag
+// comes in the navigation state and is cleared right away, so a reload
+// doesn't show it again.
+function DeletedNotice() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [show] = useState(() => Boolean(location.state && location.state.accountDeleted));
+
+  useEffect(() => {
+    if (location.state && location.state.accountDeleted) navigate('/', { replace: true, state: null });
+  }, [location.state, navigate]);
+
+  if (!show) return null;
+  return (
+    <div className="wrap">
+      <p className="home-notice" role="status">Your account has been deleted.</p>
+    </div>
   );
 }
 

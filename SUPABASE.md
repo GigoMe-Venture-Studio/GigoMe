@@ -62,6 +62,22 @@ A few details worth knowing:
   instead, so the click history is kept.
 - **One company per account.**
 
+## When someone deletes their account
+
+Users delete their own account on `/account`, which calls
+`delete_my_account()`. This happens to their data:
+
+- **Deleted:** their login, their profile, and the feedback they sent.
+- **Company accounts:** their company, its jobs, how to apply for those jobs,
+  and the clicks on those jobs are deleted too.
+- **Kept, but anonymous:** the clicks they made on "How to apply" stay in
+  `job_clicks` with `user_id` empty, so each job's click count stays right
+  without pointing to a person.
+
+Deleting a user in the dashboard (Authentication → Users) does the same,
+except that their feedback is kept with `user_id` empty. Delete it by hand
+in `feedback` if the person asked for everything to go.
+
 ## Functions the website calls
 
 | Function | Who can call it | What it does |
@@ -71,6 +87,7 @@ A few details worth knowing:
 | `get_own_job_contact(job_id)` | The job's owner | Shows the owner what they set. |
 | `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company. |
 | `admin_set_job_status(job_id, status)` | Admins | Sets any job status, including published. |
+| `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |
 
 ## Why it's safe

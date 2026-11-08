@@ -8,6 +8,7 @@ import './styles/header.css';
 import './styles/jobs.css';
 import './styles/home.css';
 import './styles/feedback.css';
+import './styles/account.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

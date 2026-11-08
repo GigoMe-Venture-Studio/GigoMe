@@ -1,0 +1,19 @@
+/* /account: details, profile form and "Delete my account". The card, form
+   and field styles come from auth.css and site.css. */
+
+.account-facts { margin-top: var(--s5); display: grid; gap: var(--s3); }
+.account-facts dt { font-size: 14px; color: var(--muted); }
+.account-facts dd { font-weight: 600; }
+.account .auth-small { margin-top: var(--s3); }
+
+.account-section { margin-top: var(--s7); }
+.account-section h2 { font-size: 20px; font-weight: 600; }
+.account-section .auth-form { margin-top: var(--s4); }
+.account-saved:empty { display: none; }
+.account-saved { font-weight: 600; }
+
+/* Kept apart from the rest of the page: a rule above it and extra space. */
+.account-danger { padding-top: var(--s6); border-top: 1px solid var(--line); }
+.account-danger-text { margin-top: var(--s3); }
+.account-danger-text p + p { margin-top: var(--s2); }
+.account-delete-btn:disabled { border-color: var(--line); color: var(--muted); background: var(--white); cursor: default; }

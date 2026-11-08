@@ -11,3 +11,6 @@
   padding: var(--s3) var(--s4); border: 1px dashed var(--slate); border-radius: var(--r-md);
   background: var(--paper); color: var(--muted); font-style: italic;
 }
+
+/* "Your account has been deleted", shown once after deleting an account. */
+.home-notice { margin-top: var(--s5); padding: var(--s3) var(--s4); border-radius: var(--r-md); background: var(--paper); font-weight: 600; }
