@@ -226,8 +226,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   Don't put the logo or other images in auth emails: they get blocked and
   hurt deliverability.
 - `wrangler.jsonc`: assets from `./dist`, `not_found_handling`
-  `"single-page-application"`, a cron trigger (daily, 04:17 UTC) and
-  `keep_vars: true`. `worker/index.js` is a tiny Worker script for the daily
+  `"single-page-application"`, a cron trigger (daily, 04:17 UTC),
+  `keep_vars: true` and Workers Logs (`observability`, sampling 1): only runs
+  of the Worker script are logged (the ping and rare unmatched requests,
+  never static assets), so it stays far inside the free plan's 200,000
+  events a day; logs are kept 3 days. `worker/index.js` is a tiny Worker script for the daily
   Supabase ping (`scheduled`: one read with the publishable key, from the
   runtime variables `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` set in the
   Cloudflare dashboard). Pages and files are served as static assets without

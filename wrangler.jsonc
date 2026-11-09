@@ -20,6 +20,16 @@
   // SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are set in the Cloudflare
   // dashboard (Worker > Settings > Variables and Secrets). Keep them on deploy.
   "keep_vars": true,
+  // Workers Logs: keeps the Worker's console output (e.g. "Supabase ping OK")
+  // in the dashboard (Worker > Observability > Logs). Only runs of the Worker
+  // script are logged: the daily ping and the rare request for a file that
+  // doesn't exist. Pages and files served as static assets aren't, so this
+  // stays far inside the free plan's daily log allowance. Every run is kept
+  // (sampling 1 = 100%); there are only a handful a day.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   // Needed for preview builds of PR branches (wrangler preview).
   "previews": {}
 }
