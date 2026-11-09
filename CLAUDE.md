@@ -397,9 +397,12 @@ Schema rules
   unless every check passes (115 to 130 stations, at least 15 per line, no
   station twice or under two names, no unknown abbreviation, Duomo, Porta
   Venezia, Garibaldi FS and Centrale FS with the right lines in the right
-  place), writes the count per line in the run's summary, and pushes the
-  migration to a new branch `data/metro-stations` (it stops if that branch
-  exists). The security check's station test uses its own stations at
+  place), writes the count per line in the run's summary, compares the
+  result with main (`scripts/metro-changed.mjs`: the newest station
+  migration minus its header comment, and the map file) and, only if
+  something changed, pushes what changed to a new branch
+  `data/metro-stations` (it stops if that branch exists); otherwise it ends
+  green with "No changes, nothing pushed". The security check's station test uses its own stations at
   45.30, 8.80, far from real ones: keep it there. A pull request from it is a migration
   like any other. `job_nearest_station` (runs after `job_location_privacy`: triggers
   fire in name order) stores `nearest_station_id`/`nearest_station_m` for
