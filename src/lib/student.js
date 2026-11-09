@@ -2,6 +2,7 @@
 // companies and the jobs they opened. All in the app only: nothing is ever
 // emailed. The database lets each student see only their own rows, and
 // deletes them with the account.
+import { dailyLimitMessage } from './limits.js';
 import { supabase } from './supabase.js';
 import {
   CATEGORY_LABEL,
@@ -39,6 +40,7 @@ export function searchSummary(filters, areas = []) {
 export async function saveSearch(name, filters) {
   const { error } = await supabase.from('saved_searches').insert({ name: name.trim().slice(0, 60), params: searchParamsText(filters) });
   if (error) {
+    if (dailyLimitMessage(error)) throw new Error(dailyLimitMessage(error));
     if (/up to 20/i.test(error.message || '')) throw new Error(`You can save up to ${MAX_SAVED_SEARCHES} searches. Delete one on Saved jobs first.`);
     throw new Error("We couldn't save this search. Try again.");
   }
@@ -99,7 +101,7 @@ export async function setFollowing(companyId, follow) {
     ? await supabase.from('company_follows').insert({ company_id: companyId })
     : await supabase.from('company_follows').delete().eq('company_id', companyId);
   // Already following (another tab): that's what was wanted.
-  if (error && !(follow && error.code === '23505')) throw error;
+  if (error && !(follow && error.code === '23505')) throw Object.assign(new Error(dailyLimitMessage(error) || 'not saved'), { limit: Boolean(dailyLimitMessage(error)) });
 }
 
 // Live jobs from the companies the student follows, published in the last

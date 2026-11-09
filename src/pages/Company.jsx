@@ -122,8 +122,9 @@ function FollowButton({ company }) {
     setState({ status: 'ready', following: next, error: '' });
     try {
       await setFollowing(company.id, next);
-    } catch {
-      setState({ status: 'ready', following: !next, error: next ? "We couldn't follow this company. Try again." : "We couldn't unfollow. Try again." });
+    } catch (e) {
+      setState({ status: 'ready', following: !next,
+        error: e && e.limit ? e.message : next ? "We couldn't follow this company. Try again." : "We couldn't unfollow. Try again." });
     }
   }
   return (

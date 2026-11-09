@@ -5,7 +5,9 @@ import ConfigError from '../components/ConfigError.jsx';
 import EmployerGate from '../components/EmployerGate.jsx';
 import JobView from '../components/JobView.jsx';
 import { supabase } from '../lib/supabase.js';
-import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
+import { normalizeEmail } from '../lib/auth.js';
+import { isPlainEmail } from '../lib/links.js';
+import { dailyLimitMessage } from '../lib/limits.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
 import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES, LANGUAGES, PAY_UNITS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
@@ -204,7 +206,7 @@ function JobForm({ company, job }) {
     const url = normalizeUrl(v.applyUrl);
     const email = normalizeEmail(v.applyEmail);
     if (url === null || (url && url.length > 500)) found.applyUrl = 'Enter a web address like www.yourcompany.it/jobs.';
-    if (email && (!looksLikeEmail(email) || email.length > 254)) found.applyEmail = "That email address doesn't look right.";
+    if (email && (!isPlainEmail(email) || email.length > 254)) found.applyEmail = "That email address doesn't look right.";
     if (submitting && !url && !email && !found.applyUrl && !found.applyEmail) {
       found.apply = 'Add a link or an email address (or both) so students can apply.';
     }
@@ -254,11 +256,12 @@ function JobForm({ company, job }) {
     } catch (e) {
       setBusy('');
       setSaveError(
-        submitting && !canSubmit
+        dailyLimitMessage(e) ||
+        (submitting && !canSubmit
           ? 'Jobs can be submitted once your company is approved. Save it as a draft for now.'
           : e && e.savedJobId
             ? "The job is saved, but we couldn't save how to apply. Try again."
-            : "We couldn't save the job. Check your connection and try again."
+            : "We couldn't save the job. Check your connection and try again.")
       );
     }
   }

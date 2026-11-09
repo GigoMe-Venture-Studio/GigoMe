@@ -8,6 +8,7 @@ import { useSession } from '../lib/useSession.js';
 import { fetchProfile } from '../lib/auth.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { fetchJob, revealContact } from '../lib/jobs.js';
+import { mailtoHref } from '../lib/links.js';
 
 export default function JobDetail() {
   return (
@@ -73,9 +74,10 @@ function JobPage() {
   );
 }
 
-// The email students send from the "Apply" button.
+// The email students send from the "Apply" button (null unless the address
+// is plain, so nothing else can ride along in the link).
 function mailtoFor(email, title) {
-  return `mailto:${email}?subject=${encodeURIComponent(`Application: ${title} (via GigoMe)`)}`;
+  return mailtoHref(email, `Application: ${title} (via GigoMe)`);
 }
 
 function HowToApply({ jobId, jobTitle }) {
@@ -154,8 +156,9 @@ function HowToApply({ jobId, jobTitle }) {
       }
     } else {
       if (tab) tab.close();
-      if (result.email) {
-        window.location.href = mailtoFor(result.email, jobTitle);
+      const mailto = mailtoFor(result.email, jobTitle);
+      if (mailto) {
+        window.location.href = mailto;
         opened = 'mail';
       }
     }
@@ -177,7 +180,9 @@ function HowToApply({ jobId, jobTitle }) {
         <p className="apply-note apply-opened" role="status">
           {reveal.url
             ? "The application page should have opened in a new tab. If it didn't, use the link below."
-            : 'Your email app should have opened with the subject filled in. If it didn\'t, write to the address below.'}
+            : reveal.opened === 'mail'
+              ? 'Your email app should have opened with the subject filled in. If it didn\'t, write to the address below.'
+              : 'Write to the address below to apply.'}
         </p>
         {reveal.url && (
           <a className="btn btn-primary" href={reveal.url} target="_blank" rel="noopener noreferrer">
@@ -186,7 +191,12 @@ function HowToApply({ jobId, jobTitle }) {
         )}
         {reveal.email && (
           <p>
-            Email: <a className="apply-email" href={mailtoFor(reveal.email, jobTitle)}>{reveal.email}</a>
+            Email:{' '}
+            {mailtoFor(reveal.email, jobTitle) ? (
+              <a className="apply-email" href={mailtoFor(reveal.email, jobTitle)}>{reveal.email}</a>
+            ) : (
+              <span className="apply-email">{reveal.email}</span>
+            )}
           </p>
         )}
         <p className="apply-note">Applications go straight to the employer.</p>

@@ -139,21 +139,8 @@ export async function deleteDraft(id) {
   if (count === 0) throw new Error('not deleted');
 }
 
-// A website or apply link as typed: adds https:// when there's no scheme.
-// Returns '' for empty input and null when it isn't an http(s) address.
-export function normalizeUrl(raw) {
-  const s = String(raw || '').trim();
-  if (!s) return '';
-  const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(s) ? s : 'https://' + s.replace(/^\/+/, '');
-  try {
-    const u = new URL(withScheme);
-    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
-    if (!u.hostname.includes('.') || /\s/.test(s)) return null;
-    return withScheme;
-  } catch {
-    return null;
-  }
-}
+// A website or apply link as typed (adds https://; null when it isn't one).
+export { normalizeUrl } from './links.js';
 
 // How many students follow the caller's company: a number, never who.
 export async function fetchFollowerCount() {

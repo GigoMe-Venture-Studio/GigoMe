@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
+import { normalizeEmail } from '../lib/auth.js';
+import { isPlainEmail } from '../lib/links.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { normalizeUrl } from '../lib/employer.js';
 import { websiteText } from '../lib/jobs.js';
@@ -43,7 +44,7 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
     if (description.length > DESCRIPTION_MAX) found.description = `Keep it under ${DESCRIPTION_MAX} characters.`;
     if (requireTerms && !termsAccepted) found.terms = 'Accept the terms to continue.';
     if (!email) found.contactEmail = 'Add an email address we can reach you at.';
-    else if (!looksLikeEmail(email) || email.length > 254) found.contactEmail = "That email address doesn't look right.";
+    else if (!isPlainEmail(email) || email.length > 254) found.contactEmail = "That email address doesn't look right.";
     setErrors(found);
     if (Object.keys(found).length) return;
     setBusy(true);

@@ -1,3 +1,4 @@
+import { dailyLimitMessage } from './limits.js';
 import { supabase } from './supabase.js';
 
 export const FEEDBACK_MAX = 2000;
@@ -13,6 +14,6 @@ export async function sendFeedback(message, page) {
   const { error } = await supabase
     .from('feedback')
     .insert({ page: String(page || '').slice(0, 200), message: text });
-  if (error) return { error: "We couldn't send your message. Check your connection and try again." };
+  if (error) return { error: dailyLimitMessage(error) || "We couldn't send your message. Check your connection and try again." };
   return { error: null };
 }

@@ -36,6 +36,8 @@
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+/* index.html's message when JavaScript is off (no inline styles: CSP) */
+.noscript{padding:16px;font-family:system-ui,sans-serif}
 h1,h2,h3,p,ul,ol,dl,dd{margin:0}
 ul,ol{padding:0}
 h1,h2,h3{line-height:1.2;letter-spacing:-0.01em}

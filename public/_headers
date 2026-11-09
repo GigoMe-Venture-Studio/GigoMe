@@ -1,10 +1,33 @@
 # Cloudflare Workers static assets: response headers by path.
-# Vite copies this file from public/ into dist/.
+# Vite copies this file from public/ into dist/. At build time the plugin in
+# vite.config.js replaces __SUPABASE_ORIGIN__ with the origin of the build
+# variable VITE_SUPABASE_URL (so the project's address isn't in the repo).
 
-# index.html and every page path (served by the single-page fallback):
-# the browser must check for a new version on every visit. With the ETag it
-# gets a quick 304 when nothing changed, and the new page right after a deploy.
+# Every page and file.
+#
+# Content-Security-Policy: the page may load and contact only
+#   - gigome.org itself (scripts, styles, fonts, images, the map worker),
+#   - Supabase (the database API and login),
+#   - OpenFreeMap (map style, tiles, labels) and Nominatim ("Find address"),
+#   - Cloudflare Turnstile (bot check on the login forms: script and frame),
+#   - Cloudflare Web Analytics (its beacon script and where it reports),
+# and nothing else. No inline scripts or styles; no plugins; no other site
+# may put GigoMe in a frame. Adding a service means adding it here, to
+# HANDOVER.md section 7b and to the privacy notice.
+#
+# Permissions-Policy: only our own pages may ask for the location ("Use my
+# location" on /jobs); camera, microphone, payment and the rest are off.
+#
+# index.html and every page path (served by the single-page fallback): the
+# browser must check for a new version on every visit. With the ETag it gets
+# a quick 304 when nothing changed, and the new page right after a deploy.
 /*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' __SUPABASE_ORIGIN__ https://tiles.openfreemap.org https://nominatim.openstreetmap.org https://cloudflareinsights.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), serial=(), bluetooth=(), hid=(), midi=(), magnetometer=(), gyroscope=(), accelerometer=(), display-capture=(), browsing-topics=()
+  Strict-Transport-Security: max-age=31536000
   Cache-Control: no-cache
 
 # Hashed build files (Vite writes them to /assets/ with a content hash in the
