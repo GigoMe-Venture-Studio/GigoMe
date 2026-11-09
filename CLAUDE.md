@@ -275,9 +275,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   Supabase ping (`scheduled`: one read with the publishable key, from the
   runtime variables `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` set in the
   Cloudflare dashboard). Pages and files are served as static assets without
-  running it; its `fetch` only hands the rare unmatched non-page request back
-  to `env.ASSETS`. Never add `run_worker_first` or routing to it: every
-  request that runs the script counts against the free plan.
+  running it; its `fetch` only sees the rare unmatched non-page request: a
+  missing file under `/assets/` gets a plain 404 with `Cache-Control:
+  no-store` (`assetNotFound()`, unit-tested), everything else goes back to
+  `env.ASSETS`. A missing `/assets/` URL typed into the address bar still
+  gets the home page (page loads never run the script). Never add
+  `run_worker_first` or routing to it: every request that runs the script
+  counts against the free plan.
 - `supabase/queries/kpis.sql`: read-only KPIs for the SQL Editor (one table).
   `HANDOVER.md`: accounts, how changes go live, moderation, limits.
 - `src/lib/supabase.js`: the only Supabase client (publishable key). If the
