@@ -32,7 +32,7 @@ export function searchSummary(filters, areas = []) {
   if (filters.hours) parts.push(`Up to ${filters.hours} h/week`);
   if (filters.when.length) parts.push(filters.when.map((w) => SCHEDULE_LABEL[w]).join(' or '));
   if (filters.lang.length) parts.push(filters.lang.map((l) => LANGUAGE_LABEL[l]).join(' or '));
-  if (filters.minpay) parts.push(`€${filters.minpay}/h or more${filters.projects ? ' (and project-paid)' : ''}`);
+  if (filters.minpay) parts.push(`€${filters.minpay}/h or more${filters.nohourly ? ' (and jobs without an hourly pay)' : ''}`);
   return parts.join(' · ') || 'All jobs';
 }
 

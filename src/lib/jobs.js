@@ -106,8 +106,10 @@ export function readFilters(params) {
     when: readList(params.get('when'), SCHEDULES),
     lang: readList(params.get('lang'), LANGUAGES),
     minpay: Number.isInteger(minpay) && minpay >= 1 && minpay <= MAX_MIN_PAY ? String(minpay) : '',
-    // With a minimum pay, project-paid jobs are hidden unless asked for.
-    projects: params.get('projects') === 'yes' && Number.isInteger(minpay) && minpay >= 1 ? 'yes' : '',
+    // With a minimum pay, jobs without an hourly equivalent (paid per
+    // project, unpaid, pay not specified) are hidden unless asked for.
+    // ("projects=yes" is the older name, from saved searches.)
+    nohourly: (params.get('nohourly') === 'yes' || params.get('projects') === 'yes') && Number.isInteger(minpay) && minpay >= 1 ? 'yes' : '',
     // Not a filter: the order of the list.
     sort: params.get('sort') === 'pay' ? 'pay' : ''
   };
@@ -125,7 +127,7 @@ export function filtersToParams(filters) {
   if (filters.when && filters.when.length) out.when = SCHEDULES.map(([v]) => v).filter((v) => filters.when.includes(v)).join(',');
   if (filters.lang && filters.lang.length) out.lang = LANGUAGES.map(([v]) => v).filter((v) => filters.lang.includes(v)).join(',');
   if (filters.minpay) out.minpay = filters.minpay;
-  if (filters.minpay && filters.projects) out.projects = 'yes';
+  if (filters.minpay && filters.nohourly) out.nohourly = 'yes';
   if (filters.sort) out.sort = filters.sort;
   return out;
 }
@@ -159,20 +161,27 @@ export async function fetchJobs(filters, { limit = 200 } = {}) {
   return data || [];
 }
 
-// How many live jobs match these filters but are paid per project (what a
-// minimum pay hides): only the count is asked for.
-export async function countProjectPaid(filters) {
-  const { count, error } = await filtered(
-    supabase
-      .from('jobs')
-      .select('id, companies!inner(status)', { count: 'exact', head: true })
-      .eq('status', 'published')
-      .gt('expires_at', new Date().toISOString())
-      .eq('companies.status', 'approved'),
-    { ...filters, minpay: '', projects: '' }
-  ).eq('pay_unit', 'project');
+// What a minimum pay hides whatever the amount: live jobs matching the other
+// filters that have no hourly equivalent. { total, project, unpaid,
+// unspecified } (only each job's pay unit is read).
+export async function fetchHiddenByPay(filters) {
+  const { data, error } = await filtered(liveJobs('pay_unit, companies!inner(status)'), { ...filters, minpay: '', nohourly: '' })
+    .is('pay_hourly', null)
+    .limit(1000);
   if (error) throw error;
-  return count || 0;
+  const rows = data || [];
+  return {
+    total: rows.length,
+    project: rows.filter((r) => r.pay_unit === 'project').length,
+    unpaid: rows.filter((r) => r.pay_unit === 'unpaid_curricular').length,
+    unspecified: rows.filter((r) => !r.pay_unit).length
+  };
+}
+
+// "paid per project, unpaid or pay not specified": the kinds that are there.
+export function hiddenKinds(h) {
+  const kinds = [h.project && 'paid per project', h.unpaid && 'unpaid', h.unspecified && 'pay not specified'].filter(Boolean);
+  return kinds.length > 1 ? `${kinds.slice(0, -1).join(', ')} or ${kinds[kinds.length - 1]}` : kinds[0] || '';
 }
 
 function filtered(query, filters) {
@@ -194,10 +203,10 @@ function filtered(query, filters) {
   if (filters.italian === 'basic') query = query.in('italian_level', ['none', 'basic']);
   if (filters.hours) query = query.lte('hours_per_week', Number(filters.hours));
   // Minimum pay (€ an hour): the hourly equivalent, which only hourly and
-  // monthly pay have; project-paid jobs only when asked for.
+  // monthly pay have; jobs without one only when asked for.
   if (filters.minpay) {
-    query = filters.projects
-      ? query.or(`pay_hourly.gte.${Number(filters.minpay)},pay_unit.eq.project`)
+    query = filters.nohourly
+      ? query.or(`pay_hourly.gte.${Number(filters.minpay)},pay_hourly.is.null`)
       : query.gte('pay_hourly', Number(filters.minpay));
   }
   return query;
