@@ -151,6 +151,14 @@ export async function extendJob(id) {
   return data;
 }
 
+// A job can be extended while live and up to 14 days after it expired (the
+// database's extend_my_job() has the same rule); after that it goes back to
+// review: edit it and submit it again.
+export const EXTEND_GRACE_DAYS = 14;
+export function canExtend(job, now = Date.now()) {
+  return job.status === 'published' && new Date(job.expires_at).getTime() >= now - EXTEND_GRACE_DAYS * 86400000;
+}
+
 // "Expires today", "Expires tomorrow", "Expires in 12 days" (null once past).
 export function expiresInLabel(iso, now = Date.now()) {
   const ms = new Date(iso).getTime() - now;

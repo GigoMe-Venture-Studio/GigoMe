@@ -185,7 +185,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   and the database stores `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
   company details and status, jobs with status, review notes and apply
   clicks from `my_job_stats()`, "Expires in N days" and "Extend by 60 days"
-  (`extend_my_job()`, no new review)), `JobEditor.jsx` (new/edit job and how
+  (`extend_my_job()`, no new review; for jobs expired more than 14 days a
+  message to edit and resubmit instead)), `JobEditor.jsx` (new/edit job and how
   to apply; "Show until" at most 60 days ahead, an unchanged date isn't sent
   again). Logic in `src/lib/employer.js`, account state in
   `src/lib/useCompanyAccount.js`, gate in `src/components/EmployerGate.jsx`.
@@ -460,7 +461,9 @@ Schema rules
 - Job expiry: a non-admin can't set `expires_at` more than 60 days ahead
   (trigger `job_expiry_limit`, only when it changes); `extend_my_job(id)`
   sets it to now + 60 days for a published job of the caller's own approved
-  company, without a new review.
+  company, without a new review, only while it's live or expired at most 14
+  days ago (`EXTEND_GRACE_DAYS` / `canExtend()` in `src/lib/employer.js` match
+  it); older expired jobs are refused and must be edited and resubmitted.
 - `my_feedback()` / `my_reports()`: the caller's own rows only (reports
   without the resolution note or resolver). `admin_stats()`: admins only.
 - Retention: `retention_settings` (one row, no grants, every period null =

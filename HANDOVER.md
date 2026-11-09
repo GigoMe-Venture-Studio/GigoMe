@@ -273,7 +273,7 @@ and browser details when it is used.
 | --- | --- | --- |
 | Supabase (Frankfurt) | Every page with jobs, every login | Everything the site stores (see SUPABASE.md) |
 | Cloudflare (hosting, Turnstile) | Every page; Turnstile on the login form | Page requests; Turnstile checks the browser to tell people from bots |
-| Cloudflare Web Analytics (static.cloudflareinsights.com, cloudflareinsights.com) | Every page, **only if** Web Analytics is switched on for gigome.org in Cloudflare (it adds its own small script): **[fill in]** whether it is | Which pages are visited, how fast they load, the referring site, browser and country. No cookies or browser storage. The security headers allow it; if it's off, nothing is loaded |
+| Cloudflare Web Analytics (static.cloudflareinsights.com, cloudflareinsights.com) | Every page. **Active:** Cloudflare adds its beacon script to every page it serves to a browser (checked on the live site in November 2026). It's switched on in Cloudflare (Analytics & Logs > Web Analytics), not in this repo | Which pages are visited, how fast they load, the referring site, browser and country. No cookies or browser storage. If it's ever switched off, remove its two hosts from `public/_headers` and from the privacy notice |
 | OpenFreeMap (tiles.openfreemap.org) | Only when a map is shown (`/jobs` map view, company pages, the job form) | Which map tiles are viewed, so roughly which part of Milan |
 | OpenStreetMap Nominatim | Only when an employer presses "Find address" | The address typed in the job's Location field |
 | Google Maps | Only when someone clicks "Open in Google Maps" on a job page (a plain link, opened without telling Google which page it came from) | The job's point (or its area's centre), as for any Google Maps visit |

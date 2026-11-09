@@ -143,7 +143,9 @@ async function downloadJson(p, click) {
     const { log } = await emock(ctx, { company: { name: 'Nebbia', status: 'approved', website: 'https://nebbia.it' },
       jobs: [{ title: 'Barista', job_type: 'part_time', hours_per_week: 10, status: 'published', expires_at: new Date(Date.now() + 5 * day + 3600e3).toISOString() },
              { title: 'Host', job_type: 'gig', hours_per_week: 5, status: 'published', expires_at: new Date(Date.now() + 40 * day + 3600e3).toISOString() },
-             { title: 'Draft one', job_type: 'gig', hours_per_week: 5, status: 'draft' }] });
+             { title: 'Draft one', job_type: 'gig', hours_per_week: 5, status: 'draft' },
+             { title: 'Recently expired', job_type: 'gig', hours_per_week: 5, status: 'published', expires_at: new Date(Date.now() - 5 * day).toISOString() },
+             { title: 'Long expired', job_type: 'gig', hours_per_week: 5, status: 'published', expires_at: new Date(Date.now() - 30 * day).toISOString() }] });
     const p = await ctx.newPage(); await employerLogin(p, E); await p.goto(E + '/dashboard'); await p.waitForSelector('.dash-job');
     const row = (t) => p.locator('.dash-job', { hasText: t });
     ok((await row('Barista').locator('.dash-expiry').innerText()) === 'Expires in 5 days' && await row('Barista').locator('.dash-expiry-soon').count() === 1, 'live job: "Expires in 5 days", highlighted in its last week');
@@ -154,13 +156,22 @@ async function downloadJson(p, click) {
     ok(/^"Barista" is now shown until \d+ \w+ \d{4}\.$/.test(await txt(p, '.dash-action-done')), 'confirmation: ' + await txt(p, '.dash-action-done'));
     ok(/^Expires in (59|60) days$/.test(await row('Barista').locator('.dash-expiry').innerText()), 'now about 60 days: ' + await row('Barista').locator('.dash-expiry').innerText());
     ok((await row('Barista').innerText()).includes('Live'), 'still live, no new review');
+    // Expired at most 14 days ago: still "Extend by 60 days"; longer ago: back to review.
+    ok((await row('Recently expired').innerText()).includes('You can still extend it until') && await row('Recently expired').locator('button:has-text("Extend by 60 days")').count() === 1,
+      'expired 5 days ago: can still be extended, with the last day shown');
+    const old = await row('Long expired').innerText();
+    ok(await row('Long expired').locator('button:has-text("Extend by 60 days")').count() === 0 && old.includes("It expired more than 14 days ago, so it can't be extended any more.") && old.includes('submit it for review'),
+      'expired 30 days ago: no Extend button, a clear message: ' + JSON.stringify(old));
+    ok(await row('Long expired').locator('a:has-text("Edit")').count() === 1, 'expired 30 days ago: Edit is there to resubmit it');
+    await row('Recently expired').locator('button:has-text("Extend by 60 days")').click(); await p.waitForTimeout(800);
+    ok(/^Expires in (59|60) days$/.test(await row('Recently expired').locator('.dash-expiry').first().innerText()) && (await row('Recently expired').innerText()).includes('Live'), 'the recently expired job is live again for 60 days');
     await p.goto(E + '/dashboard/jobs/new'); await p.waitForSelector('input[name=expires_at]');
     ok(await p.getAttribute('input[name=expires_at]', 'max') === isoDate(Date.now() + 60 * day), 'job form: "Show until" at most 60 days ahead: ' + await p.getAttribute('input[name=expires_at]', 'max'));
     await p.goto(E + '/account'); await p.waitForSelector('.account-data-btn');
     ok((await txt(p, '.account-data')).includes('your company, its jobs with how to apply'), 'company: says what the file holds');
     const { data } = await downloadJson(p, () => p.click('.account-data-btn'));
     ok(data.company && data.company.name === 'Nebbia' && data.company.contact_email === 'owner@cafe.it', 'company with its contact email');
-    ok(Array.isArray(data.jobs) && data.jobs.length === 3 && 'how_to_apply' in data.jobs[0] && 'apply_clicks' in data.jobs[0] && data.followers === 3, 'its jobs with how to apply, clicks, followers');
+    ok(Array.isArray(data.jobs) && data.jobs.length === 5 && 'how_to_apply' in data.jobs[0] && 'apply_clicks' in data.jobs[0] && data.followers === 3, 'its jobs with how to apply, clicks, followers');
     ok(!('saved_jobs' in data), 'no student lists for a company');
     await ctx.close(); }
 

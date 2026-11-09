@@ -54,6 +54,7 @@ async function emock(ctx, opts = {}) {
       const id = body().p_job_id; log.req.push({ method, path, body: body() });
       const x = db.jobs.find((y) => y.id === id);
       if (!x || x.status !== 'published' || !db.company || db.company.status !== 'approved') return j(403, { code: '42501', message: 'Only a published job of your own approved company can be extended.' });
+      if (new Date(x.expires_at).getTime() < Date.now() - 14 * 864e5) return j(403, { code: '42501', message: 'This job expired more than 14 days ago. Edit it and submit it again for review.' });
       x.expires_at = new Date(Date.now() + 60 * 864e5).toISOString(); return j(200, x.expires_at);
     }
     if (path === '/rest/v1/rpc/get_own_job_contact') { const id = body().p_job_id; const c = db.contacts[id]; return j(200, c ? [{ apply_url: c.url, apply_email: c.email }] : []); }
