@@ -53,8 +53,19 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `reveal_job_contact` counts an apply click on every call: call it only when
   a student presses "Apply", never on page load. We count "apply clicks",
   never "applications": GigoMe doesn't see whether anyone applied. Logged-out visitors go
-  to `/login?next=/jobs/<id>`; `safeNext()` in `src/lib/auth.js` only accepts
-  paths on this site.
+  to `/login?next=/jobs/<id>`; `safeNext()` (`src/lib/links.js`, re-exported
+  by `auth.js`) only accepts paths on this site (no `//`, backslashes,
+  control characters or other origins).
+- Links and emails from users: `src/lib/links.js` (no imports, unit-tested in
+  `tests/unit/`). `safeHttpUrl()` before any user link goes into an `href` or
+  is opened (the apply link, websites via `websiteHref()`), `mailtoHref()`
+  only for plain addresses, `normalizeUrl()`/`isPlainEmail()` in forms: the
+  same patterns as the database's checks. No `innerHTML` or
+  `dangerouslySetInnerHTML` anywhere: user text is rendered as text.
+- Daily limits: the database refuses with errcode 54000 and a message for
+  people ("Daily limit reached: ..."); `dailyLimitMessage()`
+  (`src/lib/limits.js`) shows it as it is (feedback, reports, saves,
+  searches, follows, job submissions).
 - Map: MapLibre GL (`src/lib/maplibre.js` sets its worker URL for Vite,
   `src/lib/map.js`) with OpenFreeMap's "positron" style and the
   OpenStreetMap attribution always visible, with the metro credit next to it
@@ -63,7 +74,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   station dots from zoom 12 and names from 13.5, from the static file
   `public/metro/milan-metro.geojson` (built by `scripts/build-metro-map.mjs`
   from DS535 + DS533; no database), with a "Metro" button to hide them
-  (remembered in localStorage only). Only ever loaded with `import()` /
+  (kept in sessionStorage, per tab, only). Only ever loaded with `import()` /
   `React.lazy` (`src/components/JobsMap.jsx`, `LocationPicker.jsx`,
   `JobPlaceMap.jsx`), so list pages stay light; helpers a page needs without
   a map (distances, the `?map=` param) live in `src/lib/geo.js`, never in
@@ -161,6 +172,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   needs DELETE typed,
   calls `delete_my_account()` (`src/lib/account.js`), goes to `/` with "Your
   account has been deleted" and then clears the session on this device.
+  "Download my data" (`src/lib/myData.js`) builds a JSON file in the browser
+  from the user's own rows and RPCs (`my_feedback`, `my_reports`,
+  `my_saved_jobs`, `my_opened_jobs`, and for companies their company, jobs,
+  contacts and clicks); nothing is stored. A new table holding user data
+  must be added to it.
   `/privacy` and `/terms` are placeholders until the owner supplies the text;
   each has a marked "Who operates GigoMe" section. Both are in the footer.
 - Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
@@ -168,8 +184,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   a company creates it, status pending; "I accept the terms" must be ticked,
   and the database stores `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
   company details and status, jobs with status, review notes and apply
-  clicks from `my_job_stats()`), `JobEditor.jsx` (new/edit job and how to
-  apply). Logic in `src/lib/employer.js`, account state in
+  clicks from `my_job_stats()`, "Expires in N days" and "Extend by 60 days"
+  (`extend_my_job()`, no new review)), `JobEditor.jsx` (new/edit job and how
+  to apply; "Show until" at most 60 days ahead, an unchanged date isn't sent
+  again). Logic in `src/lib/employer.js`, account state in
   `src/lib/useCompanyAccount.js`, gate in `src/components/EmployerGate.jsx`.
   A job is saved as a draft, then its contact (`set_job_contact`), then its
   status, so it is never submitted without a contact; a published job is
@@ -178,6 +196,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - Moderation: `src/pages/Admin.jsx` (`/admin`, logic in `src/lib/admin.js`,
   styles in `admin.css`). Only admins (`is_admin()`); everyone else, logged
   out included, gets the 404 page, and the database refuses them anyway.
+  At the top, the numbers from `admin_stats()` (same definitions as
+  `supabase/queries/kpis.sql`).
   Pending companies (approve/reject, with contact and login email from
   `admin_company_contact`), pending jobs (publish/request changes/reject, a
   note required for the last two, Publish only once the five-item review
@@ -216,9 +236,29 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   features that don't exist.
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
-  `account.css`, `employer.css`, `admin.css`).
-  No CSS framework.
-- `public/`: copied into `dist/` as is: `_headers` (cache rules),
+  `account.css`, `employer.css`, `admin.css`, `error.css`).
+  No CSS framework. The accent is the logo's purple `#A46BD6` (`--purple`,
+  `--accent`): text on it is graphite (4.5:1), never white. No inline
+  `style` attributes in `index.html` (the CSP has no 'unsafe-inline').
+- Errors: `src/components/ErrorBoundary.jsx`: `PageErrorBoundary` around the
+  routes (header, footer and feedback keep working; any navigation tries
+  again) and `AppErrorBoundary` around everything (plain fallback).
+- Titles and search engines: `src/lib/seo.js`. `RouteMeta` (in `App.jsx`)
+  sets each fixed page's title, description, canonical link and "noindex"
+  for private pages from `PAGES`; job and company pages use `usePageMeta()`;
+  job pages add schema.org JobPosting with `useJsonLd(jobPostingData(job))`
+  (`<` escaped). `public/robots.txt` and `public/sitemap.xml` (fixed pages
+  only). Add a new page to `PAGES`.
+- `public/_headers`: cache rules and the security headers for every path:
+  Content-Security-Policy (only gigome.org, Supabase, OpenFreeMap,
+  Nominatim, Turnstile and Cloudflare Web Analytics; no inline scripts or
+  styles, `frame-ancestors 'none'`), Referrer-Policy, nosniff,
+  X-Frame-Options, Permissions-Policy (geolocation only for our own pages),
+  HSTS. `__SUPABASE_ORIGIN__` is replaced at build time from
+  `VITE_SUPABASE_URL` by the plugin in `vite.config.js`. A new outside
+  service needs a line there, in HANDOVER.md 7b and in the privacy notice;
+  the browser tests fail on any CSP violation.
+- `public/`: copied into `dist/` as is: `_headers` (above),
   `favicon.ico` (16 and 32 px, flat purple on a white tile),
   `apple-touch-icon.png`, `og-image.png` (link previews, referenced from
   `index.html` with absolute https://gigome.org URLs), and `brand/` (the
@@ -264,8 +304,8 @@ of the built site before and after.
 
 ## Database (Supabase)
 
-Project ref `ukqqfryhmcgaralzybfs` (Frankfurt). Plain-English overview of the
-tables and rules: `SUPABASE.md`.
+One project, in Frankfurt (its ID is in the Supabase dashboard; keep IDs out
+of the repo). Plain-English overview of the tables and rules: `SUPABASE.md`.
 
 How changes reach the database
 - Supabase's GitHub integration applies new files in `supabase/migrations`
@@ -410,8 +450,42 @@ Schema rules
   it that way if you add a table that points at a user: decide whether it is
   deleted or kept anonymous, and add a check.
 
+- Links and emails: `companies.website` and `job_contacts.apply_url` only
+  `http(s)://` with a dotted host and no spaces, quotes or angle brackets;
+  `contact_email` and `apply_email` plain addresses (checks; older apply
+  values were left alone and are counted by the security check).
+- Daily limits (rolling 24 hours, triggers, errcode 54000): feedback 20,
+  reports 10, saved jobs + saved searches + follows 50 together, per user;
+  jobs sent to `pending` 10 per company (`jobs.submitted_at`, no grants).
+- Job expiry: a non-admin can't set `expires_at` more than 60 days ahead
+  (trigger `job_expiry_limit`, only when it changes); `extend_my_job(id)`
+  sets it to now + 60 days for a published job of the caller's own approved
+  company, without a new review.
+- `my_feedback()` / `my_reports()`: the caller's own rows only (reports
+  without the resolution note or resolver). `admin_stats()`: admins only.
+- Retention: `retention_settings` (one row, no grants, every period null =
+  nothing deleted) and `run_retention()` (no grants), run daily by pg_cron
+  job `gigome-retention`. Waiting for the legal decision: never set a period
+  without the owner's go-ahead.
+
 Security check
 - `supabase/checks/security_check.sql` is pasted into the SQL Editor after a
   merge. It must end with one SELECT of `check_name, expected, actual,
   passed` and leave no data behind. When a migration adds a table, policy or
-  function, add checks for it there too.
+  function, add checks for it there too, and add a new function callable by
+  `authenticated` to the list in "Logged-in users can call exactly these
+  functions".
+
+Tests (CI: `.github/workflows/tests.yml` on every pull request; no secrets)
+- `tests/unit/` (`node --test tests/unit/*.test.mjs`).
+- `tests/db/run-check.sh`: a throwaway PostgreSQL 16 with
+  `tests/db/supabase-stand-in.sql`, every migration, then the security
+  check; fails on any false row (except "Automatic RLS") or leftover data.
+  Never point it at the real project.
+- `tests/e2e/run.sh`: builds the site three ways (test Supabase, none,
+  Turnstile), serves them with `_headers` applied (`tests/e2e/serve.mjs`)
+  and runs every `tests/e2e/*.test.js` with the mocks in `tests/e2e/lib/`.
+  A suite fails on any CSP violation. New features get a suite or checks in
+  one. Dependabot (`.github/dependabot.yml`) opens weekly update PRs.
+- `docs/legal/`: drafts of the privacy notice and terms for the team's legal
+  person, not published.

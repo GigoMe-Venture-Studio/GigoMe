@@ -1,0 +1,79 @@
+# Runs every test on each pull request (and on main), with stand-ins for
+# Supabase, the map, Turnstile and Nominatim: no secrets, no real services.
+# A red check means something broke: open the failed job to see which test.
+#
+#   unit      tests/unit: links, redirects, emails (node --test)
+#   database  every migration on a throwaway PostgreSQL 16, then
+#             supabase/checks/security_check.sql (tests/db/run-check.sh)
+#   browser   every suite in tests/e2e against fresh builds of the site,
+#             served with the real security headers (tests/e2e/run.sh)
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: node --test tests/unit/*.test.mjs
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          # A throwaway server that only lives for this job.
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Migrations and security check
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+        run: tests/db/run-check.sh
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Playwright is only needed here, so it isn't in package.json (the
+      # Cloudflare build doesn't install it). Keep the version pinned.
+      - run: npm install --no-save playwright@1.63.0
+      - run: npx playwright install --with-deps chromium
+      - name: Browser tests
+        run: tests/e2e/run.sh
+      - name: Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: tests/e2e/.out/
+          retention-days: 7

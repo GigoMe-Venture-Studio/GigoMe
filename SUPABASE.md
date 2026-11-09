@@ -6,7 +6,8 @@ is in `supabase/migrations/`.
 
 ## Where things live
 
-- **Project:** Supabase project `ukqqfryhmcgaralzybfs`, hosted in Frankfurt.
+- **Project:** one Supabase project, hosted in Frankfurt (its ID is shown in
+  the Supabase dashboard; it isn't kept in this public repo).
 - **Changes:** every database change is a SQL file in `supabase/migrations/`.
   When a pull request with a new file there is merged into `main`, Supabase's
   GitHub integration runs it on the live database. Nobody runs SQL by hand to
@@ -58,11 +59,17 @@ domain changes no one.
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
 | `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
 | `moderation_log` | Every admin decision: company approved or rejected, job reviewed or unpublished, report resolved, with who, when and the note | Admins only | Nobody directly: the admin functions write it |
+| `retention_settings` | One row: how long to keep ended jobs, feedback, resolved reports and inactive accounts. All empty, so nothing is deleted (see "Data retention" below) | Nobody through the website or API | Only the team, in the dashboard |
 
 A few details worth knowing:
 
-- **Jobs expire** 60 days after they are created unless the owner sets
-  another date. Expired jobs disappear from the public list automatically.
+- **Jobs expire** 60 days after they are created unless the owner sets an
+  earlier date: owners can set at most 60 days from today. Expired jobs
+  disappear from the public list automatically. On the dashboard each live
+  job shows "Expires in N days" and an "Extend by 60 days" button
+  (`extend_my_job`), which moves the end to 60 days from now without a new
+  review, for published jobs of the owner's own approved company only.
+  Admins can set any date.
 - **Editing a published job** sends it back for review: an owner can't change
   a published job and keep it published, so admins see every change.
 - **Review:** admins publish, request changes or reject a job with
@@ -112,6 +119,21 @@ A few details worth knowing:
 - **Publication date:** set by the database the first time a job is
   published (editing and republishing keeps it). Jobs published in the last
   3 days get a "New" badge.
+- **Links and emails:** a company website and a job's apply link must be
+  `http://` or `https://` addresses (no `javascript:`, `data:` or other
+  schemes, no spaces, quotes or angle brackets); contact and apply emails
+  must be plain addresses (nothing like `?bcc=` that could ride along in an
+  email link). The database refuses anything else; the site checks the same
+  before saving and again before opening a link.
+- **Daily limits** (the last 24 hours, per user): 20 feedback messages, 10
+  reports, and 50 saves, saved searches and follows together. Per company:
+  10 jobs sent for review (drafts are unlimited). Over the limit the
+  database refuses with a message the site shows as it is ("Daily limit
+  reached: ... Try again tomorrow."). `jobs.submitted_at` records when each
+  job was last sent for review; it isn't readable through the API. To change
+  a limit, add a migration that replaces the function concerned
+  (`feedback_daily_limit`, `reports_daily_limit`, `saves_daily_limit`,
+  `job_submission_limit`).
 
 ## Metro stations
 
@@ -204,6 +226,7 @@ Users delete their own account on `/account`, which calls
   jobs they saved.
 - **Company accounts:** their company, its jobs, how to apply for those jobs,
   and the clicks on those jobs are deleted too.
+- **Also deleted:** their saved searches and the companies they followed.
 - **Kept, but anonymous:** the apply clicks they made stay in
   `job_clicks` with `user_id` empty, so each job's click count stays right
   without pointing to a person. Reports they filed stay in `job_reports`
@@ -230,7 +253,47 @@ in `feedback` if the person asked for everything to go.
 | `my_saved_jobs()` | Logged-in users | The caller's saved jobs with title, company and whether each is still live (so a closed job can show "No longer available"). Never anyone else's. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
+| `my_opened_jobs()` | Logged-in users | The jobs the caller pressed "Apply" on, with title, company and whether each is still live ("Jobs you opened" on /saved). |
+| `my_company_follower_count()` | Company owners | How many students follow the caller's company: a number, never who. |
+| `my_feedback()`, `my_reports()` | Logged-in users | The caller's own feedback and the reports they filed (without the admin's note or who resolved them), for "Download my data". |
+| `extend_my_job(job_id)` | Company owners | "Extend by 60 days": a published job of the caller's own approved company is shown until 60 days from now, without a new review. |
+| `admin_stats()` | Admins | The numbers at the top of /admin, the same definitions as `supabase/queries/kpis.sql`. |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |
+
+"Download my data" on /account builds its file in the browser from these
+functions and the user's own rows (profile, saved jobs and searches, follows,
+apply clicks, feedback, reports; for a company account its company, jobs,
+how to apply and click counts). Nothing new is stored.
+
+## Data retention (prepared, OFF: waiting for the legal decision)
+
+Nothing is deleted automatically today. Everything below is ready, but every
+period is empty until the team's legal person decides how long GigoMe keeps
+each kind of data (the privacy notice must say the same).
+
+- **Where:** Table Editor → `retention_settings` (one row). Each column is a
+  number of days; empty means "keep forever".
+  - `ended_jobs_days` (at least 30): closed or rejected jobs, and expired
+    jobs, this many days after they ended. Their contacts, apply clicks,
+    reports and saves go with them.
+  - `feedback_days` (at least 30): feedback older than this.
+  - `resolved_reports_days` (at least 30): reports resolved this long ago.
+    Open reports are never deleted.
+  - `inactive_accounts_days` (at least 180): accounts that haven't logged in
+    for this long, deleted exactly like "Delete my account" (their apply
+    clicks and reports stay, anonymous). Admins are never deleted. Warning:
+    a company account goes with its company and jobs. Nobody is told
+    beforehand: decide whether that's acceptable first (and see the 300
+    emails a day limit before sending warnings).
+- **When:** `run_retention()` runs every day at 03:37 UTC through pg_cron
+  (job `gigome-retention`). It writes when it ran and how many rows it
+  deleted to `last_run_at` and `last_result` in the same row.
+- **Check the schedule:** SQL Editor → `select * from cron.job;` should show
+  `gigome-retention`. If it doesn't (pg_cron wasn't available when the
+  migration ran): Database → Extensions → enable `pg_cron`, then run
+  `select cron.schedule('gigome-retention', '37 3 * * *', 'select public.run_retention()');`
+- **Try it by hand:** `select public.run_retention();` in the SQL Editor.
+  With every period empty it returns zeros and deletes nothing.
 
 ## Why it's safe
 

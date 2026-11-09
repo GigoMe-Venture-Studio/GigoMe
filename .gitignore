@@ -5,3 +5,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Browser tests: builds and screenshots
+tests/e2e/.builds/
+tests/e2e/.out/
