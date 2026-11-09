@@ -100,8 +100,14 @@ Every pull request runs the tests on GitHub ("Tests": unit, database and
 browser checks, with stand-ins for Supabase and the other services, so no
 keys are needed). A red check means something broke: open it, find the
 failed step and the line starting with `FAIL`. Don't merge a red pull
-request. Dependabot opens dependency-update pull requests every Monday; merge
-them only when the tests are green and Cloudflare's preview works. To run the
+request. Dependabot opens dependency-update pull requests every Monday: one
+for all minor and patch updates of npm packages, one for those of GitHub
+Actions, and a separate one for each major update. Merge the grouped ones
+when the tests are green; read a major update's release notes first (they
+can break things), and after merging an Actions major, start the hand-run
+"Metro stations" workflow once to check it still works. Cloudflare doesn't
+always post a preview check on Dependabot's pull requests; the build of
+`main` is what deploys, and a failed one leaves the live site as it was. To run the
 tests on your own computer: `node --test tests/unit/*.test.mjs`,
 `tests/e2e/run.sh` (needs Playwright's Chromium) and `tests/db/run-check.sh`
 (needs a throwaway PostgreSQL 16; never point it at the real project).
