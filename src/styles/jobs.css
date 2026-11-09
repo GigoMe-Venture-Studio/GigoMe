@@ -206,7 +206,7 @@
   display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer;
   font: 700 12px/1 var(--font); color: var(--ink);
 }
-.job-marker-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid #A67CBA; box-sizing: border-box; flex: none; }
+.job-marker-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid var(--accent); box-sizing: border-box; flex: none; }
 .job-marker-pay { display: none; }
 .jobs-map.show-pay .job-marker { padding: 3px 8px 3px 3px; background: var(--white); border-radius: 12px; box-shadow: var(--float); }
 .jobs-map.show-pay .job-marker-pay { display: inline; white-space: nowrap; }

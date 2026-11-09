@@ -4,6 +4,15 @@
 .admin-main { padding-top: var(--s5); padding-bottom: var(--s8); }
 .admin { max-width: 820px; }
 .admin-summary { margin-top: var(--s2); color: var(--muted); }
+
+/* The numbers at the top: a grid of small tiles (2 a row on phones). */
+.admin-stats { margin-top: var(--s4); }
+.admin-stats-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s3); }
+.admin-stats-list > div { padding: var(--s3); border: 1px solid var(--line); border-radius: var(--r-md); }
+.admin-stats-list dt { font-size: 14px; color: var(--muted); }
+.admin-stats-list dd { font-size: 24px; font-weight: 600; }
+.admin-stats .field-hint { margin-top: var(--s2); }
+@media (max-width: 400px) { .admin-stats-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .admin-section { margin-top: var(--s7); padding-top: var(--s5); border-top: 1px solid var(--line); scroll-margin-top: var(--s4); }
 .admin-section h2 { font-size: 20px; font-weight: 600; }
 .admin-section > p.muted { margin-top: var(--s3); }

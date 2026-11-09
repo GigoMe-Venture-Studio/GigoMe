@@ -65,7 +65,7 @@ export function createMap(container, options = {}) {
 
 function metroShown() {
   try {
-    return window.localStorage.getItem(METRO_PREF) !== 'off';
+    return window.sessionStorage.getItem(METRO_PREF) !== 'off';
   } catch {
     return true;
   }
@@ -162,7 +162,7 @@ class MetroToggle {
       b.setAttribute('aria-pressed', String(this._shown));
       setMetroShown(map, this._shown);
       try {
-        window.localStorage.setItem(METRO_PREF, this._shown ? 'on' : 'off');
+        window.sessionStorage.setItem(METRO_PREF, this._shown ? 'on' : 'off');
       } catch {
         /* private mode: the choice just isn't remembered */
       }

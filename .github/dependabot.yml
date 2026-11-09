@@ -1,0 +1,25 @@
+# Weekly pull requests for dependency updates: npm packages and the GitHub
+# Actions used in .github/workflows. Each one runs the tests (tests.yml), so
+# a red check means the update breaks something: don't merge it.
+# Minor and patch updates come grouped in one PR per ecosystem; major updates
+# come one by one, since they're the ones that need reading.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ['*']

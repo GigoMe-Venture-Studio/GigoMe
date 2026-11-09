@@ -66,13 +66,19 @@
 .dash-job-meta { font-size: 14px; color: var(--muted); }
 .dash-job-status { margin-top: var(--s2); font-size: 14px; }
 .dash-clicks { margin-top: var(--s1); font-size: 14px; }
+/* "Expires in N days" (darker in the last week), and the line confirming
+   "Extend by 60 days". */
+.dash-expiry { margin-top: var(--s1); font-size: 14px; color: var(--muted); }
+.dash-expiry-soon { color: var(--ink); font-weight: 600; }
+.dash-action-done { font-weight: 600; }
+.dash-action-done:empty { display: none; }
 .dash-job-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
 @media (min-width: 600px) {
   .dash-job { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
   .dash-job-actions { justify-content: flex-end; }
 }
 
-/* Status tags: gold only for "in review", orchid outline for approved/live
+/* Status tags: gold only for "in review", purple outline for approved/live
    (like the verified mark), plain for the rest. */
 .status-tag { display: inline-flex; align-items: center; height: 22px; padding: 0 var(--s2); border-radius: var(--r-sm); font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--paper); color: var(--ink); border: 1px solid transparent; }
 .status-pending { background: var(--warn); color: var(--on-warn); }

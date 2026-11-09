@@ -139,20 +139,26 @@ export async function deleteDraft(id) {
   if (count === 0) throw new Error('not deleted');
 }
 
-// A website or apply link as typed: adds https:// when there's no scheme.
-// Returns '' for empty input and null when it isn't an http(s) address.
-export function normalizeUrl(raw) {
-  const s = String(raw || '').trim();
-  if (!s) return '';
-  const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(s) ? s : 'https://' + s.replace(/^\/+/, '');
-  try {
-    const u = new URL(withScheme);
-    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
-    if (!u.hostname.includes('.') || /\s/.test(s)) return null;
-    return withScheme;
-  } catch {
-    return null;
-  }
+// A website or apply link as typed (adds https://; null when it isn't one).
+export { normalizeUrl } from './links.js';
+
+// "Extend by 60 days": a published job of the caller's own approved company
+// is shown until 60 days from now, without a new review (the database's
+// extend_my_job() checks all of that). Returns the new end as an ISO string.
+export async function extendJob(id) {
+  const { data, error } = await supabase.rpc('extend_my_job', { p_job_id: id });
+  if (error) throw error;
+  return data;
+}
+
+// "Expires today", "Expires tomorrow", "Expires in 12 days" (null once past).
+export function expiresInLabel(iso, now = Date.now()) {
+  const ms = new Date(iso).getTime() - now;
+  if (!(ms > 0)) return null;
+  const days = Math.floor(ms / 86400000);
+  if (days === 0) return 'Expires today';
+  if (days === 1) return 'Expires tomorrow';
+  return `Expires in ${days} days`;
 }
 
 // How many students follow the caller's company: a number, never who.

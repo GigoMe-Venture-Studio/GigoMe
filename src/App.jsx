@@ -3,6 +3,8 @@ import SiteHeader from './components/SiteHeader.jsx';
 import SiteFooter from './components/SiteFooter.jsx';
 import { FeedbackProvider } from './components/Feedback.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import { PageErrorBoundary } from './components/ErrorBoundary.jsx';
+import { RouteMeta } from './lib/seo.js';
 import Home from './pages/Home.jsx';
 import Jobs from './pages/Jobs.jsx';
 import JobDetail from './pages/JobDetail.jsx';
@@ -24,28 +26,31 @@ export default function App() {
   return (
     <FeedbackProvider>
       <ScrollToTop />
+      <RouteMeta />
       <SiteHeader />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/jobs" element={<Jobs />} />
-        <Route path="/jobs/:id" element={<JobDetail />} />
-        <Route path="/companies/:id" element={<Company />} />
-        {/* The About page was removed; old links land on the home page. */}
-        <Route path="/about" element={<Navigate to="/" replace />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/saved" element={<Saved />} />
-        <Route path="/employers" element={<Employers />} />
-        <Route path="/employers/setup" element={<EmployerSetup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/jobs/new" element={<JobEditor />} />
-        <Route path="/dashboard/jobs/:id/edit" element={<JobEditor />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <PageErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/:id" element={<JobDetail />} />
+          <Route path="/companies/:id" element={<Company />} />
+          {/* The About page was removed; old links land on the home page. */}
+          <Route path="/about" element={<Navigate to="/" replace />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/saved" element={<Saved />} />
+          <Route path="/employers" element={<Employers />} />
+          <Route path="/employers/setup" element={<EmployerSetup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/jobs/new" element={<JobEditor />} />
+          <Route path="/dashboard/jobs/:id/edit" element={<JobEditor />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </PageErrorBoundary>
       <SiteFooter />
     </FeedbackProvider>
   );

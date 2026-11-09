@@ -1,5 +1,6 @@
 // "Report this job": logged-in users report a live job. Only admins read
 // reports (job_reports, admin-only RLS).
+import { dailyLimitMessage } from './limits.js';
 import { supabase } from './supabase.js';
 
 export const REPORT_REASONS = [
@@ -20,5 +21,6 @@ export async function reportJob(jobId, reason, details) {
   if (!error) return null;
   // One open report per user per job (unique index).
   if (error.code === '23505') return "You've already reported this job. We're looking into it.";
+  if (dailyLimitMessage(error)) return dailyLimitMessage(error);
   return "We couldn't send your report. Check your connection and try again.";
 }

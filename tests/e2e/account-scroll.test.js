@@ -1,0 +1,25 @@
+const { OUT } = require('./lib/browser.js');
+const { chromium } = require('./lib/browser.js'); const { mock, login, ID } = require('./lib/mock.js');
+const E = 'http://127.0.0.1:4402'; let pass = 0, fail = 0; const ok = (c, m) => { if (c) pass++; else { fail++; console.log('FAIL', m); } };
+(async () => { const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 390, height: 600 } }); const log = await mock(ctx); const p = await ctx.newPage();
+  const y = () => p.evaluate(() => scrollY);
+  await p.goto(E + '/jobs'); await p.waitForTimeout(500);
+  await p.locator('.role-row').last().scrollIntoViewIfNeeded(); const before = await y();
+  await p.locator('.role-row').last().click(); await p.waitForTimeout(500);
+  ok(before > 200 && await y() === 0, `job page opens at the top (list was at ${before}, now ${await y()})`);
+  await p.goBack(); await p.waitForTimeout(600);
+  ok(await y() > 0, 'Back does not force the top: ' + await y());
+  if (await p.locator('.job-filters-toggle').isVisible()) await p.click('.job-filters-toggle');
+  await p.evaluate(() => scrollTo(0, 300)); const at = await y();
+  await p.locator('select[name=type]').selectOption('gig'); await p.waitForTimeout(600);
+  ok(new URL(p.url()).searchParams.get('type') === 'gig' && (await y()) > 0, 'changing a filter does not jump to the top: ' + at + ' -> ' + await y());
+  await p.evaluate(() => scrollTo(0, document.body.scrollHeight)); await p.click('.site-footer a:has-text("Terms")'); await p.waitForTimeout(400);
+  ok(new URL(p.url()).pathname === '/terms' && await y() === 0, 'footer link opens Terms at the top');
+  // deletion: notice visible at the top
+  await p.goto(E + '/login'); await login(p); await p.goto(E + '/account'); await p.waitForTimeout(500);
+  await p.click('.account-danger button:has-text("Delete my account")'); await p.waitForTimeout(200);
+  await p.fill('input[name=confirm]', 'DELETE'); await p.click('button.account-delete-btn'); await p.waitForTimeout(800);
+  ok(await y() === 0 && await p.locator('.home-notice').isVisible(), 'after deleting: home opens at the top with the notice in view');
+  const box = await p.locator('.home-notice').boundingBox(); ok(box && box.y < 600, 'notice is on screen: y=' + (box && box.y));
+  await p.screenshot({ path: OUT + '/phone-deleted.png' });
+  await b.close(); console.log(`${pass} passed, ${fail} failed`); })();

@@ -68,6 +68,13 @@ declare
   -- schedule, languages, saved searches, follows, opened jobs
   v_sched_job   uuid;
   v_pay_job     uuid;
+  -- launch audit
+  v_live_a      uuid;
+  v_live_b      uuid;
+  v_old_user    uuid := gen_random_uuid();
+  v_old_admin   uuid := gen_random_uuid();
+  v_ts          timestamptz;
+  v_json        jsonb;
   v_ss          uuid;
   v_n           int;
   -- on-site jobs need an area
@@ -2287,6 +2294,481 @@ begin
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
     results := pg_temp.res(results, 'anon cannot call my_opened_jobs', 'error', v_err, v_err like 'error:%');
+
+    -- ----------------------------------------------------------------------
+    -- Launch audit: the whole API surface
+    -- ----------------------------------------------------------------------
+
+    select string_agg(p.proname, ', ' order by p.proname) into v_err
+    from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+    where ns.nspname = 'public' and p.prosecdef
+      and not ('search_path=""' = any (coalesce(p.proconfig, '{}')));
+    results := pg_temp.res(results, 'Every SECURITY DEFINER function uses an empty search_path (set search_path = '''')', 'all', coalesce('not empty: ' || v_err, 'all'), v_err is null);
+
+    select string_agg(p.proname, ', ' order by p.proname) into v_err
+    from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+    where ns.nspname = 'public'
+      and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
+      and exists (select 1 from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a where a.grantee = 0 and a.privilege_type = 'EXECUTE');
+    results := pg_temp.res(results, 'No function of ours can be called by everyone (PUBLIC)', 'none', coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(distinct p.proname, ', ' order by p.proname) into v_text
+    from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+    where ns.nspname = 'public'
+      and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
+      and has_function_privilege('authenticated', p.oid, 'EXECUTE');
+    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, current_account_type, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, current_account_type, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
+
+    select string_agg(c.relname || ':' || pr, ', ' order by c.relname, pr) into v_err
+    from pg_class c join pg_namespace ns on ns.oid = c.relnamespace, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) pr
+    where ns.nspname = 'public' and c.relkind = 'r'
+      and (has_table_privilege('anon', c.oid, pr) or (pr in ('INSERT', 'UPDATE') and has_any_column_privilege('anon', c.oid, pr)));
+    results := pg_temp.res(results, 'anon can''t write to any table', 'none', coalesce(v_err, 'none'), v_err is null);
+
+    select string_agg(tablename || ': ' || policyname, '; ') into v_err from pg_policies
+    where schemaname = 'public' and 'public' = any (roles);
+    results := pg_temp.res(results, 'No policy applies to every role (each names anon and/or authenticated)', 'none', coalesce(v_err, 'none'), v_err is null);
+
+    -- ----------------------------------------------------------------------
+    -- Links and emails from users: http(s) and plain addresses only
+    -- ----------------------------------------------------------------------
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set website = 'javascript:alert(1)' where id = v_co_own;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A javascript: website is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set website = 'data:text/html,<b>x</b>' where id = v_co_own;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A data: website is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set website = 'check-site.example' where id = v_co_own;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A website without http(s):// is refused (the site adds it)', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set website = 'https://check-site.example/jobs?x=1' where id = v_co_own;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An https website is accepted (control)', 'updated', v_err, v_err = 'updated');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set contact_email = 'jobs@check.example?bcc=all' where id = v_co_own;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Contact email: an address with ?bcc= is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.companies set contact_email = '"x"@check.example' where id = v_co_own;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Contact email: an address with quotes is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.set_job_contact(v_job_own_draft, 'javascript:alert(document.cookie)', null);
+      perform set_config('role', 'none', true);
+      v_err := 'set';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A javascript: apply link is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.set_job_contact(v_job_own_draft, 'https://check-site.example/"onmouseover="alert(1)', null);
+      perform set_config('role', 'none', true);
+      v_err := 'set';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An apply link with quotes in it is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.set_job_contact(v_job_own_draft, null, 'jobs@check.example?subject=x&body=y');
+      perform set_config('role', 'none', true);
+      v_err := 'set';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An apply email carrying ?subject=&body= is refused', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.set_job_contact(v_job_own_draft, 'https://check-site.example/apply', 'jobs@check.example');
+      perform set_config('role', 'none', true);
+      v_err := 'set';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'A normal apply link and email are accepted (control)', 'set', v_err, v_err = 'set');
+
+    select (select count(*) from public.companies where website !~* '^https?://[a-z0-9-]+(\.[a-z0-9-]+)+(:[0-9]{1,5})?([/?#][^[:space:]<>"''`]*)?$')
+         + (select count(*) from public.companies where contact_email !~* '^[a-z0-9._%+''-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$')
+         + (select count(*) from public.job_contacts where apply_url !~* '^https?://[a-z0-9-]+(\.[a-z0-9-]+)+(:[0-9]{1,5})?([/?#][^[:space:]<>"''`]*)?$')
+         + (select count(*) from public.job_contacts where apply_email !~* '^[a-z0-9._%+''-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$')
+      into v_count;
+    results := pg_temp.res(results, 'Every saved website, apply link and email fits the rules (older ones included)', '0 that don''t', v_count || ' that don''t', v_count = 0);
+
+    -- ----------------------------------------------------------------------
+    -- Daily limits against abuse
+    -- ----------------------------------------------------------------------
+
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check live A', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10) returning id into v_live_a;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+      values (v_co_approved, 'Check live B', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10) returning id into v_live_b;
+
+    select string_agg(tg.tgname, ',' order by tg.tgname) into v_text from pg_trigger tg
+    where not tg.tgisinternal and tg.tgname in ('feedback_daily_limit', 'reports_daily_limit', 'saves_daily_limit', 'job_submission_limit');
+    results := pg_temp.res(results, 'The daily-limit triggers are in place (feedback, reports, saves on three tables, job submissions)', 'feedback_daily_limit,job_submission_limit,reports_daily_limit,saves_daily_limit,saves_daily_limit,saves_daily_limit', coalesce(v_text, 'none'), v_text = 'feedback_daily_limit,job_submission_limit,reports_daily_limit,saves_daily_limit,saves_daily_limit,saves_daily_limit');
+
+    insert into public.feedback (user_id, page, message)
+      select v_late, '/check', 'Check limit ' || n
+      from generate_series(1, greatest(0, 19 - (select count(*) from public.feedback where user_id = v_late and created_at > now() - interval '1 day')::int)) n;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.feedback (page, message) values ('/check', 'Check feedback 20');
+      perform set_config('role', 'none', true);
+      v_err := 'sent';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Feedback: the 20th message of the day goes through (control)', 'sent', v_err, v_err = 'sent');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.feedback (page, message) values ('/check', 'Check feedback 21');
+      perform set_config('role', 'none', true);
+      v_err := 'sent';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Feedback: the 21st message of the day is refused with a clear message', 'error: Daily limit reached…', v_err, v_err like 'error: Daily limit reached: you can send feedback up to 20 times a day.%');
+
+    insert into public.job_reports (job_id, reporter_id, reason, status, resolved_at)
+      select v_live_a, v_late, 'other', 'resolved', now()
+      from generate_series(1, greatest(0, 9 - (select count(*) from public.job_reports where reporter_id = v_late and created_at > now() - interval '1 day')::int)) n;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason) values (v_live_a, 'other');
+      perform set_config('role', 'none', true);
+      v_err := 'reported';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Reports: the 10th report of the day goes through (control)', 'reported', v_err, v_err = 'reported');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.job_reports (job_id, reason) values (v_live_b, 'other');
+      perform set_config('role', 'none', true);
+      v_err := 'reported';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Reports: the 11th report of the day is refused', 'error: Daily limit reached…', v_err, v_err like 'error: Daily limit reached: you can report a job up to 10 times a day.%');
+
+    with made as (
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        select v_co_approved, 'Check bulk ' || n, 'gig', 5, 'published', 1, array['flexible'], 'hour', 10 from generate_series(1, 50) n
+      returning id
+    )
+    insert into public.saved_jobs (user_id, job_id)
+      select v_late, id from made
+      limit greatest(0, 49 - (
+        (select count(*) from public.saved_jobs where user_id = v_late and created_at > now() - interval '1 day')
+        + (select count(*) from public.saved_searches where user_id = v_late and created_at > now() - interval '1 day')
+        + (select count(*) from public.company_follows where user_id = v_late and created_at > now() - interval '1 day'))::int);
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.saved_jobs (job_id) values (v_live_b);
+      perform set_config('role', 'none', true);
+      v_err := 'saved';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Saves: the 50th save, search or follow of the day goes through (control)', 'saved', v_err, v_err = 'saved');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.company_follows (company_id) values (v_co_emp);
+      perform set_config('role', 'none', true);
+      v_err := 'followed';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Saves: the 51st (a follow) is refused: saves, searches and follows count together', 'error: Daily limit reached…', v_err, v_err like 'error: Daily limit reached: you can save jobs or searches and follow companies up to 50 times a day.%');
+
+    select count(*) into v_n from public.jobs where company_id = v_co_emp and submitted_at > now() - interval '1 day';
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        select v_co_emp, 'Check submission ' || n, 'gig', 5, 'pending', 1, array['flexible'], 'hour', 10 from generate_series(1, greatest(0, 10 - v_n)) n;
+      perform set_config('role', 'none', true);
+      v_err := 'submitted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Jobs: a company can submit 10 jobs in a day (control)', 'submitted', v_err, v_err = 'submitted');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check submission 11', 'gig', 5, 'pending', 1, array['flexible'], 'hour', 10);
+      perform set_config('role', 'none', true);
+      v_err := 'submitted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Jobs: the 11th submission of the day is refused', 'error: Daily limit reached…', v_err, v_err like 'error: Daily limit reached: you can submit jobs for review up to 10 times a day.%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check draft after the limit', 'gig', 5, 'draft', 1, array['flexible'], 'hour', 10);
+      perform set_config('role', 'none', true);
+      v_err := 'saved';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'Jobs: drafts can still be saved after the limit (control)', 'saved', v_err, v_err = 'saved');
+
+    select string_agg(r || ' ' || pr, ', ') into v_err from unnest(array['anon', 'authenticated']) r, unnest(array['SELECT', 'INSERT', 'UPDATE']) pr
+    where has_column_privilege(r, 'public.jobs', 'submitted_at', pr);
+    results := pg_temp.res(results, 'Nobody reads or writes jobs.submitted_at through the API', 'none', coalesce(v_err, 'none'), v_err is null);
+
+    -- ----------------------------------------------------------------------
+    -- Own data ("Download my data"): my_feedback, my_reports
+    -- ----------------------------------------------------------------------
+
+    insert into public.feedback (user_id, page, message) values (v_student, '/check', 'Check own feedback');
+    insert into public.job_reports (job_id, reporter_id, reason, details, status, resolution_note, resolved_at)
+      values (v_live_a, v_student, 'misleading', 'Check own report', 'resolved', 'Check internal note', now());
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select string_agg(message, ',') into v_text from public.my_feedback() where message like 'Check %';
+      select v_text || ' | ' || string_agg(details || ' ' || status, ',') into v_text from public.my_reports() where details like 'Check %';
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_feedback and my_reports return the caller''s own rows', 'read: Check own feedback | Check own report resolved', v_err || ': ' || coalesce(v_text, 'nothing'), v_err = 'read' and v_text = 'Check own feedback | Check own report resolved');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_late, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select count(*) into v_count from public.my_feedback() where message = 'Check own feedback';
+      select v_count + count(*) into v_count from public.my_reports() where details = 'Check own report';
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'They never return someone else''s', 'read, 0', v_err || ', ' || v_count, v_err = 'read' and v_count = 0);
+
+    select string_agg(a, ',') into v_text from (select unnest(proargnames) a from pg_proc where oid = 'public.my_reports()'::regprocedure) x
+      where a in ('resolution_note', 'resolved_by', 'reporter_id');
+    results := pg_temp.res(results, 'my_reports leaves out the admin''s note and who resolved it', 'none', coalesce(v_text, 'none'), v_text is null);
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform * from public.my_feedback();
+      perform set_config('role', 'none', true);
+      v_err := 'ran';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot call my_feedback', 'error', v_err, v_err like 'error:%');
+
+    -- ----------------------------------------------------------------------
+    -- Retention (prepared, off until periods are set)
+    -- ----------------------------------------------------------------------
+
+    select string_agg(r || ':' || pr, ', ') into v_err from unnest(array['anon', 'authenticated']) r,
+      unnest(array['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) pr
+    where has_table_privilege(r, 'public.retention_settings', pr) or (pr in ('SELECT', 'INSERT', 'UPDATE') and has_any_column_privilege(r, 'public.retention_settings', pr));
+    results := pg_temp.res(results, 'No API privileges at all on public.retention_settings', 'none', coalesce(v_err, 'none'), v_err is null);
+
+    select case when has_function_privilege('anon', 'public.run_retention()', 'EXECUTE') or has_function_privilege('authenticated', 'public.run_retention()', 'EXECUTE')
+                then 'callable' else 'not callable' end into v_text;
+    results := pg_temp.res(results, 'run_retention can''t be called through the API', 'not callable', v_text, v_text = 'not callable');
+
+    if to_regclass('cron.job') is null then
+      v_text := 'pg_cron not installed here';
+    else
+      execute $q$select case when exists (select 1 from cron.job where jobname = 'gigome-retention' and command like '%run_retention%')
+                          then 'scheduled' else 'not scheduled' end$q$ into v_text;
+    end if;
+    results := pg_temp.res(results, 'The daily retention job is scheduled (where pg_cron exists)', 'scheduled', v_text, v_text in ('scheduled', 'pg_cron not installed here'));
+
+    -- Old and recent test rows, then run it with every period empty, then set.
+    insert into auth.users (id, email, created_at, last_sign_in_at) values
+      (v_old_user, 'old.user@check-uni.example', now() - interval '3 years', now() - interval '400 days'),
+      (v_old_admin, 'old.admin@check-uni.example', now() - interval '3 years', now() - interval '400 days');
+    insert into public.admins (user_id) values (v_old_admin);
+    insert into public.feedback (user_id, page, message, created_at) values
+      (null, '/check', 'Check old feedback', now() - interval '400 days'),
+      (null, '/check', 'Check recent feedback', now() - interval '5 days');
+    insert into public.job_reports (job_id, reporter_id, reason, details, status, resolved_at, created_at) values
+      (v_live_b, null, 'other', 'Check old resolved report', 'resolved', now() - interval '400 days', now() - interval '401 days'),
+      (v_live_b, null, 'other', 'Check old open report', 'open', null, now() - interval '401 days');
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, created_at, expires_at)
+      values (v_co_approved, 'Check long expired', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10, now() - interval '500 days', now() - interval '400 days');
+    update public.retention_settings set ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null where id = 1;
+    select public.run_retention() into v_json;
+    results := pg_temp.res(results, 'With every period empty, retention deletes nothing', '{"jobs": 0, "accounts": 0, "feedback": 0, "resolved_reports": 0}', v_json::text, v_json = '{"jobs": 0, "accounts": 0, "feedback": 0, "resolved_reports": 0}'::jsonb);
+
+    update public.retention_settings set ended_jobs_days = 365, feedback_days = 365, resolved_reports_days = 365, inactive_accounts_days = 365 where id = 1;
+    perform public.run_retention();
+    select (select count(*) from public.feedback where message = 'Check old feedback') || ' old/'
+           || (select count(*) from public.feedback where message = 'Check recent feedback') || ' recent feedback, '
+           || (select count(*) from public.jobs where title = 'Check long expired') || ' long-expired job, '
+           || (select count(*) from public.job_reports where details = 'Check old resolved report') || ' old resolved/'
+           || (select count(*) from public.job_reports where details = 'Check old open report') || ' old open report, '
+           || (select count(*) from auth.users where id = v_old_user) || ' inactive user, '
+           || (select count(*) from auth.users where id = v_old_admin) || ' inactive admin, '
+           || (select count(*) from auth.users where id = v_student) || ' active student'
+      into v_text;
+    results := pg_temp.res(results, 'With periods set, retention deletes only what''s older (never admins, never active users)', '0 old/1 recent feedback, 0 long-expired job, 0 old resolved/1 old open report, 0 inactive user, 1 inactive admin, 1 active student', v_text, v_text = '0 old/1 recent feedback, 0 long-expired job, 0 old resolved/1 old open report, 0 inactive user, 1 inactive admin, 1 active student');
+
+    update public.retention_settings set ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null where id = 1;
+
+    -- ----------------------------------------------------------------------
+    -- Job expiry: owners at most 60 days ahead; "Extend by 60 days"
+    -- ----------------------------------------------------------------------
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set expires_at = now() + interval '90 days' where id = v_area_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An owner can''t set a job to show for more than 60 days', 'error', v_err, v_err like 'error:%60 days%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set expires_at = now() + interval '30 days' where id = v_area_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, '30 days is fine (control)', 'updated', v_err, v_err = 'updated');
+
+    select reviewed_at into v_ts from public.jobs where id = v_emp_live;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_emp_live);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || status || ', ' || case when expires_at between now() + interval '59 days' and now() + interval '61 days' then '60 days ahead' else expires_at::text end
+           || case when reviewed_at is not distinct from v_ts then ', no new review' else ', reviewed again' end into v_text
+    from public.jobs where id = v_emp_live;
+    results := pg_temp.res(results, 'extend_my_job: a published job of your own goes to 60 days from now, still published, no new review', 'extended, published, 60 days ahead, no new review', v_text, v_text = 'extended, published, 60 days ahead, no new review');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_area_job);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'extend_my_job refuses a job that isn''t published', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_live_a);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'extend_my_job refuses another company''s job', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform public.extend_my_job(v_emp_live);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot call extend_my_job', 'error', v_err, v_err like 'error:%');
+
+    -- ----------------------------------------------------------------------
+    -- Admin numbers: admin_stats()
+    -- ----------------------------------------------------------------------
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select students || ',' || live_jobs into v_text from public.admin_stats();
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select (select count(*) from public.profiles where account_type = 'student') || ','
+           || (select count(*) from public.jobs j join public.companies c on c.id = j.company_id
+               where j.status = 'published' and j.expires_at > now() and c.status = 'approved')
+      into v_count_text;
+    results := pg_temp.res(results, 'admin_stats gives an admin the same numbers as kpis.sql', v_count_text, v_err || ': ' || coalesce(v_text, '?'), v_err = 'read' and v_text = v_count_text);
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform * from public.admin_stats();
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'admin_stats refuses anyone who isn''t an admin', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform * from public.admin_stats();
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot call admin_stats', 'error', v_err, v_err like 'error:%');
 
     -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)

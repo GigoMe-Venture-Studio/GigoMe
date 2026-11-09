@@ -12,6 +12,11 @@
 .account-saved:empty { display: none; }
 .account-saved { font-weight: 600; }
 
+/* "Your data": the download button and its result. */
+.account-data-text { margin-top: var(--s3); }
+.account-data-btn { margin-top: var(--s4); }
+.account-data .account-saved, .account-data .err { margin-top: var(--s3); }
+
 /* Kept apart from the rest of the page: a rule above it and extra space. */
 .account-danger { padding-top: var(--s6); border-top: 1px solid var(--line); }
 .account-danger-text { margin-top: var(--s3); }

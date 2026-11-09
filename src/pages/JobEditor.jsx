@@ -5,7 +5,9 @@ import ConfigError from '../components/ConfigError.jsx';
 import EmployerGate from '../components/EmployerGate.jsx';
 import JobView from '../components/JobView.jsx';
 import { supabase } from '../lib/supabase.js';
-import { looksLikeEmail, normalizeEmail } from '../lib/auth.js';
+import { normalizeEmail } from '../lib/auth.js';
+import { isPlainEmail } from '../lib/links.js';
+import { dailyLimitMessage } from '../lib/limits.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
 import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES, LANGUAGES, PAY_UNITS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
@@ -111,6 +113,8 @@ function endOfDay(dateInput) {
   return new Date(y, m - 1, d, 23, 59, 59).toISOString();
 }
 const today = () => toDateInput(new Date().toISOString());
+// The last day an owner can choose (the database allows 60 days from now).
+const inDays = (n) => toDateInput(new Date(Date.now() + n * 86400000).toISOString());
 
 function JobForm({ company, job }) {
   const navigate = useNavigate();
@@ -165,6 +169,8 @@ function JobForm({ company, job }) {
       setGeo({ busy: false, message: "The address search isn't working right now. Place the pin on the map instead." });
     }
   }
+  // The date the job had when the form opened: sent again only if changed.
+  const loadedEndDate = job ? toDateInput(job.expires_at) : '';
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
   const [busy, setBusy] = useState('');
@@ -199,12 +205,13 @@ function JobForm({ company, job }) {
     if (paid && v.payMax.trim() !== '' && !(payMax > 0 && payMax <= 100000)) found.payMax = 'Enter an amount in euros, like 13 or 13.50.';
     else if (paid && payMax != null && payMin != null && payMax < payMin) found.payMax = "The maximum can't be less than the minimum.";
     if (v.endDate && v.endDate < today()) found.endDate = 'Choose today or a later date.';
+    else if (v.endDate && v.endDate > inDays(60) && v.endDate !== loadedEndDate) found.endDate = 'Choose a date at most 60 days from today.';
     if (submitting && !v.remote && !v.area) found.area = 'Choose the area (or "Elsewhere in Milan").';
     if (submitting && !v.schedule.length) found.schedule = 'Choose when the job happens (at least one).';
     const url = normalizeUrl(v.applyUrl);
     const email = normalizeEmail(v.applyEmail);
     if (url === null || (url && url.length > 500)) found.applyUrl = 'Enter a web address like www.yourcompany.it/jobs.';
-    if (email && (!looksLikeEmail(email) || email.length > 254)) found.applyEmail = "That email address doesn't look right.";
+    if (email && (!isPlainEmail(email) || email.length > 254)) found.applyEmail = "That email address doesn't look right.";
     if (submitting && !url && !email && !found.applyUrl && !found.applyEmail) {
       found.apply = 'Add a link or an email address (or both) so students can apply.';
     }
@@ -231,8 +238,10 @@ function JobForm({ company, job }) {
       schedule: SCHEDULES.map(([x]) => x).filter((x) => v.schedule.includes(x)),
       languages: LANGUAGES.map(([x]) => x).filter((x) => v.languages.includes(x))
     };
-    if (v.endDate) fields.expires_at = endOfDay(v.endDate);
-    else if (job) fields.expires_at = new Date(Date.now() + 60 * 86400000).toISOString();
+    // An unchanged date isn't sent again, so the saved time stays.
+    if (v.endDate) {
+      if (v.endDate !== loadedEndDate) fields.expires_at = endOfDay(v.endDate);
+    } else if (job) fields.expires_at = new Date(Date.now() + 60 * 86400000).toISOString();
     return { found, fields, contact: { url: url || '', email: email || '' } };
   }
 
@@ -254,11 +263,12 @@ function JobForm({ company, job }) {
     } catch (e) {
       setBusy('');
       setSaveError(
-        submitting && !canSubmit
+        dailyLimitMessage(e) || (e && /at most 60 days/.test(e.message || '') && 'A job can be shown for at most 60 days from today. Choose an earlier "Show until" date.') ||
+        (submitting && !canSubmit
           ? 'Jobs can be submitted once your company is approved. Save it as a draft for now.'
           : e && e.savedJobId
             ? "The job is saved, but we couldn't save how to apply. Try again."
-            : "We couldn't save the job. Check your connection and try again."
+            : "We couldn't save the job. Check your connection and try again.")
       );
     }
   }
@@ -513,9 +523,9 @@ function JobForm({ company, job }) {
             </label>
             <label className="field">
               <span>Show until <span className="field-optional">(optional)</span></span>
-              <input className="input" type="date" name="expires_at" min={today()} value={v.endDate} onChange={set('endDate')}
+              <input className="input" type="date" name="expires_at" min={today()} max={loadedEndDate > inDays(60) ? loadedEndDate : inDays(60)} value={v.endDate} onChange={set('endDate')}
                 aria-invalid={Boolean(errors.endDate)} aria-describedby="end-hint" />
-              <span className="field-hint" id="end-hint">Empty: 60 days from today.</span>
+              <span className="field-hint" id="end-hint">Up to 60 days from today. Empty: 60 days. You can extend it from the dashboard.</span>
               {err('endDate')}
             </label>
           </div>

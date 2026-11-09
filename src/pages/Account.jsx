@@ -8,6 +8,7 @@ import { useSession } from '../lib/useSession.js';
 import { saveProfile } from '../lib/auth.js';
 import { announceProfileChange, checkProfile } from '../lib/profile.js';
 import { deleteMyAccount, endDeletedSession, fetchAccount } from '../lib/account.js';
+import { collectMyData, downloadJson } from '../lib/myData.js';
 
 export default function Account() {
   return <PageShell>{supabase ? <AccountGate /> : <ConfigError />}</PageShell>;
@@ -61,6 +62,8 @@ function AccountPage({ user, onLeaving }) {
       <p className="auth-small">Your email and university come from the address you log in with and can't be changed here.</p>
 
       <ProfileForm userId={user.id} account={account} student={!isCompany} />
+
+      <DownloadData user={user} isCompany={isCompany} />
 
       <DeleteAccount isCompany={isCompany} onLeaving={onLeaving} />
     </div>
@@ -116,6 +119,36 @@ const CONFIRM_WORD = 'DELETE';
 
 // Two steps: first a reminder with "Keep my account" and "Delete my account"
 // side by side, then the explanation and the typed DELETE confirmation.
+// "Download my data": a JSON file built in the browser from the user's own
+// rows. Nothing is stored or sent anywhere.
+function DownloadData({ user, isCompany }) {
+  const [state, setState] = useState({ busy: false, message: '', error: false });
+  async function onDownload() {
+    setState({ busy: true, message: '', error: false });
+    try {
+      const data = await collectMyData(user);
+      downloadJson(data, `gigome-my-data-${new Date().toISOString().slice(0, 10)}.json`);
+      setState({ busy: false, message: 'Your file has been downloaded.', error: false });
+    } catch {
+      setState({ busy: false, message: "We couldn't put your data together. Check your connection and try again.", error: true });
+    }
+  }
+  return (
+    <section className="account-section account-data" aria-labelledby="account-data-title">
+      <h2 id="account-data-title">Your data</h2>
+      <p className="account-data-text">
+        {isCompany
+          ? 'Download a file (JSON) with everything GigoMe holds about your account: your email and profile, your company, its jobs with how to apply and their apply clicks, and any feedback and reports you sent.'
+          : 'Download a file (JSON) with everything GigoMe holds about you: your email and profile, saved jobs, saved searches, companies you follow, the jobs you opened with "Apply", and any feedback and reports you sent.'}
+      </p>
+      <button type="button" className="btn btn-secondary account-data-btn" onClick={onDownload} disabled={state.busy}>
+        {state.busy ? 'Preparing…' : 'Download my data'}
+      </button>
+      <p className={state.error ? 'err' : 'account-saved'} role={state.error ? 'alert' : 'status'}>{state.message}</p>
+    </section>
+  );
+}
+
 function DeleteAccount({ isCompany, onLeaving }) {
   const navigate = useNavigate();
   const [step, setStep] = useState('ask');

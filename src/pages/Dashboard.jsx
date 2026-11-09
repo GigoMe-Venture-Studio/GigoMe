@@ -18,6 +18,8 @@ import {
   fetchMyJobs,
   setJobStatus,
   shownStatus,
+  extendJob,
+  expiresInLabel,
   updateCompany
 } from '../lib/employer.js';
 
@@ -108,6 +110,7 @@ function JobsSection({ company }) {
   const [state, setState] = useState({ status: 'loading', jobs: [], clicks: {} });
   const [version, setVersion] = useState(0);
   const [actionError, setActionError] = useState('');
+  const [actionDone, setActionDone] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -121,6 +124,17 @@ function JobsSection({ company }) {
 
   async function act(job, kind) {
     setActionError('');
+    setActionDone('');
+    if (kind === 'extend') {
+      try {
+        const until = await extendJob(job.id);
+        setActionDone(`"${job.title}" is now shown until ${dateLabel(String(until).slice(0, 10))}.`);
+        setVersion((n) => n + 1);
+      } catch {
+        setActionError("We couldn't extend the job. Try again.");
+      }
+      return;
+    }
     const question =
       kind === 'close'
         ? `Close "${job.title}"? Students will no longer see it. You can edit it and submit it again later.`
@@ -149,6 +163,7 @@ function JobsSection({ company }) {
         </p>
       )}
       {actionError && <p className="err" role="alert">{actionError}</p>}
+      <p className="dash-action-done" role="status">{actionDone}</p>
       {state.status === 'loading' && <p className="muted">Loading your jobs…</p>}
       {state.status === 'error' && (
         <p className="err" role="alert">We couldn't load your jobs. Check your connection and reload the page.</p>
@@ -170,6 +185,8 @@ function JobsSection({ company }) {
 function JobRow({ job, clicks, onAct }) {
   const status = shownStatus(job);
   const live = status === 'published';
+  const expiresIn = live ? expiresInLabel(job.expires_at) : null;
+  const soon = expiresIn && new Date(job.expires_at).getTime() - Date.now() < 7 * 86400000;
   return (
     <li className="dash-job">
       <div className="dash-job-main">
@@ -181,6 +198,7 @@ function JobRow({ job, clicks, onAct }) {
         <p className="dash-job-status">
           <StatusTag status={status} table={JOB_STATUS} /> <span className="muted">{JOB_STATUS[status].text}</span>
         </p>
+        {expiresIn && <p className={'dash-expiry' + (soon ? ' dash-expiry-soon' : '')}>{expiresIn}</p>}
         {live && clicks !== null && (
           <p className="dash-clicks">
             <strong className="tnum">{clicks}</strong> {clicks === 1 ? 'apply click' : 'apply clicks'}
@@ -198,6 +216,12 @@ function JobRow({ job, clicks, onAct }) {
           <Link className="btn btn-secondary btn-sm" to={`/dashboard/jobs/${job.id}/edit`} aria-label={`Edit ${job.title}`}>
             Edit
           </Link>
+        )}
+        {(live || status === 'expired') && (
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => onAct(job, 'extend')}
+            aria-label={`Extend ${job.title} by 60 days`} title="Shown until 60 days from today, no new review">
+            Extend by 60 days
+          </button>
         )}
         {['pending', 'published', 'changes_requested', 'expired'].includes(status) && (
           <button type="button" className="btn btn-tertiary btn-sm" onClick={() => onAct(job, 'close')} aria-label={`Close ${job.title}`}>

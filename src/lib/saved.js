@@ -1,6 +1,7 @@
 // Saved jobs (public.saved_jobs): one shared list of the logged-in student's
 // saved job ids, loaded once per login, so every card and page agrees and
 // the database is asked once. Only students can save (the database checks).
+import { dailyLimitMessage } from './limits.js';
 import { useEffect, useSyncExternalStore } from 'react';
 import { supabase } from './supabase.js';
 import { useSession } from './useSession.js';
@@ -59,7 +60,7 @@ export async function setSaved(jobId, save) {
   // Already saved (another tab): that's what was wanted.
   if (error && !(save && error.code === '23505')) {
     set({ ids: before });
-    return save ? "We couldn't save this job. Try again." : "We couldn't remove this job. Try again.";
+    return dailyLimitMessage(error) || (save ? "We couldn't save this job. Try again." : "We couldn't remove this job. Try again.");
   }
   return null;
 }

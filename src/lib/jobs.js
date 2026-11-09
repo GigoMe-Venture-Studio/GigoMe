@@ -1,4 +1,5 @@
 // The job board: reading live jobs and revealing how to apply.
+import { safeHttpUrl } from './links.js';
 import { supabase } from './supabase.js';
 
 // Values allowed by the database (jobs.job_type, jobs.italian_level).
@@ -219,7 +220,7 @@ export async function fetchJob(id) {
   if (!UUID.test(id || '')) return null;
   // The job page also needs the station's position, for its small map.
   const columns = LIST_COLUMNS.replace('metro_stations(name, lines)', 'metro_stations(name, lines, latitude, longitude)');
-  const { data, error } = await liveJobs(columns + ', description, start_date, companies!inner(id, name, website, description, status)')
+  const { data, error } = await liveJobs(columns + ', description, start_date, expires_at, companies!inner(id, name, website, description, status)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
@@ -236,7 +237,9 @@ export async function revealContact(jobId) {
     return { error: "We couldn't load how to apply. Check your connection and try again." };
   }
   const row = (data || [])[0] || {};
-  return { url: row.apply_url || null, email: row.apply_email || null };
+  // Only an http(s) link is ever opened (the database refuses anything else
+  // too); the email is shown as text and linked only when it's plain.
+  return { url: safeHttpUrl(row.apply_url), email: row.apply_email || null };
 }
 
 // The place as written by the employer, or else the area's name.
@@ -337,9 +340,8 @@ export function dateLabel(isoDate) {
 export function websiteHref(site) {
   const s = String(site || '').trim();
   if (!s) return null;
-  if (/^https?:\/\//i.test(s)) return s;
-  if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return null;
-  return 'https://' + s.replace(/^\/+/, '');
+  if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return safeHttpUrl(s);
+  return safeHttpUrl('https://' + s.replace(/^\/+/, ''));
 }
 export function websiteText(site) {
   return String(site || '').trim().replace(/^https?:\/\//i, '').replace(/\/$/, '');

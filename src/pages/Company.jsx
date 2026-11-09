@@ -5,6 +5,7 @@ import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { fetchCompany, fetchJobs, websiteHref, websiteText } from '../lib/jobs.js';
+import { shortText, usePageMeta } from '../lib/seo.js';
 import { useSession } from '../lib/useSession.js';
 import { useSavedJobs } from '../lib/saved.js';
 import { isFollowing, setFollowing } from '../lib/student.js';
@@ -42,6 +43,17 @@ function CompanyPage() {
       active = false;
     };
   }, [id]);
+
+  usePageMeta(
+    state.status === 'ready'
+      ? {
+          title: `${state.company.name}: jobs in Milan`,
+          description: shortText(`${state.company.name} on GigoMe: open jobs in Milan for students who work in English. ${state.company.description || ''}`)
+        }
+      : state.status === 'missing'
+        ? { title: "This company isn't on GigoMe", index: false }
+        : null
+  );
 
   if (state.status === 'loading') return <p className="muted">Loading…</p>;
   if (state.status === 'error') return <p className="err" role="alert">We couldn't load this company. Check your connection and reload the page.</p>;
@@ -122,8 +134,9 @@ function FollowButton({ company }) {
     setState({ status: 'ready', following: next, error: '' });
     try {
       await setFollowing(company.id, next);
-    } catch {
-      setState({ status: 'ready', following: !next, error: next ? "We couldn't follow this company. Try again." : "We couldn't unfollow. Try again." });
+    } catch (e) {
+      setState({ status: 'ready', following: !next,
+        error: e && e.limit ? e.message : next ? "We couldn't follow this company. Try again." : "We couldn't unfollow. Try again." });
     }
   }
   return (

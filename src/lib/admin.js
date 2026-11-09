@@ -149,3 +149,11 @@ export async function fetchRecentFeedback() {
   if (error) throw error;
   return data || [];
 }
+
+// The numbers at the top of /admin (admin_stats(), the same definitions as
+// supabase/queries/kpis.sql). Admins only; the database refuses anyone else.
+export async function fetchStats() {
+  const { data, error } = await supabase.rpc('admin_stats');
+  if (error) throw error;
+  return (data || [])[0] || null;
+}
