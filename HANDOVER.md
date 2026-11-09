@@ -147,7 +147,12 @@ this section.
 - **The daily ping:** every day at 04:17 UTC the Worker reads one row from
   Supabase. It needs `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` as runtime
   variables (Worker > Settings > Variables and Secrets). Check that it runs:
-  Worker > Logs or the cron events show "Supabase ping OK".
+  Workers & Pages > `gigome` > Observability (or Logs): search for "Supabase
+  ping" and look for "Supabase ping OK" once a day around 04:17 UTC. Workers
+  Logs is switched on in `wrangler.jsonc` ("observability"). On the free plan
+  logs are kept for **3 days** (200,000 log events a day; the Worker writes a
+  handful), so check within 3 days of a run. A failed ping shows as an error
+  there ("Supabase ping failed" or "skipped").
 
 ## 7b. Outside services a visitor's browser talks to
 
