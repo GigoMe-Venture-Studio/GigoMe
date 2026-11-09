@@ -156,7 +156,8 @@ week. It only reads.
 - **Make someone an admin:** find their user ID under Authentication > Users,
   insert it into the `admins` table.
 - **Load or refresh the metro stations:** GitHub > Actions > Metro stations >
-  Run workflow, then a pull request from `data/metro-stations` (SUPABASE.md,
+  Run workflow. If the summary says "No changes, nothing pushed", you're
+  done; otherwise open a pull request from `data/metro-stations` (SUPABASE.md,
   "Metro stations", has the steps). Merging it changes the live database.
 - **Rename an approved company:** only in the Table Editor (owners can't, by
   design). It isn't recorded in the moderation log, so add a note somewhere.

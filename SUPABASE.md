@@ -172,12 +172,17 @@ To load or refresh it (no terminal needed):
    the interchanges it joined and every station. If it fails because the
    City added or renamed stations, the reason is in the summary; the fix is
    usually one line in `NAMES` in the script.
-3. If it passed, it pushed `supabase/migrations/<now>_metro_stations_data.sql`
+3. It then compares the result with main: the stations with the newest
+   `*_metro_stations_data.sql` (ignoring the comment at the top, which holds
+   the date) and the map file. If nothing changed, the run ends green and
+   its summary says **No changes, nothing pushed**: there's nothing to do.
+4. If something changed, it pushed what changed
+   (`supabase/migrations/<now>_metro_stations_data.sql` and/or the map file)
    to a new branch, `data/metro-stations`. Open a pull request from it
    (the summary has the link). Merging it adds or updates the stations (by
    name) and recomputes every job's nearest station: it changes the live
-   database, so the usual rules apply. Then delete the branch; the workflow
-   stops if `data/metro-stations` already exists.
+   database, so the usual rules apply. Then delete the branch; when there
+   are changes, the workflow stops if `data/metro-stations` already exists.
 
 The script also runs on any computer with Node 20 or newer:
 `node scripts/fetch-metro-stations.mjs` writes the same file.
