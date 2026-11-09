@@ -9,6 +9,7 @@ import { fetchProfile } from '../lib/auth.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { fetchJob, revealContact } from '../lib/jobs.js';
 import { mailtoHref } from '../lib/links.js';
+import { jobPostingData, shortText, useJsonLd, usePageMeta } from '../lib/seo.js';
 
 export default function JobDetail() {
   return (
@@ -42,6 +43,20 @@ function JobPage() {
       active = false;
     };
   }, [id, retry]);
+
+  // Title, description and schema.org JobPosting data for search engines.
+  const ready = state.status === 'ready' ? state.job : null;
+  usePageMeta(
+    ready
+      ? {
+          title: `${ready.title} at ${ready.companies.name}`,
+          description: shortText(`${ready.title} at ${ready.companies.name}, Milan. ${ready.description || ''}`)
+        }
+      : state.status === 'missing'
+        ? { title: "This job isn't available", index: false }
+        : null
+  );
+  useJsonLd(ready ? jobPostingData(ready) : null);
 
   if (state.status === 'loading') return <p className="muted">Loading the job…</p>;
   if (state.status === 'error') {

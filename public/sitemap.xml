@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The fixed pages. Job and company pages are found through /jobs. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://gigome.org/</loc><changefreq>daily</changefreq></url>
+  <url><loc>https://gigome.org/jobs</loc><changefreq>daily</changefreq></url>
+  <url><loc>https://gigome.org/employers</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://gigome.org/privacy</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://gigome.org/terms</loc><changefreq>monthly</changefreq></url>
+</urlset>

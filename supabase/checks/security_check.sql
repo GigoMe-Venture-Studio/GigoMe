@@ -2317,7 +2317,7 @@ begin
     where ns.nspname = 'public'
       and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
       and has_function_privilege('authenticated', p.oid, 'EXECUTE');
-    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, current_account_type, delete_my_account, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, current_account_type, delete_my_account, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
+    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, current_account_type, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, current_account_type, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
 
     select string_agg(c.relname || ':' || pr, ', ' order by c.relname, pr) into v_err
     from pg_class c join pg_namespace ns on ns.oid = c.relnamespace, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) pr
@@ -2663,6 +2663,112 @@ begin
     results := pg_temp.res(results, 'With periods set, retention deletes only what''s older (never admins, never active users)', '0 old/1 recent feedback, 0 long-expired job, 0 old resolved/1 old open report, 0 inactive user, 1 inactive admin, 1 active student', v_text, v_text = '0 old/1 recent feedback, 0 long-expired job, 0 old resolved/1 old open report, 0 inactive user, 1 inactive admin, 1 active student');
 
     update public.retention_settings set ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null where id = 1;
+
+    -- ----------------------------------------------------------------------
+    -- Job expiry: owners at most 60 days ahead; "Extend by 60 days"
+    -- ----------------------------------------------------------------------
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set expires_at = now() + interval '90 days' where id = v_area_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An owner can''t set a job to show for more than 60 days', 'error', v_err, v_err like 'error:%60 days%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set expires_at = now() + interval '30 days' where id = v_area_job;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, '30 days is fine (control)', 'updated', v_err, v_err = 'updated');
+
+    select reviewed_at into v_ts from public.jobs where id = v_emp_live;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_emp_live);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || status || ', ' || case when expires_at between now() + interval '59 days' and now() + interval '61 days' then '60 days ahead' else expires_at::text end
+           || case when reviewed_at is not distinct from v_ts then ', no new review' else ', reviewed again' end into v_text
+    from public.jobs where id = v_emp_live;
+    results := pg_temp.res(results, 'extend_my_job: a published job of your own goes to 60 days from now, still published, no new review', 'extended, published, 60 days ahead, no new review', v_text, v_text = 'extended, published, 60 days ahead, no new review');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_area_job);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'extend_my_job refuses a job that isn''t published', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_live_a);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'extend_my_job refuses another company''s job', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform public.extend_my_job(v_emp_live);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot call extend_my_job', 'error', v_err, v_err like 'error:%');
+
+    -- ----------------------------------------------------------------------
+    -- Admin numbers: admin_stats()
+    -- ----------------------------------------------------------------------
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select students || ',' || live_jobs into v_text from public.admin_stats();
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select (select count(*) from public.profiles where account_type = 'student') || ','
+           || (select count(*) from public.jobs j join public.companies c on c.id = j.company_id
+               where j.status = 'published' and j.expires_at > now() and c.status = 'approved')
+      into v_count_text;
+    results := pg_temp.res(results, 'admin_stats gives an admin the same numbers as kpis.sql', v_count_text, v_err || ': ' || coalesce(v_text, '?'), v_err = 'read' and v_text = v_count_text);
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform * from public.admin_stats();
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'admin_stats refuses anyone who isn''t an admin', 'error', v_err, v_err like 'error:%');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform * from public.admin_stats();
+      perform set_config('role', 'none', true);
+      v_err := 'read';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot call admin_stats', 'error', v_err, v_err like 'error:%');
 
     -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)

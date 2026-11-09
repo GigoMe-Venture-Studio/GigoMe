@@ -1,0 +1,13 @@
+# GigoMe: job pages, company pages and the fixed pages may be crawled.
+# Private pages (accounts, saved jobs, the employer dashboard, moderation)
+# are left out; they also carry "noindex".
+User-agent: *
+Disallow: /account
+Disallow: /saved
+Disallow: /welcome
+Disallow: /dashboard
+Disallow: /employers/setup
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://gigome.org/sitemap.xml

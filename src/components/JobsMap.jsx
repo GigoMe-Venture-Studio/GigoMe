@@ -19,7 +19,7 @@ import { mapParam } from '../lib/geo.js';
 // (called after every move with the centre, zoom, bounds and whether the
 // person moved the map), you ([lng, lat] of "You are here", kept only in
 // memory) and children (controls drawn over the map).
-const ACCENT = '#A67CBA';
+const ACCENT = '#A46BD6'; // --accent in site.css (the logo's purple)
 const INK = '#1D1B2E';
 const PAY_ZOOM = 13;
 

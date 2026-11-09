@@ -21,7 +21,8 @@ import {
   missingInfo,
   resolveReport,
   reviewJob,
-  setCompanyStatus
+  setCompanyStatus,
+  fetchStats
 } from '../lib/admin.js';
 
 // /admin: admins only. Everyone else (logged out included) gets the 404 page,
@@ -80,6 +81,7 @@ function AdminPage() {
   return (
     <div className="admin">
       <h1 className="page-title">Moderation</h1>
+      <AdminStats />
       <p className="admin-summary">
         <a href="#admin-companies">{data.companies.length} {data.companies.length === 1 ? 'company' : 'companies'}</a>,{' '}
         <a href="#admin-jobs">{data.jobs.length} {data.jobs.length === 1 ? 'job' : 'jobs'}</a> and{' '}
@@ -177,6 +179,45 @@ function AdminPage() {
 }
 
 // Runs an admin action, shows its error, reloads the queue when done.
+// Our numbers, read through admin_stats(). Weeks start on Monday (UTC). If
+// they don't load, the moderation queue still works.
+const STATS = [
+  ['students', 'Students registered'],
+  ['companies_approved', 'Companies approved'],
+  ['companies_with_live_job', 'Companies with a live job'],
+  ['live_jobs', 'Live jobs'],
+  ['apply_clicks_this_week', 'Apply clicks this week'],
+  ['students_clicked_this_week', 'Students who clicked this week']
+];
+function AdminStats() {
+  const [stats, setStats] = useState(undefined);
+  useEffect(() => {
+    let active = true;
+    fetchStats().then((s) => active && setStats(s)).catch(() => active && setStats(null));
+    return () => {
+      active = false;
+    };
+  }, []);
+  return (
+    <section className="admin-stats" aria-labelledby="stats-title">
+      <h2 id="stats-title" className="sr-only">Numbers</h2>
+      {stats === null ? (
+        <p className="muted">The numbers couldn't be loaded.</p>
+      ) : (
+        <dl className="admin-stats-list">
+          {STATS.map(([key, label]) => (
+            <div key={key}>
+              <dt>{label}</dt>
+              <dd className="tnum">{stats === undefined ? '…' : Number(stats[key]) || 0}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <p className="field-hint">Live jobs: published, not expired, approved company. Weeks start on Monday (UTC).</p>
+    </section>
+  );
+}
+
 function useAction(onDone) {
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');

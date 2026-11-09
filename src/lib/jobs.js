@@ -220,7 +220,7 @@ export async function fetchJob(id) {
   if (!UUID.test(id || '')) return null;
   // The job page also needs the station's position, for its small map.
   const columns = LIST_COLUMNS.replace('metro_stations(name, lines)', 'metro_stations(name, lines, latitude, longitude)');
-  const { data, error } = await liveJobs(columns + ', description, start_date, companies!inner(id, name, website, description, status)')
+  const { data, error } = await liveJobs(columns + ', description, start_date, expires_at, companies!inner(id, name, website, description, status)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
