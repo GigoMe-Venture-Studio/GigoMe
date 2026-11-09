@@ -17,10 +17,11 @@ import {
   MAX_MIN_PAY,
   SCHEDULES,
   cleanKeyword,
-  countProjectPaid,
+  fetchHiddenByPay,
   fetchJobs,
   filtersToParams,
   hasFilters,
+  hiddenKinds,
   readFilters
 } from '../lib/jobs.js';
 
@@ -119,15 +120,16 @@ function JobBoard() {
     setFilter(name, filters[name].includes(value) ? filters[name].filter((x) => x !== value) : [...filters[name], value]);
   const { status, jobs } = state;
 
-  // "Minimum pay" hides project-paid jobs: say how many, with a way back.
-  const [projectCount, setProjectCount] = useState(0);
+  // "Minimum pay" hides every job without an hourly equivalent (paid per
+  // project, unpaid, pay not specified): say how many and why, with a way back.
+  const [hidden, setHidden] = useState(null);
   useEffect(() => {
-    if (!filters.minpay || filters.projects) {
-      setProjectCount(0);
+    if (!filters.minpay || filters.nohourly) {
+      setHidden(null);
       return undefined;
     }
     let active = true;
-    countProjectPaid(JSON.parse(key)).then((n) => active && setProjectCount(n)).catch(() => active && setProjectCount(0));
+    fetchHiddenByPay(JSON.parse(key)).then((h) => active && setHidden(h)).catch(() => active && setHidden(null));
     return () => {
       active = false;
     };
@@ -366,16 +368,18 @@ function JobBoard() {
         </div>
       </div>
 
-      {filters.minpay && !filters.projects && projectCount > 0 && (
+      {filters.minpay && !filters.nohourly && hidden && hidden.total > 0 && (
         <p className="pay-note-hidden" role="status">
-          {projectCount} project-paid {projectCount === 1 ? 'job' : 'jobs'} hidden.{' '}
-          <button type="button" className="btn-link" onClick={() => setFilter('projects', 'yes')}>Show them</button>
+          {hidden.total} {hidden.total === 1 ? 'job' : 'jobs'} hidden: {hiddenKinds(hidden)}.{' '}
+          <button type="button" className="btn-link" onClick={() => setFilter('nohourly', 'yes')}>
+            {hidden.total === 1 ? 'Show it' : 'Show them'}
+          </button>
         </p>
       )}
-      {filters.minpay && filters.projects && (
+      {filters.minpay && filters.nohourly && (
         <p className="pay-note-hidden">
-          Including project-paid jobs.{' '}
-          <button type="button" className="btn-link" onClick={() => setFilter('projects', '')}>Hide them</button>
+          Also showing jobs paid per project, unpaid or with pay not specified.{' '}
+          <button type="button" className="btn-link" onClick={() => setFilter('nohourly', '')}>Hide them</button>
         </p>
       )}
 

@@ -28,9 +28,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/lib/jobs.js`, written in list order, matched with PostgREST `ov`;
   flexible jobs always match a `when` filter; `minpay` = 1–30 €/h on
   `pay_hourly` (a slider, `MinPay` in `Jobs.jsx`, in the folded panel on
-  phones), which hides per-project, unpaid and unstructured jobs: the page
-  says "N project-paid jobs hidden" (`countProjectPaid()`, a count-only
-  query) with "Show them" = `projects=yes`; `sort=pay` = "Highest pay", by
+  phones), which hides every job without an hourly equivalent (paid per
+  project, unpaid, pay not specified): the page says e.g. "5 jobs hidden:
+  paid per project, unpaid or pay not specified" naming only the kinds
+  present (`fetchHiddenByPay()` reads only their pay unit, `hiddenKinds()`)
+  with "Show them" = `nohourly=yes` (older links' `projects=yes` still
+  works). Jobs paying less than the minimum aren't counted: hiding them is
+  the point; `sort=pay` = "Highest pay", by
   `pay_hourly`, nulls last; sorting isn't a filter), plus `view=map`
   for the map, which isn't a filter; `q` matches title and
   description and goes through `cleanKeyword()`, which keeps only letters,
