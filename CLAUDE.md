@@ -493,6 +493,7 @@ Tests (CI: `.github/workflows/tests.yml` on every pull request; no secrets)
   Turnstile), serves them with `_headers` applied (`tests/e2e/serve.mjs`)
   and runs every `tests/e2e/*.test.js` with the mocks in `tests/e2e/lib/`.
   A suite fails on any CSP violation. New features get a suite or checks in
-  one. Dependabot (`.github/dependabot.yml`) opens weekly update PRs.
+  one. Dependabot (`.github/dependabot.yml`) opens weekly update PRs: minor
+  and patch grouped per ecosystem (npm, GitHub Actions), every major alone.
 - `docs/legal/`: drafts of the privacy notice and terms for the team's legal
   person, not published.
