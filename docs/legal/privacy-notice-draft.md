@@ -59,7 +59,7 @@ not used anywhere today.]**
 | --- | --- | --- |
 | Technical data: IP address, browser, pages requested | Our hosting and database providers process it to serve the site and protect it from abuse; it is kept in their logs for a short time | Legitimate interests |
 | A bot check on the login forms (Cloudflare Turnstile) | To stop automated sign-ups | Legitimate interests **[LEGAL: Turnstile runs in a frame from Cloudflare and may use its own storage there. Confirm no consent is needed, or describe it as strictly necessary for security.]** |
-| Page visit statistics (Cloudflare Web Analytics) | To see which pages are used and how fast they load. No cookies, no tracking across sites | Legitimate interests **[LEGAL: only if the team switches Web Analytics on in Cloudflare. HANDOVER.md 7b says whether it is.]** |
+| Page visit statistics (Cloudflare Web Analytics, switched on) | To see which pages are used and how fast they load. No cookies, no tracking across sites | Legitimate interests **[LEGAL: confirm; it runs on every page, so no consent is asked today]** |
 
 We do **not**: sell data, show ads, track you across other sites, build
 profiles, or make automated decisions about you. Employers never see student
@@ -71,7 +71,7 @@ on their page or by email, and what you send them is between you and them.
 | Service | What for | What it receives | Where |
 | --- | --- | --- | --- |
 | Supabase | Database and logins | Everything above | Frankfurt, Germany (EU) |
-| Cloudflare | Hosting, bot check (Turnstile), page statistics if switched on | Page requests, IP address, browser details | Worldwide network **[LEGAL: Cloudflare is a US company; check its data processing addendum and the transfer basis (EU-US Data Privacy Framework / standard contractual clauses).]** |
+| Cloudflare | Hosting, bot check (Turnstile), page statistics (Web Analytics) | Page requests, IP address, browser details | Worldwide network **[LEGAL: Cloudflare is a US company; check its data processing addendum and the transfer basis (EU-US Data Privacy Framework / standard contractual clauses).]** |
 | Brevo | Sends the login-code emails | Your email address and the code | EU (France) **[LEGAL: confirm]** |
 | OpenFreeMap | Map images, only when a map is shown | Which part of the map is viewed, IP address | **[LEGAL: check where OpenFreeMap is hosted and whether it keeps logs]** |
 | OpenStreetMap Nominatim | Finding an address, only when an employer presses "Find address" | The address typed, IP address | UK / EU (OpenStreetMap Foundation) |
