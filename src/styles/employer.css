@@ -70,6 +70,7 @@
    "Extend by 60 days". */
 .dash-expiry { margin-top: var(--s1); font-size: 14px; color: var(--muted); }
 .dash-expiry-soon { color: var(--ink); font-weight: 600; }
+.dash-expiry-old { color: var(--ink); }
 .dash-action-done { font-weight: 600; }
 .dash-action-done:empty { display: none; }
 .dash-job-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }

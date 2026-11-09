@@ -75,6 +75,9 @@ declare
   v_old_admin   uuid := gen_random_uuid();
   v_ts          timestamptz;
   v_json        jsonb;
+  v_exp_recent  uuid;
+  v_exp_old     uuid;
+  v_unapproved_job uuid;
   v_ss          uuid;
   v_n           int;
   -- on-site jobs need an area
@@ -2731,6 +2734,76 @@ begin
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
     results := pg_temp.res(results, 'anon cannot call extend_my_job', 'error', v_err, v_err like 'error:%');
+
+    -- Extending only within 14 days of expiry; older expired jobs go back to review.
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, expires_at)
+      values (v_co_emp2, 'Check expired 10 days ago', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10, now() - interval '10 days')
+      returning id into v_exp_recent;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, expires_at)
+      values (v_co_emp2, 'Check expired 20 days ago', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10, now() - interval '20 days')
+      returning id into v_exp_old;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp2, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_exp_recent);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || status || ', ' || case when expires_at between now() + interval '59 days' and now() + interval '61 days' then '60 days ahead' else expires_at::text end
+      into v_text from public.jobs where id = v_exp_recent;
+    results := pg_temp.res(results, 'extend_my_job: a job that expired 10 days ago can still be extended (60 days from now, no review)', 'extended, published, 60 days ahead', v_text, v_text = 'extended, published, 60 days ahead');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp2, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_exp_old);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'extend_my_job refuses a job that expired more than 14 days ago, with a clear message',
+                           'error: This job expired more than 14 days ago. Edit it and submit it again for review.', v_err,
+                           v_err = 'error: This job expired more than 14 days ago. Edit it and submit it again for review.');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp2, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set expires_at = now() + interval '30 days' where id = v_exp_old;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select status || ', ' || case when expires_at < now() - interval '19 days' then 'still expired' else 'moved to ' || expires_at::text end
+      into v_text from public.jobs where id = v_exp_old;
+    results := pg_temp.res(results, 'The owner can''t revive it by changing the date while it stays published', 'published, still expired', v_text, v_text = 'published, still expired');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp2, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set status = 'pending', expires_at = now() + interval '30 days' where id = v_exp_old;
+      perform set_config('role', 'none', true);
+      v_err := 'updated';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', ' || status || case when expires_at > now() then ', new date' else ', old date' end into v_text from public.jobs where id = v_exp_old;
+    results := pg_temp.res(results, 'Instead the owner resubmits it: back to review with a new date', 'updated, pending, new date', v_text, v_text = 'updated, pending, new date');
+
+    -- A company that isn't approved (still pending, or rejected after a scam) can't extend.
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, expires_at)
+      values (v_co_own, 'Check job of a company not approved', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10, now() + interval '5 days')
+      returning id into v_unapproved_job;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform public.extend_my_job(v_unapproved_job);
+      perform set_config('role', 'none', true);
+      v_err := 'extended';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || case when expires_at < now() + interval '6 days' then ', unchanged' else ', moved' end into v_text from public.jobs where id = v_unapproved_job;
+    results := pg_temp.res(results, 'extend_my_job refuses a company that isn''t approved', 'error, unchanged', v_text, v_text like 'error:%, unchanged');
 
     -- ----------------------------------------------------------------------
     -- Admin numbers: admin_stats()

@@ -68,8 +68,10 @@ A few details worth knowing:
   disappear from the public list automatically. On the dashboard each live
   job shows "Expires in N days" and an "Extend by 60 days" button
   (`extend_my_job`), which moves the end to 60 days from now without a new
-  review, for published jobs of the owner's own approved company only.
-  Admins can set any date.
+  review, for published jobs of the owner's own approved company only, while
+  they're live or up to 14 days after they expired. A job that expired
+  longer ago can't be extended: its owner edits it (with a new date) and
+  submits it, so it goes through review again. Admins can set any date.
 - **Editing a published job** sends it back for review: an owner can't change
   a published job and keep it published, so admins see every change.
 - **Review:** admins publish, request changes or reject a job with
@@ -256,7 +258,7 @@ in `feedback` if the person asked for everything to go.
 | `my_opened_jobs()` | Logged-in users | The jobs the caller pressed "Apply" on, with title, company and whether each is still live ("Jobs you opened" on /saved). |
 | `my_company_follower_count()` | Company owners | How many students follow the caller's company: a number, never who. |
 | `my_feedback()`, `my_reports()` | Logged-in users | The caller's own feedback and the reports they filed (without the admin's note or who resolved them), for "Download my data". |
-| `extend_my_job(job_id)` | Company owners | "Extend by 60 days": a published job of the caller's own approved company is shown until 60 days from now, without a new review. |
+| `extend_my_job(job_id)` | Company owners | "Extend by 60 days": a published job of the caller's own approved company, live or expired at most 14 days ago, is shown until 60 days from now, without a new review. Older expired jobs are refused ("Edit it and submit it again for review"). |
 | `admin_stats()` | Admins | The numbers at the top of /admin, the same definitions as `supabase/queries/kpis.sql`. |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |
 

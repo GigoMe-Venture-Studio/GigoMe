@@ -19,6 +19,8 @@ import {
   setJobStatus,
   shownStatus,
   extendJob,
+  canExtend,
+  EXTEND_GRACE_DAYS,
   expiresInLabel,
   updateCompany
 } from '../lib/employer.js';
@@ -130,8 +132,9 @@ function JobsSection({ company }) {
         const until = await extendJob(job.id);
         setActionDone(`"${job.title}" is now shown until ${dateLabel(String(until).slice(0, 10))}.`);
         setVersion((n) => n + 1);
-      } catch {
-        setActionError("We couldn't extend the job. Try again.");
+      } catch (e) {
+        // The database's own reason when it refuses (e.g. expired too long ago).
+        setActionError(e && e.code === '42501' && e.message ? e.message : "We couldn't extend the job. Try again.");
       }
       return;
     }
@@ -187,6 +190,10 @@ function JobRow({ job, clicks, onAct }) {
   const live = status === 'published';
   const expiresIn = live ? expiresInLabel(job.expires_at) : null;
   const soon = expiresIn && new Date(job.expires_at).getTime() - Date.now() < 7 * 86400000;
+  // Live, or expired at most 14 days ago: "Extend by 60 days". Expired longer
+  // ago: edit it and submit it again for review.
+  const extendable = canExtend(job);
+  const lastExtendDay = dateLabel(new Date(new Date(job.expires_at).getTime() + EXTEND_GRACE_DAYS * 86400000).toISOString().slice(0, 10));
   return (
     <li className="dash-job">
       <div className="dash-job-main">
@@ -199,6 +206,15 @@ function JobRow({ job, clicks, onAct }) {
           <StatusTag status={status} table={JOB_STATUS} /> <span className="muted">{JOB_STATUS[status].text}</span>
         </p>
         {expiresIn && <p className={'dash-expiry' + (soon ? ' dash-expiry-soon' : '')}>{expiresIn}</p>}
+        {status === 'expired' && extendable && (
+          <p className="dash-expiry dash-expiry-soon">You can still extend it until {lastExtendDay}, without a new review.</p>
+        )}
+        {status === 'expired' && !extendable && (
+          <p className="dash-expiry dash-expiry-old">
+            It expired more than {EXTEND_GRACE_DAYS} days ago, so it can't be extended any more. To show it again, edit it
+            (choose a new "Show until" date) and submit it for review.
+          </p>
+        )}
         {live && clicks !== null && (
           <p className="dash-clicks">
             <strong className="tnum">{clicks}</strong> {clicks === 1 ? 'apply click' : 'apply clicks'}
@@ -217,7 +233,7 @@ function JobRow({ job, clicks, onAct }) {
             Edit
           </Link>
         )}
-        {(live || status === 'expired') && (
+        {extendable && (
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => onAct(job, 'extend')}
             aria-label={`Extend ${job.title} by 60 days`} title="Shown until 60 days from today, no new review">
             Extend by 60 days
