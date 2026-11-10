@@ -81,7 +81,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       ok(fine, 'footer on ' + path + ': Privacy notice and Terms, no About');
       // Area names in the dropdowns (e.g. "Porta Romana / Bocconi") are neighbourhoods, not claims of affiliation.
       // The student login names the universities whose students can log in (.login-unis, .uni-list), always
-      // with the line saying GigoMe isn't affiliated with any university (checked in login.test.js).
+      // with the line saying GigoMe isn't affiliated with or endorsed by any university (checked in login.test.js).
       const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select, .login-unis, .uni-list').forEach((x) => x.remove()); return c.innerText; });
       ok(!/bocconi/i.test(all) && !/about us|our team|founder|biograph/i.test(all), 'no Bocconi, team or biography text on ' + path);
     }
