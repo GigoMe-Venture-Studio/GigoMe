@@ -17,7 +17,8 @@ import {
 // saved jobs). The save button sits next to the link, not inside it.
 // distance: "1.2 km away" when the person chose "Use my location" (worked
 // out on their device), else null.
-export default function JobCard({ job, distance = null }) {
+// offerLogin false: no logged-out Save bookmark (see SaveButton).
+export default function JobCard({ job, distance = null, offerLogin = true }) {
   const metro = metroLabel(job);
   const when = scheduleLabels(job);
   return (
@@ -59,7 +60,7 @@ export default function JobCard({ job, distance = null }) {
           <span className="posted tnum">{postedLabel(job.created_at)}</span>
         </div>
       </Link>
-      <SaveButton jobId={job.id} title={job.title} className="card-save" />
+      <SaveButton jobId={job.id} title={job.title} className="card-save" offerLogin={offerLogin} />
     </li>
   );
 }

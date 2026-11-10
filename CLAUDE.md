@@ -111,8 +111,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   ids, loaded once per login; `useSavedJobs()`, `setSaved()`),
   `src/components/SaveButton.jsx` (the bookmark on job cards, next to the
   card's link, not inside it, and on job pages; for students; logged out
-  it's a link to `/login?next=/jobs/<id>` that saves nothing; company
-  accounts get none),
+  it's a link to `/login?next=/jobs/<id>` that saves nothing, except on the
+  home page's cards (`offerLogin={false}`), where it would push the Feedback
+  button aside at first load; company accounts get none),
   `src/pages/Saved.jsx` (`/saved`, "Saved jobs" in the header for students;
   jobs that closed or expired show as "No longer available" from
   `my_saved_jobs()`). `/saved` also holds, from `src/lib/student.js`: saved

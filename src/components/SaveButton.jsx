@@ -11,12 +11,14 @@ const BOOKMARK = (
 // The bookmark on job cards and job pages, for logged-in students. Logged
 // out, the same bookmark is a link to log in that comes back to the job (no
 // job is saved until they press it again). Company accounts get nothing.
-// labelled: also shows "Save" / "Saved" (job pages).
-export default function SaveButton({ jobId, title, labelled = false, className = '' }) {
+// labelled: also shows "Save" / "Saved" (job pages). offerLogin false: no
+// bookmark at all while logged out (the home page's cards).
+export default function SaveButton({ jobId, title, labelled = false, className = '', offerLogin = true }) {
   const saved = useSavedJobs();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   if (saved.loggedOut) {
+    if (!offerLogin) return null;
     return (
       <span className={'save-wrap ' + className}>
         <Link

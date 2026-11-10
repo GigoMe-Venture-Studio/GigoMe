@@ -88,7 +88,7 @@ async function mock(ctx, opts = {}) {
     await p.selectOption('select[name=hours]', '15'); await p.waitForTimeout(300);
     ok(new URL(p.url()).searchParams.get('hours') === '15' && (await titles(p)).join('|') === 'Weekend barista', 'plus up to 15 hours: 1 job');
     await p.selectOption('select[name=remote]', 'yes'); await p.waitForTimeout(300);
-    ok((await txt(p, '.empty-state')).includes('No jobs match these filters. Try removing one: Italian, remote or hours per week.'), 'no matches: advice names the filters that are set: ' + await txt(p, '.empty-state'));
+    ok((await txt(p, '.empty-state strong')) === 'No jobs match these filters.' && (await txt(p, '.empty-state .muted')) === 'Try removing one: Italian, remote or hours per week.', 'no matches: advice names the filters that are set: ' + await txt(p, '.empty-state'));
     await p.click('.empty-state >> text=Clear filters'); await p.waitForTimeout(300);
     ok(new URL(p.url()).search === '' && (await titles(p)).length === 4, 'clear filters: all jobs, clean URL');
     await p.selectOption('select[name=italian]', 'basic'); await p.waitForTimeout(300);

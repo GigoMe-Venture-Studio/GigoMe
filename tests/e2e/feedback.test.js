@@ -135,8 +135,16 @@ async function sweep(p, label) {
     for (const logged of [false, true]) {
       const ctx = await b.newContext(dev); await mock(ctx); const p = await ctx.newPage();
       if (logged) { await p.goto(E + '/login'); await login(p); }
+      if (!logged && name !== 'iPhone SE') {
+        // Home page, first load, logged out: the button must be fully shown
+        // (no Save bookmarks on the home page's cards for that reason). On a
+        // 320x568 screen the hero's area dropdown sits where it goes, so it
+        // steps aside there, as it already did before the bookmarks.
+        await p.goto(E + '/'); await p.waitForTimeout(700);
+        ok(await p.locator('.feedback-fab').isVisible() && await p.locator('.home-newest .save-btn').count() === 0, `${name}: home page, first load: the Feedback button is fully shown, no bookmarks on the cards`);
+      }
       if (!logged) {
-        await p.goto(E + '/jobs'); await p.waitForTimeout(400);
+        await p.goto(E + '/terms'); await p.waitForTimeout(400); // nothing there for it to step aside for
         const fab = await p.locator('.feedback-fab').boundingBox();
         const label = await p.locator('.feedback-fab-label').boundingBox();
         ok(Math.round(fab.width) === 44 && Math.round(fab.height) === 44 && label.width <= 1 && await p.getByRole('button', { name: 'Feedback', exact: true }).count() === 1,

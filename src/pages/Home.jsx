@@ -153,7 +153,10 @@ function NewestJobs() {
     <>
       <ul className="role-list job-list">
         {jobs.map((job) => (
-          <JobCard key={job.id} job={job} />
+          // No logged-out Save bookmarks here: one would sit under the
+          // Feedback button at first load, which then steps aside, and the
+          // button must be fully visible on the home page (tester phase).
+          <JobCard key={job.id} job={job} offerLogin={false} />
         ))}
       </ul>
       <Link className="see-all" to="/jobs">See all jobs</Link>
