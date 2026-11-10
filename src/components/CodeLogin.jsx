@@ -232,8 +232,13 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         {employer ? 'Use your work email.' : 'Use your university email.'} We'll send you a{' '}
         <span className="nowrap">{CODE_LENGTH}-digit</span> code, no password needed.
       </p>
+      {/* Naming a university here must never read as its endorsement: the
+          line always says GigoMe isn't affiliated with any (CLAUDE.md). */}
       {!employer && universities.length > 0 && (
-        <p className="auth-small login-unis">Open to students of {universityNames(universities)}.</p>
+        <p className="auth-small login-unis">
+          Open to students of {universityNames(universities)}. GigoMe is an independent student project, not run by
+          or affiliated with any university.
+        </p>
       )}
       <form className="auth-form" onSubmit={onSubmitEmail} noValidate>
         <label className="field">

@@ -19,7 +19,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
   `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
   redirects to `/`: there is no About page, and no team names, biographies or
-  anything suggesting a university's endorsement or affiliation anywhere. `ScrollToTop` (in `App.jsx`) starts each new path at the
+  anything suggesting a university's endorsement or affiliation anywhere. The
+  one place a university is named is the student login's list of who can log
+  in, always with "GigoMe is an independent student project, not run by or
+  affiliated with any university." `ScrollToTop` (in `App.jsx`) starts each new path at the
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:

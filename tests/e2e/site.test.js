@@ -80,7 +80,9 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       const fine = await p.locator('.site-footer').count() === 1 && f.includes('A student project in Milan. Free for students.') && !/About/.test(f) && f.includes('Privacy notice') && f.includes('Terms') && f.includes('Questions or need help? hello@gigome.org') && f.includes('Give feedback');
       ok(fine, 'footer on ' + path + ': Privacy notice and Terms, no About');
       // Area names in the dropdowns (e.g. "Porta Romana / Bocconi") are neighbourhoods, not claims of affiliation.
-      const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select').forEach((x) => x.remove()); return c.innerText; });
+      // The student login names the universities whose students can log in (.login-unis, .uni-list), always
+      // with the line saying GigoMe isn't affiliated with any university (checked in login.test.js).
+      const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select, .login-unis, .uni-list').forEach((x) => x.remove()); return c.innerText; });
       ok(!/bocconi/i.test(all) && !/about us|our team|founder|biograph/i.test(all), 'no Bocconi, team or biography text on ' + path);
     }
     for (const [path, title] of [['/privacy', 'Privacy notice'], ['/terms', 'Terms of use']]) {
