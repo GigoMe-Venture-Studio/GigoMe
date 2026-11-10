@@ -44,7 +44,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   job is visible without scrolling), `src/pages/JobDetail.jsx`
   (job, company, "How to apply"), logic in `src/lib/jobs.js`. Queries ask for
   live jobs explicitly (published, not expired, approved company), because
-  company owners and admins can also read jobs that aren't live.
+  company owners and admins can also read jobs that aren't live. Lists are
+  newest first by `published_at` (when the job went live), then
+  `created_at`; "Posted ..." counts from `postedAt()` (`published_at`, else
+  `created_at`), never from when the draft was started.
   One "Apply" button: for a logged-in student it calls `reveal_job_contact`
   and opens the destination at once (the application page in a new tab,
   opened during the click so pop-up blockers allow it, or the email app with
@@ -130,7 +133,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (`PAY_UNITS`), the amount(s), shows the hourly equivalent live for monthly
   pay, and keeps "Pay note". Keep `monthlyHours()` the same formula as the
   database.
-- Job page body: `src/components/JobView.jsx`, used by `/jobs/:id` and by
+- Job page body: `src/components/JobView.jsx`, in three parts: head (title
+  to the facts), "How to apply", body. From 900px "How to apply" is the
+  right-hand column; on phones the parts stack in that order, so "Apply"
+  comes right after the pay and hours. Used by `/jobs/:id` and by
   the job form's "Preview" (same component, so the preview is exactly what
   students see; in a preview Save, Share, Report and Apply are shown but do
   nothing, nothing is saved, and the metro badge is worked out from
@@ -161,7 +167,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
-  a code. `/welcome` and `/account` share the profile fields and their rules
+  a code. The student login reads `universities` (readable logged out) to
+  show "Open to students of ...", and when an address is refused lists each
+  university with its domains and "Is your university missing? Email
+  hello@gigome.org" (a mailto link). `/welcome` and `/account` share the profile fields and their rules
   (`src/components/ProfileFields.jsx`, `checkProfile()` in
   `src/lib/profile.js`); after saving they call `announceProfileChange()` so
   the header shows the new name.

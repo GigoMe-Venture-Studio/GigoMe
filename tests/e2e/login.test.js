@@ -80,13 +80,15 @@ async function mockSupabase(ctx, opts = {}) {
   ok(await p.evaluate(() => document.activeElement && document.activeElement.name === 'email'), 'email field is focused');
   ok((await p.getAttribute('input[name=email]', 'inputmode')) === 'email' && (await p.getAttribute('input[name=email]', 'autocapitalize')) === 'none', 'email field: email keyboard, no auto-capitals');
   ok((await txt(p, '#login-privacy')) === 'By continuing you agree to our privacy notice.' && (await p.getAttribute('#login-privacy a', 'href')) === '/privacy', 'privacy line under the email field links to /privacy');
+  ok((await txt(p, '.login-unis')) === 'Open to students of Bocconi University.' && log.universities === 1, 'the supported universities are shown, read once from the universities table');
   await p.fill('input[name=email]', 'not-an-email'); await p.click('text=Send me a code'); await p.waitForTimeout(200);
-  ok((await txt(p, '.err')).includes('full university email') && log.otp.length === 0 && log.universities === 0, 'invalid email: message, nothing sent');
+  ok((await txt(p, '.err')).includes('full university email') && log.otp.length === 0 && log.universities === 1, 'invalid email: message, nothing sent, universities not read again');
   for (const bad of ['someone@gmail.com', 'x@notstudbocconi.it', 'x@studbocconi.it.evil.com', 'x@sub.studbocconi.it']) {
     await p.fill('input[name=email]', bad); await p.click('text=Send me a code'); await p.waitForTimeout(250);
     const n = await txt(p, '.auth-notice');
-    ok(n.includes("Use your university email. If your university isn't on GigoMe yet, tell us at hello@gigome.org.") && n.includes('Are you an employer? Log in on the employers page.') && log.otp.length === 0, 'not a listed university (' + bad + '): both lines shown, no code sent');
+    ok(n.includes('Use your university email. GigoMe is open to students of: Bocconi University (@studbocconi.it)') && n.includes('Is your university missing? Email hello@gigome.org') && n.includes('Are you an employer? Log in on the employers page.') && log.otp.length === 0, 'not a listed university (' + bad + '): the universities with their domains, "missing?" and employer lines, no code sent: ' + n);
   }
+  ok((await p.getAttribute('.auth-notice a:has-text("Email hello@gigome.org")', 'href')) === 'mailto:hello@gigome.org?subject=Add%20my%20university%20to%20GigoMe', '"Is your university missing?" is a mailto link with a subject');
   await p.fill('input[name=email]', '  Name.Surname@StudBocconi.IT '); await p.click('text=Send me a code'); await p.waitForTimeout(400);
   ok(log.otp.length === 1 && log.otp[0].email === 'name.surname@studbocconi.it' && log.otp[0].create_user === true, 'listed university: code requested for the lowercased email, create_user true (' + JSON.stringify(log.otp[0] && { email: log.otp[0].email, create_user: log.otp[0].create_user }) + ')');
   ok(!('options' in (log.otp[0] || {})) && !JSON.stringify(log.otp[0]).includes('redirect'), 'no magic-link redirect in the request');

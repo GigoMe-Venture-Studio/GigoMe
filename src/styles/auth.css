@@ -28,6 +28,12 @@
 .nowrap { white-space: nowrap; }
 .auth-notice > p + p { margin-top: var(--s2); }
 .auth-notice { color: var(--ink); }
+/* Student login: which universities can log in (from the universities table). */
+.login-unis { margin-top: var(--s3); }
+.uni-list { margin-top: var(--s2); padding-left: 1.25em; }
+.auth-notice > .uni-list + p { margin-top: var(--s2); }
+.uni-list li + li { margin-top: var(--s1); }
+.uni-domains { color: var(--muted); overflow-wrap: anywhere; }
 
 .auth-links {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
