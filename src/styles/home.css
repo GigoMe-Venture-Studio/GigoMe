@@ -5,6 +5,7 @@
 .home-newest .newest-head { margin-bottom: var(--s3); }
 .home-jobs-note { padding: var(--s4) 0; }
 .how p { color: var(--ink); }
+.how .how-questions { margin-top: var(--s2); color: var(--muted); }
 
 /* Text the owner still has to write: clearly marked as missing. */
 .placeholder-text {

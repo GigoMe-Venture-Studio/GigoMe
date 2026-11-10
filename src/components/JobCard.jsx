@@ -9,6 +9,7 @@ import {
   metroLabel,
   payLabel,
   placeLabel,
+  postedAt,
   postedLabel,
   scheduleLabels
 } from '../lib/jobs.js';
@@ -57,7 +58,7 @@ export default function JobCard({ job, distance = null, offerLogin = true }) {
         </div>
         <div className="role-pay">
           <span className="pay">{payLabel(job)}</span>
-          <span className="posted tnum">{postedLabel(job.created_at)}</span>
+          <span className="posted tnum">{postedLabel(postedAt(job))}</span>
         </div>
       </Link>
       <SaveButton jobId={job.id} title={job.title} className="card-save" offerLogin={offerLogin} />

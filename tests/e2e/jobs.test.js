@@ -1,4 +1,5 @@
 const { OUT } = require('./lib/browser.js');
+const { sortByOrder } = require('./lib/mock.js');
 const { chromium, devices } = require('./lib/browser.js');
 const ENV = 'http://127.0.0.1:4302', NOENV = 'http://127.0.0.1:4301', SB = 'https://testproj.supabase.co';
 const SHOTS = require('./lib/browser.js').OUT + '/';
@@ -26,7 +27,7 @@ function applyFilters(url, rows) {
   f('remote', (v, r) => String(r.remote) === v.slice(3));
   f('italian_level', (v, r) => v.startsWith('in.') ? v.slice(4, -1).split(',').includes(r.italian_level) : r.italian_level === v.slice(3));
   f('hours_per_week', (v, r) => r.hours_per_week <= Number(v.slice(4)));
-  if ((p.get('order') || '').startsWith('created_at.desc')) out.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  out = sortByOrder(out, p.get('order'));
   return out;
 }
 

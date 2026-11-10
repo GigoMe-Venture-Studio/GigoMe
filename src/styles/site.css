@@ -167,7 +167,13 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
 
 /* ---- Job detail ---- */
 .back{display:inline-flex;align-items:center;gap:var(--s2);font-size:14px;font-weight:600}
-.detail{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--s7);align-items:start;margin-top:var(--s5)}
+/* The job page has three parts (JobView.jsx): head (title to facts), "How to
+   apply", body. Desktop: head over body on the left, "How to apply" on the
+   right. Phones: stacked in that order, so "Apply" comes right after the facts. */
+.detail{display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto 1fr;column-gap:var(--s7);align-items:start;margin-top:var(--s5)}
+.detail-head{grid-column:1;grid-row:1}
+.detail-apply{grid-column:2;grid-row:1 / span 2}
+.detail-body{grid-column:1;grid-row:2}
 .detail-co{margin-top:var(--s2);color:var(--muted)}
 .detail .tags{margin-top:var(--s3)}
 .facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--s5);margin-top:var(--s5);padding:var(--s4) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -195,7 +201,8 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
 .employer strong{display:block;font-size:16px}
 .employer > * + *{margin-top:var(--s2)}
 @media (max-width:899px){
-  .detail{grid-template-columns:1fr;gap:var(--s6)}
+  .detail{display:block}
+  .detail-apply{margin-top:var(--s5)}
   .apply{position:static}
 }
 
