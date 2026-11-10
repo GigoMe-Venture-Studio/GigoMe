@@ -233,7 +233,9 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
             }}
             aria-invalid={emailInvalid || notListed || isStudentEmail}
             aria-describedby="login-privacy"
-            autoFocus
+            /* Not on /employers: the form is under the pitch there, and focusing
+               it would scroll the pitch out of sight on phones. */
+            autoFocus={!employer}
             required
           />
         </label>
@@ -357,7 +359,7 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
         <button type="button" className="btn btn-secondary btn-sm" onClick={onResend} disabled={busy || waitLeft > 0 || waitingForCaptcha}>
           {waitLeft > 0 ? `Send a new code (${waitLeft}s)` : 'Send a new code'}
         </button>
-        <button type="button" className="btn-link" onClick={onDifferentEmail} disabled={busy}>
+        <button type="button" className="btn-link tap-44" onClick={onDifferentEmail} disabled={busy}>
           Use a different email
         </button>
       </div>

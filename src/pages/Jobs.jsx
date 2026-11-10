@@ -239,7 +239,7 @@ function JobBoard() {
             className="input"
             type="search"
             name="q"
-            placeholder="e.g. barista, tutor, marketing"
+            placeholder="e.g. barista, tutor"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             enterKeyHint="search"
@@ -276,7 +276,7 @@ function JobBoard() {
         <label className="field">
           Category
           <select className="select" name="category" value={filters.category} onChange={(e) => setFilter('category', e.target.value)}>
-            <option value="">Any category</option>
+            <option value="">Any</option>
             {CATEGORIES.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
@@ -302,7 +302,7 @@ function JobBoard() {
         <label className="field">
           Remote
           <select className="select" name="remote" value={filters.remote} onChange={(e) => setFilter('remote', e.target.value)}>
-            <option value="">Remote or on site</option>
+            <option value="">Any</option>
             <option value="yes">Remote</option>
             <option value="no">On site</option>
           </select>
@@ -353,7 +353,7 @@ function JobBoard() {
           <button type="button" className="btn-link" onClick={() => setBox(null)}>Show all jobs</button>
         )}
         {filtered && (
-          <button type="button" className="btn-link" onClick={clearFilters}>Clear filters</button>
+          <button type="button" className="btn-link tap-44" onClick={clearFilters}>Clear filters</button>
         )}
         <label className="sort-select">
           <span className="muted sort-word">Sort</span>
@@ -429,13 +429,7 @@ function JobBoard() {
         </div>
       )}
 
-      {status === 'ready' && jobs.length === 0 && filtered && (
-        <div className="empty-state">
-          <p><strong>No jobs match these filters.</strong></p>
-          <p className="muted">Try a different type, more hours or a different Italian level.</p>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={clearFilters}>Clear filters</button>
-        </div>
-      )}
+      {status === 'ready' && jobs.length === 0 && filtered && <NoMatch filters={filters} onClear={clearFilters} />}
 
       {box && status === 'ready' && jobs.length > 0 && inArea.length === 0 && (
         <div className="empty-state">
@@ -489,6 +483,40 @@ function JobBoard() {
       )}
       </div>
     </>
+  );
+}
+
+// The filters other than the keyword, as named in the advice below.
+const FILTER_WORDS = {
+  area: 'area', category: 'category', type: 'type of job', italian: 'Italian', remote: 'remote',
+  hours: 'hours per week', when: 'days and times', lang: 'languages', minpay: 'minimum pay'
+};
+const orList = (words) => (words.length > 1 ? `${words.slice(0, -1).join(', ')} or ${words[words.length - 1]}` : words[0]);
+
+// No job matches: advice for what is actually set (the keyword, other
+// filters, or both).
+function NoMatch({ filters, onClear }) {
+  const set = FOLDED_FILTERS.filter((name) => (Array.isArray(filters[name]) ? filters[name].length : filters[name])).map((name) => FILTER_WORDS[name]);
+  const q = filters.q;
+  let title, advice;
+  if (q && !set.length) {
+    title = `No jobs match “${q}”.`;
+    advice = 'Check the spelling, or try a shorter or more general word, like “barista” or “tutor”.';
+  } else if (q) {
+    title = `No jobs match “${q}” with these filters.`;
+    advice = `Try another keyword, or remove a filter: ${orList(set)}.`;
+  } else {
+    title = 'No jobs match these filters.';
+    advice = set.length > 1 ? `Try removing one: ${orList(set)}.` : `Try removing the ${set[0]} filter.`;
+  }
+  return (
+    <div className="empty-state">
+      <p><strong>{title}</strong></p>
+      <p className="muted">{advice}</p>
+      <button type="button" className="btn btn-secondary btn-sm tap-44" onClick={onClear}>
+        {q && !set.length ? 'Clear the keyword' : 'Clear filters'}
+      </button>
+    </div>
   );
 }
 

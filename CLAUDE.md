@@ -110,7 +110,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - Saved jobs: `src/lib/saved.js` (one shared list of the student's saved job
   ids, loaded once per login; `useSavedJobs()`, `setSaved()`),
   `src/components/SaveButton.jsx` (the bookmark on job cards, next to the
-  card's link, not inside it, and on job pages; students only),
+  card's link, not inside it, and on job pages; for students; logged out
+  it's a link to `/login?next=/jobs/<id>` that saves nothing; company
+  accounts get none),
   `src/pages/Saved.jsx` (`/saved`, "Saved jobs" in the header for students;
   jobs that closed or expired show as "No longer available" from
   `my_saved_jobs()`). `/saved` also holds, from `src/lib/student.js`: saved
@@ -222,7 +224,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   out. Under 768px the links move into a Menu panel. Don't add links for
   features that don't exist yet (no "Create profile" or "Post a role").
 - Feedback: `src/components/Feedback.jsx` (`FeedbackProvider` in `App.jsx`)
-  puts a fixed "Feedback" button at the bottom right of every page and opens
+  puts a fixed "Feedback" button at the bottom right of every page (under
+  768px a round 44px icon, its label kept for screen readers) and opens
   a panel (native `<dialog>`); the footer's "Give feedback" opens it too via
   `useOpenFeedback()`. Logged-in users insert `page` and `message` (max 2000)
   through `sendFeedback()` in `src/lib/feedback.js`; the database sets
@@ -241,9 +244,15 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   No CSS framework. The accent is the logo's purple `#A46BD6` (`--purple`,
   `--accent`): text on it is graphite (4.5:1), never white. No inline
   `style` attributes in `index.html` (the CSP has no 'unsafe-inline').
+  `.tap-44` (site.css) gives a small text button a 44px-tall tap area
+  without changing the layout ("Clear filters", "Use a different email",
+  "Report this job").
 - Errors: `src/components/ErrorBoundary.jsx`: `PageErrorBoundary` around the
   routes (header, footer and feedback keep working; any navigation tries
-  again) and `AppErrorBoundary` around everything (plain fallback).
+  again) and `AppErrorBoundary` around everything (plain fallback). Job
+  lists (`fetchJobs()`) give up after 15 seconds (`JOBS_TIMEOUT_MS`), so a
+  stalled connection shows the list's error and "Try again", never
+  "Loading jobs…" for ever.
 - Titles and search engines: `src/lib/seo.js`. `RouteMeta` (in `App.jsx`)
   sets each fixed page's title, description, canonical link and "noindex"
   for private pages from `PAGES`; job and company pages use `usePageMeta()`;
@@ -261,8 +270,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   the browser tests fail on any CSP violation.
 - `public/`: copied into `dist/` as is: `_headers` (above),
   `favicon.ico` (16 and 32 px, flat purple on a white tile),
-  `apple-touch-icon.png`, `og-image.png` (link previews, referenced from
-  `index.html` with absolute https://gigome.org URLs), and `brand/` (the
+  `apple-touch-icon.png`, `og-image.png` (link previews: 1200x630, the logo
+  and the home page headline on a white card framed in the brand purple;
+  referenced from `index.html` with absolute https://gigome.org URLs, with
+  `og:image:alt`; `tests/unit/share-preview.test.mjs` checks both), and `brand/` (the
   original logo JPEGs, transparent PNGs cut from them, and the header WebPs).
   Don't put the logo or other images in auth emails: they get blocked and
   hurt deliverability.

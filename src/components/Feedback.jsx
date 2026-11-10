@@ -119,7 +119,9 @@ function FeedbackButton({ hidden, onOpen }) {
       <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
-      Feedback
+      {/* Under 768px only the icon shows (feedback.css), so the button covers
+          less of the job cards; the word stays for screen readers. */}
+      <span className="feedback-fab-label">Feedback</span>
     </button>
   );
 }

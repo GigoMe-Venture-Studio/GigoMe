@@ -37,6 +37,28 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     await p.goto(ENV + '/'); await p.waitForTimeout(600);
     ok((await txt(p, '.home-newest')).includes("Jobs can't be shown right now"), 'load error: friendly message');
     await ctx.close(); }
+  // A request that never answers (stalled connection): the list gives up
+  // after about 15 seconds and offers "Try again", instead of loading for ever.
+  { const { ctx, p } = await mk();
+    await ctx.route('https://testproj.supabase.co/rest/v1/jobs**', () => {}); // never answered
+    const t0 = Date.now(); await p.goto(ENV + '/jobs');
+    await p.waitForSelector('.empty-state:has-text("We couldn\'t load the jobs")', { timeout: 25000 }).catch(() => {});
+    const waited = (Date.now() - t0) / 1000, msg = await txt(p, 'main');
+    ok(msg.includes("We couldn't load the jobs") && waited > 13 && waited < 20 && await p.locator('.empty-state button:has-text("Try again")').count() === 1, `stalled request: the error and "Try again" after ${waited.toFixed(1)}s`);
+    await ctx.close(); }
+  // Small text buttons: a tap up to 21px above or below the middle still
+  // counts (a 44px-tall tap area), on a phone.
+  { const { ctx, p } = await mk();
+    const tall = (sel) => p.$eval(sel, (el) => { el.scrollIntoView({ block: 'center' }); const r = el.getBoundingClientRect(); const x = r.left + r.width / 2, y = r.top + r.height / 2;
+      return [-21, 21].every((dy) => { const hit = document.elementFromPoint(x, y + dy); return hit === el || el.contains(hit); }); });
+    await p.goto(ENV + '/jobs?q=zzzz'); await p.waitForTimeout(500);
+    ok(await tall('.jobs-status button:has-text("Clear filters")') && await tall('.empty-state button:has-text("Clear the keyword")'), '"Clear filters" and the empty state\'s button: 44px tap area');
+    await p.goto(ENV + '/login'); await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    ok(await tall('button:has-text("Use a different email")'), '"Use a different email": 44px tap area');
+    await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
+    await p.goto(ENV + '/jobs/' + ID(3)); await p.waitForSelector('.report-job button'); // no map on this one
+    ok(await tall('.report-job button'), '"Report this job": 44px tap area');
+    await ctx.close(); }
   { const { ctx, p } = await mk();
     await p.goto(NOENV + '/'); await p.waitForTimeout(500);
     ok(await p.isVisible('.hero') && await p.isVisible('.how') && (await txt(p, '.home-newest')).includes("can't be shown"), 'no Supabase settings: home still shows hero and How it works');
@@ -56,9 +78,16 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     await p.fill('input[name=q]', 'x,title.eq.y)'); await p.press('input[name=q]', 'Enter'); await p.waitForTimeout(400);
     const lastOr = new URLSearchParams(log.jobs.at(-1)).get('or');
     ok(!log.badQuery && lastOr === '(title.ilike."*x title eq y*",description.ilike."*x title eq y*")', 'characters that could change the query are dropped: ' + lastOr);
-    ok((await txt(p, '.empty-state')).includes('No jobs match'), 'no match: friendly empty state');
-    await p.click('.empty-state >> text=Clear filters'); await p.waitForTimeout(400);
-    ok((await p.inputValue('input[name=q]')) === '' && (await titles(p)).length === 6, 'Clear filters also clears the keyword');
+    const empty = await txt(p, '.empty-state');
+    ok(empty.includes('No jobs match “x title eq y”.') && empty.includes('Check the spelling') && !empty.includes('filter'), 'keyword only, no match: advice about the keyword, nothing about filters: ' + empty);
+    await p.click('.empty-state >> text=Clear the keyword'); await p.waitForTimeout(400);
+    ok((await p.inputValue('input[name=q]')) === '' && (await titles(p)).length === 6, '"Clear the keyword" shows every job again');
+    await p.goto(ENV + '/jobs?q=barista&type=internship&minpay=20'); await p.waitForTimeout(500);
+    ok((await txt(p, '.empty-state')).includes('No jobs match “barista” with these filters. Try another keyword, or remove a filter: type of job or minimum pay.'), 'keyword and filters, no match: names the filters that are set: ' + await txt(p, '.empty-state'));
+    await p.goto(ENV + '/jobs?type=internship&remote=no'); await p.waitForTimeout(500);
+    ok((await txt(p, '.empty-state')).includes('No jobs match these filters. Try removing one: type of job or remote.'), 'filters only: names them: ' + await txt(p, '.empty-state'));
+    await p.goto(ENV + '/jobs?minpay=30'); await p.waitForTimeout(500);
+    ok((await txt(p, '.empty-state')).includes('Try removing the minimum pay filter.'), 'one filter: names it: ' + await txt(p, '.empty-state'));
     await p.goto(ENV + '/jobs?q=' + encodeURIComponent('caffè')); await p.waitForTimeout(400);
     ok((await p.inputValue('input[name=q]')) === 'caffè', 'accented keywords are kept');
     await ctx.close(); }

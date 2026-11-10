@@ -76,7 +76,7 @@ const hasSession = (p) => p.evaluate(() => Object.keys(localStorage).some((k) =>
   { const ctx = await b.newContext(desk); const log = await mock(ctx); const p = await ctx.newPage();
     await p.goto(E + '/login'); await login(p); await p.goto(E + '/account'); await p.waitForTimeout(500);
     const ask = await p.innerText('.account-danger');
-    ok(ask.includes('Before you go, remember that new opportunities are added regularly. You can keep your profile ready for the next role whenever the time is right. Still want to leave? You can delete your account below.'), 'step 1: the reminder, word for word');
+    ok(ask.includes('Before you go, remember that new opportunities are added regularly. Still want to leave? You can delete your account below.') && !ask.includes('profile ready'), 'step 1: the reminder, word for word');
     ok(await p.locator('input[name=confirm]').count() === 0, 'step 1: no DELETE field yet');
     const keepB = p.locator('.account-danger button:has-text("Keep my account")'), delB = p.locator('.account-danger button:has-text("Delete my account")');
     const kb = await keepB.boundingBox(), db = await delB.boundingBox();

@@ -135,12 +135,17 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
 
     // new job: submit needs a contact
     await p.click('a.btn:has-text("New job")'); await p.waitForTimeout(400);
+    const gaps = await p.$$eval('.form-group > .check-group', (els) => els.map((e) => getComputedStyle(e).marginTop));
+    ok(gaps.length === 3 && gaps.every((g) => g === '16px'), 'job form: Languages, When and Pay have the same space above them as other fields: ' + gaps.join(' '));
     await p.fill('input[name=title]', 'Tutor'); await p.selectOption('select[name=job_type]', 'gig'); await p.fill('input[name=hours_per_week]', '6');
     await p.selectOption('select[name=area_id]', '16');
     await p.selectOption('select[name=category]', 'tutoring_education');
     await p.click('button:has-text("Submit for review")'); await p.waitForTimeout(300);
     ok((await txt(p, 'main')).includes('Add a link or an email address'), 'submit needs a link or email');
     ok((await txt(p, 'main')).includes('Choose when the job happens (at least one).'), 'submit needs a schedule');
+    await p.waitForTimeout(600); // smooth scroll
+    ok(await p.evaluate(() => { const a = document.activeElement; const r = a.getBoundingClientRect(); return a.name === 'schedule' && r.top >= 0 && r.bottom <= innerHeight; }),
+      'failed submit: the first field marked ("When", its first box) is focused and on screen');
     await p.check('input[name=schedule][value=weekday_evenings]'); await p.check('input[name=schedule][value=weekends]'); await p.check('input[name=languages][value=en]');
     ok((await txt(p, 'main')).includes('Choose how the job is paid.'), 'submit needs structured pay');
     await p.selectOption('select[name=pay_unit]', 'month'); await p.fill('input[name=pay_min]', '600');

@@ -25,7 +25,7 @@ export default function ProfileFields({ values, onChange, errors, student = true
       {student && (
         <>
           <label className="field">
-            What are you studying?
+            Degree level
             <select
               className="select"
               name="degree_level"

@@ -48,6 +48,7 @@ async function sweep(p, label) {
       await p.goto(E + path); await p.waitForTimeout(300);
       ok(await p.locator('.feedback-fab').isVisible(), 'fab visible on ' + path);
       ok(await p.locator('.site-footer button:has-text("Give feedback")').count() === 1, 'footer Give feedback on ' + path);
+      if (path === '/jobs') ok((await p.locator('.feedback-fab').innerText()).trim() === 'Feedback', 'desktop: the button shows the word "Feedback"');
     }
     await p.goto(E + '/terms'); await p.waitForTimeout(300);
     await p.click('.feedback-fab');
@@ -134,6 +135,13 @@ async function sweep(p, label) {
     for (const logged of [false, true]) {
       const ctx = await b.newContext(dev); await mock(ctx); const p = await ctx.newPage();
       if (logged) { await p.goto(E + '/login'); await login(p); }
+      if (!logged) {
+        await p.goto(E + '/jobs'); await p.waitForTimeout(400);
+        const fab = await p.locator('.feedback-fab').boundingBox();
+        const label = await p.locator('.feedback-fab-label').boundingBox();
+        ok(Math.round(fab.width) === 44 && Math.round(fab.height) === 44 && label.width <= 1 && await p.getByRole('button', { name: 'Feedback', exact: true }).count() === 1,
+          `${name}: the button is a 44px icon, still named "Feedback" for screen readers: ${Math.round(fab.width)}x${Math.round(fab.height)}`);
+      }
       for (const path of ['/', '/jobs', `/jobs/${ID(1)}`, `/jobs/${ID(2)}`, '/terms', ...(logged ? [] : ['/login'])]) {
         await p.goto(E + path); await p.waitForTimeout(500);
         await sweep(p, `${name} ${logged ? 'in' : 'out'} ${path}`);

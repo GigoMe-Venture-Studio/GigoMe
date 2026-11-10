@@ -99,7 +99,7 @@ function HeroSearch() {
         <>
           <label className="sr-only" htmlFor="home-area">Area</label>
           <select className="select area" id="home-area" value={area} onChange={(e) => setArea(e.target.value)}>
-            <option value="">Anywhere in Milan</option>
+            <option value="">All areas</option>
             {areas.map((a) => (
               <option key={a.id} value={String(a.id)}>{a.name}</option>
             ))}
