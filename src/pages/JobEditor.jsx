@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
@@ -176,6 +176,21 @@ function JobForm({ company, job }) {
   const [busy, setBusy] = useState('');
   const set = (key) => (e) => setV((x) => ({ ...x, [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
 
+  // After a save with errors: bring the first marked field into view and
+  // focus it (the first box of a group of checkboxes), instead of leaving the
+  // employer at the bottom with "Check the fields marked above".
+  const formRef = useRef(null);
+  const [focusTry, setFocusTry] = useState(0);
+  useEffect(() => {
+    if (!focusTry || !formRef.current) return;
+    const bad = formRef.current.querySelector('[aria-invalid="true"]');
+    if (!bad) return;
+    const target = bad.matches('fieldset') ? bad.querySelector('input, select, textarea') || bad : bad;
+    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+    target.focus({ preventScroll: true });
+  }, [focusTry]);
+
   const current = job ? job.status : null;
   const isLive = current === 'published';
   const canSubmit = company.status === 'approved';
@@ -252,6 +267,7 @@ function JobForm({ company, job }) {
     setErrors(found);
     if (Object.keys(found).length) {
       setSaveError('Check the fields marked above.');
+      setFocusTry((n) => n + 1);
       return;
     }
     setBusy(status);
@@ -358,7 +374,7 @@ function JobForm({ company, job }) {
         </p>
       )}
 
-      <form className="auth-form job-form" onSubmit={(e) => { e.preventDefault(); save(canSubmit ? 'pending' : 'draft'); }} noValidate>
+      <form ref={formRef} className="auth-form job-form" onSubmit={(e) => { e.preventDefault(); save(canSubmit ? 'pending' : 'draft'); }} noValidate>
         <fieldset className="form-group">
           <legend>The job</legend>
           <label className="field">

@@ -100,6 +100,9 @@
 /* Multi-choice groups on the job form: When (required to submit), Languages. */
 .check-group { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: var(--s2); }
 .check-group legend { padding: 0; margin-bottom: var(--s1); font-size: 14px; font-weight: 600; }
+/* The same space above a group as above any other field (".check-group"'s
+   margin: 0 would otherwise cancel ".form-group > * + *"). */
+.form-group > * + .check-group { margin-top: var(--s4); }
 .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--s4); }
 @media (min-width: 560px) { .check-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .dash-followers-hint { display: block; margin-top: 2px; font-weight: 400; }

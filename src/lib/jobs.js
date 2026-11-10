@@ -152,8 +152,19 @@ function liveJobs(columns) {
     .eq('companies.status', 'approved');
 }
 
-export async function fetchJobs(filters, { limit = 200 } = {}) {
-  let query = filtered(liveJobs(LIST_COLUMNS + ', companies!inner(name, status)'), filters);
+// A job list that hasn't loaded after this long gives up, so the page shows
+// its error and "Try again" instead of "Loading jobs…" for ever: a stalled
+// connection (weak signal, a Wi-Fi login page) never fails on its own.
+export const JOBS_TIMEOUT_MS = 15000;
+function timeoutSignal(ms) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') return AbortSignal.timeout(ms);
+  const controller = new AbortController(); // Safari before 16
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+}
+
+export async function fetchJobs(filters, { limit = 200, timeoutMs = JOBS_TIMEOUT_MS } = {}) {
+  let query = filtered(liveJobs(LIST_COLUMNS + ', companies!inner(name, status)'), filters).abortSignal(timeoutSignal(timeoutMs));
   // Highest pay: by the hourly equivalent; jobs without one (per project,
   // unpaid, no structured pay) after the rest.
   if (filters.sort === 'pay') query = query.order('pay_hourly', { ascending: false, nullsFirst: false });

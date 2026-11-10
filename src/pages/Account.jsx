@@ -186,8 +186,8 @@ function DeleteAccount({ isCompany, onLeaving }) {
       <section className="account-section account-danger" aria-labelledby="delete-title">
         <h2 id="delete-title">Delete my account</h2>
         <p className="account-danger-text">
-          Before you go, remember that new opportunities are added regularly. You can keep your profile ready for the
-          next role whenever the time is right. Still want to leave? You can delete your account below.
+          Before you go, remember that new opportunities are added regularly. Still want to leave? You can delete your
+          account below.
         </p>
         {kept && <p className="account-kept" role="status">Good, your account stays as it is.</p>}
         <div className="account-choice">

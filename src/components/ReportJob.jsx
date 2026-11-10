@@ -26,7 +26,7 @@ export default function ReportJob({ jobId }) {
   if (!open) {
     return (
       <p className="report-job">
-        <button type="button" className="btn-link" onClick={() => setOpen(true)} aria-expanded="false">
+        <button type="button" className="btn-link tap-44" onClick={() => setOpen(true)} aria-expanded="false">
           Report this job
         </button>
       </p>

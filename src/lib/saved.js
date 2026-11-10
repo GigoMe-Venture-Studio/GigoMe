@@ -75,6 +75,8 @@ export function useSavedJobs() {
   const snap = useSyncExternalStore(subscribe, () => state);
   const current = snap.userId === userId;
   return {
+    // Nobody is logged in (the save button then offers to log in).
+    loggedOut: !loading && !userId,
     canSave: current && snap.canSave,
     loaded: current && snap.loaded,
     error: current ? snap.error : '',

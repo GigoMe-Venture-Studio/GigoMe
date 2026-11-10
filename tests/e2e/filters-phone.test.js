@@ -104,6 +104,26 @@ const shownSelects = (p) => p.$$eval('.job-filters select', (els) => els.filter(
     ok(await p.$eval('body', (e) => e.scrollWidth <= innerWidth), 'admin on a phone: no sideways scroll');
     await ctx.close(); }
 
+  // No select or placeholder text cut off on 375px and 320px phones (the
+  // home page search, /jobs with its filters open, the login forms). The
+  // native arrow of a select takes about 24px inside it.
+  const cutOff = () => [...document.querySelectorAll('main select, main input[placeholder]')].filter((el) => el.offsetParent).map((el) => {
+    const cs = getComputedStyle(el); const c = document.createElement('canvas').getContext('2d'); c.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const text = el.tagName === 'SELECT' ? el.options[el.selectedIndex].text : el.value || el.placeholder;
+    const room = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (el.tagName === 'SELECT' ? 24 : 0);
+    return c.measureText(text).width > room ? `${el.name || el.id}: "${text}"` : null;
+  }).filter(Boolean);
+  for (const width of [375, 320]) {
+    const ctx = await b.newContext({ viewport: { width, height: 667 }, isMobile: true, hasTouch: true }); await mock(ctx); const p = await ctx.newPage();
+    for (const path of ['/', '/jobs', '/login', '/employers']) {
+      await p.goto(E + path); await p.waitForTimeout(500);
+      if (path === '/jobs') { await p.click('.job-filters-toggle'); await p.waitForTimeout(200); }
+      const cut = await p.evaluate(cutOff);
+      ok(cut.length === 0, `${width}px ${path}: no text cut off in fields: ${cut.join(', ')}`);
+    }
+    await ctx.close();
+  }
+
   console.log(`${pass} passed, ${fail} failed`);
   await b.close();
 })();

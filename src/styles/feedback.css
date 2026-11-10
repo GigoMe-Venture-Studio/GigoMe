@@ -11,6 +11,15 @@
   transition: opacity .15s, visibility .15s, background-color .15s;
 }
 .feedback-fab[data-away] { opacity: 0; visibility: hidden; pointer-events: none; }
+/* Phones: a round icon button, so it covers less of the job cards. The label
+   is kept for screen readers (same rules as .sr-only). */
+@media (max-width: 767px) {
+  .feedback-fab { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
+  .feedback-fab-label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+}
 .feedback-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Room under the footer so the button never has to sit on its last line. */

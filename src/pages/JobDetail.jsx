@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
@@ -115,10 +115,45 @@ function HowToApply({ jobId, jobTitle }) {
     };
   }, [userId]);
 
-  if (loading || (userId && !accountType)) return <p className="muted">Loading…</p>;
+  // Nothing below this box may move when the login state arrives (on phones
+  // the map and the description are under it). While it loads, the box holds
+  // the logged-out content, invisible, so it has its usual height from the
+  // first frame; afterwards it keeps at least that height (a student's or a
+  // company's content is a little shorter) until the screen width changes.
+  const settling = loading || Boolean(userId && !accountType);
+  const body = useRef(null);
+  const measuredAt = useRef(0);
+  const [minHeight, setMinHeight] = useState(0);
+  useLayoutEffect(() => {
+    if (settling && body.current) {
+      measuredAt.current = window.innerWidth;
+      setMinHeight(body.current.offsetHeight);
+    }
+  }, [settling]);
+  useEffect(() => {
+    // Width only: phones change the height while scrolling (address bar).
+    const onResize = () => window.innerWidth !== measuredAt.current && setMinHeight(0);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const frame = (content) => (
+    <div className="apply-body" ref={body} style={minHeight ? { minHeight } : undefined}>{content}</div>
+  );
+
+  if (settling) {
+    return frame(
+      <>
+        <p className="muted apply-loading">Loading…</p>
+        <div className="apply-sizer" aria-hidden="true">
+          <span className="btn btn-primary">Log in to see how to apply</span>
+          <p className="apply-note">Log in with your university email to see how to apply.</p>
+        </div>
+      </>
+    );
+  }
 
   if (!session) {
-    return (
+    return frame(
       <>
         <Link className="btn btn-primary" to={`/login?next=${encodeURIComponent('/jobs/' + jobId)}`}>
           Log in to see how to apply
@@ -129,7 +164,7 @@ function HowToApply({ jobId, jobTitle }) {
   }
 
   if (accountType === 'company') {
-    return <p className="apply-note apply-company">Only students can apply for jobs on GigoMe. You're logged in with a company account.</p>;
+    return frame(<p className="apply-note apply-company">Only students can apply for jobs on GigoMe. You're logged in with a company account.</p>);
   }
 
   // Called only when the student presses "Apply": each call counts an apply
@@ -182,14 +217,14 @@ function HowToApply({ jobId, jobTitle }) {
 
   if (reveal.status === 'done') {
     if (!reveal.url && !reveal.email) {
-      return (
+      return frame(
         <p className="apply-note">
           This employer hasn't added how to apply yet. Write to{' '}
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we'll pass your interest on.
         </p>
       );
     }
-    return (
+    return frame(
       <div className="apply-contact">
         <p className="apply-heading">How to apply</p>
         <p className="apply-note apply-opened" role="status">
@@ -219,7 +254,7 @@ function HowToApply({ jobId, jobTitle }) {
     );
   }
 
-  return (
+  return frame(
     <>
       <button type="button" className="btn btn-primary" onClick={onApply} disabled={reveal.status === 'busy'}>
         {reveal.status === 'busy' ? 'Opening…' : 'Apply'}

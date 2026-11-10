@@ -145,6 +145,9 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
    ========================================================================== */
 /* ---- Home ---- */
 .hero{padding-top:var(--s8);padding-bottom:var(--s7)}
+/* Under 360px a little less space above the headline, so the search form ends
+   above the Feedback button and it is fully visible at first load (320x568). */
+@media (max-width:359px){ .hero{padding-top:var(--s6)} }
 .hero h1,.hero-lead{max-width:720px}
 .hero h1{font-size:clamp(2.25rem,5vw,3.5rem);font-weight:700;letter-spacing:-0.02em;line-height:1.08;text-wrap:balance}
 .hero-lead{font-size:18px;color:var(--muted);margin-top:var(--s4);max-width:60ch}
@@ -212,6 +215,11 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
 .menu-panel button:hover{background:var(--paper)}
 .btn-link{display:inline;padding:0;border:0;background:none;font:inherit;color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:pointer}
 .btn-link:hover{text-decoration-color:var(--ink)}
+/* A small button whose tap area is at least 44px tall, without changing the
+   layout: an invisible strip above and below it also counts as the button. */
+.tap-44{position:relative}
+.btn-link.tap-44{display:inline-block}
+.tap-44::after{content:"";position:absolute;left:0;right:0;top:50%;height:max(100%,44px);transform:translateY(-50%)}
 .err{color:var(--error);font-size:14px;font-weight:400}
 .input[aria-invalid=true],.select[aria-invalid=true]{border-color:var(--error)}
 .note{padding:var(--s3) var(--s4);border-radius:var(--r-md);background:var(--paper);font-size:14px}

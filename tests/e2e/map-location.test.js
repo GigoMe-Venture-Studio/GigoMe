@@ -11,11 +11,22 @@ const CLOSED = 'dead0000-0000-4000-8000-000000000099';
 (async () => {
   const b = await chromium.launch();
   // logged out
-  { const ctx = await b.newContext(desk); await mock(ctx); const p = await ctx.newPage();
+  { const ctx = await b.newContext(desk); await mock(ctx); await stubMap(ctx); const p = await ctx.newPage();
     await p.goto(E + '/jobs'); await p.waitForTimeout(600);
-    ok(await p.locator('.save-btn').count() === 0 && !(await txt(p, '.site-header')).includes('Saved jobs'), 'logged out: no save buttons, no "Saved jobs" link');
+    ok(await p.locator('a.save-btn').count() === 6 && await p.locator('button.save-btn').count() === 0 && !(await txt(p, '.site-header')).includes('Saved jobs'), 'logged out: a save bookmark on every card (a link, nothing saved), no "Saved jobs" link');
+    ok(await card(p, 'Weekend barista').locator('.save-btn').getAttribute('href') === '/login?next=' + encodeURIComponent('/jobs/' + ID(1)) && await card(p, 'Weekend barista').locator('.save-btn').getAttribute('aria-label') === 'Log in to save Weekend barista', 'logged out: the bookmark says "Log in to save ..." and goes to log in, back to that job');
+    await p.goto(E + '/jobs/' + ID(1)); await p.waitForTimeout(500);
+    ok((await txt(p, '.detail-title-row .save-btn')) === 'Save', 'logged out job page: "Save" shown too');
     await p.goto(E + '/saved'); await p.waitForTimeout(500);
     ok(new URL(p.url()).pathname === '/login' && new URL(p.url()).searchParams.get('next') === '/saved', 'logged out /saved -> /login?next=/saved');
+    await ctx.close(); }
+  // logged out "Save" -> log in -> back on the job
+  { const ctx = await b.newContext(desk); await mock(ctx); await stubMap(ctx); const p = await ctx.newPage();
+    await p.goto(E + '/jobs/' + ID(1)); await p.waitForTimeout(500);
+    await p.click('.detail-title-row .save-btn'); await p.waitForTimeout(400);
+    ok(new URL(p.url()).pathname === '/login' && new URL(p.url()).searchParams.get('next') === '/jobs/' + ID(1), 'logged out: "Save" opens /login?next=/jobs/<id>');
+    await login(p); await p.waitForTimeout(400);
+    ok(new URL(p.url()).pathname === '/jobs/' + ID(1) && await p.locator('.detail-title-row button.save-btn').count() === 1, 'after logging in: back on the job, with the real Save button: ' + p.url());
     await ctx.close(); }
   // student
   { const ctx = await b.newContext(desk); const log = await mock(ctx, { saved: [CLOSED] }); await stubMap(ctx, log); const p = await ctx.newPage();

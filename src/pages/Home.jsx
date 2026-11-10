@@ -102,7 +102,7 @@ function HeroSearch() {
         <>
           <label className="sr-only" htmlFor="home-area">Area</label>
           <select className="select area" id="home-area" value={area} onChange={(e) => setArea(e.target.value)}>
-            <option value="">Anywhere in Milan</option>
+            <option value="">All areas</option>
             {areas.map((a) => (
               <option key={a.id} value={String(a.id)}>{a.name}</option>
             ))}
@@ -156,7 +156,11 @@ function NewestJobs() {
     <>
       <ul className="role-list job-list">
         {jobs.map((job) => (
-          <JobCard key={job.id} job={job} />
+          // No Save buttons here, for anyone: one would sit under the
+          // Feedback button at first load, which then steps aside, and the
+          // button must be fully visible on the home page. Students save from
+          // /jobs and job pages.
+          <JobCard key={job.id} job={job} save={false} />
         ))}
       </ul>
       <Link className="see-all" to="/jobs">See all jobs</Link>
