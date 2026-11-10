@@ -6,12 +6,12 @@ const ID = (n) => '00000000-0000-4000-8000-0000000000' + String(n).padStart(2, '
 const NEBBIA = { id: 'c0000000-0000-4000-8000-000000000001', name: 'Nebbia Coffee Bar', status: 'approved', website: 'nebbia-example.it', description: 'Specialty coffee bar.' };
 const FINTRA = { id: 'c0000000-0000-4000-8000-000000000002', name: 'Fintra', status: 'approved', website: 'https://fintra.example/', description: null };
 const JOBS = [
-  { id: ID(1), title: 'Weekend barista', job_type: 'part_time', location: 'Porta Venezia', remote: false, hours_per_week: 12, pay: '€11/h', italian_level: 'none', start_date: '2026-12-01', created_at: ago(0), description: 'Serve coffee and learn latte art.', companies: NEBBIA, area_id: 3, latitude: 45.47612, longitude: 9.20734, show_exact_location: true },
-  { id: ID(2), title: 'Finance intern', job_type: 'internship', location: 'Porta Romana', remote: true, hours_per_week: 20, pay: null, italian_level: 'basic', start_date: null, created_at: ago(1), description: 'Spreadsheets and reporting.', companies: FINTRA, area_id: 11, latitude: 45.4505, longitude: 9.196, show_exact_location: true },
-  { id: ID(3), title: 'Event host', job_type: 'gig', location: null, remote: false, hours_per_week: 8, pay: '€90/day', italian_level: 'fluent', start_date: null, created_at: ago(2), description: 'Welcome guests at a gallery opening.', companies: NEBBIA },
-  { id: ID(4), title: 'Remote researcher', job_type: 'other', location: null, remote: true, hours_per_week: 40, pay: '€500', italian_level: 'none', start_date: null, created_at: ago(3), description: 'Desk research on cafés.', companies: FINTRA },
-  { id: ID(5), title: 'English tutor', job_type: 'part_time', location: 'Brera', remote: false, hours_per_week: 6, pay: '€15/h', italian_level: 'none', start_date: null, created_at: ago(4), description: 'Conversation classes.', companies: NEBBIA, area_id: 2, latitude: 45.4721, longitude: 9.1871, show_exact_location: true },
-  { id: ID(6), title: 'Social media helper', job_type: 'gig', location: 'Isola', remote: true, hours_per_week: 10, pay: '€300', italian_level: 'none', start_date: null, created_at: ago(6), description: 'One week of posts for a BARISTA training brand.', companies: FINTRA, area_id: 6, latitude: 45.4885, longitude: 9.1895, show_exact_location: false }
+  { id: ID(1), title: 'Weekend barista', job_type: 'part_time', location: 'Porta Venezia', remote: false, hours_per_week: 12, pay: '€11/h', italian_level: 'none', start_date: '2026-12-01', created_at: ago(3), description: 'Serve coffee and learn latte art.', companies: NEBBIA, area_id: 3, latitude: 45.47612, longitude: 9.20734, show_exact_location: true },
+  { id: ID(2), title: 'Finance intern', job_type: 'internship', location: 'Porta Romana', remote: true, hours_per_week: 20, pay: null, italian_level: 'basic', start_date: null, created_at: ago(6), description: 'Spreadsheets and reporting.', companies: FINTRA, area_id: 11, latitude: 45.4505, longitude: 9.196, show_exact_location: true },
+  { id: ID(3), title: 'Event host', job_type: 'gig', location: null, remote: false, hours_per_week: 8, pay: '€90/day', italian_level: 'fluent', start_date: null, created_at: ago(2.5), description: 'Welcome guests at a gallery opening.', companies: NEBBIA },
+  { id: ID(4), title: 'Remote researcher', job_type: 'other', location: null, remote: true, hours_per_week: 40, pay: '€500', italian_level: 'none', start_date: null, created_at: ago(12), description: 'Desk research on cafés.', companies: FINTRA },
+  { id: ID(5), title: 'English tutor', job_type: 'part_time', location: 'Brera', remote: false, hours_per_week: 6, pay: '€15/h', italian_level: 'none', start_date: null, created_at: ago(4.5), description: 'Conversation classes.', companies: NEBBIA, area_id: 2, latitude: 45.4721, longitude: 9.1871, show_exact_location: true },
+  { id: ID(6), title: 'Social media helper', job_type: 'gig', location: 'Isola', remote: true, hours_per_week: 10, pay: '€300', italian_level: 'none', start_date: null, created_at: ago(7), description: 'One week of posts for a BARISTA training brand.', companies: FINTRA, area_id: 6, latitude: 45.4885, longitude: 9.1895, show_exact_location: false }
 ];
 const AREAS = [
   { id: 1, name: 'Duomo / Centro', latitude: 45.4642, longitude: 9.19, sort_order: 10 },
@@ -51,6 +51,28 @@ for (const j of JOBS) { Object.assign(j, { category: 'other', published_at: null
 for (const j of JOBS) { j.area_id = j.area_id || null; j.latitude = j.latitude ?? null; j.longitude = j.longitude ?? null; if (j.show_exact_location === undefined) j.show_exact_location = true; const a = AREAS.find((x) => x.id === j.area_id); j.areas = a ? { name: a.name } : null; }
 const CONTACT = { [ID(1)]: { apply_url: 'https://nebbia-example.it/jobs', apply_email: 'jobs@nebbia-example.it' } };
 
+// Sorts rows the way PostgREST does for ?order=col.desc.nullslast,col2.desc
+// (desc puts nulls first unless nullslast; asc puts them last).
+function sortByOrder(rows, order) {
+  const keys = String(order || '').split(',').filter(Boolean).map((k) => {
+    const [col, dir, nulls] = k.split('.');
+    const desc = dir === 'desc';
+    return { col, desc, nullsLast: nulls ? nulls === 'nullslast' : !desc };
+  });
+  if (!keys.length) return rows;
+  return rows.slice().sort((a, b) => {
+    for (const { col, desc, nullsLast } of keys) {
+      const x = a[col], y = b[col];
+      if (x == null && y == null) continue;
+      if (x == null) return nullsLast ? 1 : -1;
+      if (y == null) return nullsLast ? -1 : 1;
+      const c = typeof x === 'number' ? x - y : String(x).localeCompare(String(y));
+      if (c) return desc ? -c : c;
+    }
+    return 0;
+  });
+}
+
 function apply(url, rows) {
   const p = url.searchParams; let out = rows.slice();
   const f = (k, fn) => { for (const v of p.getAll(k)) out = out.filter((r) => fn(v, r)); };
@@ -75,8 +97,7 @@ function apply(url, rows) {
     const kw = m[1].toLowerCase();
     out = out.filter((r) => r.title.toLowerCase().includes(kw) || (r.description || '').toLowerCase().includes(kw));
   }
-  if ((p.get('order') || '').startsWith('created_at.desc')) out.sort((a, b) => b.created_at.localeCompare(a.created_at));
-  if ((p.get('order') || '').startsWith('pay_hourly.desc.nullslast')) out.sort((a, b) => (b.pay_hourly ?? -1) - (a.pay_hourly ?? -1) || b.created_at.localeCompare(a.created_at));
+  out = sortByOrder(out, p.get('order'));
   if (p.get('limit')) out = out.slice(0, Number(p.get('limit')));
   return out;
 }
@@ -169,4 +190,4 @@ async function login(p, email = 'ana@studbocconi.it') {
   await p.fill('input[name=email]', email); await p.click('text=Send me a code'); await p.waitForTimeout(300);
   await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
 }
-module.exports = { mock, login, ID, JOBS, AREAS, NEBBIA, FINTRA, ago };
+module.exports = { sortByOrder, mock, login, ID, JOBS, AREAS, NEBBIA, FINTRA, ago };

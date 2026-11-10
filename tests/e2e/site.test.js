@@ -1,5 +1,6 @@
 const { chromium, devices } = require('./lib/browser.js');
 const { mock, login, ID } = require('./lib/mock.js');
+const { stubMap } = require('./lib/stub.js');
 const ENV = 'http://127.0.0.1:4302', NOENV = 'http://127.0.0.1:4301';
 let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
 (async () => {
@@ -15,12 +16,16 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     ok(await p.locator('.protobar, #map-stage, #jump, #reset-demo, .map-pin').count() === 0 && !/Demo\. Sample data|Jump to|Reset|on the map|★/.test(page), 'no demo bar, map, Jump to, Reset or ratings');
     ok((await txt(p, 'h1')) === 'Part-time work and internships in Milan, in English.' && (await txt(p, '.hero-lead')) === "For international students who don't speak fluent Italian. Free for students, always.", 'hero headline and subline unchanged');
     ok(await p.locator('.hero select#home-area').count() === 1 && await p.isChecked('.hero input[type=checkbox]') && (await txt(p, '.hero button')) === 'Search jobs', 'hero: keyword, area, "No Italian needed" (on), "Search jobs"');
-    ok((await titles(p)).join('|') === 'Weekend barista|Finance intern|Event host|Remote researcher|English tutor' && log.jobs.some((q) => q.includes('limit=5')), 'Newest jobs: the 5 newest live jobs, asked for with limit=5');
+    ok((await titles(p)).join('|') === 'Weekend barista|Event host|English tutor|Finance intern|Social media helper' && log.jobs.some((q) => q.includes('limit=5')), 'Newest jobs: the 5 most recently published live jobs, asked for with limit=5: ' + (await titles(p)).join('|'));
+    ok(log.jobs.some((q) => new URLSearchParams(q).get('order') === 'published_at.desc.nullslast,created_at.desc'), 'newest = published most recently, then written most recently: ' + log.jobs.map((q) => new URLSearchParams(q).get('order')).join(' '));
+    // Weekend barista was written 3 days ago and published 12 hours ago.
+    ok((await p.locator('.job-card', { hasText: 'Weekend barista' }).locator('.posted').innerText()) === 'Today', 'the card counts from publication: a job written 3 days ago and published today says "Today"');
     ok(await p.locator('.job-list .role-row[href^="/jobs/"]').count() === 5 && (await p.getAttribute('.see-all', 'href')) === '/jobs' && (await txt(p, '.see-all')) === 'See all jobs', 'same cards as /jobs, plus "See all jobs"');
     const how = await txt(p, '.how');
-    ok(['Browse jobs', 'university email', '6-digit code', 'Apply directly with the employer', 'Want to list a job? Write to hello@gigome.org.'].every((w) => how.includes(w)), 'How it works matches what GigoMe does');
-    ok(!/profile|rating|review|through GigoMe|dashboard|Create an account|Post a role|accept|reject/i.test(how), 'How it works: nothing about profiles, applying through GigoMe, ratings or employer accounts');
-    ok((await p.getAttribute('.how a[href^="mailto:"]', 'href')) === 'mailto:hello@gigome.org', 'employer line links to hello@gigome.org');
+    ok(['Browse jobs', 'university email', '6-digit code', 'Apply directly with the employer', "Want to list a job? It's free: see how it works for employers.", 'Questions? Write to hello@gigome.org.'].every((w) => how.includes(w)), 'How it works matches what GigoMe does: ' + how);
+    ok(!/profile|rating|review|through GigoMe|dashboard|Create an account|Post a role|accept|reject/i.test(how), 'How it works: nothing about profiles, applying through GigoMe, ratings or dashboards');
+    ok((await p.getAttribute('.how a:has-text("see how it works for employers")', 'href')) === '/employers', 'employers are sent to the employers page');
+    ok((await p.getAttribute('.how a[href^="mailto:"]', 'href')) === 'mailto:hello@gigome.org' && (await txt(p, '.how-questions')).startsWith('Questions?'), 'hello@gigome.org stays, as the "Questions?" line');
     await p.fill('#home-q', 'barista'); await p.click('text=Search jobs'); await p.waitForTimeout(800);
     const u = new URL(p.url());
     ok(u.pathname === '/jobs' && u.searchParams.get('q') === 'barista' && u.searchParams.get('italian') === 'none', 'hero search opens /jobs?q=barista&italian=none');
@@ -75,7 +80,9 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       const fine = await p.locator('.site-footer').count() === 1 && f.includes('A student project in Milan. Free for students.') && !/About/.test(f) && f.includes('Privacy notice') && f.includes('Terms') && f.includes('Questions or need help? hello@gigome.org') && f.includes('Give feedback');
       ok(fine, 'footer on ' + path + ': Privacy notice and Terms, no About');
       // Area names in the dropdowns (e.g. "Porta Romana / Bocconi") are neighbourhoods, not claims of affiliation.
-      const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select').forEach((x) => x.remove()); return c.innerText; });
+      // The student login names the universities whose students can log in (.login-unis, .uni-list), always
+      // with the line saying GigoMe isn't affiliated with or endorsed by any university (checked in login.test.js).
+      const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select, .login-unis, .uni-list').forEach((x) => x.remove()); return c.innerText; });
       ok(!/bocconi/i.test(all) && !/about us|our team|founder|biograph/i.test(all), 'no Bocconi, team or biography text on ' + path);
     }
     for (const [path, title] of [['/privacy', 'Privacy notice'], ['/terms', 'Terms of use']]) {
@@ -92,6 +99,23 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     const items = await p.$$eval('#menu-panel a, #menu-panel button', (els) => els.map((e) => e.textContent.trim()).join(', '));
     ok(items === 'Jobs, For employers', 'phone menu: Jobs, For employers');
     for (const path of ['/', '/terms', '/privacy', '/jobs']) { await p.goto(ENV + path); await p.waitForTimeout(400); ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on phone: ' + path); }
+    await ctx.close(); }
+
+  // Job page: "How to apply" right after the facts on phones (on the first
+  // screen for a typical job), the right-hand column on desktop.
+  { const { ctx, p } = await mk(); await stubMap(ctx);
+    for (const id of [1, 3]) {
+      await p.goto(ENV + '/jobs/' + ID(id)); await p.waitForSelector('.apply .btn'); await p.waitForTimeout(300);
+      const y = await p.evaluate(() => ['.facts', '.detail-apply', '.prose-role'].map((s) => document.querySelector(s).getBoundingClientRect().top));
+      ok(y[0] < y[1] && y[1] < y[2], `phone, job ${id}: the facts, then "How to apply", then the description: ` + y.map(Math.round).join(' < '));
+    }
+    const btn = await p.locator('.apply .btn').boundingBox();
+    ok(btn.y + btn.height <= 664, 'phone: a typical job\'s "Log in to see how to apply" is on the first screen of an iPhone 13: bottom at ' + Math.round(btn.y + btn.height));
+    await ctx.close(); }
+  { const { ctx, p } = await mk({}, { viewport: { width: 1280, height: 900 } }); await stubMap(ctx);
+    await p.goto(ENV + '/jobs/' + ID(1)); await p.waitForSelector('.apply .btn'); await p.waitForTimeout(300);
+    const [head, apply, body] = await p.evaluate(() => ['.detail-head', '.detail-apply', '.detail-body'].map((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { top: r.top, left: r.left, right: r.right }; }));
+    ok(apply.left > head.right && apply.top === head.top && body.top > head.top && body.left === head.left, 'desktop: "How to apply" is the right-hand column, level with the title; the description is under the facts on the left');
     await ctx.close(); }
 
   ok(errs.length === 0, 'no JS errors: ' + errs.join(' | '));

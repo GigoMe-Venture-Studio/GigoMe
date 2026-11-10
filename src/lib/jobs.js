@@ -157,7 +157,13 @@ export async function fetchJobs(filters, { limit = 200 } = {}) {
   // Highest pay: by the hourly equivalent; jobs without one (per project,
   // unpaid, no structured pay) after the rest.
   if (filters.sort === 'pay') query = query.order('pay_hourly', { ascending: false, nullsFirst: false });
-  const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
+  // Newest first by when each job went live (published_at, set by the
+  // database on first publication), not when its draft was started. A job
+  // without one comes after, by when it was written (see postedAt()).
+  const { data, error } = await query
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+    .limit(limit);
   if (error) throw error;
   return data || [];
 }
@@ -325,6 +331,9 @@ export function markerPay(job) {
       return shortPay(job.pay);
   }
 }
+// When a job went live: its first publication, or when it was written for a
+// job without one (and in the employer's preview, which isn't published).
+export const postedAt = (job) => job.published_at || job.created_at;
 export function postedLabel(iso) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
   if (days <= 0) return 'Today';

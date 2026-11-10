@@ -36,7 +36,10 @@ export default function Home() {
         <div>
           <h3>For employers</h3>
           <p>
-            Want to list a job? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            Want to list a job? It's free: <Link to="/employers">see how it works for employers</Link>.
+          </p>
+          <p className="how-questions">
+            Questions? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
         </div>
       </section>

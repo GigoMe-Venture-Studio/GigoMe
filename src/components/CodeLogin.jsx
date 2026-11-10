@@ -6,13 +6,16 @@ import {
   CODE_LENGTH,
   RESEND_SECONDS,
   fetchProfile,
-  findUniversity,
+  fetchUniversities,
   logOut,
   looksLikeEmail,
   normalizeEmail,
   sendCode,
+  universityFor,
+  universityNames,
   verifyCode
 } from '../lib/auth.js';
+import { mailtoHref } from '../lib/links.js';
 import { fetchMyCompany } from '../lib/employer.js';
 import { captchaEnabled } from '../lib/captcha.js';
 import Turnstile from './Turnstile.jsx';
@@ -65,6 +68,21 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   const [isStudentEmail, setIsStudentEmail] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [info, setInfo] = useState('');
+  // Students: the universities whose emails can log in, shown on the email
+  // step and listed again when an address is refused. Empty when they can't
+  // be loaded (the form still works; the check on "Send me a code" reads them
+  // again).
+  const [universities, setUniversities] = useState([]);
+  useEffect(() => {
+    if (employer) return undefined;
+    let active = true;
+    fetchUniversities()
+      .then((list) => active && setUniversities(list))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [employer]);
   // Turnstile (when VITE_TURNSTILE_SITE_KEY is set): every call to Supabase
   // Auth sends the current token, then the widget fetches a new one.
   const [captchaToken, setCaptchaToken] = useState('');
@@ -102,7 +120,9 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     try {
       let university;
       try {
-        university = await findUniversity(value);
+        const list = await fetchUniversities();
+        if (!employer) setUniversities(list);
+        university = universityFor(value, list);
       } catch {
         setError("We couldn't check your email right now. Check your connection and try again.");
         return;
@@ -212,6 +232,15 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         {employer ? 'Use your work email.' : 'Use your university email.'} We'll send you a{' '}
         <span className="nowrap">{CODE_LENGTH}-digit</span> code, no password needed.
       </p>
+      {/* Naming a university here must never read as its endorsement: the
+          line always says GigoMe isn't affiliated with or endorsed by any
+          university (CLAUDE.md). */}
+      {!employer && universities.length > 0 && (
+        <p className="auth-small login-unis">
+          Open to students of {universityNames(universities)}. GigoMe is an independent student project, not
+          affiliated with or endorsed by any university.
+        </p>
+      )}
       <form className="auth-form" onSubmit={onSubmitEmail} noValidate>
         <label className="field">
           {employer ? 'Work email' : 'University email'}
@@ -243,9 +272,23 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         {error && <p className="err" role="alert">{error}</p>}
         {notListed && (
           <div className="note auth-notice" role="alert">
+            {universities.length > 0 ? (
+              <>
+                <p>Use your university email. GigoMe is open to students of:</p>
+                <ul className="uni-list">
+                  {universities.map((u) => (
+                    <li key={u.id}>
+                      {u.name} <span className="uni-domains">({u.domains.map((d) => '@' + d).join(' or ')})</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p>Use your university email.</p>
+            )}
             <p>
-              Use your university email. If your university isn't on GigoMe yet, tell us at{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              Is your university missing?{' '}
+              <a href={mailtoHref(CONTACT_EMAIL, 'Add my university to GigoMe')}>Email {CONTACT_EMAIL}</a>
             </p>
             <p>
               Are you an employer? <Link to="/employers">Log in on the employers page</Link>.

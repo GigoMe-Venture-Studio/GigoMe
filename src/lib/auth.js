@@ -36,18 +36,32 @@ export function looksLikeEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+// Every university on GigoMe, by name, with its student email domains
+// (lowercased). Universities without a domain are left out: nobody can log in
+// with them. The universities table is readable without logging in.
+export async function fetchUniversities() {
+  const { data, error } = await supabase.from('universities').select('id, name, email_domains').order('name');
+  if (error) throw error;
+  return (data || [])
+    .map((u) => ({
+      id: u.id,
+      name: u.name,
+      domains: (u.email_domains || []).map((d) => String(d).trim().toLowerCase()).filter(Boolean)
+    }))
+    .filter((u) => u.domains.length > 0);
+}
+
 // The university this email belongs to, or null. Same rule as the database:
 // the lowercased domain must exactly match one of the university's domains.
-// The universities table is readable without logging in.
-export async function findUniversity(email) {
+export function universityFor(email, universities) {
   const domain = emailDomain(email);
-  const { data, error } = await supabase.from('universities').select('id, name, email_domains');
-  if (error) throw error;
-  return (
-    (data || []).find((u) =>
-      (u.email_domains || []).some((d) => String(d).trim().toLowerCase() === domain)
-    ) || null
-  );
+  return universities.find((u) => u.domains.includes(domain)) || null;
+}
+
+// "Bocconi University", "A and B", "A, B and C".
+export function universityNames(universities) {
+  const names = universities.map((u) => u.name);
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] || '';
 }
 
 // captchaToken: from Turnstile, when it's configured (see src/lib/captcha.js).

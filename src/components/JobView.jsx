@@ -16,6 +16,7 @@ import {
   payLabel,
   payNote,
   placeLabel,
+  postedAt,
   postedLabel,
   scheduleLabels,
   websiteHref,
@@ -33,9 +34,12 @@ export default function JobView({ job, apply, preview = false }) {
   const company = job.companies;
   const site = websiteHref(company.website);
   const companyName = preview ? <span>{company.name}</span> : <Link to={`/companies/${company.id}`}>{company.name}</Link>;
+  // Three parts, in this order: the head (title to facts), "How to apply",
+  // then the rest. On phones they stack, so "Apply" is on the first screen;
+  // from 900px "How to apply" is the right-hand column (site.css).
   return (
-    <div className="detail">
-      <article>
+    <article className="detail">
+      <div className="detail-head">
         <div className="detail-title-row">
           <h1 className="page-title">{job.title || <span className="muted">(No title yet)</span>}</h1>
           <div className="detail-actions">
@@ -79,6 +83,11 @@ export default function JobView({ job, apply, preview = false }) {
           <div><dt>Start</dt><dd>{job.start_date ? dateLabel(job.start_date) : 'Flexible'}</dd></div>
           {languageLabels(job).length > 0 && <div><dt>Languages at work</dt><dd>{languageLabels(job).join(', ')}</dd></div>}
         </dl>
+      </div>
+      <aside className="detail-apply" aria-label="How to apply">
+        <div className="apply">{apply}</div>
+      </aside>
+      <div className="detail-body">
         <div className="prose-role">
           <h2>About the job</h2>
           {job.description ? (
@@ -86,7 +95,7 @@ export default function JobView({ job, apply, preview = false }) {
           ) : (
             <p className="muted">The employer hasn't added a description yet.</p>
           )}
-          <p className="muted job-posted">Posted {postedLabel(job.created_at).toLowerCase()}.</p>
+          <p className="muted job-posted">Posted {postedLabel(postedAt(job)).toLowerCase()}.</p>
           {job.latitude != null && job.longitude != null && <JobPlace job={job} />}
           <h2>About {company.name}</h2>
           {company.description ? <p className="job-text">{company.description}</p> : null}
@@ -105,11 +114,8 @@ export default function JobView({ job, apply, preview = false }) {
         ) : (
           <ReportJob jobId={job.id} />
         )}
-      </article>
-      <aside aria-label="How to apply">
-        <div className="apply">{apply}</div>
-      </aside>
-    </div>
+      </div>
+    </article>
   );
 }
 
