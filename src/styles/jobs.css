@@ -67,6 +67,12 @@
 .job-posted { font-size: 14px; }
 
 .apply-contact > * + * { margin-top: var(--s3); }
+/* "How to apply" while the login state loads (JobDetail.jsx): the logged-out
+   content, invisible, gives the box its usual height; "Loading…" sits on top. */
+.apply-body { position: relative; }
+.apply-loading { position: absolute; top: 0; left: 0; }
+.apply-sizer { visibility: hidden; }
+.save-slot { visibility: hidden; } /* SaveButton.jsx: holds the place until the login state is known */
 .apply-heading { font-weight: 600; }
 .apply-email { overflow-wrap: anywhere; }
 .apply-company { margin-top: 0; }

@@ -1,5 +1,5 @@
 const { chromium, devices } = require('./lib/browser.js');
-const { mock, ID } = require('./lib/mock.js');
+const { mock, ID, login: studentLogin } = require('./lib/mock.js');
 const { amock, login } = require('./lib/amock.js');
 const { stubMap } = require('./lib/stub.js');
 const E = 'http://127.0.0.1:4402';
@@ -147,6 +147,25 @@ async function newPage(b, opts = {}, mockOpts = {}) {
     ok(await p.locator('.map-sheet').count() === 0, 'card closes');
     ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'phone: no sideways scroll');
     await ctx.close(); }
+
+  // ---- 4a. Job page on a phone: nothing below "How to apply" moves when the
+  // login state arrives (the map would load too early and the page jump).
+  // The map's place is recorded on every frame from first paint, logged out
+  // and as a student.
+  for (const student of [false, true]) {
+    const { ctx, p } = await newPage(b, devices['iPhone 13']);
+    if (student) { await p.goto(E + '/login'); await studentLogin(p); }
+    await p.addInitScript(() => {
+      window.__tops = [];
+      const tick = () => { const e = document.querySelector('.job-place'); if (e) window.__tops.push(Math.round(e.getBoundingClientRect().top + scrollY)); if (performance.now() < 2500) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    });
+    await p.goto(E + '/jobs/' + ID(1)); await p.waitForTimeout(2600);
+    const tops = await p.evaluate(() => window.__tops);
+    ok(tops.length > 10 && Math.min(...tops) === Math.max(...tops),
+      `job page${student ? ', student' : ''}: the map doesn't move from first paint on: ${Math.min(...tops)} to ${Math.max(...tops)} over ${tops.length} frames`);
+    await ctx.close();
+  }
 
   // ---- 4. Job page map
   { const { ctx, p, reqs } = await newPage(b, devices['iPhone 13']);

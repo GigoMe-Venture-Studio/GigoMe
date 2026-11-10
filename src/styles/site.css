@@ -145,6 +145,9 @@ svg.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;str
    ========================================================================== */
 /* ---- Home ---- */
 .hero{padding-top:var(--s8);padding-bottom:var(--s7)}
+/* Under 360px a little less space above the headline, so the search form ends
+   above the Feedback button and it is fully visible at first load (320x568). */
+@media (max-width:359px){ .hero{padding-top:var(--s6)} }
 .hero h1,.hero-lead{max-width:720px}
 .hero h1{font-size:clamp(2.25rem,5vw,3.5rem);font-weight:700;letter-spacing:-0.02em;line-height:1.08;text-wrap:balance}
 .hero-lead{font-size:18px;color:var(--muted);margin-top:var(--s4);max-width:60ch}

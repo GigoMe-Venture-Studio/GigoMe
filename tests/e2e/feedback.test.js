@@ -76,6 +76,8 @@ async function sweep(p, label) {
   {
     const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); const log = await mock(ctx); const p = await ctx.newPage();
     await p.goto(E + '/login'); await login(p);
+    await p.goto(E + '/'); await p.waitForTimeout(700);
+    ok(await p.locator('.feedback-fab').isVisible() && await p.locator('.home-newest .save-btn').count() === 0, 'desktop logged in: home page, first load: the Feedback button is fully shown, no Save buttons on the cards');
     await p.goto(E + '/jobs?q=barista'); await p.waitForTimeout(500);
     // The button fades out while it would cover a control: scroll until it shows.
     for (let y = 0; y < 3000 && await p.$eval('.feedback-fab', (e) => e.hasAttribute('data-away')); y += 120) { await p.evaluate((yy) => scrollTo(0, yy), y); await p.waitForTimeout(80); }
@@ -130,18 +132,26 @@ async function sweep(p, label) {
     await ctx.close();
   }
 
+  // ---- 375px phone: the home page at first load, logged in and out
+  for (const logged of [false, true]) {
+    const ctx = await b.newContext({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true }); await mock(ctx); const p = await ctx.newPage();
+    if (logged) { await p.goto(E + '/login'); await login(p); }
+    await p.goto(E + '/'); await p.waitForTimeout(700);
+    ok(await p.locator('.feedback-fab').isVisible(), `375x667 ${logged ? 'logged in' : 'logged out'}: home page, first load: the Feedback button is fully shown`);
+    await ctx.close();
+  }
+
   // ---- phones: the button never covers a control while scrolling
   for (const [name, dev] of [['iPhone SE', { viewport: { width: 320, height: 568 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }], ['iPhone 13', devices['iPhone 13']], ['Pixel 7', devices['Pixel 7']]]) {
     for (const logged of [false, true]) {
       const ctx = await b.newContext(dev); await mock(ctx); const p = await ctx.newPage();
       if (logged) { await p.goto(E + '/login'); await login(p); }
-      if (!logged && name !== 'iPhone SE') {
-        // Home page, first load, logged out: the button must be fully shown
-        // (no Save bookmarks on the home page's cards for that reason). On a
-        // 320x568 screen the hero's area dropdown sits where it goes, so it
-        // steps aside there, as it already did before the bookmarks.
+      {
+        // Home page, first load: the button must be fully shown, logged in
+        // or out (so no Save buttons on the home page's cards, for anyone).
         await p.goto(E + '/'); await p.waitForTimeout(700);
-        ok(await p.locator('.feedback-fab').isVisible() && await p.locator('.home-newest .save-btn').count() === 0, `${name}: home page, first load: the Feedback button is fully shown, no bookmarks on the cards`);
+        ok(await p.locator('.feedback-fab').isVisible() && await p.locator('.home-newest .save-btn').count() === 0,
+          `${name} ${logged ? 'logged in' : 'logged out'}: home page, first load: the Feedback button is fully shown, no Save buttons on the cards`);
       }
       if (!logged) {
         await p.goto(E + '/terms'); await p.waitForTimeout(400); // nothing there for it to step aside for

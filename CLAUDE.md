@@ -118,9 +118,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   ids, loaded once per login; `useSavedJobs()`, `setSaved()`),
   `src/components/SaveButton.jsx` (the bookmark on job cards, next to the
   card's link, not inside it, and on job pages; for students; logged out
-  it's a link to `/login?next=/jobs/<id>` that saves nothing, except on the
-  home page's cards (`offerLogin={false}`), where it would push the Feedback
-  button aside at first load; company accounts get none),
+  it's a link to `/login?next=/jobs/<id>` that saves nothing; company
+  accounts get none; never on the home page's cards (`JobCard save={false}`),
+  for anyone, so the Feedback button is fully visible there at first load;
+  on job pages it holds its place, invisible, until the login state is
+  known),
   `src/pages/Saved.jsx` (`/saved`, "Saved jobs" in the header for students;
   jobs that closed or expired show as "No longer available" from
   `my_saved_jobs()`). `/saved` also holds, from `src/lib/student.js`: saved
@@ -143,7 +145,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - Job page body: `src/components/JobView.jsx`, in three parts: head (title
   to the facts), "How to apply", body. From 900px "How to apply" is the
   right-hand column; on phones the parts stack in that order, so "Apply"
-  comes right after the pay and hours. Used by `/jobs/:id` and by
+  comes right after the pay and hours. Nothing below "How to apply" may move
+  when the login state arrives (the map would load too early and the page
+  jumps): while it loads the box holds the logged-out content, invisible,
+  and then keeps at least that height until the width changes
+  (`HowToApply` in `JobDetail.jsx`; a map-finish check measures it). Used by `/jobs/:id` and by
   the job form's "Preview" (same component, so the preview is exactly what
   students see; in a preview Save, Share, Report and Apply are shown but do
   nothing, nothing is saved, and the metro badge is worked out from
@@ -249,9 +255,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   feedback", which opens the same panel), so it never covers "Apply" or
   "Search jobs" on a phone: keep that working when adding pages.
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
-  that opens `/jobs` with those filters), the 5 newest live jobs, "How it
-  works". Show only real data: no sample listings, ratings, numbers or
-  features that don't exist.
+  that opens `/jobs` with those filters), the 5 newest live jobs (cards
+  without Save buttons), "How it works". Show only real data: no sample
+  listings, ratings, numbers or features that don't exist. The Feedback
+  button must be fully visible at first load, logged in or out, on desktop
+  and at 375px (checked in `feedback.test.js`).
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
   `account.css`, `employer.css`, `admin.css`, `error.css`).
