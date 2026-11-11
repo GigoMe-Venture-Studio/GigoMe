@@ -6,9 +6,9 @@ changed: each point below says what the text says, what the app actually
 does, and a suggested way to make them match. Changing the app instead is
 sometimes the better fix; that is noted where it applies.
 
-"PR B" refers to a pending change to the database (not live yet): terms
-acceptance with a version, an 18+ statement, automatic deletion periods.
-Points it would settle are marked; they stay mismatches until it is merged.
+"PR B" refers to the change that added terms acceptance with a version, an
+18+ statement and automatic deletion periods (live since November 2026).
+Points it settled are marked.
 
 ## Privacy Notice v1.0
 
@@ -78,39 +78,37 @@ Points it would settle are marked; they stay mismatches until it is merged.
 - **App:** there are two kinds of account: **student** (email from a listed university) and **company** (any other email). A private person or family who wants to advertise signs up on the employers page and must fill in a "Company name". The app doesn't record whether an advertiser is a business or a private person.
 - **Suggested:** either "role (student or advertiser)" in the Privacy Notice, or the team adds a "private person" option to the employer sign-up (worth it if Terms section D is meant to apply).
 
-### 11. Retention periods that aren't applied yet
-- **Text** (section 9): incomplete registrations 30 days; listings 90 days after removal; contact-reveal logs 180 days; active accounts 24 months after last activity with a warning; fraud records 24 months after resolution; terms-acceptance records 36 months after closure.
-- **App today:** nothing is deleted automatically (all periods in `retention_settings` are empty).
-- **PR B** adds automatic, daily jobs:
-  - incomplete sign-ups deleted after 30 days;
-  - removed or expired listings cleaned up after 90 days;
-  - apply-click records made anonymous after 180 days (the per-listing counts advertisers see stay correct).
-- **Still not built after PR B:**
-  - **24 months of inactivity** (and the warning before it). A warning needs an email, which the free email plan (300 a day for everything) can't promise; the team would do it by hand.
-  - **Fraud records** (job reports): kept until someone deletes them; nothing deletes them after 24 months.
-  - **Terms acceptance after closure:** when an account is deleted, the record of when its holder accepted the Terms is deleted with it. Nothing is kept for 36 months.
-- **Suggested:** after PR B, either keep the 24-month and 36-month rules and the team builds them (a separate, minimal acceptance record that outlives the account; a manual inactivity review), or soften section 9 to what is done: "Accounts are kept until you delete them; we review inactive accounts at least once a year and delete those inactive for 24 months." and "The record of your acceptance is deleted with your account." The legal person decides which.
+### 11. Retention periods
+- **Text** (section 9): incomplete registrations 30 days; listings 90 days after removal; contact-reveal logs 180 days; active accounts 24 months after last activity with a warning; security logs 90 days; correspondence 12 months; fraud records 24 months after resolution; terms-acceptance records 36 months after closure.
+- **App (since November 2026),** automatic every night, each a day under the Notice's limit so a nightly run is never late:
+  - incomplete sign-ups deleted after 29 days;
+  - removed or expired listings: contact, saves and details removed after 89 days (listings with a report are kept as evidence);
+  - apply-click records made anonymous after 179 days (the per-listing counts advertisers see stay correct);
+  - fraud records (job reports) deleted 730 days after resolution. A report now also outlives the deleted job or company, keeping only the job title and company name.
+- **Done by hand (HANDOVER.md section 7d, owner: Emil):** 24 months of inactivity with an emailed warning (the free email plan can't promise bulk warnings); the authentication log (Supabase's audit log, switched off in the database or emptied monthly); support and privacy email after 12 months.
+- **Not done:** **Terms acceptance after closure.** When an account is deleted, the record of when its holder accepted the Terms is deleted with it. Nothing is kept for 36 months.
+- **Suggested:** either keep the 36-month rule and the team builds a separate, minimal acceptance record that outlives the account, or change section 9 to: "The record of your acceptance is deleted with your account." The legal person decides which.
 
 ### 12. Terms acceptance and age (glance, sections 2 "Contract and compliance records", 12)
 - **Text:** "date and version of accepted Terms" are recorded; GigoMe is for people aged 18 or over.
 - **App today:**
   - Students never accept the Terms or confirm their age.
   - Employers tick "I accept the terms" when they create their company, and only the date is stored, not which version.
-- **PR B** adds a required "I'm 18 or older and I accept the Terms" for everyone (with the version and the time), and asks existing accounts once.
-- **Suggested:** no change to the text once PR B is merged. Until then this is a mismatch.
+- **PR B** added a required "I'm 18 or older and I accept the Terms" for everyone (with the version and the time), and asked existing accounts once.
+- **Suggested:** no change to the text: settled by PR B.
 
 ### 13. Small points
 - **Brevo** (section 6) "delivery of one-time login codes and certain operational emails": GigoMe sends only login codes. Suggested: "delivery of one-time login codes."
 - **Local storage** (section 8) mentions only the login session. The browser also keeps, for the open tab only (session storage), the email a login code was just sent to and whether the metro lines are hidden on maps. Suggested: add "and, for the open tab only, the email address a login code was just sent to".
 - **The map pin:** advertisers can give an exact location (a pin on the map) or only the area. Section 2's "work location" covers it; optionally add "work location (an area of Milan, and optionally an exact point on the map)".
 - **Moderation notes:** admin decisions (approve, reject, request changes) are recorded with the admin, the time and a note. When a company is deleted, its decisions stay without the company or job. Not mentioned; optional under "Contract and compliance records".
-- **Section 14 security** ("The technical team reports that Row Level Security is enabled..."): true. PR B extends the automatic security check to prove each access claim in this notice.
+- **Section 14 security** ("The technical team reports that Row Level Security is enabled..."): true. PR B extended the automatic security check to prove each access claim in this notice.
 
 ## Terms and Conditions v2.0
 
 ### 14. When an account is created (2.2)
 - **Text:** "An account may be created only after the User has been able to consult and actively accept these Terms."
-- **App:** the login account is created when someone asks for a login code, before they enter it and before they accept anything. That is how the email login works. PR B makes acceptance the first step after logging in: nothing else on the site can be used until it is ticked.
+- **App:** the login account is created when someone asks for a login code, before they enter it and before they accept anything. That is how the email login works. PR B made acceptance the first step after logging in: nothing else on the site can be used until it is ticked.
 - **Suggested:** "Before using an account, the User must consult and actively accept these Terms. An account that never does is deleted after 30 days (Privacy Notice, section 9)."
 
 ### 15. Specific approval of clauses (2.4, Italian Civil Code art. 1341)

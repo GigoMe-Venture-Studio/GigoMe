@@ -102,6 +102,7 @@ declare
   v_rt_click_old bigint;
   v_rt_click_new bigint;
   v_rt_click_orphan bigint;
+  v_kr_job      uuid;   -- a reported job its owner deletes
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -1053,7 +1054,7 @@ begin
       union all
       select 'anon:INSERT' where has_any_column_privilege('anon', 'public.job_reports', 'INSERT')
       union all
-      select 'authenticated:INSERT ' || c from unnest(array['reporter_id', 'status', 'resolution_note', 'resolved_by', 'resolved_at', 'created_at']) c
+      select 'authenticated:INSERT ' || c from unnest(array['reporter_id', 'status', 'resolution_note', 'resolved_by', 'resolved_at', 'created_at', 'job_title', 'company_name']) c
       where has_column_privilege('authenticated', 'public.job_reports', c, 'INSERT')
     ) s(x);
     results := pg_temp.res(results, 'job_reports: logged-in users insert only job, reason and details; nobody updates or deletes',
@@ -2658,8 +2659,8 @@ begin
            || coalesce(ended_jobs_days::text, 'empty') || ', ' || coalesce(feedback_days::text, 'empty') || ', '
            || coalesce(resolved_reports_days::text, 'empty') || ', ' || coalesce(inactive_accounts_days::text, 'empty')
       into v_text from public.retention_settings where id = 1;
-    results := pg_temp.res(results, 'Retention periods (Privacy Notice section 9): incomplete sign-ups 30 days, ended listings 90, apply clicks 180; the older periods empty',
-                           '30, 90, 180; older periods: empty, empty, empty, empty', v_text, v_text = '30, 90, 180; older periods: empty, empty, empty, empty');
+    results := pg_temp.res(results, 'Retention periods (Privacy Notice section 9): incomplete sign-ups 29 days, ended listings 89, apply clicks 179, resolved reports 730; ended jobs, feedback and inactive accounts empty',
+                           '29, 89, 179; older periods: empty, empty, 730, empty', v_text, v_text = '29, 89, 179; older periods: empty, empty, 730, empty');
 
     -- Old and recent test rows, then run it with every period empty, then set.
     insert into auth.users (id, email, created_at, last_sign_in_at) values
@@ -3227,12 +3228,19 @@ begin
            || (select count(*) from public.job_contacts where job_id = v_dp_gone_job) || ' contact, '
            || (select count(*) from public.job_clicks where job_id = v_dp_gone_job) || ' clicks, '
            || (select count(*) from public.saved_jobs where job_id = v_dp_gone_job) || ' saves, '
-           || (select count(*) from public.company_follows where company_id = v_dp_gone_company) || ' follows, '
-           || (select count(*) from public.job_reports where job_id = v_dp_gone_job) || ' reports'
+           || (select count(*) from public.company_follows where company_id = v_dp_gone_company) || ' follows'
       into v_text;
-    results := pg_temp.res(results, 'Deleting a company account in the dashboard: company, listing, contact, and the clicks, saves, follows and reports on it go too',
-                           '0 company, 0 job, 0 contact, 0 clicks, 0 saves, 0 follows, 0 reports', v_text,
-                           v_text = '0 company, 0 job, 0 contact, 0 clicks, 0 saves, 0 follows, 0 reports');
+    results := pg_temp.res(results, 'Deleting a company account in the dashboard: company, listing, contact, and the clicks, saves and follows on it go too',
+                           '0 company, 0 job, 0 contact, 0 clicks, 0 saves, 0 follows', v_text,
+                           v_text = '0 company, 0 job, 0 contact, 0 clicks, 0 saves, 0 follows');
+
+    select count(*) || ' kept; job: ' || coalesce(string_agg(coalesce(job_id::text, 'empty'), ','), 'none')
+           || '; title: ' || coalesce(string_agg(job_title, ','), 'none') || '; company: ' || coalesce(string_agg(company_name, ','), 'none')
+           || '; reason: ' || coalesce(string_agg(reason, ','), 'none') || '; reporter: ' || coalesce(string_agg(case when reporter_id = v_dp_student then 'kept' else 'other' end, ','), 'none')
+      into v_text from public.job_reports where details = 'Check dp report on a deleted company';
+    results := pg_temp.res(results, 'Deleting a company account in the dashboard: the reports on its jobs stay as evidence, with only the job title and company name',
+                           '1 kept; job: empty; title: Check job of a company deleted in the dashboard; company: Check Co (deleted in the dashboard); reason: scam; reporter: kept', v_text,
+                           v_text = '1 kept; job: empty; title: Check job of a company deleted in the dashboard; company: Check Co (deleted in the dashboard); reason: scam; reporter: kept');
 
     select (select count(*) || ' decision(s), ' || count(admin_id) || ' with an admin, ' || count(company_id) || ' with a company'
               from public.moderation_log where note in ('Check dp decision on a deleted company', 'Check dp decision by a deleted admin')) || '; review: '
@@ -3273,6 +3281,51 @@ begin
     results := pg_temp.res(results, 'Every reference to an account is deleted with it, except these kept without the person; nothing blocks deleting a user',
                            'emptied: job_clicks.user_id, job_reports.reporter_id, job_reports.resolved_by, jobs.reviewed_by, moderation_log.admin_id; blocking: none',
                            v_text, v_text = 'emptied: job_clicks.user_id, job_reports.reporter_id, job_reports.resolved_by, jobs.reviewed_by, moderation_log.admin_id; blocking: none');
+
+    -- Reports outlive the job -----------------------------------------------
+
+    select case when has_function_privilege('anon', 'public.job_reports_keep_job()', 'EXECUTE')
+                  or has_function_privilege('authenticated', 'public.job_reports_keep_job()', 'EXECUTE')
+                  or has_function_privilege('anon', 'public.job_reports_keep_company()', 'EXECUTE')
+                  or has_function_privilege('authenticated', 'public.job_reports_keep_company()', 'EXECUTE')
+                then 'callable' else 'not callable' end
+           || ', ' || (select count(*) from pg_trigger where not tgisinternal
+                         and tgname in ('job_reports_keep_job', 'job_reports_keep_company')) || ' triggers'
+      into v_text;
+    results := pg_temp.res(results, 'Reports are kept by two triggers whose functions nobody can call',
+                           'not callable, 2 triggers', v_text, v_text = 'not callable, 2 triggers');
+
+    -- A live job of v_emp's company, reported by the student, then taken back
+    -- to draft and deleted by its owner through the API.
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, description)
+      values (v_co_emp, 'Check reported then deleted', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10, 'Check description')
+      returning id into v_kr_job;
+    insert into public.job_reports (job_id, reporter_id, reason, details) values (v_kr_job, v_dp_student, 'misleading', 'Check report on a deleted job');
+    update public.jobs set status = 'draft' where id = v_kr_job;
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      delete from public.jobs where id = v_kr_job;
+      perform set_config('role', 'none', true);
+      v_err := 'deleted';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || ', job ' || case when exists (select 1 from public.jobs where id = v_kr_job) then 'still there' else 'gone' end
+           || '; report: ' || coalesce((select coalesce(job_id::text, 'no job') || ', ' || coalesce(job_title, 'no title') || ', ' || coalesce(company_name, 'no company')
+                                          || ', ' || reason || ', ' || status
+                                        from public.job_reports where details = 'Check report on a deleted job'), 'gone')
+      into v_text;
+    results := pg_temp.res(results, 'An owner deletes a reported job: the report stays, with only the job title and company name',
+                           'deleted, job gone; report: no job, Check reported then deleted, Check Emp, misleading, open', v_text,
+                           v_text = 'deleted, job gone; report: no job, Check reported then deleted, Check Emp, misleading, open');
+
+    v_text := pg_temp.seen_as(v_dp_student, 'select count(*) from public.my_reports() where job_id is null and job_title = ''Check reported then deleted''');
+    results := pg_temp.res(results, 'my_reports still lists the student''s report on a deleted job, with its title', '1', v_text, v_text = '1');
+
+    select count(*) into v_n from public.job_reports where job_id is null and status = 'open' and details = 'Check report on a deleted job';
+    v_text := pg_temp.seen_as(v_other, 'select count(*) from public.job_reports where job_id is null and details = ''Check report on a deleted job''');
+    results := pg_temp.res(results, 'An admin still reads the report on a deleted job (it stays open until resolved)',
+                           '1', v_text, v_text = '1' and v_n = 1);
 
     -- When a job ended ------------------------------------------------------
 
@@ -3351,19 +3404,33 @@ begin
     insert into public.job_clicks (job_id, user_id, created_at) values (v_job_live, null, now() - interval '199 days 3 hours') returning id into v_rt_click_orphan;
     select count(*) into v_n from public.job_clicks where job_id = v_job_live;
 
-    update public.retention_settings set incomplete_signups_days = 30, ended_job_details_days = 90, click_anonymize_days = 180,
-                                         ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null
+    -- Reports resolved 731 and 700 days ago.
+    insert into public.job_reports (job_id, reporter_id, reason, details, status, resolution_note, resolved_at, created_at) values
+      (v_job_live, null, 'other', 'Check rt resolved 731 days ago', 'resolved', 'Check note', now() - interval '731 days', now() - interval '740 days'),
+      (v_job_live, null, 'other', 'Check rt resolved 700 days ago', 'resolved', 'Check note', now() - interval '700 days', now() - interval '710 days');
+
+    -- The periods as the migrations set them.
+    update public.retention_settings set incomplete_signups_days = 29, ended_job_details_days = 89, click_anonymize_days = 179,
+                                         resolved_reports_days = 730, ended_jobs_days = null, feedback_days = null, inactive_accounts_days = null
       where id = 1;
     perform public.run_retention();
+
+    select (select count(*) from public.job_reports where details = 'Check rt resolved 731 days ago') || ' resolved over 730 days ago, '
+           || (select count(*) from public.job_reports where details = 'Check rt resolved 700 days ago') || ' resolved 700 days ago, '
+           || (select count(*) from public.job_reports where details = 'Check dp retention report' and status = 'open') || ' open'
+      into v_text;
+    results := pg_temp.res(results, 'Retention: resolved reports are deleted 730 days (24 months) after resolution; newer and open ones stay',
+                           '0 resolved over 730 days ago, 1 resolved 700 days ago, 1 open', v_text,
+                           v_text = '0 resolved over 730 days ago, 1 resolved 700 days ago, 1 open');
 
     select (select count(*) from auth.users where id in (v_su[1], v_su[2])) || ' users, '
            || (select count(*) from public.profiles where id in (v_su[1], v_su[2])) || ' profiles left'
       into v_text;
-    results := pg_temp.res(results, 'Retention: sign-ups never finished (no Terms, no name, no company), with no login for 30 days, are deleted',
+    results := pg_temp.res(results, 'Retention: sign-ups never finished (no Terms, no name, no company), with no login for 29 days, are deleted',
                            '0 users, 0 profiles left', v_text, v_text = '0 users, 0 profiles left');
 
     select count(*) || ' of 6 kept' into v_text from auth.users where id = any (v_su[3:8]);
-    results := pg_temp.res(results, 'Retention: kept if logged in within 30 days, named, Terms accepted, owning a company, admin, or newer than 30 days',
+    results := pg_temp.res(results, 'Retention: kept if logged in within 29 days, named, Terms accepted, owning a company, admin, or newer than 29 days',
                            '6 of 6 kept', v_text, v_text = '6 of 6 kept');
 
     select (select count(*) from public.job_contacts where job_id in (v_rt_closed, v_rt_expired)) || ' contacts, '
@@ -3372,7 +3439,7 @@ begin
                  and description is null and pay is null and location is null and not show_exact_location
                  and nearest_station_id is null and latitude is distinct from 45.4601) || ' of 2 without details'
       into v_text;
-    results := pg_temp.res(results, 'Retention: a listing closed or expired over 90 days ago loses its contact, saves, description, pay note, free-text location and pin',
+    results := pg_temp.res(results, 'Retention: a listing closed or expired over 89 days ago loses its contact, saves, description, pay note, free-text location and pin',
                            '0 contacts, 0 saves, 2 of 2 without details', v_text, v_text = '0 contacts, 0 saves, 2 of 2 without details');
 
     select (select count(*) from public.jobs where id in (v_rt_closed, v_rt_expired) and title like 'Check dp % long ago') || ' listings with their title, '
@@ -3384,14 +3451,14 @@ begin
     select (select count(*) from public.job_contacts where job_id in (v_rt_reported, v_rt_recent, v_job_live)) || ' contacts, '
            || (select count(*) from public.jobs where id in (v_rt_reported, v_rt_recent) and description = 'Check description') || ' descriptions kept'
       into v_text;
-    results := pg_temp.res(results, 'Retention: reported listings, listings ended under 90 days ago and live listings are left alone',
+    results := pg_temp.res(results, 'Retention: reported listings, listings ended under 89 days ago and live listings are left alone',
                            '3 contacts, 2 descriptions kept', v_text, v_text = '3 contacts, 2 descriptions kept');
 
     select string_agg(case when user_id is null then 'no student' else 'student' end || ', '
                       || case when created_at = date_trunc('day', created_at) then 'day only' else 'exact time' end,
                       '; ' order by array_position(array[v_rt_click_old, v_rt_click_orphan, v_rt_click_new], id))
       into v_text from public.job_clicks where id in (v_rt_click_old, v_rt_click_orphan, v_rt_click_new);
-    results := pg_temp.res(results, 'Retention: apply clicks older than 180 days lose the student for good and keep only the day; newer ones are untouched',
+    results := pg_temp.res(results, 'Retention: apply clicks older than 179 days lose the student for good and keep only the day; newer ones are untouched',
                            'no student, day only; no student, day only; student, exact time', v_text,
                            v_text = 'no student, day only; no student, day only; student, exact time');
 

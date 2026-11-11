@@ -57,7 +57,7 @@ domain changes no one.
 | `job_contacts` | How to apply for each job: a link and/or an email address | Nobody directly | Owners, through `set_job_contact` |
 | `job_clicks` | Apply clicks: one row each time a student presses "Apply" on a job. GigoMe can't see whether they then applied, so these are never "applications" | Admins; each student sees only their own ("Jobs you opened" on /saved, through `my_opened_jobs`) | Written automatically by `reveal_job_contact` |
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
-| `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
+| `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved. When the job or its company is deleted, the report stays with only the job's title and the company's name (`job_title`, `company_name`, copied by the database just before) | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
 | `moderation_log` | Every admin decision: company approved or rejected, job reviewed or unpublished, report resolved, with who, when and the note | Admins only | Nobody directly: the admin functions write it |
 | `retention_settings` | One row: the retention periods, in days (see "Data retention" below) | Nobody through the website or API | Only the team, in the dashboard |
 
@@ -245,7 +245,8 @@ done. `security_check.sql` proves it both ways.
 | `companies` they own | Deleted, with everything below |
 | → `jobs` of that company | Deleted |
 | → `job_contacts` (how to apply) | Deleted |
-| → `job_clicks`, `saved_jobs`, `job_reports` on those jobs; `company_follows` of that company | Deleted (other students' clicks, saves, reports and follows of that company go too) |
+| → `job_clicks`, `saved_jobs` on those jobs; `company_follows` of that company | Deleted (other students' clicks, saves and follows of that company go too) |
+| → `job_reports` on those jobs | **Kept as evidence:** `job_id` emptied, with only the job's title and the company's name copied in (also when a single job is deleted) |
 | `moderation_log` | **Kept:** decisions they made as an admin lose `admin_id`; decisions about their company or jobs lose `company_id` / `job_id` |
 | `jobs.reviewed_by`, `job_reports.resolved_by` (admins only) | **Kept, emptied:** the review or resolution stays, without who did it |
 
@@ -253,9 +254,9 @@ Not covered by this: Supabase's auth audit log (logins, code requests),
 which Supabase keeps itself (see `HANDOVER.md`, "Data retention: who does
 what"), and any copy outside the database (backups, see `docs/BACKUPS.md`).
 
-Note on fraud evidence: when a company account is deleted, the reports on
-its jobs go with them. If a company under investigation deletes itself,
-only the moderation log entries (without the company) remain.
+Fraud evidence: when a job or a company is deleted (by its owner, with the
+account, or in the dashboard), the reports on it stay, with only the job
+title and company name, until 730 days after they are resolved.
 
 ## Functions the website calls
 
@@ -295,38 +296,43 @@ Editor, one row; each column a number of days, empty = keep forever). It
 writes when it ran and what it did to `last_run_at` and `last_result` in the
 same row.
 
-**On** (Privacy Notice v1.0, section 9; set by migration
-`20261111120000_data_protection.sql`):
+**On** (Privacy Notice v1.0, section 9). Each runs a day before the
+Notice's limit, so a nightly run is never late. Set by the migrations
+(`20261111120000_data_protection.sql`, then
+`20261111200000_keep_reports.sql`), so the values are in git:
 
-- `incomplete_signups_days` = **30**: accounts that never finished signing
+- `incomplete_signups_days` = **29**: accounts that never finished signing
   up are deleted, like "Delete my account". "Never finished" means: never
   accepted the Terms, no name, no company, not an admin, and no login for
-  30 days (counted from the last login, or from sign-up if they never
+  29 days (counted from the last login, or from sign-up if they never
   logged in). Accounts from before the Terms were asked for that have a
   name or a company are complete and stay.
-- `ended_job_details_days` = **90**: listings closed, rejected or expired
-  90 days ago lose what isn't needed any more: how to apply
+- `ended_job_details_days` = **89**: listings closed, rejected or expired
+  89 days ago lose what isn't needed any more: how to apply
   (`job_contacts`), students' saves, the description, the pay note, the
   free-text location and the exact pin (only the area stays). The listing
   row stays (title, company, type, dates, pay, area, status) for the
   employer's dashboard, the moderation log and the counts, with its apply
   clicks. **Listings with any report are left alone** (fraud evidence).
   Closing or rejecting time is `jobs.ended_at`; expiry is `expires_at`.
-- `click_anonymize_days` = **180**: apply clicks older than this lose the
+- `click_anonymize_days` = **179**: apply clicks older than this lose the
   student (`user_id` emptied for good) and their time is cut to the day.
   The rows stay, so the per-listing counts employers see don't change, and
   the KPIs (last 12 weeks) aren't affected.
+- `resolved_reports_days` = **730**: reports resolved 24 months ago are
+  deleted. Open reports are never deleted.
 
 **Off** (empty; older settings, kept for later):
 
-- `ended_jobs_days` (at least 30): deletes ended jobs outright, **including
-  their reports**. Don't turn it on without thinking about fraud records.
+- `ended_jobs_days` (at least 30): deletes ended jobs outright (their
+  reports stay, with the job title and company name).
 - `feedback_days` (at least 30): feedback older than this.
-- `resolved_reports_days` (at least 30): reports resolved this long ago.
 - `inactive_accounts_days` (at least 180): accounts not logged in for this
   long, deleted without warning (company accounts with their company and
   jobs). The Privacy Notice's 24 months with a warning is done by hand
   instead: see `HANDOVER.md`, "Data retention: who does what".
+- Supabase's auth audit log (`auth.audit_log_entries`) is not touched by
+  the nightly job: see `HANDOVER.md` section 7d for why and what to do.
 
 - **Check the schedule:** SQL Editor → `select jobname, schedule, command
   from cron.job;` should show `gigome-retention`. If it doesn't: Database →

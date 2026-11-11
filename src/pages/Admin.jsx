@@ -378,7 +378,11 @@ function ReportItem({ report, onDone }) {
           <JobSummary job={job} />
         </div>
       ) : (
-        <p className="muted">The job no longer exists.</p>
+        // Deleted jobs keep only their title and company name in the report.
+        <p className="muted">
+          The job no longer exists
+          {report.job_title && <>: "{report.job_title}"{report.company_name && <> at {report.company_name}</>}</>}.
+        </p>
       )}
       <label className="field">
         <span>Note <span className="field-optional">(required; the employer sees it if you unpublish)</span></span>
