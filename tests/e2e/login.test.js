@@ -175,8 +175,8 @@ async function mockSupabase(ctx, opts = {}) {
       const over = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       ok(over <= 0, 'no sideways scroll on phone: ' + path);
     }
-    await p.goto(ENV + '/privacy'); await p.waitForTimeout(200);
-    ok((await txt(p, 'h1')) === 'Privacy notice', '/privacy page');
+    await p.goto(ENV + '/privacy'); await p.waitForSelector('.legal-doc');
+    ok((await txt(p, 'h1')) === 'GigoMe | Privacy Notice', '/privacy page');
     await p.screenshot({ path: SHOTS + 'phone-privacy.png' });
     await p.goto(ENV + '/nope'); await p.waitForTimeout(200);
     ok((await txt(p, 'h1')) === 'Page not found', '404 still works');

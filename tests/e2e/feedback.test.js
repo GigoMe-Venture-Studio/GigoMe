@@ -154,7 +154,7 @@ async function sweep(p, label) {
           `${name} ${logged ? 'logged in' : 'logged out'}: home page, first load: the Feedback button is fully shown, no Save buttons on the cards`);
       }
       if (!logged) {
-        await p.goto(E + '/terms'); await p.waitForTimeout(400); // nothing there for it to step aside for
+        await p.goto(E + '/'); await p.waitForTimeout(700); // home page, first load: nothing there for it to step aside for
         const fab = await p.locator('.feedback-fab').boundingBox();
         const label = await p.locator('.feedback-fab-label').boundingBox();
         ok(Math.round(fab.width) === 44 && Math.round(fab.height) === 44 && label.width <= 1 && await p.getByRole('button', { name: 'Feedback', exact: true }).count() === 1,
