@@ -35,23 +35,38 @@ async function downloadJson(p, click) {
     }
     const robots = await (await p.request.get(E + '/robots.txt')).text();
     ok(/Disallow: \/account/.test(robots) && /Disallow: \/admin/.test(robots) && /Sitemap: https:\/\/gigome\.org\/sitemap\.xml/.test(robots), 'robots.txt');
+    // Icons: favicon.ico with 16, 32 and 48 px; a 192 px PNG; both linked from the page.
+    const ico = await (await p.request.get(E + '/favicon.ico')).body();
+    const icoSizes = Array.from({ length: ico.readUInt16LE(4) }, (_, i) => ico[6 + 16 * i] || 256).sort((x, y) => x - y);
+    ok(icoSizes.join(',') === '16,32,48', 'favicon.ico has 16, 32 and 48 px: ' + icoSizes);
+    const png = await p.request.get(E + '/favicon-192.png'); const pb = await png.body();
+    ok(png.status() === 200 && /^image\/png/.test(png.headers()['content-type']) && pb.readUInt32BE(16) === 192 && pb.readUInt32BE(20) === 192, 'favicon-192.png is a 192x192 PNG');
+    const shell = await (await p.request.get(E + '/')).text();
+    ok(shell.includes('<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">') && shell.includes('<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">'), 'both icons linked from the page');
     const sitemap = await (await p.request.get(E + '/sitemap.xml')).text();
     ok(['/', '/jobs', '/employers', '/privacy', '/terms'].every((x) => sitemap.includes(`<loc>https://gigome.org${x}</loc>`)) && !sitemap.includes('/account'), 'sitemap: the fixed pages');
     await ctx.close(); }
 
   // ---- Titles, descriptions and JobPosting data
   { const ctx = await b.newContext(desk); await mock(ctx, {}); await stubMap(ctx); const p = await ctx.newPage();
-    const meta = () => p.evaluate(() => ({ title: document.title, desc: (document.querySelector('meta[name=description]') || {}).content,
-      canonical: (document.querySelector('link[rel=canonical]') || {}).href || null, robots: (document.querySelector('meta[name=robots]') || {}).content || null,
-      ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent) }));
+    // ld: the page's own JSON-LD blocks; site: the WebSite block every page has (index.html).
+    const meta = async () => {
+      const r = await p.evaluate(() => ({ title: document.title, desc: (document.querySelector('meta[name=description]') || {}).content,
+        canonical: (document.querySelector('link[rel=canonical]') || {}).href || null, robots: (document.querySelector('meta[name=robots]') || {}).content || null,
+        ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent) }));
+      const isSite = (t) => { try { return JSON.parse(t)['@type'] === 'WebSite'; } catch { return false; } };
+      return { ...r, site: r.ld.filter(isSite), ld: r.ld.filter((t) => !isSite(t)) };
+    };
     await p.goto(E + '/'); await p.waitForTimeout(500);
     let m = await meta();
     ok(m.title === 'GigoMe: part-time work and internships in Milan, in English' && m.canonical === 'https://gigome.org/' && !m.robots, 'home: title and canonical: ' + JSON.stringify(m));
+    ok(m.site.length === 1 && JSON.stringify(JSON.parse(m.site[0])) === JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'GigoMe', url: 'https://gigome.org/' }) && m.ld.length === 0,
+      'home: WebSite data with the name GigoMe and https://gigome.org/: ' + JSON.stringify(m.site));
     await p.goto(E + '/jobs?area=3'); await p.waitForSelector('.job-list .role-row'); m = await meta();
     ok(m.title === 'Jobs in Milan in English | GigoMe' && m.canonical === 'https://gigome.org/jobs' && /Filter by area/.test(m.desc), '/jobs: title, description, canonical without the filters: ' + JSON.stringify(m));
     await p.goto(E + '/jobs/' + ID(1)); await p.waitForSelector('.facts'); await p.waitForTimeout(300); m = await meta();
     ok(m.title === 'Weekend barista at Nebbia Coffee Bar | GigoMe' && /^Weekend barista at Nebbia Coffee Bar, Milan\. Serve coffee/.test(m.desc), 'job page: title and description: ' + JSON.stringify(m));
-    ok(m.ld.length === 1, 'job page: one JSON-LD block');
+    ok(m.ld.length === 1 && m.site.length === 1, 'job page: one JobPosting block, and the WebSite block once');
     const ld = JSON.parse(m.ld[0]);
     ok(ld['@type'] === 'JobPosting' && ld.title === 'Weekend barista' && ld.employmentType === 'PART_TIME' && ld.hiringOrganization.name === 'Nebbia Coffee Bar' && ld.datePosted, 'JobPosting: title, type, company, date: ' + m.ld[0].slice(0, 200));
     ok(ld.baseSalary && ld.baseSalary.currency === 'EUR' && ld.baseSalary.value.value === 11 && ld.baseSalary.value.unitText === 'HOUR', 'JobPosting: pay €11 an hour');
