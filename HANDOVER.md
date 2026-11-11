@@ -20,11 +20,14 @@ skip any because "it worked in testing".
 - [x] Who operates GigoMe: named in both texts.
 - [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
       reads it, like `hello@gigome.org`.
-- [x] Retention in the database: incomplete sign-ups 30 days, ended
-      listings' details 90 days, apply clicks anonymous after 180 days,
-      applied daily (SUPABASE.md, "Data retention").
-- [ ] Someone is named for each manual retention task in section 7d
-      (24-month inactivity, security logs, email) and has done it once.
+- [x] Retention in the database: incomplete sign-ups 29 days, ended
+      listings' details 89 days, apply clicks anonymous after 179 days,
+      resolved reports deleted after 730 days, applied daily
+      (SUPABASE.md, "Data retention").
+- [x] Emil owns every manual retention task in section 7d (24-month
+      inactivity, security logs, email).
+- [ ] Emil has switched off writing the auth audit log to the database and
+      emptied `auth.audit_log_entries` once (section 7d).
 
 **Accounts and settings**
 - [ ] Every **[fill in]** in this file is filled in.
@@ -333,16 +336,16 @@ the free plan.
 
 | What | Kept until |
 | --- | --- |
-| Profile: email, university, name, degree level, graduation year | The account is deleted. An account that never finished signing up (no Terms, no name, no company): 30 days after its last login |
+| Profile: email, university, name, degree level, graduation year | The account is deleted. An account that never finished signing up (no Terms, no name, no company): 29 days after its last login |
 | Terms acceptance: which version, when ("I'm 18 or older and I accept the Terms") | The account is deleted |
-| Saved jobs | Removed, the account is deleted, or 90 days after the job ended |
+| Saved jobs | Removed, the account is deleted, or 89 days after the job ended |
 | Saved searches: a name, the filters, when last opened | Deleted, or the account is deleted |
 | Companies followed (the company sees only a count) | Unfollowed, the company is deleted, or the account is deleted |
-| Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | After 180 days, or when the account is deleted: kept without the user (anonymous), the day only |
-| Job reports they filed (admins only) | Kept after the account is deleted, without the reporter |
+| Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | After 179 days, or when the account is deleted: kept without the user (anonymous), the day only |
+| Job reports they filed (admins only) | Kept after the account is deleted, without the reporter, and after the job or company is deleted, with only the job title and company name. Deleted 730 days after the report was resolved |
 | Feedback they sent (admins only) | The account is deleted |
 | Login details kept by Supabase Auth: email, when the account was created, last login | The account is deleted |
-| For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company). 90 days after a job is closed, rejected or expired: its contact, description, pay note, free-text location and pin (unless it was reported) |
+| For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company; reports on its jobs stay with only the job title and company name). 89 days after a job is closed, rejected or expired: its contact, description, pay note, free-text location and pin (unless it was reported) |
 
 "Share" on a job page hands the job's link to the phone's own share sheet
 (the student picks the app) or copies it; GigoMe sees nothing. "Use my
@@ -351,14 +354,16 @@ location" is never stored (section 7b).
 ## 7d. Data retention: who does what
 
 The Privacy Notice (section 9) promises retention periods. The database does
-three of them by itself every night (SUPABASE.md, "Data retention"):
-incomplete sign-ups (30 days), ended listings' details (90 days), apply
-clicks made anonymous (180 days). Everything below is **done by hand**. Put
-each in the calendar of the person named, and note the date each time in the
-team's shared notes.
+four of them by itself every night (SUPABASE.md, "Data retention"):
+incomplete sign-ups (29 days), ended listings' details (89 days), apply
+clicks made anonymous (179 days) and resolved reports (730 days, 24
+months). Each runs a day before the Notice's limit, so a nightly run is
+never late. Everything below is **done by hand by Emil**, who owns every
+task in this section. Put each in the calendar and note the date each time
+in the team's shared notes.
 
 **Accounts inactive for 24 months** (with a warning first)
-- **Who:** the data lead: **[fill in]**.
+- **Who:** Emil.
 - **When:** the first working day of every month.
 - **How:** in the SQL Editor, list accounts with no login for 23 months
   (admins left out):
@@ -375,25 +380,40 @@ team's shared notes.
 - The next month, delete the ones that still haven't logged in after their
   date: Authentication → Users → Delete (SUPABASE.md, "When someone
   deletes their account": same effect as "Delete my account"). A company
-  account takes its company and jobs with it.
+  account takes its company and jobs with it (reports on its jobs stay).
 - Don't use `inactive_accounts_days` for this: it deletes without warning.
 
 **Authentication and security logs** (normally 90 days)
-- **Who:** the data lead.
-- **When:** monthly, together with the task above.
-- **What is under our control:**
-  - Supabase's auth audit log (logins, code requests, with email and IP)
-    in the table `auth.audit_log_entries`. In the SQL Editor:
-    `delete from auth.audit_log_entries where created_at < now() - interval '90 days';`
-    (Or switch off storing it in the database: Authentication → settings,
-    if the dashboard offers it; Supabase's own logs then keep it briefly.)
-  - Cloudflare Workers Logs: kept 3 days by our `wrangler.jsonc`. Nothing to do.
-- **Not under our control:** Supabase's platform logs (1 day on the free
-  plan), Cloudflare's, Brevo's and Google's own logs. They follow those
-  providers' terms. Re-check them once a year and note what you found.
+- **Who:** Emil.
+- **What is under our control:** Supabase's auth audit log (logins, code
+  requests, with email and IP address), kept in the database table
+  `auth.audit_log_entries` and, separately, in Supabase's own logs.
+- **Once (recommended):** Supabase Dashboard → Authentication → the
+  settings that list "Disable writing auth audit logs to project database"
+  → switch it on. New entries then only go to Supabase's own logs, which
+  Supabase keeps for a short time (about a day on the free plan, per
+  Supabase's pricing page; check it when you switch it on) and which stay
+  visible in the dashboard's Logs. Then, in the SQL Editor, delete what the
+  table already holds:
+  `delete from auth.audit_log_entries where created_at < now() - interval '90 days';`
+  (or without the `where`, to empty it).
+- **If you don't switch it off:** run that `delete` on the first working day
+  of every month, with the inactivity task above.
+- **Why this isn't in the nightly job:** `auth.audit_log_entries` belongs to
+  Supabase's auth service, not to GigoMe. Since April 2025 Supabase
+  restricts what the `postgres` role (the one our migrations and the
+  nightly job run as) may do in the `auth` schema, and its documentation
+  doesn't say whether deleting from that table is still allowed. A refused
+  delete would make the whole nightly run fail (the other deletions
+  included) without anyone noticing, and the table's layout can change with
+  Supabase's updates. The dashboard switch is the supported way.
+- Cloudflare Workers Logs: kept 3 days by our `wrangler.jsonc`. Nothing to do.
+- **Not under our control:** Supabase's platform logs, Cloudflare's,
+  Brevo's and Google's own logs. They follow those providers' terms.
+  Re-check them once a year and note what you found.
 
 **Support and privacy email** (normally 12 months after the request is closed)
-- **Who:** whoever reads `hello@gigome.org` and `privacy@gigome.org`: **[fill in]**.
+- **Who:** Emil, who reads `hello@gigome.org` and `privacy@gigome.org`.
 - **When:** every three months.
 - **How:** in the mailbox those addresses forward to, search
   `older_than:12m`, check none of the threads is still open or part of a
@@ -402,18 +422,18 @@ team's shared notes.
   Check its retention in Brevo's settings once and note it here: **[fill in]**.
 
 **Fraud and complaint records** (normally 24 months after resolution)
-- Resolved reports stay until someone deletes them. Either the owner
-  approves setting `resolved_reports_days` = 730 in `retention_settings`
-  (automatic), or the data lead deletes them by hand once a quarter in
-  Table Editor → `job_reports` (status resolved, `resolved_at` older than
-  24 months).
+- Automatic: resolved reports are deleted 730 days after they were
+  resolved. Open reports are never deleted. A report stays when its job or
+  company is deleted, keeping only the job title and company name.
+- **Who checks it:** Emil, once a year: no resolved report older than 24
+  months in Table Editor → `job_reports`.
 
 **Records of Terms acceptance** (up to 36 months after an account closes)
 - Not kept: the acceptance is deleted with the account. That's a decision
   for the legal person (`docs/legal/text-vs-app.md`, point 11).
 
 **Backups:** any database dump also holds personal data; keep the newest
-three, none older than three months (`docs/BACKUPS.md`).
+three, none older than three months (`docs/BACKUPS.md`). Who: Emil.
 
 ## 8. Not built on purpose
 

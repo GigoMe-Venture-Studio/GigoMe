@@ -102,7 +102,7 @@ export function missingInfo(job) {
 export async function fetchOpenReports() {
   const { data, error } = await supabase
     .from('job_reports')
-    .select('id, reason, details, created_at, reporter_id, jobs(' + JOB_COLUMNS + ')')
+    .select('id, reason, details, created_at, reporter_id, job_title, company_name, jobs(' + JOB_COLUMNS + ')')
     .eq('status', 'open')
     .order('created_at', { ascending: true });
   if (error) throw error;

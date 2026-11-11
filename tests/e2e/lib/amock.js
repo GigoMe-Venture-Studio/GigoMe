@@ -15,7 +15,9 @@ async function amock(ctx, opts = {}) {
       { id: ID(1), title: 'Weekend barista (live)', description: 'Serve coffee.', job_type: 'part_time', location: 'Porta Venezia', remote: false, hours_per_week: 12, pay: '€11/h', italian_level: 'none', start_date: null, expires_at: ago(-24 * 30), status: 'published', created_at: ago(50), review_note: null, reviewed_at: null, company_id: 'c3' }
     ],
     jobContact: { pj1: ['https://nebbia.it/jobs', null], pj2: [null, 'promo@gmail.com'], [ID(1)]: ['https://nebbia.it/apply', null] },
-    reports: [{ id: 'r1', reason: 'scam', details: 'They asked me for a €50 fee.', created_at: ago(2), reporter_id: 'u9', job_id: ID(1), status: 'open' }],
+    reports: [{ id: 'r1', reason: 'scam', details: 'They asked me for a €50 fee.', created_at: ago(2), reporter_id: 'u9', job_id: ID(1), status: 'open' },
+      // A report whose job (and company) was deleted: only the kept title and name.
+      ...(opts.goneReport ? [{ id: 'r2', reason: 'misleading', details: 'Pay was half.', created_at: ago(1), reporter_id: null, job_id: null, job_title: 'Night shift', company_name: 'Gone Ltd', status: 'open' }] : [])],
     profiles: { u1: { id: 'u1', full_name: 'Ana Rossi', account_type: 'student' }, u9: { id: 'u9', full_name: 'Marco Bianchi', account_type: 'student' } },
     log: [{ id: 1, created_at: ago(20), admin_id: 'u1', action: 'company_approved', note: null, company_id: 'c3', job_id: null }],
     myReports: []
@@ -61,7 +63,7 @@ async function amock(ctx, opts = {}) {
     }
     if (path === '/rest/v1/job_reports' && method === 'GET') {
       if (!opts.admin) return j(200, []);
-      return j(200, db.reports.filter((x) => x.status === 'open').map((x) => ({ ...x, jobs: jobOut(db.jobs.find((y) => y.id === x.job_id)) })));
+      return j(200, db.reports.filter((x) => x.status === 'open').map((x) => { const jb = db.jobs.find((y) => y.id === x.job_id); return { ...x, jobs: jb ? jobOut(jb) : null }; }));
     }
     if (path === '/rest/v1/job_reports' && method === 'POST') {
       const b = body(); log.reportPosts = (log.reportPosts || []).concat([b]);

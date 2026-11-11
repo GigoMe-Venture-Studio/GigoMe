@@ -125,6 +125,17 @@ const probe = (sel) => { const b = document.querySelector('.feedback-fab'); cons
     }
     await ctx.close();
   }
+
+  // ---- a report whose job was deleted: kept, with the job title and company name only
+  { const ctx = await b.newContext(desk); await amock(ctx, { admin: true, goneReport: true }); const p = await ctx.newPage();
+    await p.goto(E + '/login'); await login(p); await p.goto(E + '/admin'); await p.waitForTimeout(800);
+    const r2 = p.locator('#admin-reports .admin-item', { hasText: 'Pay was half.' });
+    const t2 = await r2.innerText().catch(() => '');
+    ok(t2.includes('The job no longer exists: "Night shift" at Gone Ltd.') && t2.includes('A deleted account'), 'report on a deleted job: its kept title and company, reporter deleted: ' + t2.slice(0, 200));
+    ok(await r2.locator('button:has-text("Unpublish the job")').count() === 0 && await r2.locator('button:has-text("Reject the company")').count() === 0
+       && await r2.locator('button:has-text("Resolve the report")').count() === 1, 'only "Resolve the report" is offered for it');
+    await ctx.close();
+  }
   await b.close();
   console.log(`\n${pass} passed, ${fail} failed`);
 })();

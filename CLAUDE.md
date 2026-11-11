@@ -511,7 +511,11 @@ Schema rules
 - `job_reports`: logged-in users insert `job_id`, `reason`, `details` for a
   job they can see (RLS), one open report per user per job (unique index);
   only admins read them, and only `admin_resolve_report(id, note)` resolves
-  them. `moderation_log`: every admin decision (who, when, what, note),
+  them. A report outlives its job and company: triggers
+  `job_reports_keep_job` / `job_reports_keep_company` (SECURITY DEFINER,
+  before delete) copy only the job title and company name into
+  `job_title` / `company_name` (no grants) and empty `job_id`; /admin and
+  `my_reports()` show them. `moderation_log`: every admin decision (who, when, what, note),
   written only by the admin functions (`admin_set_company_status`,
   `admin_review_job`, `admin_resolve_report`), read only by admins. A new
   admin action must write to it too.
@@ -521,7 +525,8 @@ Schema rules
   their feedback explicitly, then the `auth.users` row, which cascades to the
   profile (with the Terms acceptance), their feedback, saved jobs, saved
   searches and follows and, for a company account, its company, jobs, job
-  contacts and those jobs' clicks (and reports on those jobs). Their own
+  contacts and those jobs' clicks (reports on those jobs stay, with only the
+  job title and company name). Their own
   clicks and the reports they filed stay, with `user_id` / `reporter_id` set
   to null; admins' decisions, reviews and resolutions stay without them.
   Deleting a user in the dashboard (Authentication > Users > Delete) does
@@ -548,16 +553,20 @@ Schema rules
   without the resolution note or resolver). `admin_stats()`: admins only.
 - Retention: `retention_settings` (one row, no grants) and `run_retention()`
   (no grants), run daily at 03:37 UTC by pg_cron job `gigome-retention`.
-  On (Privacy Notice section 9, owner's go-ahead in November 2026):
-  incomplete sign-ups deleted after 30 days without a login (no Terms, no
-  name, no company, not an admin); listings closed, rejected or expired 90
-  days ago lose contact, saves, description, pay note, free-text location
-  and pin, unless reported (`jobs.ended_at`: trigger `job_ended_at`, no
-  grants); apply clicks lose `user_id` and keep only the day after 180 days
-  (counts unchanged). The older periods (ended jobs, feedback, resolved
-  reports, inactive accounts) stay empty. Never set or shorten a period
-  without the owner's go-ahead. The rest (24-month inactivity, security
-  logs, email) is done by hand: `HANDOVER.md` section 7d.
+  On (Privacy Notice section 9, owner's go-ahead in November 2026; each a
+  day under the Notice's limit, set in migrations so the values are in
+  git): incomplete sign-ups deleted after 29 days without a login (no
+  Terms, no name, no company, not an admin); listings closed, rejected or
+  expired 89 days ago lose contact, saves, description, pay note, free-text
+  location and pin, unless reported (`jobs.ended_at`: trigger
+  `job_ended_at`, no grants); apply clicks lose `user_id` and keep only the
+  day after 179 days (counts unchanged); resolved reports deleted 730 days
+  after resolution. The other periods (ended jobs, feedback, inactive
+  accounts) stay empty. Never set or shorten a period without the owner's
+  go-ahead; change one in a new migration. Never touch Supabase's `auth`
+  tables other than `auth.users` from it (`auth.audit_log_entries`: the
+  dashboard setting, by hand). The rest (24-month inactivity, security logs,
+  email) is done by hand by Emil: `HANDOVER.md` section 7d.
 
 Security check
 - `supabase/checks/security_check.sql` is pasted into the SQL Editor after a
