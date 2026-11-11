@@ -28,7 +28,8 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
     const t = await txt(p, 'main');
     ok(/free/i.test(t) && /review/i.test(t) && /2 working days/.test(t), '/employers explains free listing and review');
     ok(await p.locator('main input[name=email]').count() === 1 && (await txt(p, '.employers-login')).includes('Work email'), 'login form with work email');
-    ok(await p.locator('.login-unis').count() === 0, 'employer login: no "Open to students of ..." line');
+    ok(await p.locator('.login-disclaimer').count() === 0, 'employer login: no student-login lines');
+    ok((await txt(p, '#login-privacy')) === 'We use your email to log you in and, if needed, to contact you about your company. See our Privacy Notice.' && (await p.getAttribute('#login-privacy a', 'href')) === '/privacy', 'employer login: what the email is used for, links to /privacy');
     await p.screenshot({ path: OUT + '/employers.png', fullPage: true });
     // a student email is pointed to the student login, no code sent
     const before = 0;

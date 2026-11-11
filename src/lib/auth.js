@@ -58,11 +58,6 @@ export function universityFor(email, universities) {
   return universities.find((u) => u.domains.includes(domain)) || null;
 }
 
-// "Bocconi University", "A and B", "A, B and C".
-export function universityNames(universities) {
-  const names = universities.map((u) => u.name);
-  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] || '';
-}
 
 // captchaToken: from Turnstile, when it's configured (see src/lib/captcha.js).
 // Supabase ignores it until CAPTCHA protection is turned on in its dashboard.

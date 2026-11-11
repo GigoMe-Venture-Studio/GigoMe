@@ -1,4 +1,4 @@
-/* Home page, and the placeholder boxes on /privacy and /terms. Mobile first;
+/* Home page. Mobile first;
    the hero and "How it works" come from site.css. */
 
 .home-newest { padding-bottom: var(--s7); }
@@ -6,12 +6,6 @@
 .home-jobs-note { padding: var(--s4) 0; }
 .how p { color: var(--ink); }
 .how .how-questions { margin-top: var(--s2); color: var(--muted); }
-
-/* Text the owner still has to write: clearly marked as missing. */
-.placeholder-text {
-  padding: var(--s3) var(--s4); border: 1px dashed var(--slate); border-radius: var(--r-md);
-  background: var(--paper); color: var(--muted); font-style: italic;
-}
 
 /* "Your account has been deleted", shown once after deleting an account. */
 .home-notice { margin-top: var(--s5); padding: var(--s3) var(--s4); border-radius: var(--r-md); background: var(--paper); font-weight: 600; }

@@ -28,8 +28,8 @@
 .nowrap { white-space: nowrap; }
 .auth-notice > p + p { margin-top: var(--s2); }
 .auth-notice { color: var(--ink); }
-/* Student login: which universities can log in (from the universities table). */
-.login-unis { margin-top: var(--s3); }
+/* Student login: GigoMe's independence, and which universities can log in when an address is refused. */
+.login-disclaimer { margin-top: var(--s3); }
 .uni-list { margin-top: var(--s2); padding-left: 1.25em; }
 .auth-notice > .uni-list + p { margin-top: var(--s2); }
 .uni-list li + li { margin-top: var(--s1); }
@@ -54,7 +54,3 @@
   .auth-buttons { flex-direction: row; }
 }
 
-/* /privacy and /terms */
-.legal-page h2 { margin-top: var(--s6); font-size: 20px; font-weight: 600; }
-.legal-page h2 + * { margin-top: var(--s3); }
-.legal-page .placeholder-text { margin-top: var(--s3); }

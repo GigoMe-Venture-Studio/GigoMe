@@ -12,7 +12,6 @@ import {
   normalizeEmail,
   sendCode,
   universityFor,
-  universityNames,
   verifyCode
 } from '../lib/auth.js';
 import { mailtoHref } from '../lib/links.js';
@@ -68,21 +67,9 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   const [isStudentEmail, setIsStudentEmail] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [info, setInfo] = useState('');
-  // Students: the universities whose emails can log in, shown on the email
-  // step and listed again when an address is refused. Empty when they can't
-  // be loaded (the form still works; the check on "Send me a code" reads them
-  // again).
+  // Students: the universities whose emails can log in, read by the check on
+  // "Send me a code" and listed when an address is refused.
   const [universities, setUniversities] = useState([]);
-  useEffect(() => {
-    if (employer) return undefined;
-    let active = true;
-    fetchUniversities()
-      .then((list) => active && setUniversities(list))
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, [employer]);
   // Turnstile (when VITE_TURNSTILE_SITE_KEY is set): every call to Supabase
   // Auth sends the current token, then the widget fetches a new one.
   const [captchaToken, setCaptchaToken] = useState('');
@@ -232,13 +219,11 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         {employer ? 'Use your work email.' : 'Use your university email.'} We'll send you a{' '}
         <span className="nowrap">{CODE_LENGTH}-digit</span> code, no password needed.
       </p>
-      {/* Naming a university here must never read as its endorsement: the
-          line always says GigoMe isn't affiliated with or endorsed by any
-          university (CLAUDE.md). */}
-      {!employer && universities.length > 0 && (
-        <p className="auth-small login-unis">
-          Open to students of {universityNames(universities)}. GigoMe is an independent student project, not
-          affiliated with or endorsed by any university.
+      {/* The universities are named only when an address is refused (below),
+          and this line is always on the student login (CLAUDE.md). */}
+      {!employer && (
+        <p className="auth-small login-disclaimer">
+          GigoMe is an independent student project, not affiliated with or endorsed by any university.
         </p>
       )}
       <form className="auth-form" onSubmit={onSubmitEmail} noValidate>
@@ -269,7 +254,10 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
           />
         </label>
         <p className="auth-small" id="login-privacy">
-          By continuing you agree to our <Link to="/privacy">privacy notice</Link>.
+          {employer
+            ? 'We use your email to log you in and, if needed, to contact you about your company.'
+            : "We use your email to log you in and to check it's from a university on GigoMe."}{' '}
+          See our <Link to="/privacy">Privacy Notice</Link>.
         </p>
         {error && <p className="err" role="alert">{error}</p>}
         {notListed && (

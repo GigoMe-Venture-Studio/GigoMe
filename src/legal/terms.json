@@ -1,0 +1,1067 @@
+{
+ "source": "docs/legal/published/terms-and-conditions-v2.0.html",
+ "title": "GigoMe | Terms and Conditions",
+ "toc": [
+  {
+   "href": "#section-1",
+   "label": "IMPORTANT: How GigoMe actually works",
+   "sub": false
+  },
+  {
+   "href": "#section-2",
+   "label": "A. General terms",
+   "sub": false
+  },
+  {
+   "href": "#section-3",
+   "label": "1. Operator, users and scope",
+   "sub": true
+  },
+  {
+   "href": "#section-4",
+   "label": "2. Eligibility and acceptance",
+   "sub": true
+  },
+  {
+   "href": "#section-5",
+   "label": "3. Features and limits of the service",
+   "sub": true
+  },
+  {
+   "href": "#section-6",
+   "label": "4. Account and system security",
+   "sub": true
+  },
+  {
+   "href": "#section-7",
+   "label": "5. General prohibited conduct",
+   "sub": true
+  },
+  {
+   "href": "#section-8",
+   "label": "B. Students and job discovery",
+   "sub": false
+  },
+  {
+   "href": "#section-9",
+   "label": "6. Student profiles",
+   "sub": true
+  },
+  {
+   "href": "#section-10",
+   "label": "7. Reveal Contact and external applications",
+   "sub": true
+  },
+  {
+   "href": "#section-11",
+   "label": "8. Employment and personal safety",
+   "sub": true
+  },
+  {
+   "href": "#section-12",
+   "label": "C. Business and professional advertisers",
+   "sub": false
+  },
+  {
+   "href": "#section-13",
+   "label": "9. Identity, authority and listings",
+   "sub": true
+  },
+  {
+   "href": "#section-14",
+   "label": "10. Mandatory employment obligations",
+   "sub": true
+  },
+  {
+   "href": "#section-15",
+   "label": "11. Advertiser contact details and external applications",
+   "sub": true
+  },
+  {
+   "href": "#section-16",
+   "label": "12. Business-user indemnification",
+   "sub": true
+  },
+  {
+   "href": "#section-17",
+   "label": "D. Private advertisers and families",
+   "sub": false
+  },
+  {
+   "href": "#section-18",
+   "label": "13. Private opportunities",
+   "sub": true
+  },
+  {
+   "href": "#section-19",
+   "label": "E. Ratings, reporting and information",
+   "sub": false
+  },
+  {
+   "href": "#section-20",
+   "label": "14. Reviews and ratings, if enabled",
+   "sub": true
+  },
+  {
+   "href": "#section-21",
+   "label": "15. Reports and moderation",
+   "sub": true
+  },
+  {
+   "href": "#section-22",
+   "label": "16. Personal data and third-party services",
+   "sub": true
+  },
+  {
+   "href": "#section-23",
+   "label": "17. Intellectual property and submitted content",
+   "sub": true
+  },
+  {
+   "href": "#section-24",
+   "label": "F. Fees, liability and legal terms",
+   "sub": false
+  },
+  {
+   "href": "#section-25",
+   "label": "18. Free service and availability",
+   "sub": true
+  },
+  {
+   "href": "#section-26",
+   "label": "19. No guarantee of third-party outcomes",
+   "sub": true
+  },
+  {
+   "href": "#section-27",
+   "label": "20. Account closure and data deletion",
+   "sub": true
+  },
+  {
+   "href": "#section-28",
+   "label": "21. Changes to the Terms",
+   "sub": true
+  },
+  {
+   "href": "#section-29",
+   "label": "22. Governing law, disputes and consumer rights",
+   "sub": true
+  },
+  {
+   "href": "#section-30",
+   "label": "23. Contact",
+   "sub": true
+  }
+ ],
+ "body": [
+  [
+   "h1",
+   null,
+   "GigoMe | Terms and Conditions"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Version 2.0 | Last updated: 11 November 2026"
+   ],
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Operator:"
+   ],
+   " Matteo Maria Scarano, acting in his personal capacity",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Contact address:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italy",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "General contact:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Privacy requests:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Website:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/"
+    },
+    "https://gigome.org/"
+   ]
+  ],
+  [
+   "h2",
+   {
+    "id": "section-1"
+   },
+   "IMPORTANT: How GigoMe actually works"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe is a free online service for discovering job opportunities and obtaining the contact details or external application links supplied by the relevant advertiser. ",
+   [
+    "strong",
+    null,
+    "GigoMe does not accept, forward or manage job applications; it does not share student profiles with advertisers."
+   ],
+   " When a student chooses ",
+   [
+    "strong",
+    null,
+    "Reveal Contact"
+   ],
+   ", GigoMe displays the contact information or external link for that listing. The student then independently decides whether and how to contact or apply to the advertiser outside GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "To provide, secure and assess this feature, GigoMe records which registered student revealed which listing's contact details and when. ",
+   [
+    "strong",
+    null,
+    "This log is accessible only to authorized GigoMe administrators, not to advertisers."
+   ],
+   " Please read the separate Privacy Notice."
+  ],
+  [
+   "p",
+   null,
+   "Employers and private advertisers are responsible for the accuracy and legality of their listings and for the employment-related obligations applicable to any subsequent engagement. GigoMe is not a party to a work agreement and does not guarantee hiring, remuneration or the conduct of users. These Terms cannot override any legal obligation that applies to GigoMe itself."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-2"
+   },
+   "A. General terms"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-3"
+   },
+   "1. Operator, users and scope"
+  ],
+  [
+   "p",
+   null,
+   "1.1. GigoMe (the ",
+   [
+    "strong",
+    null,
+    "Platform"
+   ],
+   ") is operated by ",
+   [
+    "strong",
+    null,
+    "Matteo Maria Scarano"
+   ],
+   ", acting in his personal capacity (the ",
+   [
+    "strong",
+    null,
+    "Operator"
+   ],
+   ", ",
+   [
+    "strong",
+    null,
+    "GigoMe"
+   ],
+   ", ",
+   [
+    "strong",
+    null,
+    "we"
+   ],
+   ", ",
+   [
+    "strong",
+    null,
+    "us"
+   ],
+   "). GigoMe is a service name, not a separately incorporated legal entity."
+  ],
+  [
+   "p",
+   null,
+   "1.2. These Terms apply to (a) students and other eligible individuals using the service to discover opportunities (",
+   [
+    "strong",
+    null,
+    "Students"
+   ],
+   "), (b) businesses, organizations and professionals publishing opportunities (",
+   [
+    "strong",
+    null,
+    "Business Advertisers"
+   ],
+   "), and (c) private individuals and families publishing permitted opportunities (",
+   [
+    "strong",
+    null,
+    "Private Advertisers"
+   ],
+   "). The latter two are collectively ",
+   [
+    "strong",
+    null,
+    "Advertisers"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   "1.3. The parties to any subsequent employment or service arrangement are determined by the actual relationship and applicable law. These Terms govern use of GigoMe, not agreements reached independently between a Student and an Advertiser."
+  ],
+  [
+   "p",
+   null,
+   "1.4. GigoMe's legal classification depends on the activities it actually performs. These Terms do not constitute an exemption from any mandatory registration, authorization or other regulatory requirement."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-4"
+   },
+   "2. Eligibility and acceptance"
+  ],
+  [
+   "p",
+   null,
+   "2.1. Users must be ",
+   [
+    "strong",
+    null,
+    "at least 18 years old"
+   ],
+   ", have the legal capacity to use the Platform and provide accurate information. Anyone registering for an organization warrants that they are authorized to act on its behalf."
+  ],
+  [
+   "p",
+   null,
+   "2.2. An account may be created only after the User has been able to consult and actively accept these Terms. A record of the applicable version and acceptance may be retained as explained in the Privacy Notice. The Privacy Notice is supplied separately; accepting these Terms is not blanket consent to data processing or marketing."
+  ],
+  [
+   "p",
+   null,
+   "2.3. These Terms apply to each subsequent use of the service, including each listing published by an Advertiser and each contact revealed by a Student. A separate contractual checkbox is not necessarily required for each action. The User must, however, take the relevant action voluntarily and receive all information required at that point."
+  ],
+  [
+   "p",
+   null,
+   "2.4. Clauses requiring specific acceptance under applicable law, including Article 1341 of the Italian Civil Code where relevant, shall be presented for legally effective separate approval. An ordinary general checkbox does not automatically validate an otherwise ineffective clause."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-5"
+   },
+   "3. Features and limits of the service"
+  ],
+  [
+   "p",
+   null,
+   "3.1. GigoMe may provide user accounts, listings, search and filtering tools, limited profile information, advertiser contact-reveal functions and content reporting tools."
+  ],
+  [
+   "p",
+   null,
+   "3.2. ",
+   [
+    "strong",
+    null,
+    "No in-platform applications:"
+   ],
+   " GigoMe does not receive application forms, CVs or employment applications on behalf of Advertisers, forward student profiles, notify Advertisers of individual contact reveals, manage employer–applicant conversations or select candidates. Any external email, form, phone call, interview or application is managed directly by the parties involved."
+  ],
+  [
+   "p",
+   null,
+   "3.3. ",
+   [
+    "strong",
+    null,
+    "No employer access to student profiles:"
+   ],
+   " Advertisers cannot browse, search or access Students' GigoMe profiles or the administrative contact-reveal records."
+  ],
+  [
+   "p",
+   null,
+   "3.4. GigoMe does not employ, supply, interview, assess or shortlist workers; negotiate pay or conditions; create or administer work contracts; process payroll; handle contributions or insurance; supervise work; or guarantee an engagement. It does not offer individual legal, employment or immigration advice."
+  ],
+  [
+   "p",
+   null,
+   "3.5. The Platform is initially intended for opportunities to be performed in Italy. GigoMe may restrict categories of work or locations pending appropriate legal and safety checks."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-6"
+   },
+   "4. Account and system security"
+  ],
+  [
+   "p",
+   null,
+   "4.1. Users must safeguard access to their email accounts and authentication codes, promptly notify GigoMe of unauthorized access and avoid giving login codes to others."
+  ],
+  [
+   "p",
+   null,
+   "4.2. GigoMe currently authenticates users with a one-time code delivered by email. It does not ask Users to create a GigoMe password. Users must not share authentication codes or impersonate others."
+  ],
+  [
+   "p",
+   null,
+   "4.3. Circumventing access controls, probing or exploiting vulnerabilities, scraping personal data, using automated tools in breach of applicable law, distributing malware and interfering with the service are prohibited."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-7"
+   },
+   "5. General prohibited conduct"
+  ],
+  [
+   "p",
+   null,
+   "Users must not use the Platform to commit fraud; impersonate another party; post fabricated opportunities; engage in harassment or discrimination; request unlawful fees; promote undeclared, exploitative or unlawful work; infringe intellectual property; collect credentials or sensitive data deceptively; or use listings or contact information for spam, scraping or unrelated marketing."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-8"
+   },
+   "B. Students and job discovery"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-9"
+   },
+   "6. Student profiles"
+  ],
+  [
+   "p",
+   null,
+   "6.1. Students must submit truthful information and keep it reasonably up to date. University email verification, if used, confirms control of that inbox at the relevant time, not necessarily current enrollment, academic qualifications or permission to work."
+  ],
+  [
+   "p",
+   null,
+   "6.2. Students should not enter sensitive information, identity documents, banking credentials or detailed immigration records into general profile fields. Student profiles are ",
+   [
+    "strong",
+    null,
+    "not available to Advertisers"
+   ],
+   " through GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "6.3. GigoMe may collect optional profile details, such as educational background, skills or general preferences, only in accordance with its Privacy Notice. Profile visibility choices must reflect the Platform's actual features."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-10"
+   },
+   "7. Reveal Contact and external applications"
+  ],
+  [
+   "p",
+   null,
+   "7.1. A Student may select ",
+   [
+    "strong",
+    null,
+    "Reveal Contact"
+   ],
+   " on a particular Job Listing to access an email address, telephone number, website or external application link provided by the Advertiser. This action does ",
+   [
+    "strong",
+    null,
+    "not"
+   ],
+   " send the Student's profile or application to the Advertiser."
+  ],
+  [
+   "p",
+   null,
+   "7.2. The contact information is displayed to the Student. GigoMe records the Student's account identifier, the relevant listing identifier and the time of the reveal for the purposes described in the Privacy Notice. The advertiser does not receive that log through GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "7.3. Once the Student contacts the Advertiser or uses an external website, the relevant communications and application process take place ",
+   [
+    "strong",
+    null,
+    "outside GigoMe"
+   ],
+   ". The recipient may become an independent controller of any personal information the Student provides directly. Students should consult the recipient's privacy information before submitting data externally."
+  ],
+  [
+   "p",
+   null,
+   "7.4. Revealing a contact is not an application, acceptance, employment offer, agreement to work or guarantee of a reply. GigoMe does not confirm whether a Student actually contacted the Advertiser, was interviewed or was hired."
+  ],
+  [
+   "p",
+   null,
+   "7.5. Students should verify the identity of the recipient and carefully assess external links, requested documents, working conditions and the legitimacy of the opportunity. Never send funds to secure a job or share passwords or authentication codes."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-11"
+   },
+   "8. Employment and personal safety"
+  ],
+  [
+   "p",
+   null,
+   "8.1. Before starting an engagement, Students should obtain a written statement of the essential terms from the legally responsible party, including duties, hours, location, remuneration and contractual classification. Such a statement does not replace any employment contract or mandatory filing required by law."
+  ],
+  [
+   "p",
+   null,
+   "8.2. Students retain all mandatory rights concerning remuneration, occupational safety, non-discrimination, social security and other applicable protections. No provision requires them to waive such rights or assumes they are responsible for the Employer's failure to fulfil duties legally assigned to it."
+  ],
+  [
+   "p",
+   null,
+   "8.3. Students must not knowingly submit false credentials or participate in falsification or fraudulent conduct. They are encouraged to report suspected unlawful work, payment scams, dangerous conditions or harassment to GigoMe and the competent authorities where appropriate."
+  ],
+  [
+   "p",
+   null,
+   "8.4. The Employer remains responsible for work-authorization checks and other hiring requirements allocated to it by law. GigoMe does not certify work eligibility."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-12"
+   },
+   "C. Business and professional advertisers"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-13"
+   },
+   "9. Identity, authority and listings"
+  ],
+  [
+   "p",
+   null,
+   "9.1. Business Advertisers must be legally entitled to publish the opportunity, act for the stated organization and engage workers when applicable. Any recruiter or intermediary acting for another entity must disclose its role and hold any legally required authorization."
+  ],
+  [
+   "p",
+   null,
+   "9.2. Listings must be genuine, accurate, current, transparent and lawful. Advertisers must identify the actual hiring or engaging party and provide all information required by applicable law, including, where relevant, duties, location, hours, duration, employment classification, pay or pay range, applicable collective bargaining references and material conditions."
+  ],
+  [
+   "p",
+   null,
+   "9.3. Advertisers must promptly amend or remove expired, unavailable or materially inaccurate opportunities. The Platform may request additional evidence and reject, restrict or remove listings in accordance with applicable law and its moderation rules."
+  ],
+  [
+   "p",
+   null,
+   "9.4. ",
+   [
+    "strong",
+    null,
+    "Continuing declaration."
+   ],
+   " By accepting these Terms and each time an Advertiser publishes a Job Listing, that Advertiser represents that the opportunity is genuine and lawful, the information is accurate and the actual Employer or engaging party will comply with all mandatory contractual, hiring, tax, social security, insurance and workplace-safety duties. This obligation applies without requiring a new contractual checkbox for every listing."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-14"
+   },
+   "10. Mandatory employment obligations"
+  ],
+  [
+   "p",
+   null,
+   "10.1. The actual Employer or engaging party is solely responsible ",
+   [
+    "strong",
+    null,
+    "to the extent allocated by law"
+   ],
+   " for selecting a lawful contractual form, completing required hiring notifications, supplying mandatory written information, paying remuneration and contributions, complying with applicable tax and insurance rules and ensuring workplace safety."
+  ],
+  [
+   "p",
+   null,
+   "10.2. Before work begins, the Advertiser must provide or arrange for the legally responsible party to provide the Student with written confirmation of the essential engagement conditions. This does not replace additional mandatory documents or procedures."
+  ],
+  [
+   "p",
+   null,
+   "10.3. ",
+   [
+    "strong",
+    null,
+    "Undeclared or unlawful work is strictly prohibited."
+   ],
+   " Advertisers must not evade hiring formalities, conceal wages, falsify working time, disguise employment as false self-employment or volunteering, demand unlawful fees, require unlawful unpaid productive trials or otherwise circumvent worker protections."
+  ],
+  [
+   "p",
+   null,
+   "10.4. Short duration, cash payment, occasional scheduling or use of an online platform does not in itself exempt an engagement from mandatory labour, tax or contribution requirements."
+  ],
+  [
+   "p",
+   null,
+   "10.5. Advertisers must respect non-discrimination, lawful recruitment and remuneration-transparency obligations where applicable. Language or qualification requirements must be relevant and proportionate."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-15"
+   },
+   "11. Advertiser contact details and external applications"
+  ],
+  [
+   "p",
+   null,
+   "11.1. Advertisers authorize GigoMe to display the contact channels or external application links they choose to publish with their listings. They warrant they have the right to disclose them and will keep them current."
+  ],
+  [
+   "p",
+   null,
+   "11.2. An Advertiser must not submit another person's private phone number, residential address or individually identifiable contact information for public display without an appropriate legal basis and any required notices or permissions."
+  ],
+  [
+   "p",
+   null,
+   "11.3. GigoMe may disclose an Advertiser's chosen contact details to registered Students using the Reveal Contact feature. It does not disclose which Students have revealed those details to the Advertiser."
+  ],
+  [
+   "p",
+   null,
+   "11.4. Advertisers manage all subsequent communications, applications, recruitment decisions and processing of personal information independently. They must provide any privacy notice and other information required by law when receiving candidate data directly."
+  ],
+  [
+   "p",
+   null,
+   "11.5. Advertisers must not use student communications for unrelated spam, fraud, unauthorized marketing or unlawful data collection."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-16"
+   },
+   "12. Business-user indemnification"
+  ],
+  [
+   "p",
+   null,
+   "12.1. To the extent permitted by law, Business Advertisers shall reimburse the Operator for reasonable, documented losses, legal costs and liabilities directly resulting from their own unlawful conduct or material breach of these Terms, insofar as legally attributable to that Advertiser. This does not cover losses arising from the Operator's own unlawful conduct or from liabilities that cannot lawfully be transferred."
+  ],
+  [
+   "p",
+   null,
+   "12.2. The Operator shall notify the Business Advertiser of a relevant third-party claim within a reasonable period, provide relevant information and allow reasonable participation in the defence. No settlement imposing a reimbursement obligation on the Advertiser shall be entered into without its prior agreement, not to be unreasonably withheld, except where mandatory law requires otherwise. Reimbursable costs must be proportionate and documented."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-17"
+   },
+   "D. Private advertisers and families"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-18"
+   },
+   "13. Private opportunities"
+  ],
+  [
+   "p",
+   null,
+   "13.1. Private Advertisers must be at least 18, provide truthful identifying information and publish only categories expressly enabled by GigoMe. They must not impersonate a company or conceal an activity carried out professionally."
+  ],
+  [
+   "p",
+   null,
+   "13.2. Private Advertisers are responsible for assessing and complying with the actual legal framework of any household, tutoring, care or occasional engagement, including applicable employment, INPS, insurance, tax, work-authorization and safety obligations."
+  ],
+  [
+   "p",
+   null,
+   "13.3. Any domestic employment notifications, contributions and required documentation remain the responsibility of the legally responsible Employer. The availability of Libretto Famiglia or other simplified arrangements depends on the law and the specific circumstances; GigoMe does not determine eligibility or complete those procedures."
+  ],
+  [
+   "p",
+   null,
+   "13.4. Advertisers ",
+   [
+    "strong",
+    null,
+    "must not"
+   ],
+   " publish children's names, photographs, identifying information, precise residential access details or unnecessary sensitive household information in public listings. Additional safeguarding requirements may apply to childcare, care of vulnerable persons and access to homes."
+  ],
+  [
+   "p",
+   null,
+   "13.5. Private Advertisers retain all mandatory consumer protections where legally applicable. Any indemnification or limitation of liability applies to them only within those mandatory limits."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-19"
+   },
+   "E. Ratings, reporting and information"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-20"
+   },
+   "14. Reviews and ratings, if enabled"
+  ],
+  [
+   "p",
+   null,
+   "14.1. If the Platform makes a ratings or reviews feature available, Users may publish only truthful, firsthand accounts of a real, relevant experience and must not fabricate, purchase, trade or coordinate deceptive reviews."
+  ],
+  [
+   "p",
+   null,
+   "14.2. GigoMe may request proportionate evidence, investigate reports, remove misleading or unlawful reviews and restrict accounts for serious manipulation, subject to applicable law. GigoMe does not guarantee independent verification of every experience unless expressly indicated."
+  ],
+  [
+   "p",
+   null,
+   "14.3. Reviews must not contain sensitive personal data, unlawful allegations, threats, harassment or irrelevant personal identifiers. Merely revealing a contact does not establish that a Student has completed work or is eligible to review an employment experience."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-21"
+   },
+   "15. Reports and moderation"
+  ],
+  [
+   "p",
+   null,
+   "15.1. Fraud, undeclared work, discriminatory listings, misuse of data, impersonation and unlawful content may be reported to ",
+   [
+    "strong",
+    null,
+    "hello@gigome.org"
+   ],
+   ". Reports should identify the relevant listing or account and explain the issue."
+  ],
+  [
+   "p",
+   null,
+   "15.2. GigoMe may perform proportionate manual checks before publication and investigate reports. It may request information, temporarily restrict or remove content, suspend accounts and contact competent authorities where appropriate, in compliance with applicable law. Review of listings does not guarantee that every listing has been verified or is lawful."
+  ],
+  [
+   "p",
+   null,
+   "15.3. Where applicable, Users will be informed of relevant restrictions and may ask for a review by contacting hello@gigome.org. GigoMe will follow any mandatory transparency, notice-and-action and redress procedures, including those under the Digital Services Act insofar as applicable."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-22"
+   },
+   "16. Personal data and third-party services"
+  ],
+  [
+   "p",
+   null,
+   "16.1. Personal data is handled as described in the ",
+   [
+    "strong",
+    null,
+    "GigoMe Privacy Notice"
+   ],
+   ", which identifies the Operator, processing purposes, legal bases, providers, retention and User rights."
+  ],
+  [
+   "p",
+   null,
+   "16.2. The service uses technical providers for authentication, hosting, database operations and communications. A provider's technical responsibility does not transfer the Operator's own mandatory data-protection obligations to that provider."
+  ],
+  [
+   "p",
+   null,
+   "16.3. External websites and contact channels are independently controlled by their respective operators. GigoMe cannot guarantee the privacy policies, security or behaviour of every third-party website; it remains liable for any duties imposed upon it by law."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-23"
+   },
+   "17. Intellectual property and submitted content"
+  ],
+  [
+   "p",
+   null,
+   "17.1. The Platform and its original software, design and brand assets are protected by applicable intellectual property law and remain the property of their lawful owners."
+  ],
+  [
+   "p",
+   null,
+   "17.2. Users retain rights in the content they lawfully provide and grant the Operator a limited, non-exclusive, royalty-free licence to host, format and display it as necessary to provide the requested service and comply with legal obligations."
+  ],
+  [
+   "p",
+   null,
+   "17.3. Users must not submit content that violates copyright, trademarks, privacy, confidentiality or other third-party rights."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-24"
+   },
+   "F. Fees, liability and legal terms"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-25"
+   },
+   "18. Free service and availability"
+  ],
+  [
+   "p",
+   null,
+   "18.1. Basic registration, listing discovery and contact reveal are currently free of charge. Any future paid functionality will require appropriate disclosure and, where necessary, separate acceptance. No retroactive fee will be imposed for past free use."
+  ],
+  [
+   "p",
+   null,
+   "18.2. GigoMe is an evolving service. Features may change or become unavailable due to maintenance, security, technical or legal reasons, with notice where required. No guaranteed uptime, permanent storage or automatic backup service is offered to Users."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-26"
+   },
+   "19. No guarantee of third-party outcomes"
+  ],
+  [
+   "p",
+   null,
+   "19.1. GigoMe does not guarantee that a listing is genuine, remains open, generates contact, leads to an interview or results in paid work. It does not guarantee Advertiser solvency, student performance, lawful conduct or payment under an independent engagement."
+  ],
+  [
+   "p",
+   null,
+   "19.2. To the extent permitted by law, the Operator is not responsible merely because Users discover each other through GigoMe for breaches arising exclusively from their independent contracts or conduct, including wage non-payment, failure to formalize work and workplace incidents attributable to the legally responsible parties."
+  ],
+  [
+   "p",
+   null,
+   "19.3. ",
+   [
+    "strong",
+    null,
+    "Nothing in these Terms limits liability for intentional misconduct, gross negligence, violations of mandatory public-order obligations or any other liability that cannot legally be excluded"
+   ],
+   ", including applicable privacy, safety and consumer protections."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-27"
+   },
+   "20. Account closure and data deletion"
+  ],
+  [
+   "p",
+   null,
+   "20.1. Users can request account closure and the erasure of their personal data, where legally applicable, by emailing ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ],
+   ". Requests are currently handled manually. GigoMe must verify identity where appropriate and comply with the response periods and conditions prescribed by law."
+  ],
+  [
+   "p",
+   null,
+   "20.2. Certain minimal information may be retained where a specific legal basis or obligation requires it, as explained in the Privacy Notice. Closing an account does not cancel independent communications previously sent to third parties outside GigoMe."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-28"
+   },
+   "21. Changes to the Terms"
+  ],
+  [
+   "p",
+   null,
+   "21.1. GigoMe may modify these Terms for legitimate legal, security or service-related reasons, giving appropriate advance notice where required. Material changes requiring fresh acceptance will not become binding solely by continued use where the law requires an affirmative action."
+  ],
+  [
+   "p",
+   null,
+   "21.2. The applicable version and its effective date will remain accessible. The Operator may retain proportionate acceptance records."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-29"
+   },
+   "22. Governing law, disputes and consumer rights"
+  ],
+  [
+   "p",
+   null,
+   "22.1. Italian law governs these Terms, without prejudice to applicable mandatory EU rules, consumer protection, employment rights and mandatory jurisdiction rules."
+  ],
+  [
+   "p",
+   null,
+   "22.2. Disputes shall be brought before the legally competent courts. No exclusive forum or waiver shall deprive consumers of mandatory protections."
+  ],
+  [
+   "p",
+   null,
+   "22.3. If a provision is unlawful or unenforceable, the remaining provisions continue to operate to the extent permitted by law. Failure to enforce a provision does not automatically waive an otherwise valid right."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-30"
+   },
+   "23. Contact"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Operator and legal contact:"
+   ],
+   " Matteo Maria Scarano",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Address:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italy",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Support and safety reports:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Privacy requests:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Privacy Notice:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/privacy"
+    },
+    "https://gigome.org/privacy"
+   ]
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "End of Terms and Conditions, version 2.0."
+   ]
+  ]
+ ]
+}

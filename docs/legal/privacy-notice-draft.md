@@ -1,5 +1,10 @@
 # Privacy notice: DRAFT, NOT PUBLISHED
 
+> **Superseded.** The published texts are in `docs/legal/published/` (Privacy
+> Notice v1.0, Terms and Conditions v2.0, November 2026) and are on `/privacy`
+> and `/terms`. Where they don't match what the app does yet, see
+> `docs/legal/text-vs-app.md`. This draft is kept for its notes only.
+
 > **For the team's legal person.** This draft describes what GigoMe actually
 > does, taken from the code and from `HANDOVER.md` (sections 7b and 7c) as of
 > November 2026. It is not legal advice and has not been reviewed by a

@@ -1,5 +1,10 @@
 # Terms of use: DRAFT, NOT PUBLISHED
 
+> **Superseded.** The published texts are in `docs/legal/published/` (Privacy
+> Notice v1.0, Terms and Conditions v2.0, November 2026) and are on `/privacy`
+> and `/terms`. Where they don't match what the app does yet, see
+> `docs/legal/text-vs-app.md`. This draft is kept for its notes only.
+
 > **For the team's legal person.** Written from what GigoMe actually does
 > (the code, `README.md` and `HANDOVER.md`, November 2026). Not legal advice,
 > not reviewed by a lawyer. Every **[LEGAL: ...]** needs a decision. The live

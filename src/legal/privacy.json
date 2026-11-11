@@ -1,0 +1,1411 @@
+{
+ "source": "docs/legal/published/privacy-notice-v1.0.html",
+ "title": "GigoMe | Privacy Notice",
+ "toc": [
+  {
+   "href": "#section-1",
+   "label": "Privacy at a glance",
+   "sub": false
+  },
+  {
+   "href": "#section-2",
+   "label": "1. Who controls your personal data?",
+   "sub": false
+  },
+  {
+   "href": "#section-3",
+   "label": "2. Which people and data does this Notice cover?",
+   "sub": false
+  },
+  {
+   "href": "#section-4",
+   "label": "3. What do we use the data for, and on what legal basis?",
+   "sub": false
+  },
+  {
+   "href": "#section-5",
+   "label": "4. Contact Reveal: exactly what happens?",
+   "sub": false
+  },
+  {
+   "href": "#section-6",
+   "label": "5. Who can access the data?",
+   "sub": false
+  },
+  {
+   "href": "#section-7",
+   "label": "6. Technology and service providers",
+   "sub": false
+  },
+  {
+   "href": "#section-8",
+   "label": "7. Where is the information stored or processed?",
+   "sub": false
+  },
+  {
+   "href": "#section-9",
+   "label": "8. Authentication, local storage and cookies",
+   "sub": false
+  },
+  {
+   "href": "#section-10",
+   "label": "9. How long do we keep information?",
+   "sub": false
+  },
+  {
+   "href": "#section-11",
+   "label": "10. Account closure and data deletion",
+   "sub": false
+  },
+  {
+   "href": "#section-12",
+   "label": "11. Your data-protection rights",
+   "sub": false
+  },
+  {
+   "href": "#section-13",
+   "label": "12. Children and particularly sensitive information",
+   "sub": false
+  },
+  {
+   "href": "#section-14",
+   "label": "13. Automated decision-making and profiling",
+   "sub": false
+  },
+  {
+   "href": "#section-15",
+   "label": "14. Security and incidents",
+   "sub": false
+  },
+  {
+   "href": "#section-16",
+   "label": "15. External applications and third-party services",
+   "sub": false
+  },
+  {
+   "href": "#section-17",
+   "label": "16. Changes to this Notice",
+   "sub": false
+  },
+  {
+   "href": "#section-18",
+   "label": "17. Contact",
+   "sub": false
+  }
+ ],
+ "body": [
+  [
+   "h1",
+   null,
+   "GigoMe | Privacy Notice"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Version 1.0 | Last updated: 11 November 2026"
+   ],
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Data controller:"
+   ],
+   " Matteo Maria Scarano, acting in his personal capacity",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Contact address:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italy",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Privacy requests:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Other enquiries:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Website:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/"
+    },
+    "https://gigome.org/"
+   ]
+  ],
+  [
+   "h2",
+   {
+    "id": "section-1"
+   },
+   "Privacy at a glance"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe enables students to discover work opportunities and reveal contact information or application links supplied by advertisers. ",
+   [
+    "strong",
+    null,
+    "Students do not apply through GigoMe. GigoMe does not forward student profiles or applications to advertisers, and advertisers cannot search or view student profiles."
+   ],
+   " Students who choose to contact an advertiser do so independently via email, telephone or an external website."
+  ],
+  [
+   "p",
+   null,
+   "When a registered student selects ",
+   [
+    "strong",
+    null,
+    "Reveal Contact"
+   ],
+   ", GigoMe records which student account revealed which listing's contact information and the time of the action. ",
+   [
+    "strong",
+    null,
+    "This log is not provided to advertisers and can be viewed only by authorized GigoMe administrators."
+   ],
+   " It is used for the limited purposes described below."
+  ],
+  [
+   "p",
+   null,
+   "GigoMe uses Supabase for its database and authentication, Cloudflare for hosting and domain-related services, Brevo for authentication emails, and an email inbox service for support and privacy correspondence. The main Supabase project is hosted in ",
+   [
+    "strong",
+    null,
+    "Frankfurt, Germany (eu-central-1)"
+   ],
+   "; other service-provider operations may involve processing elsewhere."
+  ],
+  [
+   "p",
+   null,
+   "This Notice explains our processing under Regulation (EU) 2016/679 (GDPR) and relevant Italian data-protection rules. It should be read together with our Terms and Conditions."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-2"
+   },
+   "1. Who controls your personal data?"
+  ],
+  [
+   "p",
+   null,
+   "The data controller for GigoMe's own processing activities is:"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Matteo Maria Scarano"
+   ],
+   [
+    "br",
+    null
+   ],
+   " Via Dante Alighieri 14",
+   [
+    "br",
+    null
+   ],
+   " 20091 Bresso (MI), Italy",
+   [
+    "br",
+    null
+   ],
+   " Email: ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ]
+  ],
+  [
+   "p",
+   null,
+   "GigoMe is the name of the service, not a separately incorporated legal entity. The controller determines the purposes and essential means of the processing described here. Infrastructure providers may process information on our behalf, but their role does not remove the controller's legal responsibilities."
+  ],
+  [
+   "p",
+   null,
+   "Employers and private advertisers independently decide how to use personal data that a student voluntarily provides to them ",
+   [
+    "strong",
+    null,
+    "outside GigoMe"
+   ],
+   ". Such third parties are generally independently responsible for their own processing, subject to the circumstances and applicable law."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-3"
+   },
+   "2. Which people and data does this Notice cover?"
+  ],
+  [
+   "p",
+   null,
+   "This Notice concerns visitors, students, business and private advertisers, account representatives and people contacting GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "Depending on the features actually used and the fields provided, GigoMe may process:"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Account and identity information:"
+   ],
+   " name or displayed name, email address, account identifier, role (student, business or private advertiser), university affiliation or verified university email where enabled, and account creation/status information."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Student profile information:"
+   ],
+   " optional educational background, course of study, languages, skills, past experience, general preferences and, if these fields are enabled, age or nationality. These details are not made available to advertisers through GigoMe. We do not need identity documents, health data or other sensitive information for ordinary profile creation."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Advertiser and listing information:"
+   ],
+   " business or individual identity, organization details, professional contact information, listing descriptions, work location, relevant remuneration and contractual information, chosen email address, phone number or external application URL, publication dates and moderation status. Information designated for display on a listing may be visible to Platform users or visitors according to the applicable publication settings."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Contact-reveal records:"
+   ],
+   " student account identifier, listing identifier, timestamp and the technical information reasonably necessary to secure or audit the operation. Only authorized administrators can consult these records. We do not automatically notify advertisers of individual reveals."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Authentication and security information:"
+   ],
+   " login email, one-time-code delivery and authentication events, session identifiers or tokens, relevant technical logs and, where necessary, IP address, device/browser data and abuse indicators. We do not ask users to create a GigoMe password, and the normal user profile does not include a stored password or uploaded CV."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Communications and reports:"
+   ],
+   " emails sent to hello@gigome.org or privacy@gigome.org, requests for help, complaints, fraud reports and information reasonably necessary to investigate them."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Contract and compliance records:"
+   ],
+   " date and version of accepted Terms, relevant account notices and records needed to demonstrate compliance or address a dispute."
+  ],
+  [
+   "p",
+   null,
+   "Please do not submit information about health, religion, political opinions, children, identity documents, immigration status or other unnecessary sensitive details in free-text fields or ordinary support requests. If such information is received incidentally, we will assess whether it must be restricted or removed."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-4"
+   },
+   "3. What do we use the data for, and on what legal basis?"
+  ],
+  [
+   "table",
+   null,
+   [
+    "thead",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "th",
+      null,
+      "Purpose"
+     ],
+     [
+      "th",
+      null,
+      "Main data involved"
+     ],
+     [
+      "th",
+      null,
+      "Legal basis under GDPR"
+     ]
+    ]
+   ],
+   [
+    "tbody",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Create and manage accounts and user roles"
+     ],
+     [
+      "td",
+      null,
+      "Email, name, role, account ID and necessary profile details"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(b): performance of the service requested by the user"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Authenticate users and deliver login codes"
+     ],
+     [
+      "td",
+      null,
+      "Email, authentication/session events"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(b), with Article 6(1)(f) for proportionate security measures"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Publish and display advertiser listings and chosen contact details"
+     ],
+     [
+      "td",
+      null,
+      "Advertiser identity, listing content and chosen contact fields"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(b); where publication of optional personal contact details is not necessary for the service, Article 6(1)(a) or another applicable basis as documented"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Display advertiser contact details when a Student chooses Reveal Contact"
+     ],
+     [
+      "td",
+      null,
+      "Student account ID, listing/contact information"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(b)"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Record and protect contact reveals, detect abuse and troubleshoot"
+     ],
+     [
+      "td",
+      null,
+      "Student ID, listing ID, time and relevant technical information"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(f): legitimate interests in security, fraud prevention and reliable operation, subject to a balancing assessment"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Secure the Platform, prevent fraud and moderate unlawful content"
+     ],
+     [
+      "td",
+      null,
+      "Technical logs, account/listing details, reports"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(f) and, where specific obligations apply, Article 6(1)(c)"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Respond to support and privacy requests"
+     ],
+     [
+      "td",
+      null,
+      "Correspondence, account and verification information"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(b), Article 6(1)(c) or Article 6(1)(f), depending on the request"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Maintain records needed for legal compliance and claims"
+     ],
+     [
+      "td",
+      null,
+      "Acceptance records, relevant correspondence and security evidence"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(c) or Article 6(1)(f), as applicable"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Send optional promotional messages, only if introduced"
+     ],
+     [
+      "td",
+      null,
+      "Contact details and recorded preferences"
+     ],
+     [
+      "td",
+      null,
+      "Consent under Article 6(1)(a) and applicable electronic-marketing rules, where required"
+     ]
+    ]
+   ]
+  ],
+  [
+   "p",
+   null,
+   "Our legitimate interests include maintaining a secure and dependable service, preventing misuse of contact details, responding to reports and protecting legal rights. These interests must be balanced against users' rights and reasonable expectations. Users may object to processing based on Article 6(1)(f) in accordance with GDPR Article 21."
+  ],
+  [
+   "p",
+   null,
+   "We do not rely on acceptance of the Terms as general consent to all processing. If a new activity requires consent, we will ask for it separately before beginning that processing."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-5"
+   },
+   "4. Contact Reveal: exactly what happens?"
+  ],
+  [
+   "ol",
+   null,
+   [
+    "li",
+    null,
+    "A registered Student views a Job Listing."
+   ],
+   [
+    "li",
+    null,
+    "The Student voluntarily selects ",
+    [
+     "strong",
+     null,
+     "Reveal Contact"
+    ],
+    "."
+   ],
+   [
+    "li",
+    null,
+    "GigoMe displays the Advertiser's contact information or external application link associated with that listing."
+   ],
+   [
+    "li",
+    null,
+    "GigoMe records the Student's account identifier, listing identifier and time of the reveal in an administrator-only log."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "No student profile, CV, application or reveal log is automatically sent to the Advertiser."
+    ]
+   ],
+   [
+    "li",
+    null,
+    "Any subsequent contact or application is initiated by the Student directly outside GigoMe and is governed by the receiving party's applicable privacy information."
+   ]
+  ],
+  [
+   "p",
+   null,
+   "The contact-reveal record is personal data even though it is not disclosed to advertisers. It is used only for the limited operational, abuse-prevention and security purposes described in this Notice. We do not use it to create public rankings or sell profiles."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-6"
+   },
+   "5. Who can access the data?"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "The account holder"
+   ],
+   " can access their own information through the available service features."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Advertisers"
+   ],
+   " cannot search, browse or access Student profiles or contact-reveal logs via GigoMe. A Student may choose independently to contact an advertiser outside the Platform."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Authorized GigoMe administrators"
+   ],
+   " may access the limited account, listing, reveal and reporting information necessary for their assigned responsibilities, subject to access restrictions and confidentiality safeguards."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Other users and visitors"
+   ],
+   " may see listings and the contact information that Advertisers have chosen to display through the relevant service features. We do not intend to publish private Student profiles."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Service providers"
+   ],
+   " may process data where necessary to provide the services identified below, in accordance with applicable roles, agreements and privacy requirements."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Authorities and professional advisers"
+   ],
+   " may receive information where disclosure is legally required or otherwise permitted and necessary for the establishment, exercise or defence of legal claims."
+  ],
+  [
+   "p",
+   null,
+   "We do not sell Student profiles or disclose them to Advertisers in return for payment."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-7"
+   },
+   "6. Technology and service providers"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Supabase:"
+   ],
+   " database, user authentication and backend services. Our project is configured in ",
+   [
+    "strong",
+    null,
+    "Frankfurt (eu-central-1)"
+   ],
+   ". Supabase processes relevant service data under its applicable Data Processing Addendum. Its subprocessors may provide technical or support services as permitted by that agreement. See ",
+   [
+    "a",
+    {
+     "href": "https://supabase.com/legal"
+    },
+    "https://supabase.com/legal"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Cloudflare:"
+   ],
+   " domain, hosting, web delivery, security and email-forwarding services. Cloudflare may process connection information and other technical data necessary for those functions under the relevant contractual and privacy arrangements. See ",
+   [
+    "a",
+    {
+     "href": "https://www.cloudflare.com/privacypolicy/"
+    },
+    "https://www.cloudflare.com/privacypolicy/"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Brevo:"
+   ],
+   " delivery of one-time login codes and certain operational emails. Brevo receives the email addresses and technical delivery information necessary for those messages. See ",
+   [
+    "a",
+    {
+     "href": "https://www.brevo.com/legal/privacypolicy/"
+    },
+    "https://www.brevo.com/legal/privacypolicy/"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Google Gmail:"
+   ],
+   " inbound communications sent to our support and privacy email addresses currently reach an inbox provided through a consumer Gmail account. Google processes information under its own applicable consumer terms and privacy policy; it does not offer a customer GDPR processor agreement for consumer Gmail. See ",
+   [
+    "a",
+    {
+     "href": "https://policies.google.com/privacy"
+    },
+    "https://policies.google.com/privacy"
+   ],
+   ". Users should avoid including unnecessary sensitive information in ordinary emails. We will review or replace this arrangement where required to meet our data-protection obligations."
+  ],
+  [
+   "p",
+   null,
+   "Depending on the provider and the particular processing activity, a provider may act as a processor or an independent controller. We will maintain the legally required arrangements with processors and provide additional details on request where appropriate."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-8"
+   },
+   "7. Where is the information stored or processed?"
+  ],
+  [
+   "p",
+   null,
+   "The main Supabase project database is located in ",
+   [
+    "strong",
+    null,
+    "Frankfurt, Germany (eu-central-1)"
+   ],
+   ", within the European Union. This does not mean that every provider, technical event, email-delivery operation, support interaction or subprocessor is located exclusively in the EU/EEA."
+  ],
+  [
+   "p",
+   null,
+   "Where personal data is transferred outside the European Economic Area, GigoMe will assess the transfer and use the relevant legal transfer mechanism where required, such as an adequacy decision or appropriate contractual safeguards, including Standard Contractual Clauses where applicable. Details about relevant safeguards may be requested at privacy@gigome.org."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-9"
+   },
+   "8. Authentication, local storage and cookies"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe currently uses email-delivered six-digit one-time login codes. Following authentication, information necessary to maintain the login session is stored in the browser's ",
+   [
+    "strong",
+    null,
+    "local storage"
+   ],
+   ". This technology serves authentication and session continuity; it is not used by GigoMe for behavioural advertising."
+  ],
+  [
+   "p",
+   null,
+   "According to the current technical configuration, GigoMe does not intentionally deploy non-essential advertising, profiling or analytics cookies. Strictly necessary technical storage and similar technologies can generally be used without prior cookie consent, while transparency remains necessary."
+  ],
+  [
+   "p",
+   null,
+   "Infrastructure providers may also deploy strictly necessary technical or security mechanisms. If the Platform introduces optional analytics, advertising trackers or other non-essential storage/access technologies, we will revise this Notice and implement the required consent and preference controls before activating them."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-10"
+   },
+   "9. How long do we keep information?"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe applies the principle that personal data must not be retained longer than necessary for the stated purposes. The following retention periods apply to data under our control, subject to the qualifications stated below."
+  ],
+  [
+   "table",
+   null,
+   [
+    "thead",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "th",
+      null,
+      "Category"
+     ],
+     [
+      "th",
+      null,
+      "Retention rule"
+     ]
+    ]
+   ],
+   [
+    "tbody",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Incomplete/unverified registrations"
+     ],
+     [
+      "td",
+      null,
+      "Delete within ",
+      [
+       "strong",
+       null,
+       "30 days"
+      ],
+      " if registration is not completed, unless a shorter period is appropriate"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Active Student and Advertiser accounts and their necessary profile data"
+     ],
+     [
+      "td",
+      null,
+      "Until account closure or ",
+      [
+       "strong",
+       null,
+       "24 months after the last account activity"
+      ],
+      "; provide an advance inactivity warning where practicable"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Advertiser listings"
+     ],
+     [
+      "td",
+      null,
+      "While active; remove from public display when expired or withdrawn; delete or anonymize non-essential archived listing data within ",
+      [
+       "strong",
+       null,
+       "90 days"
+      ],
+      " of removal"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Contact-reveal logs"
+     ],
+     [
+      "td",
+      null,
+      "Delete or irreversibly anonymize within ",
+      [
+       "strong",
+       null,
+       "180 days"
+      ],
+      " of the reveal, unless a documented incident or legal claim justifies longer retention"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Routine authentication and security logs under our control"
+     ],
+     [
+      "td",
+      null,
+      "Normally ",
+      [
+       "strong",
+       null,
+       "90 days"
+      ],
+      ", unless a specific incident requires a justified extension"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Ordinary support and privacy correspondence"
+     ],
+     [
+      "td",
+      null,
+      "Normally ",
+      [
+       "strong",
+       null,
+       "12 months after the request is closed"
+      ],
+      ", unless a longer legal retention period applies"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Fraud, safety and legal-complaint records"
+     ],
+     [
+      "td",
+      null,
+      "Normally ",
+      [
+       "strong",
+       null,
+       "24 months after resolution"
+      ],
+      ", unless required for an ongoing dispute or legal obligation"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Records proving Terms acceptance and material account notices"
+     ],
+     [
+      "td",
+      null,
+      "For the life of the account and up to ",
+      [
+       "strong",
+       null,
+       "36 months after closure"
+      ],
+      ", where reasonably necessary to establish compliance or defend claims"
+     ]
+    ]
+   ]
+  ],
+  [
+   "p",
+   null,
+   "These periods do not override binding statutory retention requirements or an obligation to preserve relevant evidence in an actual dispute. Extensions will be limited, documented and reviewed. Technical-service providers may maintain their own short-lived operational logs under their applicable terms; we will assess and document those arrangements."
+  ],
+  [
+   "p",
+   null,
+   "There is ",
+   [
+    "strong",
+    null,
+    "no guarantee of automatic database backups"
+   ],
+   " on our present service plan. The Operator must implement reasonable availability, security and recovery arrangements appropriate to the service's risks. This statement does not reduce users' legal rights."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-11"
+   },
+   "10. Account closure and data deletion"
+  ],
+  [
+   "p",
+   null,
+   "Users may request account closure, access, correction or deletion of personal data by writing to ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ],
+   ". Account deletion is currently processed ",
+   [
+    "strong",
+    null,
+    "manually by an authorized administrator"
+   ],
+   "; it is not advertised as an automatic self-service function."
+  ],
+  [
+   "p",
+   null,
+   "We will verify the request to the extent necessary, respond without undue delay and within the applicable GDPR time limits, and delete or restrict relevant personal data when the law requires it, subject to justified retention exceptions."
+  ],
+  [
+   "p",
+   null,
+   "Closing an account does not automatically remove data a Student independently sent to an Advertiser outside GigoMe; the recipient is responsible for its own processing. It also does not necessarily require deletion of records lawfully retained for security, compliance or legal claims."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-12"
+   },
+   "11. Your data-protection rights"
+  ],
+  [
+   "p",
+   null,
+   "Subject to GDPR conditions and exceptions, you may request:"
+  ],
+  [
+   "ul",
+   null,
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Access"
+    ],
+    " to personal data held about you."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Rectification"
+    ],
+    " of inaccurate or incomplete data."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Erasure"
+    ],
+    " of data where the legal requirements are met."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Restriction"
+    ],
+    " of processing in the relevant circumstances."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Data portability"
+    ],
+    " where applicable."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Objection"
+    ],
+    " to processing based on legitimate interests."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Withdrawal of consent"
+    ],
+    " at any time, for any processing based on consent, without affecting prior lawful processing."
+   ],
+   [
+    "li",
+    null,
+    "Information about any applicable automated decision-making under Article 22 GDPR."
+   ]
+  ],
+  [
+   "p",
+   null,
+   "Requests can be sent to ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ],
+   ". We normally respond within ",
+   [
+    "strong",
+    null,
+    "one month"
+   ],
+   ", subject to lawful extension in complex cases and the applicable identification safeguards."
+  ],
+  [
+   "p",
+   null,
+   "You may also lodge a complaint with the ",
+   [
+    "strong",
+    null,
+    "Garante per la protezione dei dati personali"
+   ],
+   " (",
+   [
+    "a",
+    {
+     "href": "https://www.garanteprivacy.it/"
+    },
+    "https://www.garanteprivacy.it/"
+   ],
+   ") or another competent EU supervisory authority."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-13"
+   },
+   "12. Children and particularly sensitive information"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe is intended for individuals aged ",
+   [
+    "strong",
+    null,
+    "18 or over"
+   ],
+   ". We do not intentionally offer accounts to minors. If we become aware that a minor has registered contrary to these Terms, we will take appropriate steps consistent with applicable law."
+  ],
+  [
+   "p",
+   null,
+   "We do not require special-category data for ordinary use. Users should not include information concerning health, religion, political opinions, trade-union membership, sexual life or other unnecessary sensitive matters in profiles, listings or support messages."
+  ],
+  [
+   "p",
+   null,
+   "Private Advertisers and families must not publish names, photographs or identifying details of children or unnecessary household information in job listings."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-14"
+   },
+   "13. Automated decision-making and profiling"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe does not currently use automated decision-making that produces legal or similarly significant effects on Students, and it does not automatically rank Students for Advertisers or decide who is hired. If the service changes materially, we will assess the applicable legal requirements and update the relevant information before introducing such features."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-15"
+   },
+   "14. Security and incidents"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe uses access restrictions and authentication to protect information. The technical team reports that ",
+   [
+    "strong",
+    null,
+    "Row Level Security"
+   ],
+   " is enabled for the project's database tables and that student accounts and contact-reveal records are inaccessible to Advertisers through the intended application permissions. Technical testing and monitoring remain necessary."
+  ],
+  [
+   "p",
+   null,
+   "Authorized administrators are limited to the information necessary for their responsibilities. While reasonable measures can reduce risk, no internet service is completely risk-free."
+  ],
+  [
+   "p",
+   null,
+   "If a personal-data breach occurs, GigoMe will assess it, document it and notify the supervisory authority or affected persons where required by GDPR Articles 33 and 34. Reports of suspected vulnerabilities or unauthorized access may be sent to privacy@gigome.org."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-16"
+   },
+   "15. External applications and third-party services"
+  ],
+  [
+   "p",
+   null,
+   "When a Student follows an external application link, sends an email or calls an Advertiser, those interactions occur outside GigoMe. The external recipient determines its own recruitment procedures and may process information provided directly by the Student."
+  ],
+  [
+   "p",
+   null,
+   "GigoMe does not automatically receive copies of these applications, the associated CVs, hiring decisions, contracts or payments. Students should consult any applicable privacy notices and avoid disclosing unnecessary personal information when contacting an external party."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-17"
+   },
+   "16. Changes to this Notice"
+  ],
+  [
+   "p",
+   null,
+   "We may update this Notice to reflect technical changes, new functions, legal requirements or changes in our providers. The latest version and its date will be published on GigoMe. Where required, we will provide additional notice or seek consent before introducing new processing."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-18"
+   },
+   "17. Contact"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Data controller:"
+   ],
+   " Matteo Maria Scarano",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Address:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italy",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Privacy requests:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Other correspondence:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Terms and Conditions:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/terms"
+    },
+    "https://gigome.org/terms"
+   ]
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "End of Privacy Notice, version 1.0."
+   ]
+  ]
+ ]
+}

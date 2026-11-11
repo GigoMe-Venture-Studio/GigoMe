@@ -11,11 +11,15 @@ Everything that must be done before real users arrive. Tick each one; don't
 skip any because "it worked in testing".
 
 **Legal (the team's legal person)**
-- [ ] Privacy notice and terms written from `docs/legal/privacy-notice-draft.md`
-      and `docs/legal/terms-draft.md`, with every **[LEGAL: ...]** point
-      decided, and published on `/privacy` and `/terms` (they are
-      placeholders until then).
-- [ ] "Who operates GigoMe" filled in on both pages.
+- [x] Privacy Notice (v1.0) and Terms and Conditions (v2.0) published on
+      `/privacy` and `/terms`, word for word from `docs/legal/published/`
+      (November 2026). Updating them: CLAUDE.md, "`/privacy` and `/terms`".
+- [ ] The points where the texts and the app don't match yet
+      (`docs/legal/text-vs-app.md`) are settled by the legal person: the
+      text changes, or the app does.
+- [x] Who operates GigoMe: named in both texts.
+- [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
+      reads it, like `hello@gigome.org`.
 - [ ] Retention periods decided. Either set them in `retention_settings`
       (SUPABASE.md, "Data retention") or write down that GigoMe keeps data
       until accounts are deleted, and say the same in the privacy notice.
@@ -356,6 +360,9 @@ team's legal person first.
   emails a day, and those are needed for login codes.
 
 ## 9. Backups: there are none
+
+What would be lost, the options with cost and privacy, and the
+recommendation for the test phase and for launch: `docs/BACKUPS.md`.
 
 The Supabase free plan makes **no backups**. If a bad migration, a mistaken
 delete in the Table Editor or a problem at Supabase destroys data, it's gone:
