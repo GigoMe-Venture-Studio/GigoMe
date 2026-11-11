@@ -16,6 +16,7 @@ import {
 } from '../lib/auth.js';
 import { mailtoHref } from '../lib/links.js';
 import { fetchMyCompany } from '../lib/employer.js';
+import { hasAcceptedTerms } from '../lib/terms.js';
 import { captchaEnabled } from '../lib/captcha.js';
 import Turnstile from './Turnstile.jsx';
 
@@ -24,7 +25,8 @@ import Turnstile from './Turnstile.jsx';
 // accepted, the wording, and where people go afterwards.
 //
 //   audience 'student': only emails of a listed university get a code; after
-//     login, /welcome when the profile has no name yet, otherwise `next`.
+//     login, /welcome when the profile has no name yet or the current Terms
+//     aren't accepted, otherwise `next`.
 //   audience 'employer': any email except a listed university's (those are
 //     sent to the student login); after login, /employers/setup when the
 //     company account has no company yet, otherwise `next` or /dashboard.
@@ -420,7 +422,7 @@ export function LoggedIn({ email, next }) {
 // Where to go after the code is accepted.
 async function destination(audience, profile, userId, next) {
   if (audience !== 'employer') {
-    return profile && profile.full_name ? next || '/' : '/welcome' + (next ? '?next=' + encodeURIComponent(next) : '');
+    return profile && profile.full_name && hasAcceptedTerms(profile) ? next || '/' : '/welcome' + (next ? '?next=' + encodeURIComponent(next) : '');
   }
   // A student account (its email domain became a university's) has no dashboard.
   if (profile && profile.account_type !== 'company') return '/';

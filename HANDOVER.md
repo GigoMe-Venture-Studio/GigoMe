@@ -20,9 +20,11 @@ skip any because "it worked in testing".
 - [x] Who operates GigoMe: named in both texts.
 - [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
       reads it, like `hello@gigome.org`.
-- [ ] Retention periods decided. Either set them in `retention_settings`
-      (SUPABASE.md, "Data retention") or write down that GigoMe keeps data
-      until accounts are deleted, and say the same in the privacy notice.
+- [x] Retention in the database: incomplete sign-ups 30 days, ended
+      listings' details 90 days, apply clicks anonymous after 180 days,
+      applied daily (SUPABASE.md, "Data retention").
+- [ ] Someone is named for each manual retention task in section 7d
+      (24-month inactivity, security logs, email) and has done it once.
 
 **Accounts and settings**
 - [ ] Every **[fill in]** in this file is filled in.
@@ -46,6 +48,8 @@ skip any because "it worked in testing".
 **Data**
 - [ ] Test users, companies and jobs made while building are deleted from
       the live database (Authentication > Users; Table Editor).
+- [ ] The daily retention job runs: `select last_run_at, last_result from
+      public.retention_settings;` shows today's or yesterday's date.
 - [ ] A first manual backup is made and stored safely (section 9).
 - [ ] The last migration's security check ran on the live database with
       every row `passed = true` (section 3).
@@ -322,27 +326,94 @@ its file in the browser and stores nothing.
 
 **In the database.** Also for the privacy notice. Everything is in Supabase
 (Frankfurt), visible only to that student (and admins where noted), and
-nothing is ever emailed. "Kept until" is how it works today: once retention
-periods are set (SUPABASE.md, "Data retention"), old feedback, resolved
-reports, ended jobs and long-inactive accounts are also deleted after those
-periods. Supabase also keeps its own technical logs (logins, API requests
-with IP addresses) for a short time on the free plan.
+nothing is ever emailed. The automatic periods are in SUPABASE.md, "Data
+retention"; the ones done by hand in section 7d. Supabase also keeps its own
+technical logs (logins, API requests with IP addresses) for a short time on
+the free plan.
 
 | What | Kept until |
 | --- | --- |
-| Profile: email, university, name, degree level, graduation year | The account is deleted |
-| Saved jobs | Removed, or the account is deleted |
+| Profile: email, university, name, degree level, graduation year | The account is deleted. An account that never finished signing up (no Terms, no name, no company): 30 days after its last login |
+| Terms acceptance: which version, when ("I'm 18 or older and I accept the Terms") | The account is deleted |
+| Saved jobs | Removed, the account is deleted, or 90 days after the job ended |
 | Saved searches: a name, the filters, when last opened | Deleted, or the account is deleted |
 | Companies followed (the company sees only a count) | Unfollowed, the company is deleted, or the account is deleted |
-| Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | Kept after the account is deleted, without the user (anonymous) |
+| Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | After 180 days, or when the account is deleted: kept without the user (anonymous), the day only |
 | Job reports they filed (admins only) | Kept after the account is deleted, without the reporter |
 | Feedback they sent (admins only) | The account is deleted |
 | Login details kept by Supabase Auth: email, when the account was created, last login | The account is deleted |
-| For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company) |
+| For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company). 90 days after a job is closed, rejected or expired: its contact, description, pay note, free-text location and pin (unless it was reported) |
 
 "Share" on a job page hands the job's link to the phone's own share sheet
 (the student picks the app) or copies it; GigoMe sees nothing. "Use my
 location" is never stored (section 7b).
+
+## 7d. Data retention: who does what
+
+The Privacy Notice (section 9) promises retention periods. The database does
+three of them by itself every night (SUPABASE.md, "Data retention"):
+incomplete sign-ups (30 days), ended listings' details (90 days), apply
+clicks made anonymous (180 days). Everything below is **done by hand**. Put
+each in the calendar of the person named, and note the date each time in the
+team's shared notes.
+
+**Accounts inactive for 24 months** (with a warning first)
+- **Who:** the data lead: **[fill in]**.
+- **When:** the first working day of every month.
+- **How:** in the SQL Editor, list accounts with no login for 23 months
+  (admins left out):
+  ```sql
+  select u.email, p.account_type, u.last_sign_in_at, u.created_at
+  from auth.users u left join public.profiles p on p.id = u.id
+  where coalesce(u.last_sign_in_at, u.created_at) < now() - interval '23 months'
+    and not exists (select 1 from public.admins a where a.user_id = u.id)
+  order by 3 nulls first;
+  ```
+- Write to each one **individually** from `privacy@gigome.org` (not
+  through Brevo, which is for login codes): "Your GigoMe account will be
+  deleted on <date, 30 days later> unless you log in." Note the date sent.
+- The next month, delete the ones that still haven't logged in after their
+  date: Authentication → Users → Delete (SUPABASE.md, "When someone
+  deletes their account": same effect as "Delete my account"). A company
+  account takes its company and jobs with it.
+- Don't use `inactive_accounts_days` for this: it deletes without warning.
+
+**Authentication and security logs** (normally 90 days)
+- **Who:** the data lead.
+- **When:** monthly, together with the task above.
+- **What is under our control:**
+  - Supabase's auth audit log (logins, code requests, with email and IP)
+    in the table `auth.audit_log_entries`. In the SQL Editor:
+    `delete from auth.audit_log_entries where created_at < now() - interval '90 days';`
+    (Or switch off storing it in the database: Authentication → settings,
+    if the dashboard offers it; Supabase's own logs then keep it briefly.)
+  - Cloudflare Workers Logs: kept 3 days by our `wrangler.jsonc`. Nothing to do.
+- **Not under our control:** Supabase's platform logs (1 day on the free
+  plan), Cloudflare's, Brevo's and Google's own logs. They follow those
+  providers' terms. Re-check them once a year and note what you found.
+
+**Support and privacy email** (normally 12 months after the request is closed)
+- **Who:** whoever reads `hello@gigome.org` and `privacy@gigome.org`: **[fill in]**.
+- **When:** every three months.
+- **How:** in the mailbox those addresses forward to, search
+  `older_than:12m`, check none of the threads is still open or part of a
+  dispute, and delete them (then empty the bin).
+- Brevo keeps a log of each login-code email (address, time, delivery).
+  Check its retention in Brevo's settings once and note it here: **[fill in]**.
+
+**Fraud and complaint records** (normally 24 months after resolution)
+- Resolved reports stay until someone deletes them. Either the owner
+  approves setting `resolved_reports_days` = 730 in `retention_settings`
+  (automatic), or the data lead deletes them by hand once a quarter in
+  Table Editor → `job_reports` (status resolved, `resolved_at` older than
+  24 months).
+
+**Records of Terms acceptance** (up to 36 months after an account closes)
+- Not kept: the acceptance is deleted with the account. That's a decision
+  for the legal person (`docs/legal/text-vs-app.md`, point 11).
+
+**Backups:** any database dump also holds personal data; keep the newest
+three, none older than three months (`docs/BACKUPS.md`).
 
 ## 8. Not built on purpose
 

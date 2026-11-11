@@ -8,7 +8,7 @@ const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
 // A fake Supabase: universities, OTP send/verify, profiles, logout.
 async function mockSupabase(ctx, opts = {}) {
   const log = { otp: [], verify: [], patch: [], logout: [], universities: 0 };
-  const profile = { full_name: opts.fullName ?? null, degree_level: null, graduation_year: null, account_type: 'student' };
+  const profile = { full_name: opts.fullName ?? null, degree_level: null, graduation_year: null, account_type: 'student', terms_version: opts.fullName ? '2.0' : null, terms_accepted_at: opts.fullName ? '2026-11-01T10:00:00Z' : null };
   await ctx.route(SB + '/**', async (route) => {
     const req = route.request(), url = new URL(req.url()), path = url.pathname, method = req.method();
     const json = (status, body, headers = {}) => route.fulfill({ status, contentType: 'application/json', headers, body: body === null ? '' : JSON.stringify(body) });
@@ -31,6 +31,7 @@ async function mockSupabase(ctx, opts = {}) {
       return json(200, single ? profile : [profile]);
     }
     if (path === '/rest/v1/profiles' && method === 'PATCH') { const body = req.postDataJSON(); log.patch.push({ query: url.search, body }); Object.assign(profile, body); return route.fulfill({ status: 204, body: '' }); }
+    if (path === '/rest/v1/rpc/accept_terms') { log.accept = (log.accept || []).concat([req.postDataJSON()]); profile.terms_version = req.postDataJSON().p_version; profile.terms_accepted_at = new Date().toISOString(); return json(200, profile.terms_accepted_at); }
     if (path === '/auth/v1/logout') { log.logout.push(url.search); return route.fulfill({ status: 204, body: '' }); }
     if (path === '/auth/v1/user') return json(200, { id: 'uid-1', email: 'x' });
     return json(404, { msg: 'unmocked ' + method + ' ' + path });
@@ -116,12 +117,20 @@ async function mockSupabase(ctx, opts = {}) {
   ok((await txt(p, '.header-user')) === 'name.surname@studbocconi.it', 'header shows the email until a name is saved');
   const degreeOptions = await p.$$eval('select[name=degree_level] option', os => os.map(o => o.value).filter(Boolean));
   ok(degreeOptions.join(',') === 'bachelor,master,single_cycle,phd,exchange,other', 'degree levels match the database: ' + degreeOptions.join(','));
+  ok((await txt(p, '.terms-field label')) === "I'm 18 or older and I accept the Terms" && await p.getAttribute('.terms-field label a', 'href') === '/terms'
+     && await p.getAttribute('.terms-field .field-hint a', 'href') === '/privacy' && await p.getAttribute('.terms-field label a', 'target') === '_blank',
+     'welcome: "I\'m 18 or older and I accept the Terms", linking to /terms and /privacy (new tab, nothing typed is lost)');
   await p.click('text=Save and continue'); await p.waitForTimeout(200);
-  ok((await p.locator('.field .err').count()) === 3 && log.patch.length === 0, 'empty form: three field errors, nothing saved');
+  ok((await p.locator('.field .err').count()) === 4 && (await txt(p, '.terms-field .err')) === 'Tick this box to continue.' && log.patch.length === 0 && !log.accept,
+     'empty form: three field errors and the Terms box, nothing saved');
   await p.screenshot({ path: SHOTS + 'phone-welcome.png', fullPage: true });
   await p.fill('input[name=full_name]', '  Ana   Rossi '); await p.selectOption('select[name=degree_level]', 'master');
   const year = String(new Date().getFullYear() + 2); await p.selectOption('select[name=graduation_year]', year);
+  await p.click('text=Save and continue'); await p.waitForTimeout(300);
+  ok(log.patch.length === 0 && !log.accept && new URL(p.url()).pathname === '/welcome', 'details filled but the Terms box not ticked: nothing saved');
+  await p.check('input[name=accept_terms]');
   await p.click('text=Save and continue'); await p.waitForTimeout(700);
+  ok(JSON.stringify(log.accept) === '[{"p_version":"2.0"}]', 'the Terms acceptance is recorded with the version: ' + JSON.stringify(log.accept));
   ok(log.patch.length === 1 && log.patch[0].query.includes('id=eq.uid-1') && JSON.stringify(log.patch[0].body) === JSON.stringify({ full_name: 'Ana Rossi', degree_level: 'master', graduation_year: Number(year) }), 'saves only the three fields, on the own row: ' + JSON.stringify(log.patch[0]));
   ok(new URL(p.url()).pathname === '/' && await p.isVisible('.hero'), 'then goes to the home page');
   ok((await txt(p, '.header-user')) === 'Ana Rossi' && !(await txt(p, '.site-header')).includes('Log in'), 'header shows the saved name: ' + await txt(p, '.header-user'));
