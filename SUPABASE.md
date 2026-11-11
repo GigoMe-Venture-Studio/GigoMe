@@ -45,10 +45,10 @@ domain changes no one.
 | Table | What it holds | Who can see it | Who can change it |
 | --- | --- | --- | --- |
 | `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
-| `profiles` | One row per user: account type, university, name, degree level, graduation year | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year |
+| `profiles` | One row per user: account type, university, name, degree level, graduation year, and which version of the Terms they accepted ("I'm 18 or older and I accept the Terms") and when | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year. The Terms acceptance is written only by `accept_terms()`, with the database's time |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
-| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay (per hour, per month, per project, or a curricular internship that is unpaid; an amount or a range; an hourly equivalent worked out by the database; an optional pay note), Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), and the reviewer's note, who reviewed it and when | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
+| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay (per hour, per month, per project, or a curricular internship that is unpaid; an amount or a range; an hourly equivalent worked out by the database; an optional pay note), Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), the reviewer's note, who reviewed it and when, and when it was closed or rejected (`ended_at`, set by the database, not readable through the API) | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
 | `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from the City of Milan's open data (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
 | `saved_jobs` | Jobs a student saved to come back to: who, which job, when | Only the student who saved them | That student only (save a live job, remove). Deleted with their account and with the job |
@@ -59,7 +59,7 @@ domain changes no one.
 | `feedback` | Messages users send about the site, with the page they were on | Admins only | Any logged-in user can send feedback |
 | `job_reports` | Reports about a job: reason (scam or payment demanded, illegal or unsafe, misleading pay or hours, discriminatory, other), details, who reported it, status (open or resolved), and how and by whom it was resolved | Admins only | Logged-in users report jobs they can see, one open report per job each. Only admins resolve them, with `admin_resolve_report` |
 | `moderation_log` | Every admin decision: company approved or rejected, job reviewed or unpublished, report resolved, with who, when and the note | Admins only | Nobody directly: the admin functions write it |
-| `retention_settings` | One row: how long to keep ended jobs, feedback, resolved reports and inactive accounts. All empty, so nothing is deleted (see "Data retention" below) | Nobody through the website or API | Only the team, in the dashboard |
+| `retention_settings` | One row: the retention periods, in days (see "Data retention" below) | Nobody through the website or API | Only the team, in the dashboard |
 
 A few details worth knowing:
 
@@ -226,22 +226,36 @@ area keeps the centre it had when it was saved.
 
 ## When someone deletes their account
 
-Users delete their own account on `/account`, which calls
-`delete_my_account()`. This happens to their data:
+Users delete their own account on `/account` ("Delete my account", which
+calls `delete_my_account()`). The team can also delete a user in the
+dashboard: Authentication → Users → the user → Delete. **Both do exactly the
+same**: the login (`auth.users`) row is deleted and every rule below follows
+from it automatically (foreign keys), so nothing depends on which way it was
+done. `security_check.sql` proves it both ways.
 
-- **Deleted:** their login, their profile, the feedback they sent and the
-  jobs they saved.
-- **Company accounts:** their company, its jobs, how to apply for those jobs,
-  and the clicks on those jobs are deleted too.
-- **Also deleted:** their saved searches and the companies they followed.
-- **Kept, but anonymous:** the apply clicks they made stay in
-  `job_clicks` with `user_id` empty, so each job's click count stays right
-  without pointing to a person. Reports they filed stay in `job_reports`
-  with `reporter_id` empty, so a report about a bad job isn't lost.
+| Table | What happens to the person's rows |
+| --- | --- |
+| `auth.users` and Supabase's own login tables (sessions, identities) | Deleted |
+| `profiles` | Deleted, with the name, degree, graduation year and the Terms acceptance |
+| `admins` | Deleted (if they were an admin) |
+| `feedback` | Deleted |
+| `saved_jobs`, `saved_searches`, `company_follows` | Deleted |
+| `job_clicks` (their apply clicks) | **Kept, anonymous:** `user_id` emptied, so each job's click count stays right without pointing to anyone |
+| `job_reports` they filed | **Kept, anonymous:** `reporter_id` emptied, so a report about a bad job isn't lost |
+| `companies` they own | Deleted, with everything below |
+| → `jobs` of that company | Deleted |
+| → `job_contacts` (how to apply) | Deleted |
+| → `job_clicks`, `saved_jobs`, `job_reports` on those jobs; `company_follows` of that company | Deleted (other students' clicks, saves, reports and follows of that company go too) |
+| `moderation_log` | **Kept:** decisions they made as an admin lose `admin_id`; decisions about their company or jobs lose `company_id` / `job_id` |
+| `jobs.reviewed_by`, `job_reports.resolved_by` (admins only) | **Kept, emptied:** the review or resolution stays, without who did it |
 
-Deleting a user in the dashboard (Authentication → Users) does the same,
-except that their feedback is kept with `user_id` empty. Delete it by hand
-in `feedback` if the person asked for everything to go.
+Not covered by this: Supabase's auth audit log (logins, code requests),
+which Supabase keeps itself (see `HANDOVER.md`, "Data retention: who does
+what"), and any copy outside the database (backups, see `docs/BACKUPS.md`).
+
+Note on fraud evidence: when a company account is deleted, the reports on
+its jobs go with them. If a company under investigation deletes itself,
+only the moderation log entries (without the company) remain.
 
 ## Functions the website calls
 
@@ -260,6 +274,7 @@ in `feedback` if the person asked for everything to go.
 | `my_saved_jobs()` | Logged-in users | The caller's saved jobs with title, company and whether each is still live (so a closed job can show "No longer available"). Never anyone else's. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
+| `accept_terms(version)` | Logged-in users | Records that the caller accepted that version of the Terms, with the database's time. `/welcome` and the employer setup call it when "I'm 18 or older and I accept the Terms" is ticked. |
 | `my_opened_jobs()` | Logged-in users | The jobs the caller pressed "Apply" on, with title, company and whether each is still live ("Jobs you opened" on /saved). |
 | `my_company_follower_count()` | Company owners | How many students follow the caller's company: a number, never who. |
 | `my_feedback()`, `my_reports()` | Logged-in users | The caller's own feedback and the reports they filed (without the admin's note or who resolved them), for "Download my data". |
@@ -272,35 +287,60 @@ functions and the user's own rows (profile, saved jobs and searches, follows,
 apply clicks, feedback, reports; for a company account its company, jobs,
 how to apply and click counts). Nothing new is stored.
 
-## Data retention (prepared, OFF: waiting for the legal decision)
+## Data retention
 
-Nothing is deleted automatically today. Everything below is ready, but every
-period is empty until the team's legal person decides how long GigoMe keeps
-each kind of data (the privacy notice must say the same).
+`run_retention()` runs every day at 03:37 UTC through pg_cron (job
+`gigome-retention`) and applies the periods set in `retention_settings` (Table
+Editor, one row; each column a number of days, empty = keep forever). It
+writes when it ran and what it did to `last_run_at` and `last_result` in the
+same row.
 
-- **Where:** Table Editor → `retention_settings` (one row). Each column is a
-  number of days; empty means "keep forever".
-  - `ended_jobs_days` (at least 30): closed or rejected jobs, and expired
-    jobs, this many days after they ended. Their contacts, apply clicks,
-    reports and saves go with them.
-  - `feedback_days` (at least 30): feedback older than this.
-  - `resolved_reports_days` (at least 30): reports resolved this long ago.
-    Open reports are never deleted.
-  - `inactive_accounts_days` (at least 180): accounts that haven't logged in
-    for this long, deleted exactly like "Delete my account" (their apply
-    clicks and reports stay, anonymous). Admins are never deleted. Warning:
-    a company account goes with its company and jobs. Nobody is told
-    beforehand: decide whether that's acceptable first (and see the 300
-    emails a day limit before sending warnings).
-- **When:** `run_retention()` runs every day at 03:37 UTC through pg_cron
-  (job `gigome-retention`). It writes when it ran and how many rows it
-  deleted to `last_run_at` and `last_result` in the same row.
-- **Check the schedule:** SQL Editor → `select * from cron.job;` should show
-  `gigome-retention`. If it doesn't (pg_cron wasn't available when the
-  migration ran): Database → Extensions → enable `pg_cron`, then run
+**On** (Privacy Notice v1.0, section 9; set by migration
+`20261111120000_data_protection.sql`):
+
+- `incomplete_signups_days` = **30**: accounts that never finished signing
+  up are deleted, like "Delete my account". "Never finished" means: never
+  accepted the Terms, no name, no company, not an admin, and no login for
+  30 days (counted from the last login, or from sign-up if they never
+  logged in). Accounts from before the Terms were asked for that have a
+  name or a company are complete and stay.
+- `ended_job_details_days` = **90**: listings closed, rejected or expired
+  90 days ago lose what isn't needed any more: how to apply
+  (`job_contacts`), students' saves, the description, the pay note, the
+  free-text location and the exact pin (only the area stays). The listing
+  row stays (title, company, type, dates, pay, area, status) for the
+  employer's dashboard, the moderation log and the counts, with its apply
+  clicks. **Listings with any report are left alone** (fraud evidence).
+  Closing or rejecting time is `jobs.ended_at`; expiry is `expires_at`.
+- `click_anonymize_days` = **180**: apply clicks older than this lose the
+  student (`user_id` emptied for good) and their time is cut to the day.
+  The rows stay, so the per-listing counts employers see don't change, and
+  the KPIs (last 12 weeks) aren't affected.
+
+**Off** (empty; older settings, kept for later):
+
+- `ended_jobs_days` (at least 30): deletes ended jobs outright, **including
+  their reports**. Don't turn it on without thinking about fraud records.
+- `feedback_days` (at least 30): feedback older than this.
+- `resolved_reports_days` (at least 30): reports resolved this long ago.
+- `inactive_accounts_days` (at least 180): accounts not logged in for this
+  long, deleted without warning (company accounts with their company and
+  jobs). The Privacy Notice's 24 months with a warning is done by hand
+  instead: see `HANDOVER.md`, "Data retention: who does what".
+
+- **Check the schedule:** SQL Editor → `select jobname, schedule, command
+  from cron.job;` should show `gigome-retention`. If it doesn't: Database →
+  Extensions → enable `pg_cron`, then run
   `select cron.schedule('gigome-retention', '37 3 * * *', 'select public.run_retention()');`
-- **Try it by hand:** `select public.run_retention();` in the SQL Editor.
-  With every period empty it returns zeros and deletes nothing.
+- **Check it runs:** `select last_run_at, last_result from
+  public.retention_settings;` (`last_run_at` should be from today or
+  yesterday), or `select * from cron.job_run_details order by start_time
+  desc limit 5;`.
+- **Run it by hand:** `select public.run_retention();` in the SQL Editor. It
+  deletes for real.
+- **Change a period:** edit the number in the Table Editor. Never shorter
+  than the Privacy Notice says, and never set a period without the owner's
+  go-ahead.
 
 ## Why it's safe
 

@@ -180,7 +180,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   lives only in the Supabase dashboard.
 - Student login: `src/pages/Login.jsx` (email, then 6-digit code),
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
-  profile has no name yet), logic in `src/lib/auth.js`, session in
+  profile has no name yet, and the Terms box until the current version is
+  accepted), logic in `src/lib/auth.js`, session in
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
   a code. Under the email field: what the email is used for and a link to
   the Privacy Notice (people don't "agree" to a privacy notice: never write
@@ -190,6 +191,20 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (`src/components/ProfileFields.jsx`, `checkProfile()` in
   `src/lib/profile.js`); after saving they call `announceProfileChange()` so
   the header shows the new name.
+- Terms acceptance: every account (students and companies) ticks "I'm 18 or
+  older and I accept the Terms" (`TermsCheckbox.jsx`: "Terms" links to
+  `/terms`, a hint links to `/privacy`, both in a new tab) on `/welcome` or on
+  the employer setup, which calls `accept_terms(TERMS_VERSION)`
+  (`src/lib/terms.js`). `TERMS_VERSION` there is the only place the version
+  is set: change it with a new Terms file and everyone is asked again.
+  `TermsGate` (`src/components/TermsGate.jsx`, around the routes in
+  `App.jsx`) sends a logged-in account that hasn't accepted the current
+  version to `/welcome?next=<page>` once (checked once per login), except on
+  `/welcome`, `/login`, `/employers`, `/employers/setup`, `/privacy`, `/terms`
+  and `/account` (to read the texts, download the data or delete the account
+  without accepting). `/welcome` asks only the Terms ("Before you continue")
+  when the details are already there or it's a company account. The test
+  mocks accept the current version by default (`termsVersion` option).
 - Account: `src/pages/Account.jsx` (`/account`, reached from the name in the
   header and the phone menu; logged out goes to `/login?next=/account`).
   Email and university are read-only. "Delete my account" first shows a
@@ -214,8 +229,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   footer.
 - Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
   login), `EmployerSetup.jsx` (`/employers/setup`: a company account without
-  a company creates it, status pending; "I accept the terms" must be ticked,
-  and the database stores `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
+  a company creates it, status pending; "I'm 18 or older and I accept the
+  Terms" must be ticked: the account records the version (`accept_terms`)
+  and the database stores the company's `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
   company details and status, jobs with status, review notes and apply
   clicks from `my_job_stats()`, "Expires in N days" and "Extend by 60 days"
   (`extend_my_job()`, no new review; for jobs expired more than 14 days a
@@ -399,7 +415,9 @@ Schema rules
   after the @ exactly matches one of `universities.email_domains`; everyone
   else is a `company`. Users can edit only `full_name`, `degree_level` and
   `graduation_year`; nobody can change `account_type` or `university_id` from
-  the client.
+  the client. `terms_version` / `terms_accepted_at` (both or neither) are
+  written only by `accept_terms(version)` (a version number like `2.0`, the
+  database's `now()`, the caller's own row).
 - When a university is added or its `email_domains` change, the
   `on_university_domains_changed` trigger upgrades matching `company` accounts
   to `student` (with `university_id`), except accounts that own a company.
@@ -408,7 +426,7 @@ Schema rules
   no write policies). It is changed only in the dashboard.
 - Company accounts create and edit their own company (one per account) but
   never its `status`. Creating it requires `terms_accepted_at` (the owner
-  ticked "I accept the terms"); a trigger replaces whatever time is sent with
+  ticked the Terms box); a trigger replaces whatever time is sent with
   the database's `now()`, and there is no update grant, so it is set only on
   creation. Once it is approved, its owner can't change `name` or
   `website` any more (trigger `lock_approved_company_identity`: API callers
@@ -501,11 +519,17 @@ Schema rules
   `reveal_job_contact(job_id)`, which also writes `job_clicks`.
 - `delete_my_account()` deletes only the caller (no arguments, `auth.uid()`):
   their feedback explicitly, then the `auth.users` row, which cascades to the
-  profile, their saved jobs, saved searches and follows and, for a company account, its company, jobs, job contacts and
-  those jobs' clicks (and reports on those jobs). Their own clicks and the
-  reports they filed stay, with `user_id` / `reporter_id` set to null. Keep
-  it that way if you add a table that points at a user: decide whether it is
-  deleted or kept anonymous, and add a check.
+  profile (with the Terms acceptance), their feedback, saved jobs, saved
+  searches and follows and, for a company account, its company, jobs, job
+  contacts and those jobs' clicks (and reports on those jobs). Their own
+  clicks and the reports they filed stay, with `user_id` / `reporter_id` set
+  to null; admins' decisions, reviews and resolutions stay without them.
+  Deleting a user in the dashboard (Authentication > Users > Delete) does
+  exactly the same, through the foreign keys alone (table by table in
+  SUPABASE.md, "When someone deletes their account"). Keep it that way if
+  you add a table that points at a user: `on delete cascade` or `set null`,
+  never a rule that blocks the delete; the security check lists every such
+  column and fails on a new one until its expected list is updated.
 
 - Links and emails: `companies.website` and `job_contacts.apply_url` only
   `http(s)://` with a dotted host and no spaces, quotes or angle brackets;
@@ -522,10 +546,18 @@ Schema rules
   it); older expired jobs are refused and must be edited and resubmitted.
 - `my_feedback()` / `my_reports()`: the caller's own rows only (reports
   without the resolution note or resolver). `admin_stats()`: admins only.
-- Retention: `retention_settings` (one row, no grants, every period null =
-  nothing deleted) and `run_retention()` (no grants), run daily by pg_cron
-  job `gigome-retention`. Waiting for the legal decision: never set a period
-  without the owner's go-ahead.
+- Retention: `retention_settings` (one row, no grants) and `run_retention()`
+  (no grants), run daily at 03:37 UTC by pg_cron job `gigome-retention`.
+  On (Privacy Notice section 9, owner's go-ahead in November 2026):
+  incomplete sign-ups deleted after 30 days without a login (no Terms, no
+  name, no company, not an admin); listings closed, rejected or expired 90
+  days ago lose contact, saves, description, pay note, free-text location
+  and pin, unless reported (`jobs.ended_at`: trigger `job_ended_at`, no
+  grants); apply clicks lose `user_id` and keep only the day after 180 days
+  (counts unchanged). The older periods (ended jobs, feedback, resolved
+  reports, inactive accounts) stay empty. Never set or shorten a period
+  without the owner's go-ahead. The rest (24-month inactivity, security
+  logs, email) is done by hand: `HANDOVER.md` section 7d.
 
 Security check
 - `supabase/checks/security_check.sql` is pasted into the SQL Editor after a

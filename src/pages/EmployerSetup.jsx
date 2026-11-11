@@ -7,6 +7,7 @@ import EmployerGate from '../components/EmployerGate.jsx';
 import { supabase } from '../lib/supabase.js';
 import { createCompany } from '../lib/employer.js';
 import { announceProfileChange } from '../lib/profile.js';
+import { acceptTerms } from '../lib/terms.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
 
 // /employers/setup: a company account without a company creates it here.
@@ -36,6 +37,8 @@ function Setup() {
   if (account.status === 'ready') return <Navigate to="/dashboard" replace />;
 
   async function onSave(fields) {
+    // The Terms box was ticked: record the version on the account first.
+    await acceptTerms(account.session.user.id);
     await createCompany(fields);
     announceProfileChange();
     setCreated(true);

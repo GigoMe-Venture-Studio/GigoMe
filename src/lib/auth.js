@@ -127,7 +127,7 @@ export function verifyErrorMessage(error, sentAt) {
 export async function fetchProfile(userId) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('full_name, degree_level, graduation_year, account_type')
+    .select('full_name, degree_level, graduation_year, account_type, terms_version, terms_accepted_at')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw error;
