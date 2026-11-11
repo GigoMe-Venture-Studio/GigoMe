@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react';
 import { Navigate, Routes, Route } from 'react-router';
 import SiteHeader from './components/SiteHeader.jsx';
 import SiteFooter from './components/SiteFooter.jsx';
@@ -8,7 +9,6 @@ import { RouteMeta } from './lib/seo.js';
 import Home from './pages/Home.jsx';
 import Jobs from './pages/Jobs.jsx';
 import JobDetail from './pages/JobDetail.jsx';
-import Terms from './pages/Terms.jsx';
 import Company from './pages/Company.jsx';
 import Saved from './pages/Saved.jsx';
 import Account from './pages/Account.jsx';
@@ -19,8 +19,12 @@ import JobEditor from './pages/JobEditor.jsx';
 import Admin from './pages/Admin.jsx';
 import Login from './pages/Login.jsx';
 import Welcome from './pages/Welcome.jsx';
-import Privacy from './pages/Privacy.jsx';
 import NotFound from './pages/NotFound.jsx';
+
+// The legal texts are long: downloaded only when /privacy or /terms is opened.
+const Privacy = lazy(() => import('./pages/Privacy.jsx'));
+const Terms = lazy(() => import('./pages/Terms.jsx'));
+const loadingPage = <main className="wrap legal-main"><p className="muted">Loading…</p></main>;
 
 export default function App() {
   return (
@@ -46,8 +50,8 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/login" element={<Login />} />
           <Route path="/welcome" element={<Welcome />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Suspense fallback={loadingPage}><Privacy /></Suspense>} />
+          <Route path="/terms" element={<Suspense fallback={loadingPage}><Terms /></Suspense>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageErrorBoundary>

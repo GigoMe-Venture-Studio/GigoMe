@@ -15,6 +15,7 @@ import './styles/account.css';
 import './styles/employer.css';
 import './styles/admin.css';
 import './styles/error.css';
+import './styles/legal.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

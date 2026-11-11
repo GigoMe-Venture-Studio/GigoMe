@@ -109,17 +109,24 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       const fine = await p.locator('.site-footer').count() === 1 && f.includes('A student project in Milan. Free for students.') && !/About/.test(f) && f.includes('Privacy notice') && f.includes('Terms') && f.includes('Questions or need help? hello@gigome.org') && f.includes('Give feedback');
       ok(fine, 'footer on ' + path + ': Privacy notice and Terms, no About');
       // Area names in the dropdowns (e.g. "Porta Romana / Bocconi") are neighbourhoods, not claims of affiliation.
-      // The student login names the universities whose students can log in (.login-unis, .uni-list), always
-      // with the line saying GigoMe isn't affiliated with or endorsed by any university (checked in login.test.js).
-      const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select, .login-unis, .uni-list').forEach((x) => x.remove()); return c.innerText; });
+      // The student login names the universities whose students can log in only when an address is refused
+      // (.uni-list), under the line saying GigoMe isn't affiliated with or endorsed by any university (login.test.js).
+      const all = await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelectorAll('select, .uni-list').forEach((x) => x.remove()); return c.innerText; });
       ok(!/bocconi/i.test(all) && !/about us|our team|founder|biograph/i.test(all), 'no Bocconi, team or biography text on ' + path);
     }
-    for (const [path, title] of [['/privacy', 'Privacy notice'], ['/terms', 'Terms of use']]) {
+    // The legal texts as supplied (word-for-word checks: tests/unit/legal.test.mjs).
+    for (const [path, h1, sections, other] of [['/privacy', 'GigoMe | Privacy Notice', 18, '/terms'], ['/terms', 'GigoMe | Terms and Conditions', 30, '/privacy']]) {
       await p.goto(ENV + '/'); await p.waitForTimeout(300);
-      await p.click('.site-footer a:has-text("' + (path === '/terms' ? 'Terms' : 'Privacy notice') + '")'); await p.waitForTimeout(400);
+      await p.click('.site-footer a:has-text("' + (path === '/terms' ? 'Terms' : 'Privacy notice') + '")'); await p.waitForSelector('.legal-doc');
       const t = await txt(p, 'main');
-      ok(new URL(p.url()).pathname === path && t.includes(title) && t.includes('Who operates GigoMe') && (await p.locator('main .placeholder-text').allInnerTexts()).includes('[Who operates GigoMe: to be filled in]'), path + ': opened from the footer, with the marked "Who operates GigoMe" placeholder');
+      ok(new URL(p.url()).pathname === path && (await txt(p, 'h1')) === h1 && t.includes('Matteo Maria Scarano') && !t.includes('activate this link') && !t.includes('to be filled in'),
+        path + ': opened from the footer, the supplied text, no drafting notes or placeholders');
+      ok(await p.locator('.legal-doc [id^="section-"]').count() === sections && await p.locator('.legal-toc a').count() === sections, path + ': every section has its anchor and a line in "On this page"');
+      ok(await p.locator('.legal-doc a[href="' + other + '"]').count() === 1, path + ': its link to ' + other + ' works inside the site');
+      ok(await p.locator('link[rel=canonical]').getAttribute('href') === 'https://gigome.org' + path && !(await p.locator('meta[name=robots]').count()), path + ': indexable, with its canonical link');
     }
+    await p.goto(ENV + '/privacy#section-10'); await p.waitForSelector('.legal-doc'); await p.waitForTimeout(400);
+    ok(await p.evaluate(() => Math.abs(document.getElementById('section-10').getBoundingClientRect().top) < 40), '/privacy#section-10 opens at that section');
     await p.goto(ENV + '/#jobs'); await p.waitForTimeout(400);
     ok(await p.isVisible('.hero'), 'old /#jobs links land on the home page');
     await ctx.close(); }
@@ -127,7 +134,12 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     await p.goto(ENV + '/terms'); await p.waitForTimeout(400); await p.click('#menu-btn');
     const items = await p.$$eval('#menu-panel a, #menu-panel button', (els) => els.map((e) => e.textContent.trim()).join(', '));
     ok(items === 'Jobs, For employers', 'phone menu: Jobs, For employers');
-    for (const path of ['/', '/terms', '/privacy', '/jobs']) { await p.goto(ENV + path); await p.waitForTimeout(400); ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on phone: ' + path); }
+    for (const path of ['/', '/terms', '/privacy', '/jobs']) {
+      await p.goto(ENV + path); await p.waitForTimeout(400);
+      if (path === '/terms' || path === '/privacy') await p.waitForSelector('.legal-doc');
+      ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on phone: ' + path);
+      if (path === '/privacy') ok(await p.$$eval('.legal-table', (els) => els.length === 2 && els.every((e) => e.scrollWidth > e.clientWidth && getComputedStyle(e).overflowX === 'auto')), 'phone: the privacy notice\'s two tables scroll sideways inside their box');
+    }
     await ctx.close(); }
 
   // Job page: "How to apply" right after the facts on phones (on the first

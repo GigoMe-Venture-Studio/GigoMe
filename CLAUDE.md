@@ -19,10 +19,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
   `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
   redirects to `/`: there is no About page, and no team names, biographies or
-  anything suggesting a university's endorsement or affiliation anywhere. The
-  one place a university is named is the student login's list of who can log
-  in, always with "GigoMe is an independent student project, not affiliated
-  with or endorsed by any university." (the disclaimer itself never names a
+  anything suggesting a university's endorsement or affiliation anywhere
+  (the legal texts on `/privacy` and `/terms` name the operator, as the law
+  requires). The one place a university is named is the student login's list
+  of who can log in, shown only when an address is refused, under the line
+  "GigoMe is an independent student project, not affiliated with or endorsed
+  by any university." (always on the student login; it never names a
   university). `ScrollToTop` (in `App.jsx`) starts each new path at the
   top, except on Back/Forward and query-only changes. Don't
   add placeholder pages for features that aren't built.
@@ -180,10 +182,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
   profile has no name yet), logic in `src/lib/auth.js`, session in
   `src/lib/useSession.js`. Only emails whose domain is in `universities` get
-  a code. The student login reads `universities` (readable logged out) to
-  show "Open to students of ...", and when an address is refused lists each
-  university with its domains and "Is your university missing? Email
-  hello@gigome.org" (a mailto link). `/welcome` and `/account` share the profile fields and their rules
+  a code. Under the email field: what the email is used for and a link to
+  the Privacy Notice (people don't "agree" to a privacy notice: never write
+  that). When an address is refused, the student login reads `universities`
+  (readable logged out) and lists each university with its domains and "Is
+  your university missing? Email hello@gigome.org" (a mailto link). `/welcome` and `/account` share the profile fields and their rules
   (`src/components/ProfileFields.jsx`, `checkProfile()` in
   `src/lib/profile.js`); after saving they call `announceProfileChange()` so
   the header shows the new name.
@@ -199,8 +202,16 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `my_saved_jobs`, `my_opened_jobs`, and for companies their company, jobs,
   contacts and clicks); nothing is stored. A new table holding user data
   must be added to it.
-  `/privacy` and `/terms` are placeholders until the owner supplies the text;
-  each has a marked "Who operates GigoMe" section. Both are in the footer.
+  `/privacy` and `/terms` show the legal texts word for word as supplied:
+  the files in `docs/legal/published/` (never edit their wording; a new
+  version is a new file from the team's legal person), turned into
+  `src/legal/*.json` by `node scripts/legal-to-json.mjs <in.html> <out.json>`
+  and rendered by `src/components/LegalDocument.jsx` with React elements
+  (never as HTML), in our layout (`legal.css`), keeping the section ids
+  (`/privacy#section-10`), with tables that scroll sideways on phones.
+  `tests/unit/legal.test.mjs` checks the wording word for word against the
+  supplied file. Both pages are loaded only when opened, and are in the
+  footer.
 - Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
   login), `EmployerSetup.jsx` (`/employers/setup`: a company account without
   a company creates it, status pending; "I accept the terms" must be ticked,
