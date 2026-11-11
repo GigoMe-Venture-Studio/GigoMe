@@ -279,8 +279,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   sets each fixed page's title, description, canonical link and "noindex"
   for private pages from `PAGES`; job and company pages use `usePageMeta()`;
   job pages add schema.org JobPosting with `useJsonLd(jobPostingData(job))`
-  (`<` escaped). `public/robots.txt` and `public/sitemap.xml` (fixed pages
-  only). Add a new page to `PAGES`.
+  (`<` escaped). `index.html` has a static schema.org WebSite block (`name`
+  "GigoMe", `url` https://gigome.org/) so search results show "GigoMe" as
+  the site name; it's a data block, never run, so the CSP allows it.
+  `public/robots.txt` and `public/sitemap.xml` (fixed pages only). Add a new
+  page to `PAGES`.
 - `public/_headers`: cache rules and the security headers for every path:
   Content-Security-Policy (only gigome.org, Supabase, OpenFreeMap,
   Nominatim, Turnstile and Cloudflare Web Analytics; no inline scripts or
@@ -291,7 +294,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   service needs a line there, in HANDOVER.md 7b and in the privacy notice;
   the browser tests fail on any CSP violation.
 - `public/`: copied into `dist/` as is: `_headers` (above),
-  `favicon.ico` (16 and 32 px, flat purple on a white tile),
+  `favicon.ico` (16, 32 and 48 px) and `favicon-192.png` (192x192, linked
+  from `index.html`): the G mark with flat purple `#8A55C4` on a white tile
+  with rounded corners (padding 1/16 of the size, corner radius 1/5),
   `apple-touch-icon.png`, `og-image.png` (link previews: 1200x630, the logo
   and the home page headline on a white card framed in the brand purple;
   referenced from `index.html` with absolute https://gigome.org URLs, with
