@@ -8,7 +8,7 @@ const E = 'http://127.0.0.1:4402'; let pass = 0, fail = 0; const ok = (c, m) => 
   await p.locator('.role-row').last().click(); await p.waitForTimeout(500);
   ok(before > 200 && await y() === 0, `job page opens at the top (list was at ${before}, now ${await y()})`);
   await p.goBack(); await p.waitForTimeout(600);
-  ok(await y() > 0, 'Back does not force the top: ' + await y());
+  ok(Math.abs((await y()) - before) <= 2, `Back returns to where the list was, once it has loaded again (${before}, now ${await y()})`);
   if (await p.locator('.job-filters-toggle').isVisible()) await p.click('.job-filters-toggle');
   await p.evaluate(() => scrollTo(0, 300)); const at = await y();
   await p.locator('select[name=type]').selectOption('gig'); await p.waitForTimeout(600);

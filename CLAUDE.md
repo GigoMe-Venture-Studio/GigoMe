@@ -26,7 +26,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   "GigoMe is an independent student project, not affiliated with or endorsed
   by any university." (always on the student login; it never names a
   university). `ScrollToTop` (in `App.jsx`) starts each new path at the
-  top, except on Back/Forward and query-only changes. Don't
+  top, except on query-only changes; Back/Forward return to where that
+  page was left (kept in memory per history entry, restored once the page,
+  e.g. a job list still loading, is tall enough). Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
   `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=&when=&lang=`
