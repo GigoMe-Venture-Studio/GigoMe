@@ -49,6 +49,12 @@ skip any because "it worked in testing".
 - [ ] `universities` holds the right domains (Bocconi's student domain(s)).
 
 **Data**
+- [ ] **Example listings removed.** The made-up companies and jobs for
+      testers (badge "Example listing, not a real job") must be gone before
+      the public launch: SQL Editor > paste all of
+      `supabase/seed/remove_examples.sql` > Run. Every row of the result
+      must say 0. Then open https://gigome.org/jobs: no card says "Example
+      listing". Section 4, "Example listings", has the details.
 - [ ] Test users, companies and jobs made while building are deleted from
       the live database (Authentication > Users; Table Editor).
 - [ ] The daily retention job runs: `select last_run_at, last_result from
@@ -201,6 +207,35 @@ week. It only reads.
   to update the contact email. The old owner's account is then a company
   account without a company: delete it if they ask. Note the change
   somewhere (it isn't in the moderation log).
+- **Example listings (testing only, gone before launch):** 6 made-up
+  companies and 20 jobs, so testers can try search, filters and the map
+  before real employers post. Every card, map card and page says "Example
+  listing, not a real job" (company pages: "Example company, not a real
+  employer"), every company name starts with "Example ", search engines are
+  told not to index them, and "Apply" only explains that it's an example
+  (nothing opens, no apply click is counted; the database refuses it too).
+  They're left out of the numbers on `/admin` and in `kpis.sql`. They have
+  no owner account, so nobody can log in as them or edit them; the only
+  contact detail is hello@gigome.org, never shown.
+  - **Load them:** only after the pull request that adds
+    `supabase/migrations/20261112120000_example_listings.sql` is merged and
+    Supabase has applied it (Database > Migrations). SQL Editor > New query >
+    paste all of `supabase/seed/examples.sql` > Run. The result lists what
+    was loaded, filter by filter. It refuses to run while examples are
+    already there.
+  - **Refresh them** (the "New" badges and the job that expires in 2 days
+    are counted from the day they were loaded): run `remove_examples.sql`,
+    then `examples.sql` again.
+  - **Remove them (before the public launch, at the latest):** SQL Editor >
+    paste all of `supabase/seed/remove_examples.sql` > Run. It deletes every
+    example company and job and everything that points at them: students'
+    saves and follows, apply clicks, how to apply, reports on them (unlike
+    reports on real jobs, which are kept as evidence) and the moderation
+    log's entries about them. Real companies and jobs, and every account,
+    are never touched. Every row of its result must say 0. Running it again
+    does nothing.
+  - Testers' saved searches stay (they're filters, not listings), as do
+    their accounts and anything they did on real listings.
 - **Someone asks for their data or its deletion:** they can do both
   themselves on `/account` ("Download my data", "Delete my account"). If
   they can't log in, check it's really them (a reply from that email

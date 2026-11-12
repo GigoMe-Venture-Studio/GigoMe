@@ -13,12 +13,16 @@
 --   * Distinct students per week leaves out clicks of deleted accounts (their
 --     user_id is empty); their clicks still count in "Apply clicks".
 --   * Test and admin accounts are counted like everyone else.
+--   * Example listings (is_example: supabase/seed/examples.sql) are left
+--     out: example companies, their jobs and any clicks on them. admin_stats()
+--     on /admin does the same.
 
 with live_jobs as (
   select j.id, j.company_id
   from public.jobs j
   join public.companies c on c.id = j.company_id
   where j.status = 'published' and j.expires_at > now() and c.status = 'approved'
+    and not j.is_example and not c.is_example
 ),
 weeks as (
   select w::date as week
@@ -29,8 +33,12 @@ weekly as (
          count(k.id) as clicks,
          count(distinct k.user_id) as students
   from weeks wk
-  left join public.job_clicks k
-    on k.created_at >= wk.week and k.created_at < wk.week + interval '1 week'
+  left join (
+    select k.id, k.user_id, k.created_at
+    from public.job_clicks k
+    join public.jobs j on j.id = k.job_id
+    where not j.is_example
+  ) k on k.created_at >= wk.week and k.created_at < wk.week + interval '1 week'
   group by wk.week
 )
 select metric, detail, value
@@ -43,7 +51,7 @@ from (
   left join public.profiles p on p.university_id = u.id and p.account_type = 'student'
   group by u.name
   union all
-  select 3, 'Approved companies', '', (select count(*) from public.companies where status = 'approved')
+  select 3, 'Approved companies', '', (select count(*) from public.companies where status = 'approved' and not is_example)
   union all
   select 4, 'Companies with at least one live job', '', (select count(distinct company_id) from live_jobs)
   union all

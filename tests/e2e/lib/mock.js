@@ -50,6 +50,14 @@ for (const j of JOBS) { const pp = PAY[j.title]; if (pp) Object.assign(j, { pay_
 for (const j of JOBS) { Object.assign(j, { category: 'other', published_at: null, nearest_station_m: null, metro_stations: null }, EXTRA[j.title] || {}); j.company_id = j.companies.id; j.schedule = (WHEN[j.title] || [[]])[0]; j.languages = (WHEN[j.title] || [[], ['en', 'it']])[1]; }
 for (const j of JOBS) { j.area_id = j.area_id || null; j.latitude = j.latitude ?? null; j.longitude = j.longitude ?? null; if (j.show_exact_location === undefined) j.show_exact_location = true; const a = AREAS.find((x) => x.id === j.area_id); j.areas = a ? { name: a.name } : null; }
 const CONTACT = { [ID(1)]: { apply_url: 'https://nebbia-example.it/jobs', apply_email: 'jobs@nebbia-example.it' } };
+// Example listings (supabase/seed/examples.sql), only with { examples: true }:
+// a made-up company without an owner and two of its jobs, one on the map.
+const EXAMPLE_CO = { id: 'e0000000-0000-4000-8000-0000000000c1', name: 'Example Café Immaginario', status: 'approved', website: null, description: 'A made-up café, invented to test GigoMe.', is_example: true };
+const EXAMPLE_JOBS = [
+  { id: 'e0000000-0000-4000-8000-000000000001', title: 'Evening waiter or waitress', job_type: 'part_time', category: 'hospitality', location: null, remote: false, hours_per_week: 16, pay: null, pay_unit: 'hour', pay_min: 9.5, pay_max: null, pay_hourly: 9.5, italian_level: 'basic', start_date: null, created_at: ago(2), published_at: ago(1), description: 'Example listing, made up for testing GigoMe.', schedule: ['weekday_evenings'], languages: ['en'], area_id: 1, areas: { name: 'Duomo / Centro' }, latitude: 45.4655, longitude: 9.1885, show_exact_location: true, nearest_station_m: 145, metro_stations: { name: 'Duomo', lines: ['M1', 'M3'], latitude: 45.464, longitude: 9.1895 } },
+  { id: 'e0000000-0000-4000-8000-000000000002', title: 'Online homework helper', job_type: 'part_time', category: 'tutoring_education', location: null, remote: true, hours_per_week: 10, pay: null, pay_unit: 'hour', pay_min: 12, pay_max: null, pay_hourly: 12, italian_level: 'none', start_date: null, created_at: ago(21), published_at: ago(20), description: 'Example listing, made up for testing GigoMe.', schedule: ['flexible'], languages: ['en'], area_id: null, areas: null, latitude: null, longitude: null, show_exact_location: true, nearest_station_m: null, metro_stations: null }
+];
+for (const j of EXAMPLE_JOBS) Object.assign(j, { is_example: true, companies: EXAMPLE_CO, company_id: EXAMPLE_CO.id, expires_at: new Date(Date.now() + 40 * 86400000).toISOString() });
 
 // Sorts rows the way PostgREST does for ?order=col.desc.nullslast,col2.desc
 // (desc puts nulls first unless nullslast; asc puts them last).
@@ -112,15 +120,17 @@ async function mock(ctx, opts = {}) {
     if (path === '/rest/v1/jobs') {
       log.jobs.push(url.search);
       if (opts.jobsFail) return j(500, { message: 'boom' });
-      let rows; try { rows = apply(url, opts.noJobs ? [] : JOBS); } catch (e) { log.badQuery = e.message; return j(400, { message: e.message }); }
+      let rows; try { rows = apply(url, opts.noJobs ? [] : opts.examples ? JOBS.concat(EXAMPLE_JOBS) : JOBS); } catch (e) { log.badQuery = e.message; return j(400, { message: e.message }); }
       if (method === 'HEAD') { log.counts = (log.counts || []).concat(url.search); return r.fulfill({ status: 200, headers: { 'content-range': `*/${rows.length}`, 'access-control-allow-origin': '*', 'access-control-expose-headers': 'content-range' }, body: '' }); }
       const single = /vnd\.pgrst\.object/.test(req.headers()['accept'] || '');
       return j(200, single ? rows[0] || null : rows);
     }
-    if (path === '/rest/v1/rpc/reveal_job_contact') { log.rpc.push(req.postDataJSON()); if (profile.account_type !== 'student') return j(403, { code: '42501', message: 'x' }); return j(200, CONTACT[req.postDataJSON().p_job_id] ? [CONTACT[req.postDataJSON().p_job_id]] : []); }
+    if (path === '/rest/v1/rpc/reveal_job_contact') { log.rpc.push(req.postDataJSON()); if (profile.account_type !== 'student') return j(403, { code: '42501', message: 'x' });
+      if (EXAMPLE_JOBS.some((x) => x.id === req.postDataJSON().p_job_id)) return j(404, { code: 'P0002', message: 'This is an example listing, not a real job: there is nobody to apply to.' });
+      return j(200, CONTACT[req.postDataJSON().p_job_id] ? [CONTACT[req.postDataJSON().p_job_id]] : []); }
     if (path === '/rest/v1/companies' && method === 'GET' && url.searchParams.get('status') === 'eq.approved' && url.searchParams.get('id')) {
-      const id = url.searchParams.get('id').slice(3); const c = [NEBBIA, FINTRA].find((x) => x.id === id && x.status === 'approved');
-      const row = c ? { id: c.id, name: c.name, website: c.website, description: c.description, status: c.status } : null;
+      const id = url.searchParams.get('id').slice(3); const c = [NEBBIA, FINTRA, ...(opts.examples ? [EXAMPLE_CO] : [])].find((x) => x.id === id && x.status === 'approved');
+      const row = c ? { id: c.id, name: c.name, website: c.website, description: c.description, status: c.status, is_example: Boolean(c.is_example) } : null;
       const single = /vnd\.pgrst\.object/.test(req.headers()['accept'] || '');
       log.companyReads = (log.companyReads || []).concat(url.searchParams.get('select'));
       return single ? (row ? j(200, row) : j(406, { code: 'PGRST116' })) : j(200, row ? [row] : []);
@@ -192,4 +202,4 @@ async function login(p, email = 'ana@studbocconi.it') {
   await p.fill('input[name=email]', email); await p.click('text=Send me a code'); await p.waitForTimeout(300);
   await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
 }
-module.exports = { sortByOrder, mock, login, ID, JOBS, AREAS, NEBBIA, FINTRA, ago };
+module.exports = { sortByOrder, mock, login, ID, JOBS, AREAS, NEBBIA, FINTRA, EXAMPLE_CO, EXAMPLE_JOBS, ago };

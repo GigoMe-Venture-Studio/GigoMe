@@ -103,6 +103,10 @@ declare
   v_rt_click_new bigint;
   v_rt_click_orphan bigint;
   v_kr_job      uuid;   -- a reported job its owner deletes
+  -- example listings
+  v_ex_co       uuid;
+  v_ex_job      uuid;
+  v_ex_before   text;
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -2846,9 +2850,11 @@ begin
       v_err := 'read';
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
+    -- Example listings (supabase/seed/examples.sql) are left out, as in kpis.sql.
     select (select count(*) from public.profiles where account_type = 'student') || ','
            || (select count(*) from public.jobs j join public.companies c on c.id = j.company_id
-               where j.status = 'published' and j.expires_at > now() and c.status = 'approved')
+               where j.status = 'published' and j.expires_at > now() and c.status = 'approved'
+                 and not j.is_example and not c.is_example)
       into v_count_text;
     results := pg_temp.res(results, 'admin_stats gives an admin the same numbers as kpis.sql', v_count_text, v_err || ': ' || coalesce(v_text, '?'), v_err = 'read' and v_text = v_count_text);
 
@@ -3471,6 +3477,101 @@ begin
     select public.run_retention() into v_json;
     select case when count(*) = 9 and bool_and(value = '0') then 'all 0' else v_json::text end into v_text from jsonb_each_text(v_json);
     results := pg_temp.res(results, 'Retention: running it again changes nothing', 'all 0', v_text, v_text = 'all 0');
+
+    -- ----------------------------------------------------------------------
+    -- Example listings (is_example, supabase/seed/examples.sql)
+    -- ----------------------------------------------------------------------
+    select string_agg(x, ', ' order by x) into v_err from (
+      select r || ':' || p || ' ' || tbl
+      from unnest(array['anon', 'authenticated']) r, unnest(array['INSERT', 'UPDATE']) p,
+           unnest(array['public.jobs', 'public.companies']) tbl
+      where has_column_privilege(r, tbl, 'is_example', p)
+      union all
+      select r || ':no SELECT ' || tbl
+      from unnest(array['anon', 'authenticated']) r, unnest(array['public.jobs', 'public.companies']) tbl
+      where not has_column_privilege(r, tbl, 'is_example', 'SELECT')
+    ) s(x);
+    results := pg_temp.res(results, 'is_example: everyone reads it on jobs and companies; nobody writes it through the API', 'read only',
+                           coalesce(v_err, 'read only'), v_err is null);
+
+    begin
+      insert into public.companies (owner_id, name, status) values (null, 'Check company without an owner', 'approved');
+      v_err := 'created';
+    exception when others then v_err := 'refused';
+    end;
+    results := pg_temp.res(results, 'A company needs an owner unless it is an example', 'refused', v_err, v_err = 'refused');
+
+    -- The admin numbers before an example company and a live example job exist.
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select row(s.*)::text into v_ex_before from public.admin_stats() s;
+      perform set_config('role', 'none', true);
+    exception when others then v_ex_before := 'error: ' || sqlerrm;
+    end;
+
+    insert into public.companies (owner_id, name, status, is_example)
+      values (null, 'Check example company', 'approved', true) returning id into v_ex_co;
+    insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, is_example)
+      values (v_ex_co, 'Check example job', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10, true) returning id into v_ex_job;
+    insert into public.job_contacts (job_id, apply_email) values (v_ex_job, 'hello@gigome.org');
+
+    select pg_temp.seen_as(null, format('select count(*) from public.jobs where id = %L and is_example', v_ex_job)) || ' job, '
+           || pg_temp.seen_as(null, format('select count(*) from public.companies where id = %L and is_example', v_ex_co)) || ' company'
+      into v_text;
+    results := pg_temp.res(results, 'Logged-out visitors see example jobs and companies, marked as examples', '1 job, 1 company',
+                           v_text, v_text = '1 job, 1 company');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      perform * from public.reveal_job_contact(v_ex_job);
+      perform set_config('role', 'none', true);
+      v_err := 'revealed';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    select v_err || '; ' || count(*) || ' clicks' into v_text from public.job_clicks where job_id = v_ex_job;
+    results := pg_temp.res(results, 'reveal_job_contact refuses an example job and records no apply click',
+                           'error: This is an example listing, not a real job: there is nobody to apply to.; 0 clicks', v_text,
+                           v_text = 'error: This is an example listing, not a real job: there is nobody to apply to.; 0 clicks');
+
+    -- An owner and a student try to change it; the RLS lets nobody through.
+    v_n := 0;
+    foreach v_text in array array[v_emp::text, v_student::text] loop
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub', v_text, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        update public.jobs set title = 'Changed' where id = v_ex_job;
+        get diagnostics v_rows = row_count;
+        v_n := v_n + v_rows;
+        update public.companies set description = 'Changed' where id = v_ex_co;
+        get diagnostics v_rows = row_count;
+        v_n := v_n + v_rows;
+        perform set_config('role', 'none', true);
+      exception when others then perform set_config('role', 'none', true);
+      end;
+    end loop;
+    results := pg_temp.res(results, 'Nobody can change an example company or its jobs through the API (they have no owner)', '0 rows changed',
+                           v_n || ' rows changed', v_n = 0);
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select row(s.*)::text into v_text from public.admin_stats() s;
+      perform set_config('role', 'none', true);
+    exception when others then v_text := 'error: ' || sqlerrm;
+    end;
+    -- A click on the example job (only possible from the SQL Editor) mustn't count either.
+    insert into public.job_clicks (job_id, user_id) values (v_ex_job, v_student);
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select v_text || ' / ' || row(s.*)::text into v_text from public.admin_stats() s;
+      perform set_config('role', 'none', true);
+    exception when others then v_text := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'admin_stats leaves example companies, jobs and their clicks out', v_ex_before || ' / ' || v_ex_before,
+                           v_text, v_text = v_ex_before || ' / ' || v_ex_before and v_ex_before like '(%');
 
     -- ----------------------------------------------------------------------
     -- Undo everything above

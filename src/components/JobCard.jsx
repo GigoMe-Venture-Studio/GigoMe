@@ -2,9 +2,11 @@ import { Link } from 'react-router';
 import SaveButton from './SaveButton.jsx';
 import {
   CATEGORY_LABEL,
+  EXAMPLE_JOB_LABEL,
   ITALIAN_LABEL,
   JOB_TYPE_LABEL,
   hoursLabel,
+  isExample,
   isNew,
   metroLabel,
   payLabel,
@@ -19,13 +21,16 @@ import {
 // distance: "1.2 km away" when the person chose "Use my location" (worked
 // out on their device), else null.
 // save false: no Save button on the card (the home page).
+// An example listing (made up for testers) says so first, before the title.
 export default function JobCard({ job, distance = null, save = true }) {
   const metro = metroLabel(job);
   const when = scheduleLabels(job);
+  const example = isExample(job);
   return (
     <li className="job-card">
       <Link className="role-row" to={`/jobs/${job.id}`}>
         <div>
+          {example && <div className="role-example"><span className="tag tag-example">{EXAMPLE_JOB_LABEL}</span></div>}
           <div className="role-l1">
             <span className="role-title">{job.title}</span>
             {job.companies && <span className="role-co">{job.companies.name}</span>}

@@ -62,7 +62,7 @@ export const languageLabels = (job) => LANGUAGES.filter(([v]) => (job.languages 
 // them, never select *).
 const LIST_COLUMNS =
   'id, title, job_type, location, remote, hours_per_week, pay, pay_unit, pay_min, pay_max, pay_hourly, italian_level, created_at, ' +
-  'category, published_at, schedule, languages, ' +
+  'category, published_at, schedule, languages, is_example, ' +
   'area_id, latitude, longitude, show_exact_location, nearest_station_m, areas(name), metro_stations(name, lines)';
 
 // A search keyword, reduced to letters, numbers, spaces, hyphens and
@@ -164,7 +164,7 @@ function timeoutSignal(ms) {
 }
 
 export async function fetchJobs(filters, { limit = 200, timeoutMs = JOBS_TIMEOUT_MS } = {}) {
-  let query = filtered(liveJobs(LIST_COLUMNS + ', companies!inner(name, status)'), filters).abortSignal(timeoutSignal(timeoutMs));
+  let query = filtered(liveJobs(LIST_COLUMNS + ', companies!inner(name, status, is_example)'), filters).abortSignal(timeoutSignal(timeoutMs));
   // Highest pay: by the hourly equivalent; jobs without one (per project,
   // unpaid, no structured pay) after the rest.
   if (filters.sort === 'pay') query = query.order('pay_hourly', { ascending: false, nullsFirst: false });
@@ -237,7 +237,7 @@ export async function fetchJob(id) {
   if (!UUID.test(id || '')) return null;
   // The job page also needs the station's position, for its small map.
   const columns = LIST_COLUMNS.replace('metro_stations(name, lines)', 'metro_stations(name, lines, latitude, longitude)');
-  const { data, error } = await liveJobs(columns + ', description, start_date, expires_at, companies!inner(id, name, website, description, status)')
+  const { data, error } = await liveJobs(columns + ', description, start_date, expires_at, companies!inner(id, name, website, description, status, is_example)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
@@ -273,6 +273,14 @@ export function metroLabel(job) {
   if (!job.show_exact_location || !s || m == null || m > 1000) return null;
   return `${s.lines.join(' ')} ${s.name} · ${Math.max(1, Math.round(m / 80))} min walk`;
 }
+
+// Example listings (supabase/seed/examples.sql): made-up companies and jobs
+// for testers, until the public launch. Marked on every card and page, never
+// indexed, and Apply explains instead of opening anything. A job counts as an
+// example when it or its company is one.
+export const EXAMPLE_JOB_LABEL = 'Example listing, not a real job';
+export const EXAMPLE_COMPANY_LABEL = 'Example company, not a real employer';
+export const isExample = (job) => Boolean(job && (job.is_example || (job.companies && job.companies.is_example)));
 
 // Published in the last 3 days.
 export function isNew(job) {
@@ -372,7 +380,7 @@ export async function fetchCompany(id) {
   if (!UUID.test(id || '')) return null;
   const { data, error } = await supabase
     .from('companies')
-    .select('id, name, website, description, status')
+    .select('id, name, website, description, status, is_example')
     .eq('id', id)
     .eq('status', 'approved')
     .maybeSingle();

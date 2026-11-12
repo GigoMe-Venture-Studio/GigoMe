@@ -3,8 +3,9 @@ import { Link, useNavigate, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
+import ExampleNotice from '../components/ExampleNotice.jsx';
 import { supabase } from '../lib/supabase.js';
-import { fetchCompany, fetchJobs, websiteHref, websiteText } from '../lib/jobs.js';
+import { EXAMPLE_COMPANY_LABEL, fetchCompany, fetchJobs, websiteHref, websiteText } from '../lib/jobs.js';
 import { shortText, usePageMeta } from '../lib/seo.js';
 import { useSession } from '../lib/useSession.js';
 import { useSavedJobs } from '../lib/saved.js';
@@ -44,11 +45,13 @@ function CompanyPage() {
     };
   }, [id]);
 
+  // An example company (made up for testers) is never indexed.
   usePageMeta(
     state.status === 'ready'
       ? {
           title: `${state.company.name}: jobs in Milan`,
-          description: shortText(`${state.company.name} on GigoMe: open jobs in Milan for students who work in English. ${state.company.description || ''}`)
+          description: shortText(`${state.company.name} on GigoMe: open jobs in Milan for students who work in English. ${state.company.description || ''}`),
+          index: !state.company.is_example
         }
       : state.status === 'missing'
         ? { title: "This company isn't on GigoMe", index: false }
@@ -70,6 +73,11 @@ function CompanyPage() {
   const site = websiteHref(company.website);
   return (
     <article className="company-page">
+      {company.is_example && (
+        <ExampleNotice label={EXAMPLE_COMPANY_LABEL}>
+          It's made up so testers can try GigoMe: it doesn't exist, and its jobs aren't real.
+        </ExampleNotice>
+      )}
       <div className="company-title-row">
         <h1 className="page-title">{company.name}</h1>
         <FollowButton company={company} />

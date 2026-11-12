@@ -47,8 +47,8 @@ domain changes no one.
 | `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
 | `profiles` | One row per user: account type, university, name, degree level, graduation year, and which version of the Terms they accepted ("I'm 18 or older and I accept the Terms") and when | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year. The Terms acceptance is written only by `accept_terms()`, with the database's time |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
-| `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), and when the owner accepted the terms (set by the database on creation) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status |
-| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay (per hour, per month, per project, or a curricular internship that is unpaid; an amount or a range; an hourly equivalent worked out by the database; an optional pay note), Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), the reviewer's note, who reviewed it and when, and when it was closed or rejected (`ended_at`, set by the database, not readable through the API) | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
+| `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), when the owner accepted the terms (set by the database on creation), and `is_example` (a made-up company for testers, see "Example listings" below) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status. Only the SQL Editor sets `is_example` |
+| `jobs` | Job listings: title, description, type (gig, part-time, internship, other), location, remote, hours per week (1 to 40), pay (per hour, per month, per project, or a curricular internship that is unpaid; an amount or a range; an hourly equivalent worked out by the database; an optional pay note), Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), the reviewer's note, who reviewed it and when, when it was closed or rejected (`ended_at`, set by the database, not readable through the API), and `is_example` (a made-up job for testers) | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
 | `areas` | Milan areas for location search and the map: name and an approximate centre (see the list below). "Elsewhere in Milan" has no centre | Everyone, including logged-out visitors | Only the team, in the dashboard |
 | `metro_stations` | Milan's M1–M5 metro stations: name, lines, coordinates, from the City of Milan's open data (see "Metro stations" below) | Everyone | Only the team: a data migration made by `scripts/fetch-metro-stations.mjs`, or the dashboard |
 | `saved_jobs` | Jobs a student saved to come back to: who, which job, when | Only the student who saved them | That student only (save a live job, remove). Deleted with their account and with the job |
@@ -85,7 +85,8 @@ A few details worth knowing:
   email stay editable). To rename a company, change it in the Table Editor.
 - **Owners can delete only drafts.** Anything that went further gets closed
   instead, so the click history is kept.
-- **One company per account.**
+- **One company per account.** Every company has an owner account, except
+  example companies (below), which have none.
 - **Job locations:** a job has an area and, optionally, an exact point
   (latitude and longitude) for the map. If the employer ticks "Only show the
   area" (`show_exact_location` false), the database stores the area's centre
@@ -136,6 +137,36 @@ A few details worth knowing:
   a limit, add a migration that replaces the function concerned
   (`feedback_daily_limit`, `reports_daily_limit`, `saves_daily_limit`,
   `job_submission_limit`).
+
+## Example listings
+
+Until the public launch, testers need listings to try search, filters and
+the map. `supabase/seed/examples.sql` (run by hand in the SQL Editor, not a
+migration) loads 6 made-up companies and 20 published jobs covering every
+filter value and a few edge cases; `supabase/seed/remove_examples.sql`
+deletes them again with everything that points at them. HANDOVER.md,
+section 4, "Example listings", says when and how.
+
+- `companies.is_example` and `jobs.is_example` mark them (default false).
+  Everyone can read the flag; nobody can set it through the API, so no
+  employer can turn a real listing into an example or the other way round.
+- Example companies have **no owner** (`owner_id` empty, allowed only for
+  them by the check `companies_owner_unless_example`): no fake login
+  accounts, and nobody can edit them or their jobs through the API.
+- The site shows "Example listing, not a real job" on every card, map card
+  and page (company pages: "Example company, not a real employer"), asks
+  search engines not to index them and gives them no JobPosting data.
+- `reveal_job_contact` refuses example jobs, so no contact is shown and no
+  apply click is recorded. Their only contact is hello@gigome.org.
+- `admin_stats()` and `supabase/queries/kpis.sql` leave example companies,
+  jobs and any clicks on them out.
+- One example job has no pay at all, the way listings from before
+  structured pay look. The database doesn't let a job be published without
+  pay any more (`job_pay_required`), so `examples.sql` switches that rule
+  off for that one insert and straight back on, inside its transaction.
+- Removing them deletes the reports on them too (reports on real jobs
+  outlive the job as evidence; made-up ones don't need to) and the
+  moderation log's entries about them.
 
 ## Metro stations
 
@@ -262,7 +293,7 @@ title and company name, until 730 days after they are resolved.
 
 | Function | Who can call it | What it does |
 | --- | --- | --- |
-| `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records an apply click. Anyone else gets an error. The job page calls it only when a student presses "Apply". |
+| `reveal_job_contact(job_id)` | Logged-in students | Returns how to apply for a published job and records an apply click. Anyone else gets an error, and so does an example listing (nothing recorded). The job page calls it only when a student presses "Apply", and never on an example listing. |
 | `set_job_contact(job_id, apply_url, apply_email)` | The job's owner | Sets how students apply. Two empty values remove it. |
 | `get_own_job_contact(job_id)` | The job's owner | Shows the owner what they set. |
 | `admin_set_company_status(company_id, status)` | Admins | Approves or rejects a company, and logs it. |
@@ -280,7 +311,7 @@ title and company name, until 730 days after they are resolved.
 | `my_company_follower_count()` | Company owners | How many students follow the caller's company: a number, never who. |
 | `my_feedback()`, `my_reports()` | Logged-in users | The caller's own feedback and the reports they filed (without the admin's note or who resolved them), for "Download my data". |
 | `extend_my_job(job_id)` | Company owners | "Extend by 60 days": a published job of the caller's own approved company, live or expired at most 14 days ago, is shown until 60 days from now, without a new review. Older expired jobs are refused ("Edit it and submit it again for review"). |
-| `admin_stats()` | Admins | The numbers at the top of /admin, the same definitions as `supabase/queries/kpis.sql`. |
+| `admin_stats()` | Admins | The numbers at the top of /admin, the same definitions as `supabase/queries/kpis.sql` (example listings left out). |
 | `is_admin()`, `current_account_type()` | Logged-in users | Small helpers used by the access rules. |
 
 "Download my data" on /account builds its file in the browser from these
