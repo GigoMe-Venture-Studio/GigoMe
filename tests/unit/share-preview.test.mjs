@@ -32,3 +32,14 @@ test('the image has a real description, for Open Graph and X', () => {
 test('theme-color is set', () => {
   assert.match(meta('name', 'theme-color') || '', /^#[0-9A-Fa-f]{6}$/);
 });
+
+test('the image line, its description and the home page headline say the same', () => {
+  const line = 'Part-time jobs and gigs in Milan, in English.';
+  const script = readFileSync(new URL('scripts/build-og-image.mjs', root), 'utf8');
+  const tagline = JSON.parse(script.match(/const TAGLINE = (\[.*\]);/)[1].replace(/'/g, '"')).join(' ');
+  assert.equal(tagline, line, 'scripts/build-og-image.mjs TAGLINE');
+  assert.equal(meta('property', 'og:image:alt'), 'The GigoMe logo with the line: ' + line);
+  const home = readFileSync(new URL('src/pages/Home.jsx', root), 'utf8');
+  assert.ok(home.includes(`<h1 id="home-title">${line}</h1>`), 'home page headline');
+  assert.doesNotMatch(html, /internship|unpaid/i, 'index.html never mentions internships');
+});

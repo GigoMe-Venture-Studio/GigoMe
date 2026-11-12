@@ -50,18 +50,18 @@ const meta = (p) => p.evaluate(() => ({
   { const { ctx, p, log } = await ctxWith(b);
     await p.goto(E + '/jobs'); await p.waitForSelector('.job-list .role-row'); await p.waitForTimeout(300);
     let t = await titlesIn(p, '.jobs-list-col > .job-list');
-    ok(t.join('|') === 'Weekend barista|Event host|English tutor|Finance intern|Social media helper|Remote researcher|Evening waiter or waitress|Online homework helper',
+    ok(t.join('|') === 'Weekend barista|Event host|English tutor|Finance assistant|Social media helper|Remote researcher|Evening waiter or waitress|Online homework helper',
       '/jobs: the 6 real jobs newest first, then the 2 examples newest first (the newer example is not second): ' + t.join('|'));
     ok(new URLSearchParams(log.jobs[log.jobs.length - 1]).get('order').startsWith('is_example.asc,'), 'asked of the database: is_example first');
     await p.goto(E + '/jobs?sort=pay'); await p.waitForTimeout(700);
     t = await titlesIn(p, '.jobs-list-col > .job-list');
-    ok(t.join('|') === 'English tutor|Weekend barista|Remote researcher|Event host|Finance intern|Social media helper|Online homework helper|Evening waiter or waitress',
+    ok(t.join('|') === 'English tutor|Weekend barista|Remote researcher|Event host|Finance assistant|Social media helper|Online homework helper|Evening waiter or waitress',
       'Highest pay: real ones by pay, then the examples by pay (€12/h before €9.50/h): ' + t.join('|'));
     await ctx.close(); }
   { const { ctx, p } = await ctxWith(b, { jobs: [JOBS[0], JOBS[1]] });
     await p.goto(E + '/'); await p.waitForSelector('.job-list .role-row'); await p.waitForTimeout(300);
     const t = await titlesIn(p, '.job-list');
-    ok(t.join('|') === 'Weekend barista|Finance intern|Evening waiter or waitress|Online homework helper', 'home page: real ones first, then examples: ' + t.join('|'));
+    ok(t.join('|') === 'Weekend barista|Finance assistant|Evening waiter or waitress|Online homework helper', 'home page: real ones first, then examples: ' + t.join('|'));
     ok(await p.locator('.job-card', { hasText: EX.title }).locator('.tag-example').count() === 1, 'home page: the example card has the badge too');
     await ctx.close(); }
   { const { ctx, p } = await ctxWith(b);

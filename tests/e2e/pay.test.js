@@ -23,7 +23,7 @@ async function slide(p, to) { await p.focus('input[name=minpay]'); await p.keybo
     ok((await card(p, 'English tutor')).includes('€15–18/h'), 'hourly range: €15–18/h');
     ok((await card(p, 'Remote researcher')).includes('€500/month (≈ €3/h)'), 'monthly with the hourly equivalent: ' + await card(p, 'Remote researcher'));
     ok((await card(p, 'Event host')).includes('€90 per project'), 'per project');
-    ok((await card(p, 'Finance intern')).includes('Pay not listed'), 'a job from before structured pay: as before');
+    ok((await card(p, 'Finance assistant')).includes('Pay not listed'), 'a job from before structured pay: as before');
     await p.goto(E + '/jobs/' + ID(1)); await p.waitForSelector('.facts');
     const pay = await txt(p, '.facts > div:first-child dd');
     ok(pay.includes('€11/h') && pay.includes('+ tips'), 'job page: pay and its note: ' + JSON.stringify(pay));
@@ -46,8 +46,8 @@ async function slide(p, to) { await p.focus('input[name=minpay]'); await p.keybo
     ok(hq && hq.startsWith('?select=pay_unit%2Ccompanies%21inner%28status%29') && !hq.includes('gte'), 'asks only for the hidden jobs\' pay unit: ' + hq);
     ok(!(await txt(p, '.pay-note-hidden')).includes('Weekend barista'), 'jobs paying below the minimum are not counted as hidden');
     await p.click('.pay-note-hidden button:has-text("Show them")'); await p.waitForTimeout(600);
-    ok(qp(p).get('nohourly') === 'yes' && (await titles(p)).sort().join('|') === 'English tutor|Event host|Finance intern|Social media helper', 'Show them: every hidden job back: ' + (await titles(p)).join('|'));
-    ok((await txt(p, '.pay-note-hidden')).includes('Also showing jobs paid per project, unpaid or with pay not specified.'), 'says they are shown');
+    ok(qp(p).get('nohourly') === 'yes' && (await titles(p)).sort().join('|') === 'English tutor|Event host|Finance assistant|Social media helper', 'Show them: every hidden job back: ' + (await titles(p)).join('|'));
+    ok((await txt(p, '.pay-note-hidden')).includes('Also showing jobs paid per project or with pay not specified.'), 'says they are shown');
     await p.click('.pay-note-hidden button:has-text("Hide them")'); await p.waitForTimeout(600);
     ok(!qp(p).get('nohourly') && (await titles(p)).length === 1, 'Hide them');
     await p.goto(E + '/jobs?minpay=12&remote=no'); await p.waitForTimeout(700);
@@ -77,7 +77,7 @@ async function slide(p, to) { await p.focus('input[name=minpay]'); await p.keybo
     await p.goto(E + '/jobs'); await p.waitForSelector('.job-list .role-row');
     await p.selectOption('select[name=sort]', 'pay'); await p.waitForTimeout(600);
     ok(qp(p).get('sort') === 'pay' && new URLSearchParams(log.jobs.pop()).get('order').startsWith('is_example.asc,pay_hourly.desc.nullslast'), 'sort=pay, by the hourly equivalent');
-    ok((await titles(p)).join('|') === 'English tutor|Weekend barista|Remote researcher|Event host|Finance intern|Social media helper', 'highest first, then the rest most recently published first: ' + (await titles(p)).join('|'));
+    ok((await titles(p)).join('|') === 'English tutor|Weekend barista|Remote researcher|Event host|Finance assistant|Social media helper', 'highest first, then the rest most recently published first: ' + (await titles(p)).join('|'));
     ok(!(await p.locator('button:has-text("Clear filters")').count()), 'sorting is not a filter');
     await ctx.close(); }
 
@@ -95,7 +95,9 @@ async function slide(p, to) { await p.focus('input[name=minpay]'); await p.keybo
     await p.fill('input[name=hours_per_week]', '12'); await p.check('input[name=schedule][value=weekends]'); await p.selectOption('select[name=area_id]', '3');
     await p.fill('input[name=apply_url]', 'nebbia.it/jobs');
     const units = await p.$$eval('select[name=pay_unit] option', (o) => o.map((x) => x.textContent));
-    ok(units.join('|') === 'Choose…|Per hour|Per month|Per project|Curricular internship (university credits)', 'units: ' + units.join('|'));
+    ok(units.join('|') === 'Choose…|Per hour|Per month|Per project', 'units: per hour, month or project, nothing unpaid: ' + units.join('|'));
+    const types = await p.$$eval('select[name=job_type] option', (o) => o.map((x) => x.value));
+    ok(types.join('|') === '|gig|part_time|other', 'types: no internship: ' + types.join('|'));
     await p.click('button:has-text("Submit for review")'); await p.waitForTimeout(300);
     ok((await txt(p, 'main')).includes('Choose how the job is paid.'), 'pay required to submit');
     await p.selectOption('select[name=pay_unit]', 'month'); await p.fill('input[name=pay_min]', '600');
@@ -111,17 +113,31 @@ async function slide(p, to) { await p.focus('input[name=minpay]'); await p.keybo
     await p.click('button:has-text("Preview")'); await p.waitForSelector('.preview-banner');
     ok((await txt(p, '.facts > div:first-child dd')).includes('€12.50/h') && (await txt(p, '.facts > div:first-child dd')).includes('meals included'), 'preview: "12,5" read as €12.50/h, with the note');
     await p.click('.preview-banner button'); await p.waitForTimeout(300);
-    await p.selectOption('select[name=pay_unit]', 'unpaid_curricular'); await p.click('button:has-text("Submit for review")'); await p.waitForTimeout(300);
-    ok((await txt(p, 'main')).includes('Unpaid is possible only for an internship'), 'unpaid refused for a part-time job');
-    await p.selectOption('select[name=job_type]', 'internship');
-    ok(await p.locator('input[name=pay_min]').count() === 0, 'unpaid: no amount fields');
-    await p.click('button:has-text("Preview")'); await p.waitForSelector('.preview-banner');
-    ok((await txt(p, '.facts > div:first-child dd')).startsWith('Curricular internship (unpaid)'), 'shown as "Curricular internship (unpaid)"');
-    await p.click('.preview-banner button'); await p.waitForTimeout(300);
     const n0 = log.req.length;
     await p.click('button:has-text("Submit for review")'); await p.waitForTimeout(800);
     const post = log.req.slice(n0).find((x) => x.method === 'POST' && x.path === '/rest/v1/jobs');
-    ok(post && post.body.pay_unit === 'unpaid_curricular' && post.body.pay_min === null && post.body.pay_max === null && post.body.pay === 'meals included', 'sends unit, no amounts, the note: ' + JSON.stringify(post && [post.body.pay_unit, post.body.pay_min, post.body.pay_max, post.body.pay]));
+    ok(post && post.body.job_type === 'part_time' && post.body.pay_unit === 'hour' && post.body.pay_min === 12.5 && post.body.pay_max === null && post.body.pay === 'meals included', 'sends type, unit, amount, the note: ' + JSON.stringify(post && [post.body.job_type, post.body.pay_unit, post.body.pay_min, post.body.pay_max, post.body.pay]));
+    await ctx.close(); }
+
+  // ---- 2b. An internship or unpaid job from before they were dropped: the owner chooses again
+  { const ctx = await b.newContext(desk);
+    const { log } = await emock(ctx, { company: { name: 'Nebbia', status: 'approved' },
+      jobs: [{ title: 'Old internship', job_type: 'internship', category: 'office_admin', hours_per_week: 20, status: 'draft', area_id: 3, pay_unit: 'unpaid_curricular', pay_min: null }] });
+    await stubMap(ctx, {}); const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message));
+    await employerLogin(p, E);
+    ok((await txt(p, '.dash-job:has-text("Old internship")')).includes('Choose a type'), 'dashboard: no "Internship" label, asks for a type: ' + await txt(p, '.dash-job:has-text("Old internship") .dash-job-meta'));
+    await p.locator('.dash-job:has-text("Old internship") a.btn:has-text("Edit")').click(); await p.waitForTimeout(500);
+    ok(await p.inputValue('select[name=job_type]') === '' && await p.inputValue('select[name=pay_unit]') === '', 'edit form: type and pay start empty');
+    await p.fill('input[name=apply_url]', 'nebbia.it/jobs');
+    const n0 = log.req.length;
+    await p.click('button:has-text("Submit for review")'); await p.waitForTimeout(400);
+    const main = await txt(p, 'main');
+    ok(main.includes('Choose the type of job.') && main.includes('Choose how the job is paid.') && !log.req.slice(n0).some((x) => x.method === 'PATCH'), 'nothing sent until both are chosen');
+    await p.selectOption('select[name=job_type]', 'part_time'); await p.selectOption('select[name=pay_unit]', 'hour'); await p.fill('input[name=pay_min]', '11');
+    await p.click('button:has-text("Submit for review")'); await p.waitForTimeout(800);
+    const patch = log.req.slice(n0).find((x) => x.method === 'PATCH' && x.path === '/rest/v1/jobs');
+    ok(patch && patch.body.job_type === 'part_time' && patch.body.pay_unit === 'hour' && patch.body.pay_min === 11, 'then sent as a paid part-time job: ' + JSON.stringify(patch && [patch.body.job_type, patch.body.pay_unit, patch.body.pay_min]));
+    ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
     await ctx.close(); }
 
   // ---- 1. /admin: live jobs without structured pay

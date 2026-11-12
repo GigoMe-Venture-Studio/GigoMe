@@ -14,11 +14,12 @@
 --   * 6 made-up companies, approved, with no owner account (nobody can log
 --     in as them). Every name starts with "Example ". No website, phone or
 --     address; the only contact detail is hello@gigome.org.
---   * 19 published jobs covering every filter: the 4 job types, the 8
---     categories, all 16 areas, remote and on site, the 3 Italian levels,
---     hours from 4 to 40 a week, every schedule and language, pay per hour,
---     per month, per project, a range, unpaid curricular, and the minimum-pay
---     slider up to €25/h. Edge cases: a 117-character title, one that
+--   * 19 published jobs covering every filter: the 3 job types (gig,
+--     part-time, other: GigoMe lists no internships), the 8 categories, all
+--     16 areas, remote and on site, the 3 Italian levels, hours from 4 to 30
+--     a week, every schedule and language, pay per hour, per month, per
+--     project and a range (all paid), and the minimum-pay slider up to
+--     €25/h. Edge cases: a 117-character title, one that
 --     expires in 2 days, five "New" ones, pins with and without a metro
 --     station within 1 km, area-only and remote jobs. Every database rule
 --     applies to them as to real jobs (none is switched off), so all of them
@@ -125,15 +126,15 @@ from (values
   (10, 'c3', 'Online homework helper', 'part_time', 'tutoring_education', true, null, true, null, null, 10,
    'hour', 12, null, null, 'none', array['flexible'], array['de', 'en', 'es', 'fr'], null, 20, null,
    E'Fully remote: answer students'' questions by video call, whenever suits you.\nRemote, with no location, to test the "Remote / no location" list next to the map.'),
-  (11, 'c4', 'Social media content intern', 'internship', 'marketing_social', false, 6, true, 45.4893, 9.1903, 20,
-   'month', 600, null, null, 'basic', array['weekday_mornings', 'weekday_afternoons'], array['en', 'it'], 56, 4, null,
-   E'Plan and write posts for our (made-up) clients, and help film short videos.\nA six-month internship.'),
+  (11, 'c4', 'Social media content assistant', 'part_time', 'marketing_social', false, 6, true, 45.4893, 9.1903, 20,
+   'month', 800, null, null, 'basic', array['weekday_mornings', 'weekday_afternoons'], array['en', 'it'], 56, 4, null,
+   E'Plan and write posts for our (made-up) clients, and help film short videos.\nA six-month contract, 20 hours a week.'),
   (12, 'c4', 'Video editor for short clips', 'gig', 'marketing_social', true, 5, false, null, null, 8,
    'project', 250, 400, null, 'none', array['flexible'], array['en'], null, 15, null,
    E'Edit ten short vertical videos from our footage. Work from home, or from our office now and then.'),
-  (13, 'c4', 'Studio administration intern (university credits)', 'internship', 'office_admin', false, 7, true, 45.4768, 9.1742, 30,
-   'unpaid_curricular', null, null, null, 'fluent', array['weekday_mornings', 'weekday_afternoons'], array['en', 'it'], 80, 6, null,
-   E'A curricular internship for university credits (unpaid): invoices, scheduling and supplier emails.'),
+  (13, 'c4', 'Studio administration assistant', 'part_time', 'office_admin', false, 7, true, 45.4768, 9.1742, 30,
+   'hour', 11, null, null, 'fluent', array['weekday_mornings', 'weekday_afternoons'], array['en', 'it'], 80, 6, null,
+   E'Invoices, scheduling and supplier emails for a small (made-up) studio, 30 hours a week.'),
   (14, 'c5', 'Event host at a gallery opening', 'gig', 'events', false, 10, true, 45.4528, 9.1665, 5,
    'project', 90, null, 'One evening, 18:00 to 23:00', 'basic', array['weekday_evenings'], array['en', 'fr', 'it'], 15, 1, null,
    E'Welcome guests, hand out programmes and answer questions at an exhibition opening.'),
@@ -146,9 +147,9 @@ from (values
   (17, 'c6', 'Junior web developer (React)', 'part_time', 'tech', false, 15, true, 45.5142, 9.2105, 20,
    'hour', 16, 18, null, 'none', array['flexible'], array['en'], null, 2.5, null,
    E'Build small features for our web app with React, with code review from a senior developer.'),
-  (18, 'c6', 'Data analysis intern', 'internship', 'tech', true, null, true, null, null, 40,
-   'month', 1100, 1300, null, 'none', array['weekday_mornings', 'weekday_afternoons'], array['de', 'en'], 63, 30, null,
-   E'Full time and remote: clean data, build dashboards and present findings to the team every week.'),
+  (18, 'c6', 'Data analysis assistant', 'part_time', 'tech', true, null, true, null, null, 20,
+   'month', 1000, 1200, null, 'none', array['weekday_mornings', 'weekday_afternoons'], array['de', 'en'], 63, 30, null,
+   E'Part-time and remote, 20 hours a week: clean data, build dashboards and present findings to the team every week.'),
   (19, 'c6', 'Office assistant, mornings', 'part_time', 'office_admin', false, 5, true, 45.4830, 9.1885, 14,
    'hour', 10, null, null, 'fluent', array['weekday_mornings'], array['en', 'it'], null, 8, null,
    E'Answer the phone, greet visitors and keep the office running, Monday to Friday mornings.')

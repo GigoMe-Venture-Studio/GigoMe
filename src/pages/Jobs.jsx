@@ -122,7 +122,7 @@ function JobBoard() {
   const { status, jobs } = state;
 
   // "Minimum pay" hides every job without an hourly equivalent (paid per
-  // project, unpaid, pay not specified): say how many and why, with a way back.
+  // project, pay not specified): say how many and why, with a way back.
   const [hidden, setHidden] = useState(null);
   useEffect(() => {
     if (!filters.minpay || filters.nohourly) {
@@ -225,7 +225,7 @@ function JobBoard() {
   return (
     <>
       <h1 className="page-title">Jobs in Milan</h1>
-      <p className="muted jobs-lead">Part-time work, gigs and internships for students, in English.</p>
+      <p className="muted jobs-lead">Part-time jobs and gigs for students, in English.</p>
 
       <form
         className={'job-filters' + (filtersOpen ? ' is-open' : '')}
@@ -380,7 +380,7 @@ function JobBoard() {
       )}
       {filters.minpay && filters.nohourly && (
         <p className="pay-note-hidden">
-          Also showing jobs paid per project, unpaid or with pay not specified.{' '}
+          Also showing jobs paid per project or with pay not specified.{' '}
           <button type="button" className="btn-link" onClick={() => setFilter('nohourly', '')}>Hide them</button>
         </p>
       )}

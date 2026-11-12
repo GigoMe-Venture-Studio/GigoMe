@@ -72,7 +72,7 @@ export default function JobView({ job, apply, preview = false }) {
         <p className="detail-co">{companyName}</p>
         <div className="tags">
           {isNew(job) && <span className="tag tag-new">New</span>}
-          {job.job_type && <span className="tag">{JOB_TYPE_LABEL[job.job_type]}</span>}
+          {JOB_TYPE_LABEL[job.job_type] && <span className="tag">{JOB_TYPE_LABEL[job.job_type]}</span>}
           {job.category && job.category !== 'other' && <span className="tag">{CATEGORY_LABEL[job.category]}</span>}
           <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>{ITALIAN_LABEL[job.italian_level]}</span>
           {job.remote && <span className="tag">Remote</span>}

@@ -9,13 +9,13 @@ import { useLocation } from 'react-router';
 
 export const SITE = 'https://gigome.org';
 const DEFAULT_DESCRIPTION =
-  'Part-time work and internships in Milan, in English. A free, student-run job board for international students.';
+  'Part-time jobs and gigs in Milan, in English. A free, student-run job board for international students.';
 
 // [path, title, description, indexable]
 const PAGES = [
-  ['/', 'GigoMe: part-time work and internships in Milan, in English', DEFAULT_DESCRIPTION, true],
-  ['/jobs', 'Jobs in Milan in English', 'Part-time jobs, gigs and internships in Milan you can do in English. Filter by area, schedule, pay and how much Italian is needed.', true],
-  ['/employers', 'Hire international students in Milan', 'Post part-time jobs, gigs and internships for international students in Milan who work in English. Free, reviewed by the GigoMe team.', true],
+  ['/', 'GigoMe: part-time jobs and gigs in Milan, in English', DEFAULT_DESCRIPTION, true],
+  ['/jobs', 'Jobs in Milan in English', 'Part-time jobs and gigs in Milan you can do in English. Filter by area, schedule, pay and how much Italian is needed.', true],
+  ['/employers', 'Hire international students in Milan', 'Post paid part-time jobs and gigs for international students in Milan who work in English. Free, reviewed by the GigoMe team.', true],
   ['/privacy', 'Privacy Notice', 'How GigoMe handles personal data: who is responsible, what is collected and why, who can see it, how long it is kept, and your rights.', true],
   ['/terms', 'Terms and Conditions', 'The terms for using GigoMe, for students and for employers and other advertisers.', true],
   ['/login', 'Log in', 'Log in to GigoMe with your university email.', false],
@@ -94,7 +94,7 @@ export function useJsonLd(data) {
   }, [json]);
 }
 
-const EMPLOYMENT_TYPE = { part_time: 'PART_TIME', internship: 'INTERN', gig: 'TEMPORARY', other: 'OTHER' };
+const EMPLOYMENT_TYPE = { part_time: 'PART_TIME', gig: 'TEMPORARY', other: 'OTHER' };
 const SALARY_UNIT = { hour: 'HOUR', month: 'MONTH' };
 
 // schema.org JobPosting for a live job (Google for Jobs and others).

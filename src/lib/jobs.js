@@ -3,10 +3,11 @@ import { safeHttpUrl } from './links.js';
 import { supabase } from './supabase.js';
 
 // Values allowed by the database (jobs.job_type, jobs.italian_level).
+// GigoMe lists only paid part-time jobs and gigs: no internships (the
+// database refuses new ones, migration 20261112180000_no_internships.sql).
 export const JOB_TYPES = [
   ['gig', 'Gig'],
   ['part_time', 'Part-time'],
-  ['internship', 'Internship'],
   ['other', 'Other']
 ];
 export const JOB_TYPE_LABEL = Object.fromEntries(JOB_TYPES);
@@ -46,13 +47,13 @@ export const LANGUAGES = [
   ['other', 'Other']
 ];
 export const LANGUAGE_LABEL = Object.fromEntries(LANGUAGES);
-// Values allowed by jobs.pay_unit. Unpaid only as a curricular internship.
+// Values allowed by jobs.pay_unit. Every job is paid: nothing unpaid.
 export const PAY_UNITS = [
   ['hour', 'Per hour'],
   ['month', 'Per month'],
-  ['project', 'Per project'],
-  ['unpaid_curricular', 'Curricular internship (university credits)']
+  ['project', 'Per project']
 ];
+export const PAY_UNIT_LABEL = Object.fromEntries(PAY_UNITS);
 export const MAX_MIN_PAY = 30; // the "Minimum pay" slider goes from €0 to €30 an hour
 // In the order of the list, so labels always read the same way.
 export const scheduleLabels = (job) => SCHEDULES.filter(([v]) => (job.schedule || []).includes(v)).map(([, l]) => l);
@@ -108,7 +109,7 @@ export function readFilters(params) {
     lang: readList(params.get('lang'), LANGUAGES),
     minpay: Number.isInteger(minpay) && minpay >= 1 && minpay <= MAX_MIN_PAY ? String(minpay) : '',
     // With a minimum pay, jobs without an hourly equivalent (paid per
-    // project, unpaid, pay not specified) are hidden unless asked for.
+    // project, pay not specified) are hidden unless asked for.
     // ("projects=yes" is the older name, from saved searches.)
     nohourly: (params.get('nohourly') === 'yes' || params.get('projects') === 'yes') && Number.isInteger(minpay) && minpay >= 1 ? 'yes' : '',
     // Not a filter: the order of the list.
@@ -170,7 +171,7 @@ export async function fetchJobs(filters, { limit = 200, timeoutMs = JOBS_TIMEOUT
   // takes real listings first. Pages that re-sort use realFirst().
   query = query.order('is_example', { ascending: true });
   // Highest pay: by the hourly equivalent; jobs without one (per project,
-  // unpaid, no structured pay) after the rest.
+  // no structured pay) after the rest.
   if (filters.sort === 'pay') query = query.order('pay_hourly', { ascending: false, nullsFirst: false });
   // Newest first by when each job went live (published_at, set by the
   // database on first publication), not when its draft was started. A job
@@ -184,8 +185,8 @@ export async function fetchJobs(filters, { limit = 200, timeoutMs = JOBS_TIMEOUT
 }
 
 // What a minimum pay hides whatever the amount: live jobs matching the other
-// filters that have no hourly equivalent. { total, project, unpaid,
-// unspecified } (only each job's pay unit is read).
+// filters that have no hourly equivalent. { total, project, unspecified }
+// (only each job's pay unit is read).
 export async function fetchHiddenByPay(filters) {
   const { data, error } = await filtered(liveJobs('pay_unit, companies!inner(status)'), { ...filters, minpay: '', nohourly: '' })
     .is('pay_hourly', null)
@@ -195,14 +196,14 @@ export async function fetchHiddenByPay(filters) {
   return {
     total: rows.length,
     project: rows.filter((r) => r.pay_unit === 'project').length,
-    unpaid: rows.filter((r) => r.pay_unit === 'unpaid_curricular').length,
-    unspecified: rows.filter((r) => !r.pay_unit).length
+    // Anything else shows as "Pay not listed" (payLabel()).
+    unspecified: rows.filter((r) => r.pay_unit !== 'project').length
   };
 }
 
-// "paid per project, unpaid or pay not specified": the kinds that are there.
+// "paid per project or pay not specified": the kinds that are there.
 export function hiddenKinds(h) {
-  const kinds = [h.project && 'paid per project', h.unpaid && 'unpaid', h.unspecified && 'pay not specified'].filter(Boolean);
+  const kinds = [h.project && 'paid per project', h.unspecified && 'pay not specified'].filter(Boolean);
   return kinds.length > 1 ? `${kinds.slice(0, -1).join(', ')} or ${kinds[kinds.length - 1]}` : kinds[0] || '';
 }
 
@@ -316,9 +317,8 @@ const range = (a, b) => (b != null && Number(b) !== Number(a) ? `${euros(a)}–$
 // Hours in a month at this many hours a week (52 weeks / 12 months).
 export const monthlyHours = (hoursPerWeek) => (hoursPerWeek * 52) / 12;
 
-// "€11–13/h", "€600/month (≈ €12/h)", "€500 per project",
-// "Curricular internship (unpaid)". Jobs from before structured pay show
-// their pay text, or "Pay not listed".
+// "€11–13/h", "€600/month (≈ €12/h)", "€500 per project". Jobs from
+// before structured pay show their pay text, or "Pay not listed".
 export function payLabel(job) {
   switch (job.pay_unit) {
     case 'hour':
@@ -333,15 +333,13 @@ export function payLabel(job) {
     }
     case 'project':
       return `€${range(job.pay_min, job.pay_max)} per project`;
-    case 'unpaid_curricular':
-      return 'Curricular internship (unpaid)';
     default:
       return job.pay || 'Pay not listed';
   }
 }
 // The free-text pay is a note ("+ tips") once the pay is structured.
 export const payNote = (job) => (job.pay_unit && job.pay ? job.pay : null);
-// Short, for a map marker: "€11–13/h", "€600+/mo", "€500/proj", "Unpaid".
+// Short, for a map marker: "€11–13/h", "€600+/mo", "€500/proj".
 export function markerPay(job) {
   const plus = job.pay_max != null && Number(job.pay_max) !== Number(job.pay_min) ? '+' : '';
   switch (job.pay_unit) {
@@ -351,8 +349,6 @@ export function markerPay(job) {
       return `€${euros(job.pay_min)}${plus}/mo`;
     case 'project':
       return `€${euros(job.pay_min)}${plus}/proj`;
-    case 'unpaid_curricular':
-      return 'Unpaid';
     default:
       return shortPay(job.pay);
   }

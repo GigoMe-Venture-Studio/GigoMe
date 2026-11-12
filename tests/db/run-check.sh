@@ -4,7 +4,8 @@
 # Fails if any row is false, except "Automatic RLS", which only exists on the
 # real Supabase project. For tests only: never point it at the real project.
 #
-# Then the example listings: supabase/seed/examples.sql, the security check
+# Then older internships and unpaid jobs (tests/db/legacy-internships.sql),
+# and the example listings: supabase/seed/examples.sql, the security check
 # again with them loaded (as on the live project while testers use them),
 # what testers do with them (examples-activity.sql),
 # supabase/seed/remove_examples.sql, and examples-removed.sql, which checks
@@ -48,14 +49,18 @@ left_behind() { # <when>
 checks "Security check" supabase/checks/security_check.sql
 left_behind "The check"
 
+# Internships and unpaid jobs written before the rule against them
+checks "Older internships and unpaid jobs" tests/db/legacy-internships.sql
+left_behind "The older internships test"
+
 # Example listings ------------------------------------------------------------
 if ! out=$("${P[@]}" -U supa -d "$DB" -At -F '|' -f supabase/seed/examples.sql 2>&1); then
   echo "examples.sql failed:"; echo "$out"; exit 1
 fi
-for want in '1|Example companies|6' '2|Live example jobs|19' '3|Job types|gig, internship, other, part_time' \
-             '4|Categories|8 of 8: ' '5|Areas|16 of 16' '6|Remote / on site|3 remote, 16 on site' '7|Italian|basic, fluent, none' \
+for want in '1|Example companies|6' '2|Live example jobs|19' '3|Job types|gig, other, part_time' \
+             '4|Categories|8 of 8: ' '5|Areas|16 of 16' '6|Remote / on site|3 remote, 16 on site' '7|Italian|basic, fluent, none' '8|Hours per week|4 to 30' \
              '9|Schedules|flexible, weekday_afternoons, weekday_evenings, weekday_mornings, weekends' \
-             '10|Languages|ar, de, en, es, fr, it, other, zh' '11|Pay|hour, month, project, unpaid_curricular; hourly equivalent 6.35 to 25.00' \
+             '10|Languages|ar, de, en, es, fr, it, other, zh' '11|Pay|hour, month, project; hourly equivalent 7.50 to 25.00' \
              '12|Metro badge (exact pin within 1 km)|14 jobs; 1 pinned without one' '13|Area only (no exact pin)|2' \
              '14|New (published in the last 3 days)|5' \
              '15|Expiring within 3 days|1' '16|Longest title|117 characters'; do

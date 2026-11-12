@@ -41,10 +41,10 @@ export default function JobCard({ job, distance = null, save = true }) {
             {when.map((w) => <span key={w} className="tag tag-when">{w}</span>)}
           </div>
           <div className="role-meta">
-            <span>{JOB_TYPE_LABEL[job.job_type]}</span>
+            {JOB_TYPE_LABEL[job.job_type] && <span>{JOB_TYPE_LABEL[job.job_type]}</span>}
             {job.category && job.category !== 'other' && (
               <>
-                <span className="sep" aria-hidden="true">·</span>
+                {JOB_TYPE_LABEL[job.job_type] && <span className="sep" aria-hidden="true">·</span>}
                 <span>{CATEGORY_LABEL[job.category]}</span>
               </>
             )}

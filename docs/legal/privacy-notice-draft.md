@@ -20,7 +20,7 @@
 ## 1. Who we are
 
 GigoMe (gigome.org) is a free job board for international students in Milan:
-part-time jobs, gigs and internships they can do in English.
+part-time jobs and gigs they can do in English.
 
 GigoMe is operated by **[LEGAL: name and legal form of the operator (a
 person, an association, a company?), registered address, tax or company

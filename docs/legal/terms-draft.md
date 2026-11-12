@@ -19,8 +19,8 @@
 
 ## 1. About GigoMe
 
-GigoMe (gigome.org) is a free website where employers publish part-time
-jobs, gigs and internships in Milan for international students, and students
+GigoMe (gigome.org) is a free website where employers publish paid
+part-time jobs and gigs in Milan for international students, and students
 find them. It is operated by **[LEGAL: operator's name, legal form,
 address]** ("we").
 
@@ -58,7 +58,7 @@ By publishing on GigoMe you confirm that:
   pay) and complies with Italian law, including employment, tax, safety and
   immigration rules (for example the hours non-EU students may work)
   **[LEGAL: check what can reasonably be required here]**;
-- unpaid positions are only curricular internships with university credits;
+- every job is paid: GigoMe lists no internships and no unpaid positions;
 - you **never ask students for money** (registration, training, deposits,
   equipment) or for documents before an interview;
 - you don't discriminate on grounds forbidden by law;
