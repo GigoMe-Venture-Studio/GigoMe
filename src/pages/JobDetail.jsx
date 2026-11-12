@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
 import { fetchProfile } from '../lib/auth.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
-import { fetchJob, revealContact } from '../lib/jobs.js';
+import { fetchJob, isExample, revealContact } from '../lib/jobs.js';
 import { mailtoHref } from '../lib/links.js';
 import { jobPostingData, shortText, useJsonLd, usePageMeta } from '../lib/seo.js';
 
@@ -45,18 +45,22 @@ function JobPage() {
   }, [id, retry]);
 
   // Title, description and schema.org JobPosting data for search engines.
+  // Example listings are never indexed and get no JobPosting data, so they
+  // can't turn up in search results or Google's job listings.
   const ready = state.status === 'ready' ? state.job : null;
+  const example = Boolean(ready && isExample(ready));
   usePageMeta(
     ready
       ? {
           title: `${ready.title} at ${ready.companies.name}`,
-          description: shortText(`${ready.title} at ${ready.companies.name}, Milan. ${ready.description || ''}`)
+          description: shortText(`${ready.title} at ${ready.companies.name}, Milan. ${ready.description || ''}`),
+          index: !example
         }
       : state.status === 'missing'
         ? { title: "This job isn't available", index: false }
         : null
   );
-  useJsonLd(ready ? jobPostingData(ready) : null);
+  useJsonLd(ready && !example ? jobPostingData(ready) : null);
 
   if (state.status === 'loading') return <p className="muted">Loading the job…</p>;
   if (state.status === 'error') {
@@ -84,7 +88,7 @@ function JobPage() {
   return (
     <>
       <BackLink />
-      <JobView job={job} apply={<HowToApply jobId={job.id} jobTitle={job.title} />} />
+      <JobView job={job} apply={<HowToApply jobId={job.id} jobTitle={job.title} example={isExample(job)} />} />
     </>
   );
 }
@@ -95,7 +99,10 @@ function mailtoFor(email, title) {
   return mailtoHref(email, `Application: ${title} (via GigoMe)`);
 }
 
-function HowToApply({ jobId, jobTitle }) {
+// example: a made-up listing. Everything looks as on a real job until a
+// student presses "Apply", which then explains instead: nothing opens, the
+// database isn't asked (it would refuse) and no apply click is counted.
+function HowToApply({ jobId, jobTitle, example = false }) {
   const { session, loading } = useSession();
   const userId = session ? session.user.id : null;
   const [accountType, setAccountType] = useState(null);
@@ -173,6 +180,10 @@ function HowToApply({ jobId, jobTitle }) {
   // blocked by Safari and most phones. It's pointed at the application page
   // once that's known, or closed again for an email-only job.
   async function onApply() {
+    if (example) {
+      setReveal({ status: 'example' });
+      return;
+    }
     let tab = null;
     try {
       tab = window.open('', '_blank');
@@ -213,6 +224,18 @@ function HowToApply({ jobId, jobTitle }) {
       }
     }
     setReveal({ status: 'done', ...result, opened });
+  }
+
+  if (reveal.status === 'example') {
+    return frame(
+      <div className="apply-contact">
+        <p className="apply-heading">This is an example listing</p>
+        <p className="apply-note apply-opened" role="status">
+          It isn't a real job, so there's nobody to apply to: nothing opened and nothing was sent or counted. On a real
+          job, Apply opens the employer's application page or your email app, and shows their contact here.
+        </p>
+      </div>
+    );
   }
 
   if (reveal.status === 'done') {
@@ -260,7 +283,9 @@ function HowToApply({ jobId, jobTitle }) {
         {reveal.status === 'busy' ? 'Opening…' : 'Apply'}
       </button>
       {reveal.status === 'error' && <p className="err" role="alert">{reveal.message}</p>}
-      <p className="apply-note">Applications go straight to the employer.</p>
+      <p className="apply-note">
+        {example ? 'An example listing: Apply only shows what would happen.' : 'Applications go straight to the employer.'}
+      </p>
     </>
   );
 }

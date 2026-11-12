@@ -22,7 +22,8 @@ import {
   filtersToParams,
   hasFilters,
   hiddenKinds,
-  readFilters
+  readFilters,
+  realFirst
 } from '../lib/jobs.js';
 
 // MapLibre is only downloaded when the map is shown.
@@ -215,8 +216,9 @@ function JobBoard() {
   }, [you, jobs]);
   const inArea = box ? jobs.filter((j) => isMappable(j) && inBounds(j, box)) : jobs;
   const elsewhere = box ? jobs.filter((j) => !isMappable(j)) : [];
+  // Sorted by distance on the page: real listings still come first.
   const listed = byDistance && distances
-    ? [...inArea].sort((a, b) => (distances.has(a.id) ? distances.get(a.id) : Infinity) - (distances.has(b.id) ? distances.get(b.id) : Infinity))
+    ? realFirst([...inArea].sort((a, b) => (distances.has(a.id) ? distances.get(a.id) : Infinity) - (distances.has(b.id) ? distances.get(b.id) : Infinity)))
     : inArea;
   const outside = you && !inLimits(you);
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { createMap, maplibregl } from '../lib/map.js';
-import { markerPay, metroLabel, payLabel, placeLabel } from '../lib/jobs.js';
+import { EXAMPLE_JOB_LABEL, isExample, markerPay, metroLabel, payLabel, placeLabel, realFirst } from '../lib/jobs.js';
 import { mapParam } from '../lib/geo.js';
 
 // The map on /jobs and on company pages. Loaded with React.lazy, so MapLibre
@@ -51,6 +51,12 @@ function cardFor(job, onOpenJob) {
     e.preventDefault();
     onOpenJob(job.id);
   });
+  if (isExample(job)) {
+    const ex = document.createElement('span');
+    ex.className = 'tag tag-example map-card-example';
+    ex.textContent = EXAMPLE_JOB_LABEL;
+    box.append(ex);
+  }
   const co = document.createElement('p');
   co.className = 'map-card-co';
   co.textContent = job.companies ? job.companies.name : '';
@@ -108,7 +114,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
 
     const open = (ids, lngLat) => {
       if (popup.current) popup.current.remove();
-      const found = ids.map((id) => byId.current.get(id)).filter(Boolean);
+      const found = realFirst(ids.map((id) => byId.current.get(id)).filter(Boolean));
       if (!found.length) return;
       if (isPhone()) {
         setSheet(found.map((j) => j.id));
@@ -296,6 +302,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
           <ul className="map-sheet-list">
             {shown.map((job) => (
               <li key={job.id}>
+                {isExample(job) && <span className="tag tag-example map-card-example">{EXAMPLE_JOB_LABEL}</span>}
                 <Link className="map-card-title" to={`/jobs/${job.id}`}>{job.title}</Link>
                 <p className="map-card-co">{job.companies ? job.companies.name : ''}</p>
                 <p className="map-card-meta">{payLabel(job)} · {placeLabel(job)}</p>

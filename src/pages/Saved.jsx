@@ -5,7 +5,7 @@ import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { fetchJobs } from '../lib/jobs.js';
+import { EXAMPLE_JOB_LABEL, fetchJobs, isExample, realFirst } from '../lib/jobs.js';
 import { fetchAreas } from '../lib/areas.js';
 import { fetchSavedList, setSaved, useSavedJobs } from '../lib/saved.js';
 import {
@@ -66,8 +66,9 @@ function SavedPage() {
   // Follow removals made on this page (or elsewhere) straight away.
   const rows = state.rows.filter((r) => saved.ids.has(r.job_id));
   const byId = new Map(state.jobs.map((j) => [j.id, j]));
-  const live = rows.map((r) => byId.get(r.job_id)).filter(Boolean);
-  const gone = rows.filter((r) => !byId.get(r.job_id));
+  // Newest saved first, real listings before example ones.
+  const live = realFirst(rows.map((r) => byId.get(r.job_id)).filter(Boolean));
+  const gone = realFirst(rows.filter((r) => !byId.get(r.job_id)));
 
   return (
     <>
@@ -107,6 +108,7 @@ function GoneRow({ row }) {
   return (
     <li className="saved-gone-row">
       <div>
+        {isExample(row) && <div className="role-example"><span className="tag tag-example">{EXAMPLE_JOB_LABEL}</span></div>}
         <p className="role-title">{row.title}</p>
         <p className="role-co">{row.company_name} · <span className="muted">No longer available</span></p>
         {error && <p className="err" role="alert">{error}</p>}

@@ -112,6 +112,23 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - Badges on job cards and job pages: "New" (`isNew()`: published in the last
   3 days, gold), the category, and the metro badge (`metroLabel()`: only for
   an exact location within 1000 m of a station, at 80 m a minute walking).
+- Example listings (made up for testers until the public launch; loaded and
+  removed by hand with `supabase/seed/examples.sql` / `remove_examples.sql`,
+  SUPABASE.md "Example listings"): `isExample()` in `src/lib/jobs.js` (the
+  job's or its company's `is_example`; every job and company query reads
+  it). Real listings always come before examples in every list, each group
+  in its usual order: `fetchJobs()` orders by `is_example` first (so limits
+  like the home page's 5 take real ones first), and any list re-sorted on
+  the page goes through `realFirst()` (distance, saved order, followed
+  companies, the map's multi-job card). Every
+  card (`JobCard`, first, before the title), map card and page shows the
+  graphite badge `EXAMPLE_JOB_LABEL` "Example listing, not a real job"
+  (`.tag-example`); job and company pages also start with
+  `ExampleNotice.jsx` (companies: "Example company, not a real employer").
+  Their pages are noindex and get no JobPosting data. "Apply" on an example
+  never calls `reveal_job_contact` (the database refuses it too) and opens
+  nothing: it explains instead. Anything new that shows a job or company
+  must show the badge too.
   Company pages: `src/pages/Company.jsx` (`/companies/:id`): approved
   companies only (asked for explicitly), name, description, website and open
   jobs with the map when some have a location; never the contact email.
@@ -284,7 +301,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
   that opens `/jobs` with those filters), the 5 newest live jobs (cards
   without Save buttons), "How it works". Show only real data: no sample
-  listings, ratings, numbers or features that don't exist. The Feedback
+  listings, ratings, numbers or features that don't exist (the example
+  listings from the database are the one exception: badged, never indexed,
+  removed before launch). The Feedback
   button must be fully visible at first load, logged in or out, on desktop
   and at 375px (checked in `feedback.test.js`).
 - `src/styles/site.css`: tokens, base styles and shared components; page
@@ -451,6 +470,20 @@ Schema rules
   nobody reads `reviewed_by` through the API (jobs have column-level SELECT
   grants: list columns explicitly, never `select=*`).
 - `my_job_stats()` returns apply clicks (not applications) for the caller's own jobs only.
+- Example listings: `companies.is_example` / `jobs.is_example` (default
+  false), readable by everyone, no insert or update grants (only the SQL
+  Editor sets them). Example companies have no owner: `owner_id` may be
+  empty only when `is_example` (check `companies_owner_unless_example`).
+  `reveal_job_contact` refuses example jobs (no click recorded);
+  `my_saved_jobs()` returns `is_example`; `admin_stats()` and `kpis.sql`
+  leave example companies, jobs and their clicks out (keep both the same).
+  The seed never switches a database rule off: example jobs meet every
+  rule real jobs do. `supabase/seed/` holds the hand-run
+  load and removal scripts: never a migration, never applied
+  automatically. `tests/db/run-check.sh` loads them, runs the security
+  check with them in, removes them and checks only the example side went:
+  keep both scripts working when the schema changes (a new required
+  column or rule, a new table pointing at jobs or companies).
 - `areas` is read-only for `anon` and `authenticated`, changed only in the
   dashboard. Jobs have `area_id`, `latitude`, `longitude` and
   `show_exact_location`; the `job_location_privacy` trigger replaces the point

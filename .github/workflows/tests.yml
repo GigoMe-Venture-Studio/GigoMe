@@ -4,7 +4,8 @@
 #
 #   unit      tests/unit: links, redirects, emails (node --test)
 #   database  every migration on a throwaway PostgreSQL 16, then
-#             supabase/checks/security_check.sql (tests/db/run-check.sh)
+#             supabase/checks/security_check.sql, then the example
+#             listings loaded and removed (tests/db/run-check.sh)
 #   browser   every suite in tests/e2e against fresh builds of the site,
 #             served with the real security headers (tests/e2e/run.sh)
 name: Tests
