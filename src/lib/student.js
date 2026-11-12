@@ -11,7 +11,8 @@ import {
   SCHEDULE_LABEL,
   fetchJobs,
   filtersToParams,
-  readFilters
+  readFilters,
+  realFirst
 } from './jobs.js';
 
 // ---- Saved searches
@@ -111,9 +112,9 @@ export async function fetchNewFromFollowed(companyIds) {
   if (!companyIds.length) return [];
   const jobs = await fetchJobs({ companyIds });
   const since = Date.now() - NEW_FROM_FOLLOWED_DAYS * 86400000;
-  return jobs
+  return realFirst(jobs
     .filter((j) => j.published_at && new Date(j.published_at).getTime() > since)
-    .sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+    .sort((a, b) => new Date(b.published_at) - new Date(a.published_at)));
 }
 
 // ---- Jobs the student opened ("Apply" pressed), from their own apply clicks.

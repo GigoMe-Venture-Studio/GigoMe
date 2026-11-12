@@ -4,9 +4,10 @@
 --   * companies.is_example / jobs.is_example (default false). Example rows
 --     are loaded by hand in the SQL Editor from supabase/seed/examples.sql
 --     and removed, with everything that points at them, by
---     supabase/seed/remove_examples.sql (HANDOVER.md, launch checklist).
---     The site marks them "Example listing, not a real job" and asks search
---     engines not to index their pages.
+--     supabase/seed/remove_examples.sql (SUPABASE.md, "Example listings").
+--     The site marks them "Example listing, not a real job", lists them
+--     after the real listings and asks search engines not to index their
+--     pages.
 --   * Everyone reads the flag; nobody writes it through the API (no insert
 --     or update grants), so no employer can mark a real listing as an
 --     example or the other way round. Only the SQL Editor sets it.
@@ -20,6 +21,9 @@
 --     only the owner sees them, and example companies have none.
 --   * admin_stats() leaves example companies and jobs (and any clicks on
 --     them) out of every number, like supabase/queries/kpis.sql.
+--   * my_saved_jobs() also says which saved jobs are examples, so /saved can
+--     badge them and list them after the real ones, also once they're no
+--     longer live (students can't read those jobs directly).
 
 -- ===========================================================================
 -- The flag
@@ -145,3 +149,31 @@ $$;
 
 revoke all on function public.admin_stats() from public, anon, authenticated;
 grant execute on function public.admin_stats() to authenticated;
+
+
+-- ===========================================================================
+-- Saved jobs say whether they're examples
+-- ===========================================================================
+
+-- As in 20261108170200_saved_jobs.sql, plus is_example (the job's or its
+-- company's). A new result column needs drop and create.
+drop function public.my_saved_jobs();
+create function public.my_saved_jobs()
+returns table (job_id uuid, saved_at timestamptz, title text, company_name text, live boolean, is_example boolean)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select s.job_id, s.created_at, j.title, c.name,
+         (j.status = 'published' and j.expires_at > now() and c.status = 'approved'),
+         (j.is_example or c.is_example)
+  from public.saved_jobs s
+  join public.jobs j on j.id = s.job_id
+  join public.companies c on c.id = j.company_id
+  where s.user_id = (select auth.uid())
+  order by s.created_at desc;
+$$;
+
+revoke all on function public.my_saved_jobs() from public, anon, authenticated;
+grant execute on function public.my_saved_jobs() to authenticated;

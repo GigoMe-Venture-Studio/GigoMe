@@ -52,11 +52,12 @@ left_behind "The check"
 if ! out=$("${P[@]}" -U supa -d "$DB" -At -F '|' -f supabase/seed/examples.sql 2>&1); then
   echo "examples.sql failed:"; echo "$out"; exit 1
 fi
-for want in '1|Example companies|6' '2|Live example jobs|20' '3|Job types|gig, internship, other, part_time' \
-             '4|Categories|8 of 8: ' '5|Areas|16 of 16' '6|Remote / on site|3 remote, 17 on site' '7|Italian|basic, fluent, none' \
+for want in '1|Example companies|6' '2|Live example jobs|19' '3|Job types|gig, internship, other, part_time' \
+             '4|Categories|8 of 8: ' '5|Areas|16 of 16' '6|Remote / on site|3 remote, 16 on site' '7|Italian|basic, fluent, none' \
              '9|Schedules|flexible, weekday_afternoons, weekday_evenings, weekday_mornings, weekends' \
-             '10|Languages|ar, de, en, es, fr, it, other, zh' '11|Pay|hour, month, none, project, unpaid_curricular' \
-             '12|Metro badge (exact pin within 1 km)|14 jobs; 1 pinned without one' '14|New (published in the last 3 days)|5' \
+             '10|Languages|ar, de, en, es, fr, it, other, zh' '11|Pay|hour, month, project, unpaid_curricular; hourly equivalent 6.35 to 25.00' \
+             '12|Metro badge (exact pin within 1 km)|14 jobs; 1 pinned without one' '13|Area only (no exact pin)|2' \
+             '14|New (published in the last 3 days)|5' \
              '15|Expiring within 3 days|1' '16|Longest title|117 characters'; do
   if ! grep -qF "$want" <<<"$out"; then echo "examples.sql: expected a row starting \"$want\", got:"; echo "$out"; exit 1; fi
 done
@@ -66,7 +67,7 @@ if out=$("${P[@]}" -U supa -d "$DB" -f supabase/seed/examples.sql 2>&1); then
 fi
 grep -q 'already loaded' <<<"$out" || { echo "examples.sql refused for another reason:"; echo "$out"; exit 1; }
 n=$("${P[@]}" -U supa -d "$DB" -At -c "select count(*) from public.jobs where is_example")
-[ "$n" = "20" ] || { echo "examples.sql run twice changed the example jobs: $n"; exit 1; }
+[ "$n" = "19" ] || { echo "examples.sql run twice changed the example jobs: $n"; exit 1; }
 echo "examples.sql: refuses to run twice"
 
 checks "Security check with the examples loaded" supabase/checks/security_check.sql

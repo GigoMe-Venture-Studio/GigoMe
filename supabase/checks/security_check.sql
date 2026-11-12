@@ -107,6 +107,7 @@ declare
   v_ex_co       uuid;
   v_ex_job      uuid;
   v_ex_before   text;
+  v_ex_student  uuid := gen_random_uuid();
 begin
   begin  -- sandbox: everything in here is rolled back at the end
 
@@ -3554,6 +3555,7 @@ begin
     results := pg_temp.res(results, 'Nobody can change an example company or its jobs through the API (they have no owner)', '0 rows changed',
                            v_n || ' rows changed', v_n = 0);
 
+
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
@@ -3572,6 +3574,17 @@ begin
     end;
     results := pg_temp.res(results, 'admin_stats leaves example companies, jobs and their clicks out', v_ex_before || ' / ' || v_ex_before,
                            v_text, v_text = v_ex_before || ' / ' || v_ex_before and v_ex_before like '(%');
+
+    -- A student who saved a real job and the example one: /saved lists the
+    -- example after the real ones and badges it, also once it's no longer live.
+    insert into auth.users (id, email) values (v_ex_student, 'examples.check@studbocconi.it');
+    insert into public.saved_jobs (user_id, job_id) values (v_ex_student, v_job_live), (v_ex_student, v_ex_job);
+    select pg_temp.seen_as(v_ex_student, 'select count(*) from public.my_saved_jobs()') || ' saved, '
+           || pg_temp.seen_as(v_ex_student, format('select count(*) from public.my_saved_jobs() where job_id = %L and is_example', v_ex_job)) || ' marked as example, '
+           || pg_temp.seen_as(v_ex_student, 'select count(*) from public.my_saved_jobs() where not is_example') || ' real'
+      into v_text;
+    results := pg_temp.res(results, 'my_saved_jobs says which saved jobs are examples', '2 saved, 1 marked as example, 1 real',
+                           v_text, v_text = '2 saved, 1 marked as example, 1 real');
 
     -- ----------------------------------------------------------------------
     -- Undo everything above

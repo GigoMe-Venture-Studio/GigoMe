@@ -165,6 +165,10 @@ function timeoutSignal(ms) {
 
 export async function fetchJobs(filters, { limit = 200, timeoutMs = JOBS_TIMEOUT_MS } = {}) {
   let query = filtered(liveJobs(LIST_COLUMNS + ', companies!inner(name, status, is_example)'), filters).abortSignal(timeoutSignal(timeoutMs));
+  // Real listings always before example ones (false sorts first), whatever
+  // the order below; asked of the database so a limit (the home page's 5)
+  // takes real listings first. Pages that re-sort use realFirst().
+  query = query.order('is_example', { ascending: true });
   // Highest pay: by the hourly equivalent; jobs without one (per project,
   // unpaid, no structured pay) after the rest.
   if (filters.sort === 'pay') query = query.order('pay_hourly', { ascending: false, nullsFirst: false });
@@ -281,6 +285,9 @@ export function metroLabel(job) {
 export const EXAMPLE_JOB_LABEL = 'Example listing, not a real job';
 export const EXAMPLE_COMPANY_LABEL = 'Example company, not a real employer';
 export const isExample = (job) => Boolean(job && (job.is_example || (job.companies && job.companies.is_example)));
+// Real listings first, then example ones, each group in the order it had.
+// For every list sorted on the page (by distance, saved order, ...).
+export const realFirst = (jobs) => [...jobs.filter((j) => !isExample(j)), ...jobs.filter(isExample)];
 
 // Published in the last 3 days.
 export function isNew(job) {

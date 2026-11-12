@@ -48,7 +48,7 @@ const PAY = {
 const hourly = (j) => (j.pay_unit === 'hour' ? j.pay_min : j.pay_unit === 'month' ? Math.round((j.pay_min / (j.hours_per_week * 52 / 12)) * 100) / 100 : null);
 for (const j of JOBS) { const pp = PAY[j.title]; if (pp) Object.assign(j, { pay_unit: pp[0], pay_min: pp[1], pay_max: pp[2], pay: pp[3] }); else Object.assign(j, { pay_unit: null, pay_min: null, pay_max: null }); j.pay_hourly = hourly(j); }
 for (const j of JOBS) { Object.assign(j, { category: 'other', published_at: null, nearest_station_m: null, metro_stations: null }, EXTRA[j.title] || {}); j.company_id = j.companies.id; j.schedule = (WHEN[j.title] || [[]])[0]; j.languages = (WHEN[j.title] || [[], ['en', 'it']])[1]; }
-for (const j of JOBS) { j.area_id = j.area_id || null; j.latitude = j.latitude ?? null; j.longitude = j.longitude ?? null; if (j.show_exact_location === undefined) j.show_exact_location = true; const a = AREAS.find((x) => x.id === j.area_id); j.areas = a ? { name: a.name } : null; }
+for (const j of JOBS) { j.is_example = false; j.area_id = j.area_id || null; j.latitude = j.latitude ?? null; j.longitude = j.longitude ?? null; if (j.show_exact_location === undefined) j.show_exact_location = true; const a = AREAS.find((x) => x.id === j.area_id); j.areas = a ? { name: a.name } : null; }
 const CONTACT = { [ID(1)]: { apply_url: 'https://nebbia-example.it/jobs', apply_email: 'jobs@nebbia-example.it' } };
 // Example listings (supabase/seed/examples.sql), only with { examples: true }:
 // a made-up company without an owner and two of its jobs, one on the map.
@@ -120,7 +120,8 @@ async function mock(ctx, opts = {}) {
     if (path === '/rest/v1/jobs') {
       log.jobs.push(url.search);
       if (opts.jobsFail) return j(500, { message: 'boom' });
-      let rows; try { rows = apply(url, opts.noJobs ? [] : opts.examples ? JOBS.concat(EXAMPLE_JOBS) : JOBS); } catch (e) { log.badQuery = e.message; return j(400, { message: e.message }); }
+      // opts.jobs: other real jobs instead of JOBS.
+      let rows; try { rows = apply(url, opts.noJobs ? [] : (opts.jobs || JOBS).concat(opts.examples ? EXAMPLE_JOBS : [])); } catch (e) { log.badQuery = e.message; return j(400, { message: e.message }); }
       if (method === 'HEAD') { log.counts = (log.counts || []).concat(url.search); return r.fulfill({ status: 200, headers: { 'content-range': `*/${rows.length}`, 'access-control-allow-origin': '*', 'access-control-expose-headers': 'content-range' }, body: '' }); }
       const single = /vnd\.pgrst\.object/.test(req.headers()['accept'] || '');
       return j(200, single ? rows[0] || null : rows);
@@ -147,7 +148,11 @@ async function mock(ctx, opts = {}) {
     }
     if (path === '/rest/v1/rpc/my_saved_jobs') {
       log.saved = log.saved || new Set(opts.saved || []);
-      return j(200, [...log.saved].map((id) => { const jb = JOBS.find((x) => x.id === id); return jb ? { job_id: id, saved_at: ago(1), title: jb.title, company_name: jb.companies.name, live: true } : { job_id: id, saved_at: ago(2), title: 'Closed cafe job', company_name: 'Old Cafe', live: false }; }));
+      // Saved ids that aren't live jobs: closed ones, an example if its id starts like the examples'.
+      return j(200, [...log.saved].map((id) => { const jb = JOBS.concat(opts.examples ? EXAMPLE_JOBS : []).find((x) => x.id === id);
+        if (jb) return { job_id: id, saved_at: ago(1), title: jb.title, company_name: jb.companies.name, live: true, is_example: Boolean(jb.is_example) };
+        return id.startsWith('e0000000') ? { job_id: id, saved_at: ago(2), title: 'Stocktaking helper, one weekend', company_name: 'Example Libreria Finta', live: false, is_example: true }
+          : { job_id: id, saved_at: ago(2), title: 'Closed cafe job', company_name: 'Old Cafe', live: false, is_example: false }; }));
     }
     // ---- saved searches, follows, opened jobs (students)
     if (path === '/rest/v1/saved_searches') {
@@ -163,7 +168,7 @@ async function mock(ctx, opts = {}) {
       log.follows = log.follows || (opts.follows || []).map((x) => ({ ...x })); log.followReq = log.followReq || [];
       const body = method === 'POST' ? req.postDataJSON() : null;
       log.followReq.push({ method, search: url.search, body });
-      const co = (id) => [NEBBIA, FINTRA].find((c) => c.id === id);
+      const co = (id) => [NEBBIA, FINTRA, ...(opts.examples ? [EXAMPLE_CO] : [])].find((c) => c.id === id);
       if (method === 'GET') {
         let rows = log.follows; const eq = url.searchParams.get('company_id'); if (eq) rows = rows.filter((x) => x.company_id === eq.slice(3));
         rows = rows.map((x) => ({ company_id: x.company_id, created_at: x.created_at, companies: co(x.company_id) ? { id: x.company_id, name: co(x.company_id).name } : null }));

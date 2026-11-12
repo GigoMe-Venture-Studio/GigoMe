@@ -1,6 +1,7 @@
 -- EXAMPLE LISTINGS for testers. NOT a migration: it is never applied
--- automatically. Remove them before the public launch (HANDOVER.md, launch
--- checklist) with supabase/seed/remove_examples.sql.
+-- automatically. Remove them when testing ends, and before the public launch
+-- at the latest, with supabase/seed/remove_examples.sql (SUPABASE.md,
+-- "Example listings").
 --
 -- How to run: Supabase dashboard > SQL Editor > New query > paste this whole
 -- file > Run. It needs migration 20261112120000_example_listings.sql to be
@@ -13,14 +14,15 @@
 --   * 6 made-up companies, approved, with no owner account (nobody can log
 --     in as them). Every name starts with "Example ". No website, phone or
 --     address; the only contact detail is hello@gigome.org.
---   * 20 published jobs covering every filter: the 4 job types, the 8
+--   * 19 published jobs covering every filter: the 4 job types, the 8
 --     categories, all 16 areas, remote and on site, the 3 Italian levels,
 --     hours from 4 to 40 a week, every schedule and language, pay per hour,
 --     per month, per project, a range, unpaid curricular, and the minimum-pay
---     slider up to €25/h. Edge cases: a 117-character title, a job without
---     any pay (how listings from before structured pay look), one that
+--     slider up to €25/h. Edge cases: a 117-character title, one that
 --     expires in 2 days, five "New" ones, pins with and without a metro
---     station within 1 km, area-only and remote jobs.
+--     station within 1 km, area-only and remote jobs. Every database rule
+--     applies to them as to real jobs (none is switched off), so all of them
+--     have structured pay.
 --   * Their "how to apply" is hello@gigome.org, but the site never reveals
 --     it: Apply explains it's an example, and the database refuses
 --     reveal_job_contact() for example jobs, so no apply click is recorded.
@@ -138,7 +140,7 @@ from (values
   (15, 'c5', 'Festival volunteer coordinator assistant', 'part_time', 'events', false, 8, true, 45.4782, 9.1548, 24,
    'hour', 11, 13, null, 'none', array['weekday_evenings', 'weekends'], array['ar', 'en', 'other'], null, 10, null,
    E'Help coordinate volunteers for a three-day festival: shift plans, briefings and the info desk.'),
-  (16, 'c5', 'Warehouse helper for event set-up', 'gig', 'events', false, 16, true, 45.5030, 9.1585, 30,
+  (16, 'c5', 'Warehouse helper for event set-up', 'gig', 'other', false, 16, true, 45.5030, 9.1585, 30,
    'hour', 12, null, null, 'basic', array['weekday_mornings'], array['it'], null, 25, null,
    E'Load and unload stage equipment before events.\nIn "Elsewhere in Milan", more than 1 km from any metro station, so it has no metro badge.'),
   (17, 'c6', 'Junior web developer (React)', 'part_time', 'tech', false, 15, true, 45.5142, 9.2105, 20,
@@ -152,34 +154,6 @@ from (values
    E'Answer the phone, greet visitors and keep the office running, Monday to Friday mornings.')
 ) as v(n, co, title, job_type, category, remote, area_id, exact, lat, lng, hours,
        pay_unit, pay_min, pay_max, pay_note, italian, schedule, languages, start_in, posted_days_ago, expires_in_days, body);
-
--- One job without any pay, as listings from before structured pay look
--- ("Pay not listed"; hidden by the minimum pay filter as "pay not
--- specified"). The database no longer lets a job be published without pay
--- (trigger job_pay_required), so that one rule is switched off for this one
--- insert and back on straight after, inside this transaction: no other
--- session ever sees it off. If the SQL Editor's role isn't allowed to do
--- that, this job is skipped and everything else is still loaded.
-do $nopay$
-begin
-  alter table public.jobs disable trigger job_pay_required;
-  insert into public.jobs (
-    id, company_id, is_example, status, title, description, job_type, category, remote,
-    area_id, show_exact_location, hours_per_week, italian_level, schedule, languages,
-    created_at, published_at, expires_at)
-  values (
-    'e0000000-0000-4000-8000-000000000020', 'e0000000-0000-4000-8000-0000000000c2', true, 'published',
-    'Flyer distribution, one afternoon',
-    'Example listing, made up for testing GigoMe: this company and this job don''t exist, and there is nobody to apply to.'
-      || E'\n\nHand out flyers near the university for one afternoon.\nThis listing gives no pay at all, like listings from before pay was required.',
-    'other', 'other', false,
-    11, false, 4, 'none', array['weekday_afternoons'], array[]::text[],
-    now() - interval '41 days', now() - interval '40 days', now() + interval '20 days');
-  alter table public.jobs enable trigger job_pay_required;
-exception when insufficient_privilege then
-  raise notice 'Skipped the example job without pay: %', sqlerrm;
-end
-$nopay$;
 
 -- How to apply: only hello@gigome.org, and never shown (see the top).
 insert into public.job_contacts (job_id, apply_email)

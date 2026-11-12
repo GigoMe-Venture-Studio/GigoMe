@@ -140,33 +140,51 @@ A few details worth knowing:
 
 ## Example listings
 
-Until the public launch, testers need listings to try search, filters and
-the map. `supabase/seed/examples.sql` (run by hand in the SQL Editor, not a
-migration) loads 6 made-up companies and 20 published jobs covering every
-filter value and a few edge cases; `supabase/seed/remove_examples.sql`
-deletes them again with everything that points at them. HANDOVER.md,
-section 4, "Example listings", says when and how.
+While the site is being tested, testers need listings to try search,
+filters and the map. `supabase/seed/examples.sql` loads 6 made-up companies
+and 19 published jobs covering every filter value and a few edge cases;
+`supabase/seed/remove_examples.sql` deletes them again with everything that
+points at them. Both are run by hand in the SQL Editor (not migrations):
+remove them when testing ends, and before the public launch at the latest.
+
+- **Load:** SQL Editor > New query > paste all of
+  `supabase/seed/examples.sql` > Run. The result lists what was loaded,
+  filter by filter (6 companies, 19 live jobs). It refuses to run while
+  examples are already there, and before the migration that adds
+  `is_example` is applied.
+- **Refresh** ("New" badges and the job that expires in 2 days count from
+  the day they were loaded): run `remove_examples.sql`, then `examples.sql`.
+- **Remove:** SQL Editor > paste all of `supabase/seed/remove_examples.sql`
+  > Run. Every row of its result must say 0. It deletes every example
+  company and job and what points at them: students' saves and follows,
+  apply clicks, how to apply, reports on them (reports on real jobs outlive
+  the job as evidence; made-up ones don't need to) and the moderation log's
+  entries about them. Real companies and jobs and every account are left
+  alone, and so are testers' saved searches (filters, not listings).
+  Running it again does nothing.
+
+How they're kept apart from real listings:
 
 - `companies.is_example` and `jobs.is_example` mark them (default false).
   Everyone can read the flag; nobody can set it through the API, so no
   employer can turn a real listing into an example or the other way round.
 - Example companies have **no owner** (`owner_id` empty, allowed only for
   them by the check `companies_owner_unless_example`): no fake login
-  accounts, and nobody can edit them or their jobs through the API.
+  accounts, and nobody can edit them or their jobs through the API. Every
+  name starts with "Example "; the only contact detail is hello@gigome.org,
+  never shown.
 - The site shows "Example listing, not a real job" on every card, map card
-  and page (company pages: "Example company, not a real employer"), asks
-  search engines not to index them and gives them no JobPosting data.
+  and page (company pages: "Example company, not a real employer"), lists
+  them after the real listings everywhere (home page, /jobs, company pages,
+  saved jobs), asks search engines not to index them and gives them no
+  JobPosting data. `my_saved_jobs` says which saved jobs are examples, so
+  /saved can do the same for ones that are no longer live.
 - `reveal_job_contact` refuses example jobs, so no contact is shown and no
-  apply click is recorded. Their only contact is hello@gigome.org.
+  apply click is recorded.
 - `admin_stats()` and `supabase/queries/kpis.sql` leave example companies,
   jobs and any clicks on them out.
-- One example job has no pay at all, the way listings from before
-  structured pay look. The database doesn't let a job be published without
-  pay any more (`job_pay_required`), so `examples.sql` switches that rule
-  off for that one insert and straight back on, inside its transaction.
-- Removing them deletes the reports on them too (reports on real jobs
-  outlive the job as evidence; made-up ones don't need to) and the
-  moderation log's entries about them.
+- Every database rule applies to them as to real jobs: nothing is switched
+  off to load them.
 
 ## Metro stations
 
@@ -303,7 +321,7 @@ title and company name, until 730 days after they are resolved.
 | `admin_company_contact(company_id)` | Admins | A company's contact email and the email its owner logs in with. |
 | `admin_set_job_status(job_id, status)` | Admins | The same without a note (so it can't request changes or reject). |
 | `my_job_stats()` | Company owners | Apply clicks on each of the caller's own jobs (how often students pressed "Apply"). Never other companies' numbers. |
-| `my_saved_jobs()` | Logged-in users | The caller's saved jobs with title, company and whether each is still live (so a closed job can show "No longer available"). Never anyone else's. |
+| `my_saved_jobs()` | Logged-in users | The caller's saved jobs with title, company, whether each is still live (so a closed job can show "No longer available") and whether it's an example listing. Never anyone else's. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
 | `accept_terms(version)` | Logged-in users | Records that the caller accepted that version of the Terms, with the database's time. `/welcome` and the employer setup call it when "I'm 18 or older and I accept the Terms" is ticked. |

@@ -76,7 +76,7 @@ async function slide(p, to) { await p.focus('input[name=minpay]'); await p.keybo
   { const ctx = await b.newContext(desk); const log = await mock(ctx, {}); const p = await ctx.newPage();
     await p.goto(E + '/jobs'); await p.waitForSelector('.job-list .role-row');
     await p.selectOption('select[name=sort]', 'pay'); await p.waitForTimeout(600);
-    ok(qp(p).get('sort') === 'pay' && log.jobs.pop().includes('order=pay_hourly.desc.nullslast'), 'sort=pay, by the hourly equivalent');
+    ok(qp(p).get('sort') === 'pay' && new URLSearchParams(log.jobs.pop()).get('order').startsWith('is_example.asc,pay_hourly.desc.nullslast'), 'sort=pay, by the hourly equivalent');
     ok((await titles(p)).join('|') === 'English tutor|Weekend barista|Remote researcher|Event host|Finance intern|Social media helper', 'highest first, then the rest most recently published first: ' + (await titles(p)).join('|'));
     ok(!(await p.locator('button:has-text("Clear filters")').count()), 'sorting is not a filter');
     await ctx.close(); }

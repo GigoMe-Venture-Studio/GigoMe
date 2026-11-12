@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { createMap, maplibregl } from '../lib/map.js';
-import { EXAMPLE_JOB_LABEL, isExample, markerPay, metroLabel, payLabel, placeLabel } from '../lib/jobs.js';
+import { EXAMPLE_JOB_LABEL, isExample, markerPay, metroLabel, payLabel, placeLabel, realFirst } from '../lib/jobs.js';
 import { mapParam } from '../lib/geo.js';
 
 // The map on /jobs and on company pages. Loaded with React.lazy, so MapLibre
@@ -114,7 +114,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
 
     const open = (ids, lngLat) => {
       if (popup.current) popup.current.remove();
-      const found = ids.map((id) => byId.current.get(id)).filter(Boolean);
+      const found = realFirst(ids.map((id) => byId.current.get(id)).filter(Boolean));
       if (!found.length) return;
       if (isPhone()) {
         setSheet(found.map((j) => j.id));

@@ -114,8 +114,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   an exact location within 1000 m of a station, at 80 m a minute walking).
 - Example listings (made up for testers until the public launch; loaded and
   removed by hand with `supabase/seed/examples.sql` / `remove_examples.sql`,
-  HANDOVER.md section 4): `isExample()` in `src/lib/jobs.js` (the job's or
-  its company's `is_example`; every job and company query reads it). Every
+  SUPABASE.md "Example listings"): `isExample()` in `src/lib/jobs.js` (the
+  job's or its company's `is_example`; every job and company query reads
+  it). Real listings always come before examples in every list, each group
+  in its usual order: `fetchJobs()` orders by `is_example` first (so limits
+  like the home page's 5 take real ones first), and any list re-sorted on
+  the page goes through `realFirst()` (distance, saved order, followed
+  companies, the map's multi-job card). Every
   card (`JobCard`, first, before the title), map card and page shows the
   graphite badge `EXAMPLE_JOB_LABEL` "Example listing, not a real job"
   (`.tag-example`); job and company pages also start with
@@ -470,8 +475,10 @@ Schema rules
   Editor sets them). Example companies have no owner: `owner_id` may be
   empty only when `is_example` (check `companies_owner_unless_example`).
   `reveal_job_contact` refuses example jobs (no click recorded);
-  `admin_stats()` and `kpis.sql` leave example companies, jobs and their
-  clicks out (keep both the same). `supabase/seed/` holds the hand-run
+  `my_saved_jobs()` returns `is_example`; `admin_stats()` and `kpis.sql`
+  leave example companies, jobs and their clicks out (keep both the same).
+  The seed never switches a database rule off: example jobs meet every
+  rule real jobs do. `supabase/seed/` holds the hand-run
   load and removal scripts: never a migration, never applied
   automatically. `tests/db/run-check.sh` loads them, runs the security
   check with them in, removes them and checks only the example side went:

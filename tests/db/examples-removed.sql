@@ -22,9 +22,7 @@ insert into r (check_name, expected, actual) values
     from public.companies c join public.jobs j on j.company_id = c.id join public.job_contacts jc on jc.job_id = j.id
     where c.id = 'd0000000-0000-4000-8000-0000000000c1')),
   ('Removal: no account was deleted', '3',
-   (select count(*) from auth.users where id::text like 'd0000000-%')::text),
-  ('Removal: the job pay rule is on (the seed switched it off for one insert only)', 'O',
-   (select tgenabled::text from pg_trigger where tgname = 'job_pay_required'));
+   (select count(*) from auth.users where id::text like 'd0000000-%')::text);
 
 -- Clean up the test accounts (with their company, job, saves, follows) and what
 -- outlives them.

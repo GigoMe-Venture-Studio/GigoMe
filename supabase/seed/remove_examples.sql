@@ -1,5 +1,6 @@
--- REMOVE THE EXAMPLE LISTINGS. NOT a migration: run it by hand, and before
--- the public launch at the latest (HANDOVER.md, launch checklist).
+-- REMOVE THE EXAMPLE LISTINGS. NOT a migration: run it by hand when testing
+-- ends, and before the public launch at the latest (SUPABASE.md, "Example
+-- listings").
 --
 -- How to run: Supabase dashboard > SQL Editor > New query > paste this whole
 -- file > Run. The result is one table that should say 0 on every row.
