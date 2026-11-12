@@ -1917,41 +1917,61 @@ begin
       v_err := 'inserted';
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
-    results := pg_temp.res(results, 'Only per hour, month, project, or a curricular internship', 'error', v_err, v_err like 'error:%');
+    results := pg_temp.res(results, 'Only per hour, month or project', 'error', v_err, v_err like 'error:%');
 
+    -- No internships and nothing unpaid (20261112180000_no_internships.sql).
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
+        values (v_co_emp, 'Check internship draft', 'internship', 12, 'draft', 1, array['flexible'], 'hour', 12);
+      perform set_config('role', 'none', true);
+      v_err := 'done';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'No job can be created as an internship, not even a draft', 'error', v_err, v_err like 'error:%not internships%');
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
       insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit)
         values (v_co_emp, 'Check unpaid gig', 'gig', 12, 'draft', 1, array['flexible'], 'unpaid_curricular');
       perform set_config('role', 'none', true);
-      v_err := 'inserted';
+      v_err := 'done';
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
-    results := pg_temp.res(results, 'Unpaid is refused for anything but an internship', 'error', v_err, v_err like 'error:%');
-
-    begin
-      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
-      perform set_config('role', 'authenticated', true);
-      insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min)
-        values (v_co_emp, 'Check unpaid with an amount', 'internship', 12, 'draft', 1, array['flexible'], 'unpaid_curricular', 5);
-      perform set_config('role', 'none', true);
-      v_err := 'inserted';
-    exception when others then v_err := 'error: ' || sqlerrm;
-    end;
-    results := pg_temp.res(results, 'A curricular internship has no amount', 'error', v_err, v_err like 'error:%');
-
+    results := pg_temp.res(results, 'No job can be created unpaid', 'error', v_err, v_err like 'error:%only paid jobs%');
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
       perform set_config('role', 'authenticated', true);
       insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit)
         values (v_co_emp, 'Check curricular internship', 'internship', 12, 'pending', 1, array['flexible'], 'unpaid_curricular');
       perform set_config('role', 'none', true);
-      v_err := 'inserted';
+      v_err := 'done';
     exception when others then v_err := 'error: ' || sqlerrm;
     end;
-    select coalesce(pay_hourly::text, 'none') into v_text from public.jobs where title = 'Check curricular internship';
-    results := pg_temp.res(results, 'A curricular internship (unpaid) can be submitted, with no hourly equivalent', 'inserted, none', v_err || ', ' || coalesce(v_text, '?'), v_err = 'inserted' and v_text = 'none');
+    results := pg_temp.res(results, 'No job can be submitted as an unpaid curricular internship', 'error', v_err, v_err like 'error:%not internships%');
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set job_type = 'internship' where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'done';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An owner cannot change a job to an internship', 'error', v_err, v_err like 'error:%not internships%');
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      update public.jobs set pay_unit = 'unpaid_curricular', pay_min = null, pay_max = null where id = v_pay_job;
+      perform set_config('role', 'none', true);
+      v_err := 'done';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'An owner cannot change a job to unpaid', 'error', v_err, v_err like 'error:%only paid jobs%');
+    select job_type || ', ' || coalesce(pay_unit, 'none') into v_text from public.jobs where id = v_pay_job;
+    results := pg_temp.res(results, 'That job is unchanged', 'gig, none', coalesce(v_text, '?'), v_text = 'gig, none');
+    select count(*)::text into v_text from public.jobs where title in ('Check internship draft', 'Check unpaid gig', 'Check curricular internship');
+    results := pg_temp.res(results, 'None of those jobs exists', '0', v_text, v_text = '0');
 
     begin
       perform set_config('request.jwt.claims', jsonb_build_object('sub', v_emp, 'role', 'authenticated')::text, true);

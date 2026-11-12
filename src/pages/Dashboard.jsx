@@ -199,7 +199,7 @@ function JobRow({ job, clicks, onAct }) {
       <div className="dash-job-main">
         <p className="dash-job-title">{job.title}</p>
         <p className="dash-job-meta">
-          {JOB_TYPE_LABEL[job.job_type]} · {job.hours_per_week} h/week
+          {JOB_TYPE_LABEL[job.job_type] || 'Choose a type'} · {job.hours_per_week} h/week
           {(live || status === 'expired') && <> · until {dateLabel(String(job.expires_at).slice(0, 10))}</>}
         </p>
         <p className="dash-job-status">

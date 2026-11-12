@@ -1,6 +1,6 @@
 # GigoMe
 
-**Part-time work and internships in Milan, in English.**
+**Part-time jobs and gigs in Milan, in English.**
 
 GigoMe is a job discovery platform for international and English-speaking
 university students in Milan. Employers list English-friendly roles, students
@@ -20,9 +20,9 @@ English-speaking student have no simple way to reach them.
 
 ## What GigoMe does
 
-- **For students:** browse part-time jobs, gigs, tutoring and internships
-  that don't need Italian, filtered by keyword, job type, remote work, Italian
-  level and hours.
+- **For students:** browse paid part-time jobs, gigs and tutoring that
+  don't need Italian, filtered by keyword, job type, remote work, Italian
+  level and hours. No internships and no unpaid roles.
 - **For employers:** businesses and private people (a family looking for a
   tutor, someone who needs a dog walker) list roles for free by writing to
   hello@gigome.org.
@@ -120,6 +120,7 @@ companies and a compliant way of operating.
 | [`wrangler.jsonc`](wrangler.jsonc), [`vite.config.js`](vite.config.js) | Build and hosting config: Vite builds the site into `dist/`, Cloudflare Workers serves it as static assets. |
 | [`worker/index.js`](worker/index.js) | A tiny Worker script for one job: a daily ping to Supabase so the free project never pauses. Pages don't run it. |
 | [`scripts/fetch-metro-stations.mjs`](scripts/fetch-metro-stations.mjs), [`scripts/build-metro-map.mjs`](scripts/build-metro-map.mjs), [`.github/workflows/metro-stations.yml`](.github/workflows/metro-stations.yml) | Build the metro station data migration and the metro map file (`public/metro/milan-metro.geojson`) from the City of Milan's open data (datasets DS535 and DS533, CC BY 4.0). The workflow runs it on GitHub when started by hand from the Actions tab. See SUPABASE.md. |
+| [`scripts/build-og-image.mjs`](scripts/build-og-image.mjs) | Rebuilds the link preview image (`public/og-image.png`) when the home page headline changes. |
 | [`supabase/queries/kpis.sql`](supabase/queries/kpis.sql) | The numbers (students, companies, live jobs, apply clicks per week) to paste into the Supabase SQL Editor. Read-only. |
 | [`HANDOVER.md`](HANDOVER.md) | For the next CTO: the launch checklist, every account, how a change goes live, moderation, limits, backups, the domain. |
 | [`tests/`](tests), [`.github/workflows/tests.yml`](.github/workflows/tests.yml) | The tests, run on every pull request without any keys: `unit/` (links and redirects), `db/` (every migration and the security check on a throwaway database) and `e2e/` (every page in a real browser with stand-ins for Supabase and the map, and the real security headers). |

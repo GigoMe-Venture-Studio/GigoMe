@@ -26,7 +26,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   "GigoMe is an independent student project, not affiliated with or endorsed
   by any university." (always on the student login; it never names a
   university). `ScrollToTop` (in `App.jsx`) starts each new path at the
-  top, except on Back/Forward and query-only changes. Don't
+  top, except on query-only changes; Back/Forward return to where that
+  page was left (kept in memory per history entry, restored once the page,
+  e.g. a job list still loading, is tall enough). Don't
   add placeholder pages for features that aren't built.
 - Job board: `src/pages/Jobs.jsx` (list, filters kept in the URL:
   `?q=&area=&category=&type=&remote=yes|no&italian=none|basic&hours=&when=&lang=`
@@ -35,8 +37,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   flexible jobs always match a `when` filter; `minpay` = 1–30 €/h on
   `pay_hourly` (a slider, `MinPay` in `Jobs.jsx`, in the folded panel on
   phones), which hides every job without an hourly equivalent (paid per
-  project, unpaid, pay not specified): the page says e.g. "5 jobs hidden:
-  paid per project, unpaid or pay not specified" naming only the kinds
+  project, pay not specified): the page says e.g. "5 jobs hidden:
+  paid per project or pay not specified" naming only the kinds
   present (`fetchHiddenByPay()` reads only their pay unit, `hiddenKinds()`)
   with "Show them" = `nohourly=yes` (older links' `projects=yes` still
   works). Jobs paying less than the minimum aren't counted: hiding them is
@@ -153,9 +155,16 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `my_opened_jobs()`, labelled exactly "You opened the application on
   <date>": never "applied" anywhere. All in the app only: nothing is
   emailed.
+- Paid part-time jobs and gigs only: no internships and nothing unpaid
+  anywhere (job types gig, part-time, other; pay per hour, month or
+  project). The tagline is "Part-time jobs and gigs in Milan, in English."
+  (home page headline, titles, meta and the share image). An older job
+  with `internship` or `unpaid_curricular` shows no type and "Pay not
+  listed", and the job form starts both fields empty so the owner chooses
+  again.
 - Pay: `payLabel()` in `src/lib/jobs.js` everywhere ("€11–13/h",
-  "€600/month (≈ €12/h)", "€500 per project", "Curricular internship
-  (unpaid)"; jobs from before structured pay show their pay text);
+  "€600/month (≈ €12/h)", "€500 per project"; jobs from before structured
+  pay show their pay text);
   `payNote()` shows the free-text `pay` as a note once pay is structured;
   `markerPay()` for map markers. The job form asks how it's paid
   (`PAY_UNITS`), the amount(s), shows the hourly equivalent live for monthly
@@ -345,8 +354,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   with rounded corners (padding 1/16 of the size, corner radius 1/5),
   `apple-touch-icon.png`, `og-image.png` (link previews: 1200x630, the logo
   and the home page headline on a white card framed in the brand purple;
+  rebuilt with `node scripts/build-og-image.mjs` when the headline changes;
   referenced from `index.html` with absolute https://gigome.org URLs, with
-  `og:image:alt`; `tests/unit/share-preview.test.mjs` checks both), and `brand/` (the
+  `og:image:alt`; `tests/unit/share-preview.test.mjs` checks both and that
+  the line matches the headline), and `brand/` (the
   original logo JPEGs, transparent PNGs cut from them, and the header WebPs).
   Don't put the logo or other images in auth emails: they get blocked and
   hurt deliverability.
@@ -517,9 +528,17 @@ Schema rules
   stored sorted without repeats and readable like the rest of a job. The
   security check gives every test job a schedule (and an area): keep doing
   that for new test jobs.
-- Structured pay: `pay_unit` (hour, month, project, unpaid_curricular),
-  `pay_min` (> 0) and `pay_max` (optional, never below min), none for
-  unpaid, and unpaid only when `job_type` is internship (checks). Required
+- No internships, nothing unpaid: trigger `job_no_internships` (admins and
+  the dashboard included) refuses any new job with `job_type` `internship`
+  or `pay_unit` `unpaid_curricular`, any change to either value, and
+  submitting or publishing a job that still has one. Older rows with them
+  can still be closed, edited otherwise, deleted and cleaned up by
+  `run_retention()` (`tests/db/legacy-internships.sql`). The values are
+  still in the check constraints so those rows stay valid; drop them in a
+  later migration once no row uses them.
+- Structured pay: `pay_unit` (hour, month, project; `unpaid_curricular`
+  only on older rows, see above), `pay_min` (> 0) and `pay_max` (optional,
+  never below min). Required
   to submit or publish (trigger `job_pay_required`, admins included; fires
   only when status or pay_unit change). `pay_hourly` is a generated column
   (hour: pay_min; month: pay_min ÷ (hours × 52 ÷ 12); none otherwise): a

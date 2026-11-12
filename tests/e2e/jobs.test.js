@@ -11,7 +11,7 @@ const NEBBIA = { name: 'Nebbia Coffee Bar', status: 'approved', website: 'nebbia
 const FINTRA = { name: 'Fintra', status: 'approved', website: 'https://fintra.example/', description: null };
 const JOBS = [
   { id: ID(1), title: 'Weekend barista', job_type: 'part_time', location: 'Porta Venezia', remote: false, hours_per_week: 12, pay: '€11/h', italian_level: 'none', start_date: '2026-12-01', created_at: ago(0), description: 'Serve coffee.\nLearn latte art.', companies: NEBBIA },
-  { id: ID(2), title: 'Finance intern', job_type: 'internship', location: 'Porta Romana', remote: true, hours_per_week: 20, pay: null, italian_level: 'basic', start_date: null, created_at: ago(2), description: null, companies: FINTRA },
+  { id: ID(2), title: 'Finance assistant', job_type: 'other', location: 'Porta Romana', remote: true, hours_per_week: 20, pay: null, italian_level: 'basic', start_date: null, created_at: ago(2), description: null, companies: FINTRA },
   { id: ID(3), title: 'Event host', job_type: 'gig', location: null, remote: false, hours_per_week: 8, pay: '€90/day', italian_level: 'fluent', start_date: null, created_at: ago(5), description: 'One evening.', companies: NEBBIA },
   { id: ID(4), title: 'Remote researcher', job_type: 'other', location: null, remote: true, hours_per_week: 40, pay: '€500', italian_level: 'none', start_date: null, created_at: ago(9), description: 'Desk research.', companies: FINTRA }
 ];
@@ -74,7 +74,7 @@ async function mock(ctx, opts = {}) {
   // List, newest first, card contents
   { const { ctx, p } = await mk();
     await p.goto(ENV + '/jobs'); await p.waitForTimeout(500);
-    ok((await titles(p)).join('|') === 'Weekend barista|Finance intern|Event host|Remote researcher', 'list newest first: ' + (await titles(p)).join(', '));
+    ok((await titles(p)).join('|') === 'Weekend barista|Finance assistant|Event host|Remote researcher', 'list newest first: ' + (await titles(p)).join(', '));
     ok((await txt(p, '.jobs-status')).startsWith('4 jobs'), 'count shown');
     const card = await txt(p, '.job-list li:first-child');
     ok(['Weekend barista', 'Nebbia Coffee Bar', 'No Italian needed', 'Part-time', 'Porta Venezia', '12 h/week', '€11/h', 'Today'].every((w) => card.includes(w)), 'card: title, company, Italian, type, location, hours, pay: ' + card);
@@ -94,17 +94,21 @@ async function mock(ctx, opts = {}) {
     await p.click('.empty-state >> text=Clear filters'); await p.waitForTimeout(300);
     ok(new URL(p.url()).search === '' && (await titles(p)).length === 4, 'clear filters: all jobs, clean URL');
     await p.selectOption('select[name=italian]', 'basic'); await p.waitForTimeout(300);
-    ok((await titles(p)).join('|') === 'Weekend barista|Finance intern|Remote researcher', 'Italian "basic at most" includes none and basic');
+    ok((await titles(p)).join('|') === 'Weekend barista|Finance assistant|Remote researcher', 'Italian "basic at most" includes none and basic');
     await p.selectOption('select[name=italian]', ''); await p.selectOption('select[name=type]', 'gig'); await p.waitForTimeout(300);
     ok((await titles(p)).join('|') === 'Event host', 'type filter');
     await ctx.close(); }
 
   // Shared filtered URL, and bad values ignored
-  { const { ctx, p } = await mk({}, { viewport: { width: 1280, height: 900 } });
+  { const { ctx, p, log } = await mk({}, { viewport: { width: 1280, height: 900 } });
     await p.goto(ENV + '/jobs?italian=none&remote=yes'); await p.waitForTimeout(500);
     ok((await titles(p)).join('|') === 'Remote researcher' && (await p.inputValue('select[name=italian]')) === 'none' && (await p.inputValue('select[name=remote]')) === 'yes', 'opening a shared filtered link sets the filters');
     await p.goto(ENV + '/jobs?type=evil&hours=99&remote=maybe'); await p.waitForTimeout(500);
     ok((await titles(p)).length === 4, 'unknown filter values are ignored');
+    const typeOptions = await p.$$eval('select[name=type] option', (o) => o.map((x) => x.value));
+    ok(typeOptions.join('|') === '|gig|part_time|other', 'type filter: gig, part-time, other; no internship: ' + typeOptions.join('|'));
+    await p.goto(ENV + '/jobs?type=internship'); await p.waitForTimeout(500);
+    ok((await titles(p)).length === 4 && (await p.inputValue('select[name=type]')) === '' && !log.jobsQueries.some((q) => q.includes('job_type=eq.internship')), 'an old link or saved search with type=internship shows every job');
     ok((await p.getAttribute('.site-header .main-nav a:first-child', 'aria-current')) === 'page' && (await p.getAttribute('.site-header .main-nav a:first-child', 'href')) === '/jobs', 'header Jobs points to /jobs and is marked current');
     await p.screenshot({ path: SHOTS + 'jobs-desk.png', fullPage: true });
     await p.click('.job-list li:first-child a'); await p.waitForTimeout(500);

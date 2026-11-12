@@ -134,6 +134,11 @@ See point 9.
 ### 20. Private advertisers (section D)
 See point 10. As built, the app can't tell a family from a business.
 
+### 21. No internships (checked 12 November 2026)
+- **Decision:** GigoMe lists only paid part-time jobs and gigs. Internships (including unpaid curricular internships) are no longer offered, and the database refuses new ones.
+- **Text:** neither published text mentions internships, traineeships, tirocini or stages. The only related wording is Terms v2.0 section 10.3, which forbids advertisers to "require unlawful unpaid productive trials"; it still fits and needs no change.
+- **Suggested:** nothing required. If a future version describes what GigoMe lists, say "paid part-time jobs and gigs".
+
 ## Also to check (not visible from the code)
 
 - **`privacy@gigome.org`** is named in both texts. Make sure it receives mail and someone reads it (the site's contact address is hello@gigome.org).

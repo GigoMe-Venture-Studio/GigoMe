@@ -11,7 +11,7 @@ export default function Home() {
     <main>
       <DeletedNotice />
       <section className="wrap hero" aria-labelledby="home-title">
-        <h1 id="home-title">Part-time work and internships in Milan, in English.</h1>
+        <h1 id="home-title">Part-time jobs and gigs in Milan, in English.</h1>
         <p className="hero-lead">For international students who don't speak fluent Italian. Free for students, always.</p>
         <HeroSearch />
       </section>
@@ -28,7 +28,7 @@ export default function Home() {
         <div>
           <h3>For students</h3>
           <ol>
-            <li><Link to="/jobs">Browse jobs</Link>: part-time work, gigs and internships you can do in English.</li>
+            <li><Link to="/jobs">Browse jobs</Link>: part-time jobs and gigs you can do in English.</li>
             <li>Log in with your university email. We send you a 6-digit code, no password needed.</li>
             <li>Apply directly with the employer, on their website or by email.</li>
           </ol>

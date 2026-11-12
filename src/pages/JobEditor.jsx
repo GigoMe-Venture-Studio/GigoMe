@@ -9,7 +9,7 @@ import { normalizeEmail } from '../lib/auth.js';
 import { isPlainEmail } from '../lib/links.js';
 import { dailyLimitMessage } from '../lib/limits.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
-import { CATEGORIES, ITALIAN_LABEL, JOB_TYPES, LANGUAGES, PAY_UNITS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
+import { CATEGORIES, ITALIAN_LABEL, JOB_TYPE_LABEL, JOB_TYPES, LANGUAGES, PAY_UNIT_LABEL, PAY_UNITS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
 import { fetchAreas } from '../lib/areas.js';
 import { findAddress } from '../lib/geocode.js';
@@ -120,7 +120,9 @@ function JobForm({ company, job }) {
   const navigate = useNavigate();
   const [v, setV] = useState(() => ({
     title: job ? job.title : '',
-    jobType: job ? job.job_type : '',
+    // A type or pay unit that isn't offered any more (an internship, unpaid)
+    // starts empty, so the owner chooses again.
+    jobType: job && JOB_TYPE_LABEL[job.job_type] ? job.job_type : '',
     category: job ? job.category || 'other' : '',
     description: job ? job.description || '' : '',
     location: job ? job.location || '' : '',
@@ -134,7 +136,7 @@ function JobForm({ company, job }) {
     applyEmail: job ? job.apply_email : '',
     area: job && job.area_id ? String(job.area_id) : '',
     onlyArea: job ? !job.show_exact_location : false,
-    payUnit: job ? job.pay_unit || '' : '',
+    payUnit: job && PAY_UNIT_LABEL[job.pay_unit] ? job.pay_unit : '',
     payMin: job && job.pay_min != null ? String(Number(job.pay_min)) : '',
     payMax: job && job.pay_max != null ? String(Number(job.pay_max)) : '',
     schedule: job ? job.schedule || [] : [],
@@ -208,13 +210,10 @@ function JobForm({ company, job }) {
     if (!v.hours) found.hours = 'Add the hours per week.';
     else if (!Number.isInteger(hours) || hours < 1 || hours > 40) found.hours = 'Hours per week must be a whole number from 1 to 40.';
     if (v.pay.trim().length > 200) found.pay = 'Keep the pay note under 200 characters.';
-    // Structured pay: a unit and an amount (or a curricular internship).
-    const paid = v.payUnit && v.payUnit !== 'unpaid_curricular';
+    // Structured pay: a unit and an amount.
+    const paid = Boolean(v.payUnit);
     const payMin = amount(v.payMin), payMax = amount(v.payMax);
     if (submitting && !v.payUnit) found.payUnit = 'Choose how the job is paid.';
-    if (v.payUnit === 'unpaid_curricular' && v.jobType !== 'internship') {
-      found.payUnit = 'Unpaid is possible only for an internship with university credits: choose "Internship" as the type.';
-    }
     if (paid && v.payMin.trim() === '' && submitting) found.payMin = 'Add the amount in euros.';
     else if (paid && v.payMin.trim() !== '' && !(payMin > 0 && payMin <= 100000)) found.payMin = 'Enter an amount in euros, like 11 or 11.50.';
     if (paid && v.payMax.trim() !== '' && !(payMax > 0 && payMax <= 100000)) found.payMax = 'Enter an amount in euros, like 13 or 13.50.';
@@ -240,7 +239,7 @@ function JobForm({ company, job }) {
       hours_per_week: hours,
       pay: v.pay.trim() || null,
       // A unit only with its amount (a half-filled draft keeps neither).
-      pay_unit: v.payUnit === 'unpaid_curricular' || (paid && payMin > 0) ? v.payUnit : null,
+      pay_unit: paid && payMin > 0 ? v.payUnit : null,
       pay_min: paid && payMin > 0 ? payMin : null,
       pay_max: paid && payMin > 0 && payMax > 0 && payMax !== payMin ? payMax : null,
       italian_level: v.italian,
@@ -505,7 +504,7 @@ function JobForm({ company, job }) {
               </select>
               {err('payUnit')}
             </label>
-            {v.payUnit && v.payUnit !== 'unpaid_curricular' && (
+            {v.payUnit && (
               <div className="form-row pay-amounts">
                 <label className="field">
                   <span>{v.payUnit === 'hour' ? '€ an hour' : v.payUnit === 'month' ? '€ a month' : '€ for the project'}</span>
@@ -522,9 +521,6 @@ function JobForm({ company, job }) {
               </div>
             )}
             {v.payUnit === 'month' && <HourlyEquivalent min={amount(v.payMin)} max={amount(v.payMax)} hours={hours} />}
-            {v.payUnit === 'unpaid_curricular' && (
-              <p className="field-hint">Shown to students as "Curricular internship (unpaid)". Only for internships that give university credits.</p>
-            )}
             <label className="field">
               <span>Pay note <span className="field-optional">(optional)</span></span>
               <input className="input" type="text" name="pay" maxLength={200} value={v.pay} onChange={set('pay')}

@@ -18,8 +18,8 @@ export default function Employers() {
         <section className="employers-intro" aria-labelledby="employers-title">
           <h1 id="employers-title">Hire students in Milan who work in English</h1>
           <p className="lead">
-            GigoMe is a job board for international students in Milan: part-time work, gigs and internships you can do
-            in English.
+            GigoMe is a job board for international students in Milan: paid part-time jobs and gigs they can do in
+            English. We don't list internships or unpaid roles.
           </p>
           <h2>Free to list jobs</h2>
           <p>Listing jobs on GigoMe is free. Students apply directly with you, on your website or by email.</p>

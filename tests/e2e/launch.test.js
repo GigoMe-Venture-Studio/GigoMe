@@ -59,7 +59,7 @@ async function downloadJson(p, click) {
     };
     await p.goto(E + '/'); await p.waitForTimeout(500);
     let m = await meta();
-    ok(m.title === 'GigoMe: part-time work and internships in Milan, in English' && m.canonical === 'https://gigome.org/' && !m.robots, 'home: title and canonical: ' + JSON.stringify(m));
+    ok(m.title === 'GigoMe: part-time jobs and gigs in Milan, in English' && m.canonical === 'https://gigome.org/' && !m.robots, 'home: title and canonical: ' + JSON.stringify(m));
     ok(m.site.length === 1 && JSON.stringify(JSON.parse(m.site[0])) === JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'GigoMe', url: 'https://gigome.org/' }) && m.ld.length === 0,
       'home: WebSite data with the name GigoMe and https://gigome.org/: ' + JSON.stringify(m.site));
     await p.goto(E + '/jobs?area=3'); await p.waitForSelector('.job-list .role-row'); m = await meta();
@@ -73,13 +73,19 @@ async function downloadJson(p, click) {
     ok(ld.jobLocation && ld.jobLocation.address.addressLocality === 'Milano' && ld.jobLocation.geo && ld.jobLocation.geo.latitude === 45.47612 && !ld.jobLocationType, 'JobPosting: place with its point');
     await p.goto(E + '/jobs/' + ID(2)); await p.waitForSelector('.facts'); await p.waitForTimeout(300); m = await meta();
     const ld2 = JSON.parse(m.ld[0]);
-    ok(ld2.jobLocationType === 'TELECOMMUTE' && ld2.employmentType === 'INTERN' && !ld2.baseSalary, 'JobPosting: remote internship, no structured pay: ' + m.ld[0].slice(0, 300));
+    ok(ld2.jobLocationType === 'TELECOMMUTE' && ld2.employmentType === 'OTHER' && !ld2.baseSalary, 'JobPosting: remote, type other, no structured pay: ' + m.ld[0].slice(0, 300));
     await p.goto(E + '/jobs/' + ID(3)); await p.waitForSelector('.facts'); await p.waitForTimeout(300); m = await meta();
     ok(!JSON.parse(m.ld[0]).baseSalary, 'JobPosting: paid per project: no baseSalary');
     await p.goto(E + '/companies/' + NEBBIA.id); await p.waitForSelector('.company-page'); await p.waitForTimeout(300); m = await meta();
     ok(m.title === 'Nebbia Coffee Bar: jobs in Milan | GigoMe' && m.ld.length === 0, 'company page: title, no job data left over: ' + JSON.stringify(m.title));
     await p.goto(E + '/employers'); await p.waitForTimeout(300); m = await meta();
     ok(m.title === 'Hire international students in Milan | GigoMe', 'employers: title');
+    ok(m.desc.startsWith('Post paid part-time jobs and gigs') && (await p.innerText('.employers-intro .lead')).includes("We don't list internships or unpaid roles."), 'employers: paid part-time jobs and gigs only, said up front');
+    for (const path of ['/', '/jobs']) {
+      await p.goto(E + path); await p.waitForTimeout(400); m = await meta();
+      const words = (await p.innerText('body')) + ' ' + m.title + ' ' + m.desc;
+      ok(!/intern(ship)?s?\b|unpaid/i.test(words) && /part-time jobs and gigs/i.test(words), path + ': no internships anywhere, "part-time jobs and gigs" instead: ' + m.desc);
+    }
     await p.goto(E + '/saved'); await p.waitForTimeout(300); m = await meta();
     ok(m.robots === 'noindex' && !m.canonical, 'private pages: noindex: ' + JSON.stringify(m));
     await p.goto(E + '/nothing-here'); await p.waitForTimeout(300); m = await meta();

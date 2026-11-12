@@ -273,7 +273,7 @@ function JobSummary({ job }) {
         {c.name || 'Unknown company'} (company {c.status || 'unknown'}) · created {when(job.created_at)}
       </p>
       <dl className="dash-facts admin-job-facts">
-        <div><dt>Type</dt><dd>{JOB_TYPE_LABEL[job.job_type]}{job.category ? `, ${CATEGORY_LABEL[job.category]}` : ''}</dd></div>
+        <div><dt>Type</dt><dd>{JOB_TYPE_LABEL[job.job_type] || job.job_type}{job.category ? `, ${CATEGORY_LABEL[job.category]}` : ''}</dd></div>
         <div><dt>Hours</dt><dd className="tnum">{job.hours_per_week} h/week{job.hours_per_week > 20 ? ' (over 20)' : ''}</dd></div>
         <div><dt>Pay</dt><dd>{job.pay_unit ? payLabel(job) : <span className="muted">Not structured{job.pay ? `: "${job.pay}"` : ''}</span>}{payNote(job) ? ` · ${payNote(job)}` : ''}</dd></div>
         <div><dt>Where</dt><dd>{placeLabel(job)}</dd></div>

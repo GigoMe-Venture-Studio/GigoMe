@@ -110,7 +110,7 @@ async function ctxWith(b, opts = {}, mopts = {}, dev = desk) {
     ok((await txt(p, 'button.follow-btn')) === 'Following', 'still following after reload');
     await p.goto(E + '/saved'); await p.waitForSelector('#following .saved-row'); await p.waitForTimeout(500);
     const f = await txt(p, '#following');
-    ok(f.includes('Weekend barista') && f.includes('Event host') && f.includes('English tutor') && !f.includes('Finance intern'), 'New from companies you follow: Nebbia\'s recent jobs only');
+    ok(f.includes('Weekend barista') && f.includes('Event host') && f.includes('English tutor') && !f.includes('Finance assistant'), 'New from companies you follow: Nebbia\'s recent jobs only');
     ok(log.jobs.some((s) => s.includes('company_id=in.%28' + NEBBIA.id)), 'asks for the followed companies\' jobs');
     await p.click('button[aria-label="Unfollow Nebbia Coffee Bar"]'); await p.waitForTimeout(600);
     ok(log.followReq.some((x) => x.method === 'DELETE') && (await txt(p, '#following')).includes("You don't follow any companies yet"), 'unfollow from /saved');

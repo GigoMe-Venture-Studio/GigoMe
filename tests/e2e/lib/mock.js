@@ -7,7 +7,7 @@ const NEBBIA = { id: 'c0000000-0000-4000-8000-000000000001', name: 'Nebbia Coffe
 const FINTRA = { id: 'c0000000-0000-4000-8000-000000000002', name: 'Fintra', status: 'approved', website: 'https://fintra.example/', description: null };
 const JOBS = [
   { id: ID(1), title: 'Weekend barista', job_type: 'part_time', location: 'Porta Venezia', remote: false, hours_per_week: 12, pay: '€11/h', italian_level: 'none', start_date: '2026-12-01', created_at: ago(3), description: 'Serve coffee and learn latte art.', companies: NEBBIA, area_id: 3, latitude: 45.47612, longitude: 9.20734, show_exact_location: true },
-  { id: ID(2), title: 'Finance intern', job_type: 'internship', location: 'Porta Romana', remote: true, hours_per_week: 20, pay: null, italian_level: 'basic', start_date: null, created_at: ago(6), description: 'Spreadsheets and reporting.', companies: FINTRA, area_id: 11, latitude: 45.4505, longitude: 9.196, show_exact_location: true },
+  { id: ID(2), title: 'Finance assistant', job_type: 'other', location: 'Porta Romana', remote: true, hours_per_week: 20, pay: null, italian_level: 'basic', start_date: null, created_at: ago(6), description: 'Spreadsheets and reporting.', companies: FINTRA, area_id: 11, latitude: 45.4505, longitude: 9.196, show_exact_location: true },
   { id: ID(3), title: 'Event host', job_type: 'gig', location: null, remote: false, hours_per_week: 8, pay: '€90/day', italian_level: 'fluent', start_date: null, created_at: ago(2.5), description: 'Welcome guests at a gallery opening.', companies: NEBBIA },
   { id: ID(4), title: 'Remote researcher', job_type: 'other', location: null, remote: true, hours_per_week: 40, pay: '€500', italian_level: 'none', start_date: null, created_at: ago(12), description: 'Desk research on cafés.', companies: FINTRA },
   { id: ID(5), title: 'English tutor', job_type: 'part_time', location: 'Brera', remote: false, hours_per_week: 6, pay: '€15/h', italian_level: 'none', start_date: null, created_at: ago(4.5), description: 'Conversation classes.', companies: NEBBIA, area_id: 2, latitude: 45.4721, longitude: 9.1871, show_exact_location: true },
@@ -23,7 +23,7 @@ const AREAS = [
 ];
 const EXTRA = {
   'Weekend barista': { category: 'hospitality', published_at: ago(0.5), nearest_station_m: 201, metro_stations: { name: 'Porta Venezia', lines: ['M1'], latitude: 45.474419, longitude: 9.205046 } },
-  'Finance intern': { category: 'office_admin', published_at: ago(5), nearest_station_m: 1400, metro_stations: { name: 'Lodi T.I.B.B.', lines: ['M3'], latitude: 45.446763, longitude: 9.210816 } },
+  'Finance assistant': { category: 'office_admin', published_at: ago(5), nearest_station_m: 1400, metro_stations: { name: 'Lodi T.I.B.B.', lines: ['M3'], latitude: 45.446763, longitude: 9.210816 } },
   'Event host': { category: 'events', published_at: ago(2) },
   'Remote researcher': { category: 'other', published_at: ago(10) },
   'English tutor': { category: 'tutoring_education', published_at: ago(4), nearest_station_m: 350, metro_stations: { name: 'Lanza', lines: ['M2'], latitude: 45.472229, longitude: 9.182548 } },
@@ -31,7 +31,7 @@ const EXTRA = {
 };
 const WHEN = {
   'Weekend barista': [['weekends'], ['en', 'it']],
-  'Finance intern': [['weekday_afternoons', 'weekday_mornings'], ['en']],
+  'Finance assistant': [['weekday_afternoons', 'weekday_mornings'], ['en']],
   'Event host': [['weekday_evenings'], []],
   'Remote researcher': [['flexible'], ['en', 'es']],
   'English tutor': [['weekday_evenings', 'weekends'], ['en']]
@@ -43,7 +43,7 @@ const PAY = {
   'Remote researcher': ['month', 500, null, null],
   'English tutor': ['hour', 15, 18, null],
   'Social media helper': ['project', 300, null, null]
-  // 'Finance intern': from before structured pay (none)
+  // 'Finance assistant': from before structured pay (none)
 };
 const hourly = (j) => (j.pay_unit === 'hour' ? j.pay_min : j.pay_unit === 'month' ? Math.round((j.pay_min / (j.hours_per_week * 52 / 12)) * 100) / 100 : null);
 for (const j of JOBS) { const pp = PAY[j.title]; if (pp) Object.assign(j, { pay_unit: pp[0], pay_min: pp[1], pay_max: pp[2], pay: pp[3] }); else Object.assign(j, { pay_unit: null, pay_min: null, pay_max: null }); j.pay_hourly = hourly(j); }
