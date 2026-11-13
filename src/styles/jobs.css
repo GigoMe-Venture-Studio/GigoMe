@@ -227,6 +227,13 @@ a.save-btn { text-decoration: none; } /* logged out: a link to log in */
 .jobs-map.show-pay .job-marker-pay { display: inline; white-space: nowrap; }
 .job-marker:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 12px; }
 .job-marker:hover .job-marker-dot { border-color: var(--ink); }
+/* Example listings: a graphite pill that always says "Example" (the badge's
+   colours), drawn under real jobs' markers (JobsMap). */
+.job-marker-example,
+.jobs-map.show-pay .job-marker-example { padding: 2px 8px 2px 2px; background: var(--graphite); color: var(--white); border-radius: 12px; box-shadow: var(--float); }
+.job-marker-example .job-marker-dot { width: 14px; height: 14px; background: var(--white); border: 3px solid var(--graphite); }
+.job-marker-ex { white-space: nowrap; }
+.job-marker-example:hover .job-marker-dot { border-color: var(--white); }
 
 /* "You are here": only drawn on this device. */
 .you-dot { width: 18px; height: 18px; border-radius: 50%; background: #2F6FED; border: 3px solid var(--white); box-shadow: 0 0 0 6px rgba(47,111,237,.2); }

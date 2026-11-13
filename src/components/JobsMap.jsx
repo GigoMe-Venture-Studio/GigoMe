@@ -18,7 +18,14 @@ import { mapParam } from '../lib/geo.js';
 // fitting the jobs, autoFit (fit again when the jobs change), onViewChange
 // (called after every move with the centre, zoom, bounds and whether the
 // person moved the map), you ([lng, lat] of "You are here", kept only in
-// memory) and children (controls drawn over the map).
+// memory) and children (controls drawn over the map). cooperative (the home
+// page): one finger scrolls the page, two fingers (or Ctrl + scroll) move
+// the map. fitPadding: room around the jobs when fitting them (a smaller
+// map needs more on the right, where the buttons are, and at the bottom,
+// where the credits are).
+//
+// Example listings get a graphite marker that always says "Example", drawn
+// under real jobs' markers, and their cards carry the example badge.
 const ACCENT = '#A46BD6'; // --accent in site.css (the logo's purple)
 const INK = '#1D1B2E';
 const PAY_ZOOM = 13;
@@ -76,7 +83,7 @@ function cardFor(job, onOpenJob) {
 
 const isPhone = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
 
-export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', view = null, autoFit = true, onViewChange, you = null, children }) {
+export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', view = null, autoFit = true, onViewChange, you = null, cooperative = false, fitPadding = 48, errorNote = "The map can't be shown right now. The list has every job.", children }) {
   const box = useRef(null);
   const map = useRef(null);
   const popup = useRef(null);
@@ -87,12 +94,12 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
   const quiet = useRef(false);
   const fitQuietly = (m, list) => {
     quiet.current = true;
-    fit(m, list);
+    fit(m, list, latest.current.fitPadding);
     quiet.current = false;
   };
   const byId = useRef(new Map());
   const latest = useRef({});
-  latest.current = { jobs, onOpenJob, onViewChange, autoFit };
+  latest.current = { jobs, onOpenJob, onViewChange, autoFit, fitPadding };
   const [state, setState] = useState('loading');
   const [sheet, setSheet] = useState(null); // job ids shown in the phone card
 
@@ -100,7 +107,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
   useEffect(() => {
     let m;
     try {
-      m = createMap(box.current, view ? { center: view.center, zoom: view.zoom } : {});
+      m = createMap(box.current, { ...(view ? { center: view.center, zoom: view.zoom } : {}), ...(cooperative ? { cooperativeGestures: true } : {}) });
     } catch {
       setState('error');
       return undefined;
@@ -142,15 +149,22 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
         if (markers.current.has(id)) continue;
         const job = byId.current.get(id);
         if (!job) continue;
+        const example = isExample(job);
         const el = document.createElement('button');
         el.type = 'button';
-        el.className = 'job-marker';
+        el.className = example ? 'job-marker job-marker-example' : 'job-marker';
         el.dataset.id = id;
         const pay = markerPay(job);
-        el.setAttribute('aria-label', `${job.title}${job.companies ? `, ${job.companies.name}` : ''}${pay ? `, ${payLabel(job)}` : ''}`);
+        el.setAttribute('aria-label', `${example ? `${EXAMPLE_JOB_LABEL}: ` : ''}${job.title}${job.companies ? `, ${job.companies.name}` : ''}${pay ? `, ${payLabel(job)}` : ''}`);
         const dot = document.createElement('span');
         dot.className = 'job-marker-dot';
         el.append(dot);
+        if (example) {
+          const t = document.createElement('span');
+          t.className = 'job-marker-ex';
+          t.textContent = 'Example';
+          el.append(t);
+        }
         if (pay) {
           const t = document.createElement('span');
           t.className = 'job-marker-pay';
@@ -162,6 +176,12 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
           open([id], [job.longitude, job.latitude]);
         });
         markers.current.set(id, new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([job.longitude, job.latitude]).addTo(m));
+        // Markers are drawn in the order they sit in the page: an example's
+        // goes before every other marker, so it never covers a real job.
+        if (example) {
+          const first = el.parentNode && el.parentNode.querySelector('.maplibregl-marker');
+          if (first && first !== el) el.parentNode.insertBefore(el, first);
+        }
       }
       for (const [id, mk] of markers.current) {
         if (!seen.has(id)) {
@@ -291,7 +311,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
       <div ref={box} className="jobs-map" role="region" aria-label={label} data-state={state} data-points={count} />
       {children}
       {state === 'error' && (
-        <p className="jobs-map-note" role="alert">The map can't be shown right now. The list has every job.</p>
+        <p className="jobs-map-note" role="alert">{errorNote}</p>
       )}
       {state === 'ready' && count === 0 && (
         <p className="jobs-map-note">None of these jobs has a place on the map.</p>
@@ -316,7 +336,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
   );
 }
 
-function fit(m, jobs) {
+function fit(m, jobs, padding = 48) {
   const pts = mappableJobs(jobs).map((j) => [j.longitude, j.latitude]);
   if (!pts.length) return;
   if (pts.length === 1) {
@@ -325,5 +345,5 @@ function fit(m, jobs) {
   }
   const b = new maplibregl.LngLatBounds(pts[0], pts[0]);
   for (const p of pts) b.extend(p);
-  m.fitBounds(b, { padding: 48, maxZoom: 15, duration: 0 });
+  m.fitBounds(b, { padding, maxZoom: 15, duration: 0 });
 }
