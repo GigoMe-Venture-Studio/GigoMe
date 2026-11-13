@@ -184,7 +184,7 @@ function NewestJobs({ onShown }) {
   );
 }
 
-// "Jobs on the map", under "Newest jobs". Nothing for it (the jobs it shows,
+// "Map of current jobs", under "Newest jobs". Nothing for it (the jobs it shows,
 // the map code, tiles, the metro file) is downloaded until it is within 300px
 // of the screen, as on job pages, so a visitor who never scrolls down gets
 // nothing extra. One finger scrolls the page over it; two fingers move it.
@@ -246,7 +246,7 @@ function HomeMap() {
   if (status === 'error') {
     body = failed;
   } else if (status === 'ready' && !jobs.length) {
-    body = <p className="home-map-note">No job has an exact address on the map right now. <Link to="/jobs">See all jobs</Link>.</p>;
+    body = <p className="home-map-note">No current job has an exact address to pin. <Link to="/jobs">See all jobs</Link>.</p>;
   } else if (status === 'ready') {
     body = (
       <SectionErrorBoundary fallback={failed}>
@@ -268,7 +268,7 @@ function HomeMap() {
 
   return (
     <section className="wrap home-map" aria-labelledby="map-title">
-      <h2 className="section-title" id="map-title">Jobs on the map</h2>
+      <h2 className="section-title" id="map-title">Map of current jobs</h2>
       <p className="muted home-map-lead">
         Jobs with an exact address. Jobs that show only their area, and remote jobs, are in the <Link to="/jobs">job list</Link>.
       </p>

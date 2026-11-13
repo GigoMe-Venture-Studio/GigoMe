@@ -1,4 +1,4 @@
-// The home page's map ("Jobs on the map", under "Newest jobs"):
+// The home page's map ("Map of current jobs", under "Newest jobs"):
 //   * lazy: nothing for it (its jobs, map code, tiles, metro file) is
 //     downloaded until the visitor scrolls near it, or it is on the screen;
 //     the first screen on phones is unchanged and the Feedback button shows;
@@ -47,6 +47,7 @@ const scrollMapTo = (p, below) => p.evaluate((d) => { const t = document.querySe
     await p.goto(E + '/'); await p.waitForSelector('.home-newest .job-list'); await p.waitForTimeout(1500);
     ok(mapReqs(reqs).length === 0, `${name}: first load, no scrolling: nothing for the map downloaded: ${mapReqs(reqs).join(' ')}`);
     ok(await p.locator('.home-map').count() === 1 && await p.locator('.home-map .jobs-map[data-state]').count() === 0, `${name}: the map's place is there, the map isn't`);
+    ok((await p.innerText('#map-title')) === 'Map of current jobs', `${name}: headed "Map of current jobs"`);
     const below = await p.$eval('.home-map', (e) => e.getBoundingClientRect().top >= innerHeight);
     if (dev.isMobile || name === 'iPhone 13') ok(below, `${name}: the map section starts below the first screen`);
     ok(await p.locator('.feedback-fab').isVisible() && !(await p.locator('.feedback-fab').getAttribute('data-away')), `${name}: Feedback button fully shown at first load`);

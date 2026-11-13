@@ -311,7 +311,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   "Search jobs" on a phone: keep that working when adding pages.
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
   that opens `/jobs` with those filters), the 5 newest live jobs (cards
-  without Save buttons), "Jobs on the map" (`HomeMap`), "How it works".
+  without Save buttons), "Map of current jobs" (`HomeMap`), "How it works".
   The map section only appears once the newest jobs are shown (none: no
   map), and nothing for it (its jobs from `fetchMapJobs()`, `JobsMap`,
   MapLibre, tiles, the metro file) is downloaded until it is on the screen,
