@@ -96,6 +96,8 @@ function apply(url, rows) {
   f('schedule', (v, r) => ov(v, r.schedule)); f('languages', (v, r) => ov(v, r.languages));
   f('pay_hourly', (v, r) => { if (v === 'is.null') return r.pay_hourly == null; if (!v.startsWith('gte.')) throw new Error('unexpected pay filter: ' + v); return r.pay_hourly != null && r.pay_hourly >= Number(v.slice(4)); });
   f('pay_unit', (v, r) => r.pay_unit === v.slice(3));
+  f('show_exact_location', (v, r) => String(Boolean(r.show_exact_location)) === v.slice(3));
+  for (const col of ['latitude', 'longitude']) f(col, (v, r) => { if (v !== 'not.is.null') throw new Error('unexpected ' + col + ' filter: ' + v); return r[col] != null; });
   for (const v of p.getAll('or')) {
     const pm = v.match(/^\(pay_hourly\.gte\.(\d+),pay_hourly\.is\.null\)$/);
     if (pm) { out = out.filter((r) => r.pay_hourly == null || r.pay_hourly >= Number(pm[1])); continue; }

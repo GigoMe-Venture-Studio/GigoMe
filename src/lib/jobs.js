@@ -184,6 +184,29 @@ export async function fetchJobs(filters, { limit = 200, timeoutMs = JOBS_TIMEOUT
   return data || [];
 }
 
+// Jobs that may get a pin: on site, with an exact location. An area-only job
+// carries its area's centre as its point (the database puts it there), so it
+// is never pinned as if that were its address.
+export const exactlyPlaced = (jobs) =>
+  jobs.filter((j) => !j.remote && j.show_exact_location && j.latitude != null && j.longitude != null);
+
+// The home page's map: live jobs with an exact location, real listings first,
+// newest first. Asked only once the map is about to scroll into view.
+export async function fetchMapJobs({ limit = 200, timeoutMs = JOBS_TIMEOUT_MS } = {}) {
+  const { data, error } = await liveJobs(LIST_COLUMNS + ', companies!inner(name, status, is_example)')
+    .eq('remote', false)
+    .eq('show_exact_location', true)
+    .not('latitude', 'is', null)
+    .not('longitude', 'is', null)
+    .abortSignal(timeoutSignal(timeoutMs))
+    .order('is_example', { ascending: true })
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return exactlyPlaced(data || []);
+}
+
 // What a minimum pay hides whatever the amount: live jobs matching the other
 // filters that have no hourly equivalent. { total, project, unspecified }
 // (only each job's pay unit is read).

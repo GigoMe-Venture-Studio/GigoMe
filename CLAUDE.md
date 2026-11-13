@@ -93,7 +93,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   one or the other); the map shows exactly the list's jobs, minus remote jobs
   and jobs without coordinates, clustered with counts when zoomed out; single
   jobs are button markers that show `shortPay()` from zoom 13 and open a
-  popup (desktop) or a bottom card (phones, `.map-sheet`). The map position
+  popup (desktop) or a bottom card (phones, `.map-sheet`); an example
+  listing's marker is a graphite pill saying "Example", placed before the
+  other markers so real ones are drawn over it. The map position
   is in the URL (`?map=zoom/lat/lng`), and filters don't move a map the
   person chose. Desktop: "Search as I move the map" (on by default) limits
   the list to the visible area; phones: "Search this area" after moving it.
@@ -309,7 +311,18 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   "Search jobs" on a phone: keep that working when adding pages.
 - `src/pages/Home.jsx`: hero (headline, keyword + "No Italian needed" search
   that opens `/jobs` with those filters), the 5 newest live jobs (cards
-  without Save buttons), "How it works". Show only real data: no sample
+  without Save buttons), "Jobs on the map" (`HomeMap`), "How it works".
+  The map section only appears once the newest jobs are shown (none: no
+  map), and nothing for it (its jobs from `fetchMapJobs()`, `JobsMap`,
+  MapLibre, tiles, the metro file) is downloaded until it is on the screen,
+  or, after the visitor's first scroll, within 300px of it: a visitor who
+  never scrolls downloads nothing extra, and the first screen on phones is
+  unchanged. `JobsMap` with `cooperative` (one finger scrolls the page, two
+  move the map) and its own `fitPadding` (clear of the buttons and
+  credits). Pins: live on-site jobs with an exact location only
+  (`exactlyPlaced()`: an area-only job's point is its area's centre, never
+  pinned). A failure (tiles, its jobs, its code: `SectionErrorBoundary`)
+  shows a note in the map's place only. Checked in `home-map.test.js`. Show only real data: no sample
   listings, ratings, numbers or features that don't exist (the example
   listings from the database are the one exception: badged, never indexed,
   removed before launch). The Feedback

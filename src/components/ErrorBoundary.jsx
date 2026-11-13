@@ -32,6 +32,13 @@ class Boundary extends Component {
   }
 }
 
+// Around one part of a page (the home page's map): if it fails (its code
+// can't be downloaded, MapLibre throws), only that part shows the fallback
+// and the rest of the page keeps working.
+export function SectionErrorBoundary({ fallback, children }) {
+  return <Boundary fallback={fallback}>{children}</Boundary>;
+}
+
 // Around the pages: going anywhere (even the same page with other filters)
 // tries again.
 export function PageErrorBoundary({ children }) {
