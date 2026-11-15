@@ -16,6 +16,8 @@ import {
   MAX_HOURS_OPTIONS,
   MAX_MIN_PAY,
   SCHEDULES,
+  SCHEDULE_HOURS,
+  SCHEDULE_HOURS_LINE,
   cleanKeyword,
   fetchHiddenByPay,
   fetchJobs,
@@ -321,10 +323,11 @@ function JobBoard() {
         <MinPay value={filters.minpay} onChange={(v) => setFilter('minpay', v)} />
         <fieldset className="chip-filter">
           <legend>When <span className="chip-filter-note">flexible jobs always match</span></legend>
+          <p className="chip-filter-hint" id="when-hint">{SCHEDULE_HOURS_LINE}</p>
           <div className="chips">
             {SCHEDULES.filter(([v]) => v !== 'flexible').map(([value, label]) => (
               <button key={value} type="button" className="chip" aria-pressed={filters.when.includes(value)} onClick={() => toggleIn('when', value)}>
-                {label}
+                {label}<span className="sr-only">, {SCHEDULE_HOURS[value]}</span>
               </button>
             ))}
           </div>

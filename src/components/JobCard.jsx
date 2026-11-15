@@ -13,7 +13,7 @@ import {
   placeLabel,
   postedAt,
   postedLabel,
-  scheduleLabels
+  scheduleItems
 } from '../lib/jobs.js';
 
 // One job in a list (/jobs, "Newest jobs" on the home page, company pages,
@@ -24,7 +24,7 @@ import {
 // An example listing (made up for testers) says so first, before the title.
 export default function JobCard({ job, distance = null, save = true }) {
   const metro = metroLabel(job);
-  const when = scheduleLabels(job);
+  const when = scheduleItems(job);
   const example = isExample(job);
   return (
     <li className="job-card">
@@ -38,7 +38,7 @@ export default function JobCard({ job, distance = null, save = true }) {
             <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>
               {ITALIAN_LABEL[job.italian_level]}
             </span>
-            {when.map((w) => <span key={w} className="tag tag-when">{w}</span>)}
+            {when.map((w) => <span key={w.value} className="tag tag-when">{w.label}<span className="sr-only">, {w.hours}</span></span>)}
           </div>
           <div className="role-meta">
             {JOB_TYPE_LABEL[job.job_type] && <span>{JOB_TYPE_LABEL[job.job_type]}</span>}

@@ -64,9 +64,12 @@ What exists today:
 - Student profiles visible to employers.
 - Applying through GigoMe.
 - Employer ratings or reviews.
+- A personal work calendar, or tracking which jobs a student takes.
 
 The first two would bring GigoMe under Italian job-intermediation rules, and
-reviews need moderation we can't provide. Anyone who wants to add one of these
+reviews need moderation we can't provide. A work calendar would mean tracking
+what happens after a student applies, which GigoMe doesn't do: for privacy,
+and because of the same no-intermediation design. Anyone who wants to add one of these
 should check with the team's legal person first.
 
 ## Goal

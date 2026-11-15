@@ -1,6 +1,7 @@
 // The job board: reading live jobs and revealing how to apply.
 import { safeHttpUrl } from './links.js';
 import { supabase } from './supabase.js';
+import { SCHEDULES } from './schedules.js';
 
 // Values allowed by the database (jobs.job_type, jobs.italian_level).
 // GigoMe lists only paid part-time jobs and gigs: no internships (the
@@ -25,16 +26,8 @@ export const CATEGORIES = [
   ['other', 'Other']
 ];
 export const CATEGORY_LABEL = Object.fromEntries(CATEGORIES);
-// Values allowed by jobs.schedule (when the job happens). A "flexible" job
-// matches any "When" filter.
-export const SCHEDULES = [
-  ['weekday_mornings', 'Weekday mornings'],
-  ['weekday_afternoons', 'Weekday afternoons'],
-  ['weekday_evenings', 'Weekday evenings'],
-  ['weekends', 'Weekends'],
-  ['flexible', 'Flexible']
-];
-export const SCHEDULE_LABEL = Object.fromEntries(SCHEDULES);
+// When a job happens (jobs.schedule) and what each value means: src/lib/schedules.js.
+export { SCHEDULES, SCHEDULE_LABEL, SCHEDULE_HOURS, SCHEDULE_HOURS_LINE, scheduleLabels, scheduleItems } from './schedules.js';
 // Values allowed by jobs.languages (languages used at work; optional).
 export const LANGUAGES = [
   ['en', 'English'],
@@ -56,7 +49,6 @@ export const PAY_UNITS = [
 export const PAY_UNIT_LABEL = Object.fromEntries(PAY_UNITS);
 export const MAX_MIN_PAY = 30; // the "Minimum pay" slider goes from €0 to €30 an hour
 // In the order of the list, so labels always read the same way.
-export const scheduleLabels = (job) => SCHEDULES.filter(([v]) => (job.schedule || []).includes(v)).map(([, l]) => l);
 export const languageLabels = (job) => LANGUAGES.filter(([v]) => (job.languages || []).includes(v)).map(([, l]) => l);
 
 // Columns every job list and page reads (jobs have column-level grants: list

@@ -16,6 +16,8 @@
 .chip-filter { grid-column: 1 / -1; margin: 0; padding: 0; border: 0; min-width: 0; }
 .chip-filter legend { padding: 0; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
 .chip-filter-note { font-weight: 400; color: var(--muted); font-size: 13px; margin-left: var(--s1); }
+/* What the "When" chips mean (src/lib/schedules.js): visible, since phones have no hover. */
+.chip-filter-hint { margin: -2px 0 var(--s2); font-size: 13px; color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
 .chip {
   height: 36px; padding: 0 var(--s3); border: 1px solid var(--control); border-radius: 18px;
@@ -122,6 +124,11 @@
 .role-metro { margin-top: 6px; }
 /* When the job happens: plain outlined tags (gold is for "New"). */
 .tag-when { background: var(--white); border: 1px solid var(--line); font-weight: 500; }
+/* On job pages each "When" tag also says its hours ("Weekday mornings
+   Mon to Fri, before 12:00"); it may wrap rather than be cut off on narrow
+   phones. */
+.tag-when-hours { height: auto; min-height: 22px; padding-top: 2px; padding-bottom: 2px; white-space: normal; flex-wrap: wrap; column-gap: 6px; max-width: 100%; }
+.tag-when-def { font-weight: 400; color: var(--muted); }
 .metro-badge { display: inline-flex; align-items: center; gap: var(--s1); padding: 2px var(--s2); border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 13px; color: var(--ink); background: var(--white); white-space: nowrap; }
 .detail-metro { margin-left: var(--s2); }
 
