@@ -116,7 +116,7 @@ async function mock(ctx, opts = {}) {
     const d = await txt(p, 'main');
     ok(['Weekend barista', 'Nebbia Coffee Bar', 'Part-time', 'No Italian needed', '€11/h', '12 h/week', 'Porta Venezia', '1 December 2026', 'Serve coffee.', 'Specialty coffee bar.'].every((w) => d.includes(w)), 'job page: everything from the card plus start date, description, company');
     ok((await p.getAttribute('a[href^="https://nebbia"]', 'href')) === 'https://nebbia-example.it' && (await txt(p, 'a[href^="https://nebbia"]')) === 'nebbia-example.it', 'company website gets https:// and opens');
-    ok(await p.evaluate(() => getComputedStyle(document.querySelector('.job-text')).whiteSpace) === 'pre-line', 'line breaks in descriptions are kept');
+    ok(await p.locator('.detail .prose-role .desc p').count() >= 1, 'the description is shown as paragraphs (info-pages.test.js checks headings, lists and line breaks)');
     ok((await p.getAttribute('.site-header .main-nav a:first-child', 'aria-current')) === 'page', 'Jobs marked current on a job page');
     await p.screenshot({ path: SHOTS + 'job-desk-out.png', fullPage: true });
     await ctx.close(); }

@@ -16,6 +16,8 @@ export default function SiteFooter() {
         </div>
         <nav aria-label="Footer">
           {!session && !loading && <Link to="/employers">For employers</Link>}
+          <Link to="/how-it-works">How it works</Link>
+          <Link to="/safety">Staying safe</Link>
           <Link to="/privacy">Privacy notice</Link>
           <Link to="/terms">Terms</Link>
           <button type="button" className="footer-link-btn" onClick={openFeedback}>Give feedback</button>

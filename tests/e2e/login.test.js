@@ -55,7 +55,7 @@ async function mockSupabase(ctx, opts = {}) {
     await p.goto(NOENV + '/login'); await p.waitForTimeout(300);
     ok((await txt(p, 'main')).includes("Logging in isn't available right now") && (await txt(p, 'main')).includes('VITE_SUPABASE_URL'), 'missing variables: /login shows a clear message, not a blank page');
     await p.goto(NOENV + '/'); await p.waitForTimeout(400);
-    ok(await p.isVisible('.hero') && (await txt(p, '.site-header')).includes('Log in'), 'missing variables: the home page and header still work');
+    ok(await p.isVisible('.hero') && (await txt(p, '.site-header')).includes('Student login'), 'missing variables: the home page and header still work');
     await p.goto(NOENV + '/welcome'); await p.waitForTimeout(200);
     ok((await txt(p, 'main')).includes("isn't available"), 'missing variables: /welcome shows the same message');
     await ctx.close(); }
@@ -64,15 +64,15 @@ async function mockSupabase(ctx, opts = {}) {
   { const { ctx, p } = await newPage({ viewport: { width: 1280, height: 900 } });
     await p.goto(ENV + '/'); await p.waitForTimeout(400);
     const hrefs = await p.$$eval('.site-header .header-actions a', as => as.map(a => a.textContent + '->' + a.getAttribute('href')));
-    ok(hrefs.join(',') === 'Log in->/login', 'desktop header: ' + hrefs.join(', '));
-    await p.click('.site-header >> text=Log in'); await p.waitForTimeout(400);
-    ok(new URL(p.url()).pathname === '/login' && (await txt(p, 'h1')) === 'Log in or sign up', 'header Log in opens /login');
+    ok(hrefs.join(',') === 'Student login->/login', 'desktop header: ' + hrefs.join(', '));
+    await p.click('.site-header >> text=Student login'); await p.waitForTimeout(400);
+    ok(new URL(p.url()).pathname === '/login' && (await txt(p, 'h1')) === 'Log in or sign up', 'header Student login opens /login');
     await ctx.close(); }
   { const { ctx, p } = await newPage();
     await p.goto(ENV + '/'); await p.waitForTimeout(400); await p.click('#menu-btn');
     ok((await p.$$eval('#menu-panel a, #menu-panel button', els => els.map(e => e.textContent.trim()).join(', '))) === 'Jobs, For employers', 'phone menu when logged out: Jobs, For employers');
-    await p.click('#menu-btn'); await p.click('.site-header >> text=Log in'); await p.waitForTimeout(400);
-    ok(new URL(p.url()).pathname === '/login', 'phone: Log in button opens /login');
+    await p.click('#menu-btn'); await p.click('.site-header >> text=Student login'); await p.waitForTimeout(400);
+    ok(new URL(p.url()).pathname === '/login', 'phone: Student login button opens /login');
     await ctx.close(); }
 
   // 3. Email step
@@ -135,13 +135,13 @@ async function mockSupabase(ctx, opts = {}) {
   ok(new URL(p.url()).pathname === '/welcome' && (await txt(p, 'h1')) === "You're all set, Ana." && (await txt(p, 'main')).includes("You're logged in as name.surname@studbocconi.it."), 'then the confirmation (signup.test.js checks it in full)');
   await p.click('.signup-done >> text=Browse jobs'); await p.waitForTimeout(500);
   ok(new URL(p.url()).pathname === '/jobs', 'Browse jobs opens the list');
-  ok((await txt(p, '.header-user')) === 'Ana Rossi' && !(await txt(p, '.site-header')).includes('Log in'), 'header shows the saved name: ' + await txt(p, '.header-user'));
+  ok((await txt(p, '.header-user')) === 'Ana Rossi' && !(await txt(p, '.site-header')).includes('Student login'), 'header shows the saved name: ' + await txt(p, '.header-user'));
   await p.goto(ENV + '/login'); await p.waitForTimeout(300);
   ok((await txt(p, 'h1')) === "You're logged in", '/login while logged in offers "Go to GigoMe" and "Log out"');
   await p.goto(ENV + '/'); await p.waitForTimeout(400);
   await p.click('#menu-btn'); ok((await p.$$eval('#menu-panel a, #menu-panel button', els => els.map(e => e.textContent.trim()).join(', '))) === 'Jobs, Saved jobs, Ana Rossi, Log out', 'phone menu when logged in: Jobs, Saved jobs, name, Log out');
   await p.click('#menu-panel >> text=Log out'); await p.waitForTimeout(400);
-  ok(log.logout.length === 1 && log.logout[0].includes('scope=local') && (await txt(p, '.site-header')).includes('Log in') && await p.locator('.header-user').count() === 0, 'log out from the phone menu: this device only, header back to Log in');
+  ok(log.logout.length === 1 && log.logout[0].includes('scope=local') && (await txt(p, '.site-header')).includes('Student login') && await p.locator('.header-user').count() === 0, 'log out from the phone menu: this device only, header back to Student login');
   await p.goto(ENV + '/welcome'); await p.waitForTimeout(300);
   ok(new URL(p.url()).pathname === '/login', '/welcome when logged out redirects to /login');
   await ctx.close();

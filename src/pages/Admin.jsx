@@ -1,3 +1,4 @@
+import JobText from '../components/JobText.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
@@ -286,7 +287,7 @@ function JobSummary({ job }) {
       </dl>
       <div className="admin-description">
         <p className="review-note-label">Description</p>
-        <p className="job-text">{job.description || <span className="muted">None</span>}</p>
+        {job.description ? <JobText text={job.description} /> : <p className="muted">None</p>}
       </div>
     </>
   );

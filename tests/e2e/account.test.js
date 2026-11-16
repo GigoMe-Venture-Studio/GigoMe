@@ -99,7 +99,7 @@ const hasSession = (p) => p.evaluate(() => Object.keys(localStorage).some((k) =>
     ok(log.deleted === 1 && log.deleteMethod === 'POST', 'delete_my_account called once');
     ok(new URL(p.url()).pathname === '/', 'back on the home page: ' + p.url());
     ok((await p.innerText('main')).includes('Your account has been deleted.'), 'notice on home');
-    ok(await p.locator('.site-header a:has-text("Log in")').count() === 1, 'header shows Log in');
+    ok(await p.locator('.site-header a:has-text("Student login")').count() === 1, 'header shows Student login');
     ok(!(await hasSession(p)), 'session removed from the browser (even though the server refused the logout)');
     await p.screenshot({ path: OUT + '/desk-deleted.png' });
     await p.reload(); await p.waitForTimeout(500);

@@ -223,6 +223,14 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
       </p>
       {/* The universities are named only when an address is refused (below),
           and this line is always on the student login (CLAUDE.md). */}
+      {/* Which login is which: the other one, in one line. */}
+      <p className="auth-small login-switch">
+        {employer ? (
+          <>Looking for work? <Link to="/login">Student login</Link></>
+        ) : (
+          <>Hiring? <Link to="/employers">Use the employer login</Link></>
+        )}
+      </p>
       {!employer && (
         <p className="auth-small login-disclaimer">
           GigoMe is an independent student project, not affiliated with or endorsed by any university.

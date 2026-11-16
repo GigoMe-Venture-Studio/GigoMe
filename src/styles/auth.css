@@ -30,6 +30,7 @@
 .auth-notice { color: var(--ink); }
 /* Student login: GigoMe's independence, and which universities can log in when an address is refused. */
 .login-disclaimer { margin-top: var(--s3); }
+.login-switch { margin-top: var(--s2); }
 .uni-list { margin-top: var(--s2); padding-left: 1.25em; }
 .auth-notice > .uni-list + p { margin-top: var(--s2); }
 .uni-list li + li { margin-top: var(--s1); }

@@ -17,6 +17,8 @@ const PAGES = [
   ['/jobs', 'Jobs in Milan in English', 'Part-time jobs and gigs in Milan you can do in English. Filter by area, schedule, pay and how much Italian is needed.', true],
   ['/employers', 'Hire international students in Milan', 'Post paid part-time jobs and gigs for international students in Milan who work in English. Free, reviewed by the GigoMe team.', true],
   ['/privacy', 'Privacy Notice', 'How GigoMe handles personal data: who is responsible, what is collected and why, who can see it, how long it is kept, and your rights.', true],
+  ['/how-it-works', 'How GigoMe works', 'How GigoMe works for students and employers: finding jobs, applying directly with employers, company and job review, and what GigoMe sees.', true],
+  ['/safety', 'Staying safe', 'What GigoMe checks and what it can\'t, tips for meeting an employer, and what to do if something is wrong.', true],
   ['/terms', 'Terms and Conditions', 'The terms for using GigoMe, for students and for employers and other advertisers.', true],
   ['/login', 'Log in', 'Log in to GigoMe with your university email.', false],
   ['/welcome', 'Welcome', DEFAULT_DESCRIPTION, false],

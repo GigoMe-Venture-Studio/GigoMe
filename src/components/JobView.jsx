@@ -1,3 +1,4 @@
+import JobText from './JobText.jsx';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import ExampleNotice from './ExampleNotice.jsx';
@@ -97,20 +98,29 @@ export default function JobView({ job, apply, preview = false }) {
         </dl>
       </div>
       <aside className="detail-apply" aria-label="How to apply">
-        <div className="apply">{apply}</div>
+        <div className="apply">
+          {apply}
+          {/* On-site jobs only, at the bottom of the box: it never pushes "Apply" down. */}
+          {!job.remote && (
+            <p className="apply-safety">
+              Meeting an employer in person?{' '}
+              {preview ? <span className="link-like">Read our safety tips.</span> : <Link to="/safety">Read our safety tips.</Link>}
+            </p>
+          )}
+        </div>
       </aside>
       <div className="detail-body">
         <div className="prose-role">
           <h2>About the job</h2>
           {job.description ? (
-            <p className="job-text">{job.description}</p>
+            <JobText text={job.description} />
           ) : (
             <p className="muted">The employer hasn't added a description yet.</p>
           )}
           <p className="muted job-posted">Posted {postedLabel(postedAt(job)).toLowerCase()}.</p>
           {job.latitude != null && job.longitude != null && <JobPlace job={job} />}
           <h2>About {company.name}</h2>
-          {company.description ? <p className="job-text">{company.description}</p> : null}
+          {company.description ? <JobText text={company.description} /> : null}
           {site ? (
             <p>
               <a href={site} target="_blank" rel="noopener noreferrer">{websiteText(company.website)}</a>
