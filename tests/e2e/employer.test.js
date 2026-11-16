@@ -65,7 +65,7 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
     const pb = post ? { ...post.body } : {}; const ta = pb.terms_accepted_at; delete pb.terms_accepted_at;
     ok(post && JSON.stringify(pb) === JSON.stringify({ name: 'Nebbia Coffee', website: 'https://nebbia.it', description: 'Specialty coffee.', contact_email: 'hiring@nebbia.it' }) && ta && !isNaN(Date.parse(ta)), 'creates the company without status, with terms accepted: ' + JSON.stringify(post && post.body));
     ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]', 'setup: the account records the Terms version too: ' + JSON.stringify(log.acceptTerms));
-    ok((await txt(p, 'main')).includes("We'll review your company, usually within 2 working days."), 'review message after setup');
+    ok((await txt(p, 'h1')) === 'Your company is submitted' && (await txt(p, 'main')).includes('Nebbia Coffee is now in review.'), 'confirmation after setup (signup.test.js checks it in full)');
     ok(db.company.status === 'pending', 'company is pending');
     await p.waitForTimeout(300);
     ok((await txt(p, '.site-header .header-user')) === 'Nebbia Coffee', 'header shows the company name: ' + await txt(p, '.site-header .header-user'));

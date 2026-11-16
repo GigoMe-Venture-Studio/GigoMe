@@ -1,7 +1,7 @@
 // node --test tests/unit
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { isPlainEmail, mailtoHref, normalizeUrl, safeHttpUrl, safeNext } from '../../src/lib/links.js';
+import { isJobPath, isPlainEmail, mailtoHref, normalizeUrl, safeHttpUrl, safeNext } from '../../src/lib/links.js';
 
 test('safeNext keeps paths on this site', () => {
   for (const ok of ['/', '/jobs/123', '/jobs?q=barista&when=weekends', '/account#delete', '/companies/abc?x=%2F%2F'])
@@ -46,4 +46,11 @@ test('emails: plain addresses only in mailto links', () => {
   assert.equal(mailtoHref('jobs@example.it', 'Application: Barista & more (via GigoMe)'),
     'mailto:jobs@example.it?subject=Application%3A%20Barista%20%26%20more%20(via%20GigoMe)');
   assert.equal(mailtoHref('jobs@example.it?bcc=x@y.it', 'x'), null);
+});
+
+test('isJobPath: a job page, not the list or another page', () => {
+  for (const yes of ['/jobs/123', '/jobs/0b7c-11', '/jobs/123#apply', '/jobs/123?x=1'])
+    assert.equal(isJobPath(yes), true, yes);
+  for (const no of ['', null, '/', '/jobs', '/jobs/', '/jobs?q=barista', '/jobs/123/edit', '/saved', '/companies/1', '/dashboard/jobs/new'])
+    assert.equal(isJobPath(no), false, String(no));
 });

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router';
+import { Navigate } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import CompanyForm from '../components/CompanyForm.jsx';
 import EmployerGate from '../components/EmployerGate.jsx';
+import { CompanySubmitted } from '../components/SignupDone.jsx';
 import { supabase } from '../lib/supabase.js';
 import { createCompany } from '../lib/employer.js';
 import { announceProfileChange } from '../lib/profile.js';
@@ -17,20 +18,10 @@ export default function EmployerSetup() {
 
 function Setup() {
   const account = useCompanyAccount();
-  const [created, setCreated] = useState(false);
+  // created: the saved company, to show the confirmation (CompanySubmitted).
+  const [created, setCreated] = useState(null);
 
-  if (created) {
-    return (
-      <div className="auth-card">
-        <h1>Thanks, your company is saved</h1>
-        <p className="lead" role="status">We'll review your company, usually within 2 working days.</p>
-        <p className="setup-next">Meanwhile you can prepare your jobs as drafts and submit them once your company is approved.</p>
-        <div className="auth-buttons">
-          <Link className="btn btn-primary" to="/dashboard">Go to your dashboard</Link>
-        </div>
-      </div>
-    );
-  }
+  if (created) return <CompanySubmitted companyName={created.name} email={created.email} />;
 
   const gate = <EmployerGate account={account} here="/employers/setup" allowNoCompany />;
   if (account.status !== 'noCompany' && account.status !== 'ready') return gate;
@@ -39,9 +30,9 @@ function Setup() {
   async function onSave(fields) {
     // The Terms box was ticked: record the version on the account first.
     await acceptTerms(account.session.user.id);
-    await createCompany(fields);
+    const company = await createCompany(fields);
     announceProfileChange();
-    setCreated(true);
+    setCreated({ name: company.name || fields.name, email: account.session.user.email });
   }
 
   return (

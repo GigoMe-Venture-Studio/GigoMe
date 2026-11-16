@@ -132,7 +132,9 @@ async function mock(ctx, opts = {}) {
     await p.fill('input[name=full_name]', 'Ana Rossi'); await p.selectOption('select[name=degree_level]', 'master'); await p.selectOption('select[name=graduation_year]', String(new Date().getFullYear() + 1));
     await p.check('input[name=accept_terms]');
     await p.click('text=Save and continue'); await p.waitForTimeout(800);
-    ok(new URL(p.url()).pathname === '/jobs/' + ID(1) && JSON.stringify(log.accept) === '[{"p_version":"2.0"}]', 'after /welcome (Terms accepted, version 2.0), back on the same job');
+    ok((await txt(p, 'h1')) === "You're all set, Ana." && JSON.stringify(log.accept) === '[{"p_version":"2.0"}]', 'after /welcome (Terms accepted, version 2.0): the confirmation');
+    await p.click('.signup-done >> text=Back to the job'); await p.waitForTimeout(800);
+    ok(new URL(p.url()).pathname === '/jobs/' + ID(1), '"Back to the job": back on the same job');
     ok(log.rpc.length === 0 && await p.locator('.apply button:has-text("Apply")').count() === 1 && await p.locator('.apply >> text=How to apply').count() === 0, 'student sees one "Apply" button; nothing counted yet');
     await p.reload(); await p.waitForTimeout(700);
     ok(log.rpc.length === 0, 'reloading the page counts nothing');

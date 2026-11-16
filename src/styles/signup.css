@@ -1,0 +1,9 @@
+/* The confirmation after signing up (src/components/SignupDone.jsx). */
+.signup-done h1:focus { outline: none; }
+.signup-done-name { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.signup-done-h2 { margin-top: var(--s5); font-size: 16px; font-weight: 700; }
+.signup-done-steps { margin: var(--s2) 0 0; padding-left: 1.25em; }
+.signup-done-steps li + li { margin-top: var(--s2); }
+.signup-done-login { margin-top: var(--s5); padding: var(--s3) var(--s4); border-radius: var(--r-sm); background: var(--paper); }
+.signup-done-login p + p { margin-top: var(--s2); color: var(--muted); }
+.signup-done-account { margin-top: var(--s5); }

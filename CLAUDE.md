@@ -232,6 +232,19 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (`src/components/ProfileFields.jsx`, `checkProfile()` in
   `src/lib/profile.js`); after saving they call `announceProfileChange()` so
   the header shows the new name.
+- Signup confirmation (`src/components/SignupDone.jsx`, `signup.css`), shown
+  once, right after signing up, from page state only (never on a later
+  login, a Terms update or a reload; no database change, no email):
+  `StudentReady` after a new student's first save on `/welcome` ("You're
+  all set, <first name>.", the email they're logged in with, how login
+  works next time, "Back to the job" when `?next=` is a job page
+  (`isJobPath()` in `links.js`: Save or Apply sent them to log in),
+  "Continue" for any other `?next=`, "Browse jobs", and "Edit or delete
+  your account"); `CompanySubmitted` after the employer setup (in review,
+  what they can do meanwhile, that the dashboard shows the status and no
+  email is sent, dashboard and draft-job buttons). It must describe the
+  review flow as it is and never promise emails or timings. Checked in
+  `signup.test.js`.
 - Terms acceptance: every account (students and companies) ticks "I'm 18 or
   older and I accept the Terms" (`TermsCheckbox.jsx`: "Terms" links to
   `/terms`, a hint links to `/privacy`, both in a new tab) on `/welcome` or on
