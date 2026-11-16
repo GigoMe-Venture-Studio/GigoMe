@@ -113,6 +113,19 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   optional pin (tap, drag, or "Find address": one Nominatim request per press
   from `src/lib/geocode.js`, bounded to Milan, never autocomplete, credited
   on the form), or "Only show the area".
+- "When" (`jobs.schedule`): values, labels and what each means are in
+  `src/lib/schedules.js` only (no imports, unit-tested; re-exported by
+  `jobs.js`): `SCHEDULE_HOURS` (weekday mornings = Mon to Fri, before 12:00;
+  afternoons 12:00 to 18:00; evenings after 18:00; weekends = Saturday and
+  Sunday, any time; flexible = hours agreed with the employer) and
+  `SCHEDULE_HOURS_LINE`. Shown as visible text wherever "When" appears,
+  never as a hover tooltip (phones have none): in the "When" heading line
+  of the /jobs filters (its own line on phones; inline from 768px so the
+  filters get no taller and the Feedback button stays clear of the first
+  job; the chips carry the hours for screen readers), the hours
+  inside each "When" tag on job pages (the tag may wrap, never cut off), on
+  each box of the job form, and for screen readers on job cards (no room:
+  the first job must fit on a 320×568 screen).
 - Badges on job cards and job pages: "New" (`isNew()`: published in the last
   3 days, gold), the category, and the metro badge (`metroLabel()`: only for
   an exact location within 1000 m of a station, at 80 m a minute walking).

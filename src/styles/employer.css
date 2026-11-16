@@ -105,6 +105,13 @@
 .form-group > * + .check-group { margin-top: var(--s4); }
 .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--s4); }
 @media (min-width: 560px) { .check-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* "When": each box says what it means (src/lib/schedules.js), under its label,
+   so one column on phones and two from 560px, to keep each definition on one line. */
+.check-grid-when { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 560px) { .check-grid-when { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.check-when { align-items: flex-start; padding: 4px 0; }
+.check-when input { margin-top: 4px; }
+.check-when-def { display: block; font-size: 14px; color: var(--muted); }
 .dash-followers-hint { display: block; margin-top: 2px; font-weight: 400; }
 
 /* The job form's "Preview": the real job page under a banner. */

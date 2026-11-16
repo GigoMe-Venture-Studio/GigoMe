@@ -9,7 +9,7 @@ import { normalizeEmail } from '../lib/auth.js';
 import { isPlainEmail } from '../lib/links.js';
 import { dailyLimitMessage } from '../lib/limits.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
-import { CATEGORIES, ITALIAN_LABEL, JOB_TYPE_LABEL, JOB_TYPES, LANGUAGES, PAY_UNIT_LABEL, PAY_UNITS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
+import { CATEGORIES, ITALIAN_LABEL, JOB_TYPE_LABEL, JOB_TYPES, LANGUAGES, PAY_UNIT_LABEL, PAY_UNITS, SCHEDULE_HOURS, SCHEDULES, monthlyHours } from '../lib/jobs.js';
 import { HOURS_HINT_ABOVE, JOB_STATUS, fetchMyJob, normalizeUrl, saveJob } from '../lib/employer.js';
 import { fetchAreas } from '../lib/areas.js';
 import { findAddress } from '../lib/geocode.js';
@@ -472,10 +472,11 @@ function JobForm({ company, job }) {
           )}
           <fieldset className="check-group" aria-invalid={Boolean(errors.schedule)}>
             <legend>When <span className="field-optional">(at least one, to submit)</span></legend>
-            <div className="check-grid">
+            <div className="check-grid check-grid-when">
               {SCHEDULES.map(([value, label]) => (
-                <label key={value} className="check">
-                  <input type="checkbox" name="schedule" value={value} checked={v.schedule.includes(value)} onChange={toggle('schedule', value)} /> {label}
+                <label key={value} className="check check-when">
+                  <input type="checkbox" name="schedule" value={value} checked={v.schedule.includes(value)} onChange={toggle('schedule', value)} />
+                  <span>{label}<span className="check-when-def">{SCHEDULE_HOURS[value]}</span></span>
                 </label>
               ))}
             </div>

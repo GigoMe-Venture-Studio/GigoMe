@@ -21,7 +21,7 @@ import {
   placeLabel,
   postedAt,
   postedLabel,
-  scheduleLabels,
+  scheduleItems,
   websiteHref,
   websiteText
 } from '../lib/jobs.js';
@@ -76,7 +76,11 @@ export default function JobView({ job, apply, preview = false }) {
           {job.category && job.category !== 'other' && <span className="tag">{CATEGORY_LABEL[job.category]}</span>}
           <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>{ITALIAN_LABEL[job.italian_level]}</span>
           {job.remote && <span className="tag">Remote</span>}
-          {scheduleLabels(job).map((w) => <span key={w} className="tag tag-when">{w}</span>)}
+          {scheduleItems(job).map((w) => (
+            <span key={w.value} className="tag tag-when tag-when-hours">
+              {w.label}<span className="tag-when-def"><span className="sr-only">: </span>{w.hours}</span>
+            </span>
+          ))}
         </div>
         <dl className="facts">
           <div><dt>Pay</dt><dd>{payLabel(job)}{payNote(job) && <span className="pay-note">{payNote(job)}</span>}</dd></div>

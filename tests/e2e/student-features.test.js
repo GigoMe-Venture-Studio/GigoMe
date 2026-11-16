@@ -25,6 +25,9 @@ async function ctxWith(b, opts = {}, mopts = {}, dev = desk) {
     ok(card.includes('Weekends'), 'card shows the schedule tag');
     ok(await p.locator('.job-card', { hasText: 'Social media helper' }).locator('.tag-when').count() === 0, 'a job without a schedule shows no When tag');
     ok(await p.locator('.chip-filter legend', { hasText: 'When' }).count() === 1 && await p.locator('.chip-filter legend', { hasText: 'Languages at work' }).count() === 1, 'When and Languages filters');
+    ok((await txt(p, '#when-hint')) === 'Mornings before 12 · Afternoons 12 to 18 · Evenings after 18' && await p.locator('#when-hint').isVisible(), 'When: the hours are written under the heading, visible');
+    ok(await p.locator('.chip', { hasText: 'Weekday mornings' }).getAttribute('aria-pressed') !== null && (await p.getByRole('button', { name: /^Weekday mornings\s*, Mon to Fri, before 12:00$/ }).count()) === 1, 'When chips: hours in their accessible name');
+    ok(await p.locator('.job-list li:first-child .tag-when .sr-only').first().textContent() === ', Saturday and Sunday, any time', 'card: the tag\'s hours are there for screen readers');
     await p.click('.chip:has-text("Weekends")'); await p.waitForTimeout(500);
     ok(qp(p).get('when') === 'weekends', 'when=weekends in the URL');
     ok(log.jobs.pop().includes('schedule=ov.%7Bweekends%2Cflexible%7D'), 'asks for weekends or flexible');
@@ -43,6 +46,7 @@ async function ctxWith(b, opts = {}, mopts = {}, dev = desk) {
     await p.goto(E + '/jobs/' + ID(1)); await p.waitForSelector('.detail');
     const d = await txt(p, '.detail');
     ok(d.includes('Weekends') && d.includes('Languages at work') && d.includes('English, Italian'), 'job page: When tag and languages');
+    ok(d.includes('Saturday and Sunday, any time'), 'job page: the When tag shows its hours');
     await p.goto(E + '/jobs/' + ID(3)); await p.waitForSelector('.detail');
     ok(!(await txt(p, '.detail')).includes('Languages at work') && (await txt(p, '.detail')).includes('Weekday evenings'), 'no languages: no row');
     ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
@@ -54,6 +58,33 @@ async function ctxWith(b, opts = {}, mopts = {}, dev = desk) {
     await p.click('.job-filters-toggle'); ok(await p.locator('.chip-filter').first().isVisible(), 'phone: chips in the panel');
     ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'phone: no sideways scroll');
     await ctx.close(); }
+
+  // ---- When definitions: nothing cut off on 320px and 375px phones (job page tags, filter hint, job form)
+  const cutOff = (sel) => (els) => els.filter((e) => e.offsetParent !== null).filter((e) => { const r = e.getBoundingClientRect(); return e.scrollWidth > e.clientWidth + 1 || r.left < 0 || r.right > innerWidth + 0.5; }).map((e) => e.textContent.trim().slice(0, 40));
+  for (const width of [320, 375]) {
+    const dev = { viewport: { width, height: 640 }, isMobile: true, hasTouch: true };
+    { const { ctx, p } = await ctxWith(b, {}, {}, dev);
+      for (const id of [ID(1), ID(3)]) {
+        await p.goto(E + '/jobs/' + id); await p.waitForSelector('.detail .tag-when'); await p.waitForTimeout(300);
+        const cut = await p.$$eval('.detail .tag-when, .detail .tag-when-def', cutOff());
+        ok(cut.length === 0, `${width}px job page: When tags not cut off: ${cut.join(', ')}`);
+        ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `${width}px job page: no sideways scroll`);
+      }
+      await p.goto(E + '/jobs'); await p.waitForSelector('.job-list'); await p.click('.job-filters-toggle'); await p.waitForTimeout(300);
+      const cut = await p.$$eval('#when-hint, .chip-filter .chip', cutOff());
+      ok(cut.length === 0 && await p.locator('#when-hint').isVisible(), `${width}px /jobs: When hint and chips not cut off: ${cut.join(', ')}`);
+      await ctx.close(); }
+    { const ctx = await b.newContext(dev); await emock(ctx, { company: { name: 'Nebbia', status: 'approved', website: 'nebbia.it', description: 'Coffee.' } }); await stubMap(ctx, {});
+      const p = await ctx.newPage(); await employerLogin(p, E);
+      await p.goto(E + '/dashboard/jobs/new'); await p.waitForSelector('input[name=schedule]'); await p.waitForTimeout(300);
+      const defs = await p.$$eval('.check-when', (els) => els.map((e) => e.innerText.replace(/\s+/g, ' ').trim()));
+      ok(defs.join('|') === 'Weekday mornings Mon to Fri, before 12:00|Weekday afternoons Mon to Fri, 12:00 to 18:00|Weekday evenings Mon to Fri, after 18:00|Weekends Saturday and Sunday, any time|Flexible Hours agreed with the employer',
+        `${width}px job form: every When box says its hours: ${defs.join('|')}`);
+      const cut = await p.$$eval('.check-when, .check-when-def', cutOff());
+      ok(cut.length === 0, `${width}px job form: When boxes not cut off: ${cut.join(', ')}`);
+      ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `${width}px job form: no sideways scroll`);
+      await ctx.close(); }
+  }
 
   // ---- 3. Saved searches
   { const { ctx, p, log } = await ctxWith(b);

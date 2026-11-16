@@ -447,6 +447,10 @@ team's legal person first.
   whether anyone applied.
 - **Employer ratings or reviews:** they need moderation the team can't
   provide.
+- **A personal work calendar, or tracking which jobs a student takes:**
+  GigoMe doesn't track what happens after a student presses "Apply"
+  (privacy, and the same no-intermediation design as above: the student and
+  the employer deal with each other directly).
 - **Email to all users** (newsletters, alerts): Brevo's free plan allows 300
   emails a day, and those are needed for login codes.
 
