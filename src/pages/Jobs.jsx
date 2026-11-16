@@ -322,8 +322,11 @@ function JobBoard() {
         </label>
         <MinPay value={filters.minpay} onChange={(v) => setFilter('minpay', v)} />
         <fieldset className="chip-filter">
-          <legend>When <span className="chip-filter-note">flexible jobs always match</span></legend>
-          <p className="chip-filter-hint" id="when-hint">{SCHEDULE_HOURS_LINE}</p>
+          <legend>
+            When <span className="chip-filter-note">flexible jobs always match</span>
+            <span className="chip-filter-sep" aria-hidden="true"> · </span>
+            <span className="chip-filter-hint" id="when-hint">{SCHEDULE_HOURS_LINE}</span>
+          </legend>
           <div className="chips">
             {SCHEDULES.filter(([v]) => v !== 'flexible').map(([value, label]) => (
               <button key={value} type="button" className="chip" aria-pressed={filters.when.includes(value)} onClick={() => toggleIn('when', value)}>

@@ -119,8 +119,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   afternoons 12:00 to 18:00; evenings after 18:00; weekends = Saturday and
   Sunday, any time; flexible = hours agreed with the employer) and
   `SCHEDULE_HOURS_LINE`. Shown as visible text wherever "When" appears,
-  never as a hover tooltip (phones have none): the line under "When" in the
-  /jobs filters (the chips carry the hours for screen readers), the hours
+  never as a hover tooltip (phones have none): in the "When" heading line
+  of the /jobs filters (its own line on phones; inline from 768px so the
+  filters get no taller and the Feedback button stays clear of the first
+  job; the chips carry the hours for screen readers), the hours
   inside each "When" tag on job pages (the tag may wrap, never cut off), on
   each box of the job form, and for screen readers on job cards (no room:
   the first job must fit on a 320×568 screen).
