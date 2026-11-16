@@ -243,7 +243,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   your account"); `CompanySubmitted` after the employer setup (in review,
   what they can do meanwhile, that the dashboard shows the status and no
   email is sent, dashboard and draft-job buttons). It must describe the
-  review flow as it is and never promise emails or timings. Checked in
+  review flow as it is: no emails, and no timing other than the review
+  promise every employer page makes ("We'll review your company, usually
+  within 2 working days."; admins check /admin daily). Checked in
   `signup.test.js`.
 - Terms acceptance: every account (students and companies) ticks "I'm 18 or
   older and I accept the Terms" (`TermsCheckbox.jsx`: "Terms" links to

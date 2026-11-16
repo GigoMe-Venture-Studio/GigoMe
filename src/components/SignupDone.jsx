@@ -63,7 +63,8 @@ export function StudentReady({ firstName, email, next }) {
 }
 
 // What happens next follows the review flow as it is: the company is
-// pending until an admin approves it; drafts can be written meanwhile; jobs
+// pending until an admin approves it (usually within 2 working days, the
+// same promise as /employers and the dashboard); drafts can be written meanwhile; jobs
 // are submitted only once it's approved and each is reviewed too; nobody is
 // emailed about it, the dashboard shows the status.
 export function CompanySubmitted({ companyName, email }) {
@@ -73,7 +74,7 @@ export function CompanySubmitted({ companyName, email }) {
       <h1 ref={heading} tabIndex={-1}>Your company is submitted</h1>
       <p className="lead">
         <span className="signup-done-name">{companyName}</span> is now in review. GigoMe checks every company by hand
-        before its jobs can go live.
+        before its jobs can go live. We'll review your company, usually within 2 working days.
       </p>
       <h2 className="signup-done-h2">What happens next</h2>
       <ul className="signup-done-steps">

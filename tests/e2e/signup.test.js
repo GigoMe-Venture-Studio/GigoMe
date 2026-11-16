@@ -106,11 +106,11 @@ async function fillWelcome(p, name = 'Ana Maria Rossi') {
     ok(db.company && db.company.status === 'pending', 'company saved, pending');
     ok((await txt(p, 'h1')) === 'Your company is submitted' && await p.evaluate(() => document.activeElement.tagName === 'H1'), 'headline, focused');
     const t = await txt(p, '.signup-done');
-    ok(t.includes('Nebbia Coffee is now in review. GigoMe checks every company by hand before its jobs can go live.'), 'names the company, in review');
+    ok(t.includes("Nebbia Coffee is now in review. GigoMe checks every company by hand before its jobs can go live. We'll review your company, usually within 2 working days."), 'names the company, in review, and the same review promise as /employers and the dashboard');
     ok(t.includes('You can already write your jobs. They stay drafts that only you can see.')
        && t.includes('Once your company is approved, submit each job. Students see a job only after it has been reviewed too.')
        && t.includes("Your dashboard shows your company's status. We don't send an email when it changes, so check there."), 'what happens next, as the review flow works');
-    ok(!/working days|within|hours|we'll email|we will email|notify/i.test(t), 'no promised timings or emails');
+    ok((t.match(/working days/g) || []).length === 1 && !/\bhours\b|we'll email|we will email|notify/i.test(t), 'only the usual review promise: no other timings, no emails');
     ok(t.includes("You're logged in as owner@cafe.it.") && t.includes("Next time, enter this email on the For employers page and we'll send you a new 6-digit code. There's no password."), 'signed-in email and how login works next time');
     ok((await buttons(p)).join(' | ') === 'Go to your dashboard /dashboard | Write a draft job /dashboard/jobs/new', 'buttons: dashboard, draft job: ' + (await buttons(p)).join(' | '));
     ok(await p.getAttribute('.signup-done-account a', 'href') === '/account', 'small link to /account');
