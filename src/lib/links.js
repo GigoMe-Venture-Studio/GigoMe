@@ -61,3 +61,10 @@ export function safeNext(value) {
     return '';
   }
 }
+
+// True when a (safe) ?next= path is a job page ("/jobs/123", "/jobs/123#apply"):
+// someone who pressed Save or Apply on a job before logging in. The list
+// ("/jobs", "/jobs?q=…") and the map are not job pages.
+export function isJobPath(path) {
+  return /^\/jobs\/[^/?#]+(?:[?#]|$)/.test(String(path || ''));
+}

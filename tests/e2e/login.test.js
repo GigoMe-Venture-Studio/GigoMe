@@ -132,7 +132,9 @@ async function mockSupabase(ctx, opts = {}) {
   await p.click('text=Save and continue'); await p.waitForTimeout(700);
   ok(JSON.stringify(log.accept) === '[{"p_version":"2.0"}]', 'the Terms acceptance is recorded with the version: ' + JSON.stringify(log.accept));
   ok(log.patch.length === 1 && log.patch[0].query.includes('id=eq.uid-1') && JSON.stringify(log.patch[0].body) === JSON.stringify({ full_name: 'Ana Rossi', degree_level: 'master', graduation_year: Number(year) }), 'saves only the three fields, on the own row: ' + JSON.stringify(log.patch[0]));
-  ok(new URL(p.url()).pathname === '/' && await p.isVisible('.hero'), 'then goes to the home page');
+  ok(new URL(p.url()).pathname === '/welcome' && (await txt(p, 'h1')) === "You're all set, Ana." && (await txt(p, 'main')).includes("You're logged in as name.surname@studbocconi.it."), 'then the confirmation (signup.test.js checks it in full)');
+  await p.click('.signup-done >> text=Browse jobs'); await p.waitForTimeout(500);
+  ok(new URL(p.url()).pathname === '/jobs', 'Browse jobs opens the list');
   ok((await txt(p, '.header-user')) === 'Ana Rossi' && !(await txt(p, '.site-header')).includes('Log in'), 'header shows the saved name: ' + await txt(p, '.header-user'));
   await p.goto(ENV + '/login'); await p.waitForTimeout(300);
   ok((await txt(p, 'h1')) === "You're logged in", '/login while logged in offers "Go to GigoMe" and "Log out"');

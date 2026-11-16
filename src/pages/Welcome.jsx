@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
 import ProfileFields from '../components/ProfileFields.jsx';
 import TermsCheckbox from '../components/TermsCheckbox.jsx';
+import { StudentReady } from '../components/SignupDone.jsx';
 import { fetchProfile, logOut, safeNext, saveProfile } from '../lib/auth.js';
 import { announceProfileChange, checkProfile } from '../lib/profile.js';
 import { TERMS_REQUIRED, acceptTerms, hasAcceptedTerms } from '../lib/terms.js';
@@ -13,7 +14,9 @@ import { TERMS_REQUIRED, acceptTerms, hasAcceptedTerms } from '../lib/terms.js';
 // /welcome: a new student's name, degree and graduation year, and for every
 // account (students and companies) the Terms ("I'm 18 or older and I accept
 // the Terms") until the current version is accepted. TermsGate sends
-// accounts here, with ?next= the page they asked for.
+// accounts here, with ?next= the page they asked for. A new student's first
+// save (no name yet) ends on the confirmation (StudentReady), once; accepting
+// a new Terms version goes straight on to ?next=.
 export default function Welcome() {
   return <PageShell>{supabase ? <WelcomeGate /> : <ConfigError />}</PageShell>;
 }
@@ -41,6 +44,10 @@ function WelcomeForm({ user, next }) {
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
   const [busy, setBusy] = useState(false);
+  // firstTime: a student signing up (no name yet). done: their first name,
+  // once saved, to show the confirmation.
+  const [firstTime, setFirstTime] = useState(false);
+  const [done, setDone] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -53,6 +60,7 @@ function WelcomeForm({ user, next }) {
           setYear(p.graduation_year ? String(p.graduation_year) : '');
         }
         const terms = !hasAcceptedTerms(p);
+        setFirstTime(Boolean(p) && p.account_type === 'student' && !p.full_name);
         setNeeds({ terms, termsOnly: terms && Boolean(p) && (p.account_type !== 'student' || Boolean(p.full_name)) });
         setLoaded(true);
       })
@@ -76,6 +84,10 @@ function WelcomeForm({ user, next }) {
       if (fields) await saveProfile(user.id, fields);
       if (needs.terms) await acceptTerms(user.id);
       announceProfileChange();
+      if (firstTime && fields) {
+        setDone(fields.full_name.split(' ')[0]);
+        return;
+      }
       navigate(next || '/', { replace: true });
     } catch {
       setSaveError(needs.termsOnly
@@ -85,6 +97,7 @@ function WelcomeForm({ user, next }) {
     }
   }
 
+  if (done) return <StudentReady firstName={done} email={user.email} next={next} />;
   if (loadError) return <p className="auth-card err" role="alert">{loadError}</p>;
   if (!loaded) return <p className="auth-card muted">Loading…</p>;
 

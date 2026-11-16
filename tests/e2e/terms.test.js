@@ -83,7 +83,7 @@ const desk = { viewport: { width: 1280, height: 900 } };
     ok(url(p).pathname === '/employers/setup' && await p.locator('input[name=accept_terms]').count() === 1, 'new employer: the setup page itself has the Terms box');
     await p.fill('input[name=company_name]', 'Nebbia Coffee'); await p.check('input[name=accept_terms]');
     await p.click('button:has-text("Save company")'); await p.waitForTimeout(700);
-    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]' && (await txt(p, 'main')).includes('your company is saved'), 'setup: company saved, version recorded: ' + JSON.stringify(log.acceptTerms) + ' ' + (await txt(p, 'main')).slice(0, 200));
+    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]' && (await txt(p, 'main')).includes('Your company is submitted'), 'setup: company saved, version recorded: ' + JSON.stringify(log.acceptTerms) + ' ' + (await txt(p, 'main')).slice(0, 200));
     await p.click('text=Go to your dashboard'); await p.waitForTimeout(600);
     ok(url(p).pathname === '/dashboard', 'and the dashboard opens without asking again');
     await ctx.close(); }
