@@ -35,12 +35,12 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
     const before = 0;
     await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
     const note = await txt(p, '.employers-login');
-    ok(/university email/.test(note) && await p.locator('.employers-login a[href="/login"]').count() === 1, 'student email: pointed to the student login');
+    ok(/university email/.test(note) && await p.locator('.employers-login .auth-notice a[href="/login"]').count() === 1, 'student email: pointed to the student login');
     ok(await p.locator('input[name=code]').count() === 0, 'student email: no code step');
     // /login with a company email points to /employers
     await p.goto(E + '/login'); await p.waitForTimeout(300);
     await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
-    ok(await p.locator('main a[href="/employers"]').count() === 1, '/login with a non-university email links to /employers');
+    ok(await p.locator('main .auth-notice a[href="/employers"]').count() === 1, '/login with a non-university email links to /employers');
     await p.goto(E + '/dashboard'); await p.waitForTimeout(400);
     ok(path(p) === '/employers' && new URL(p.url()).searchParams.get('next') === '/dashboard', 'logged out /dashboard goes to /employers?next=/dashboard');
     await ctx.close(); }

@@ -16,6 +16,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   service visitors' browsers talk to (HANDOVER.md, section 7b).
 - `src/main.jsx`, `src/App.jsx`: entry point and router. Routes: `/` (home),
   `/jobs`, `/jobs/:id`, `/companies/:id`, `/saved`, `/account`, `/login`, `/welcome`, `/privacy`, `/terms`,
+  `/how-it-works`, `/safety`,
   `/employers`, `/employers/setup`, `/dashboard`, `/dashboard/jobs/new`,
   `/dashboard/jobs/:id/edit`, `/admin` and `*` (404). `/about` only
   redirects to `/`: there is no About page, and no team names, biographies or
@@ -126,6 +127,29 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   inside each "When" tag on job pages (the tag may wrap, never cut off), on
   each box of the job form, and for screen readers on job cards (no room:
   the first job must fit on a 320×568 screen).
+- `/how-it-works` (`src/pages/HowItWorks.jsx`: questions that open, native
+  `<details>` in `Faq.jsx`, for students and for employers) and `/safety`
+  ("Staying safe", `src/pages/Safety.jsx`), styles in `info.css`, loaded only
+  when opened, linked from the footer, the home page's "How it works" and
+  each other. Every sentence must match what the app does and the legal
+  texts; the legal person reviews them, so tell the owner when you change
+  them. `/safety` says what GigoMe checks (a person reviews every company
+  and job) and, as clearly, what it can't (Terms 15.2 and 19): never call
+  employers "verified" or jobs "safe" (checked in `info-pages.test.js`).
+  Links to Terms clauses use the Terms page's anchors, which count every
+  heading (clause 8 = `#section-11`, 15 = `#section-21`, 19 =
+  `#section-26`). The residence-permit tip is a link to an official source
+  only, never advice. Every on-site job page (not remote) ends its "How to
+  apply" box with "Meeting an employer in person? Read our safety tips."
+  (`.apply-safety`, under Apply, so it never pushes it down).
+- Descriptions (jobs and companies) go through `src/components/JobText.jsx`
+  and `descriptionBlocks()` (`src/lib/description.js`, no imports,
+  unit-tested): a short line ending with ":" (or one of "What you'll do",
+  "Who we're looking for", "Practical details") is a heading, lines
+  starting with "-", "*", "•" or "1." are lists, other lines paragraphs with
+  their line breaks; always rendered as text. The job form suggests those
+  three parts (hint and placeholder); `supabase/seed/examples.sql` follows
+  them.
 - Badges on job cards and job pages: "New" (`isNew()`: published in the last
   3 days, gold), the category, and the metro badge (`metroLabel()`: only for
   an exact location within 1000 m of a station, at 80 m a minute walking).
@@ -203,7 +227,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   first job still fits on a 320×568 screen.
 - `src/components/PageShell.jsx`: the `<main>` frame for every page except
   the home page. `src/components/SiteFooter.jsx`: the footer on every page
-  (rendered once in `App.jsx`). `src/components/JobCard.jsx`: the job card on
+  (rendered once in `App.jsx`: "For employers" when logged out, "How it
+  works", "Staying safe", the legal texts and "Give feedback").
+  `src/components/JobCard.jsx`: the job card on
   `/jobs` and on the home page.
 - New features are React pages and components (`src/pages/`,
   `src/components/`). Styles for them go in their own file (e.g.
@@ -212,7 +238,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - The 6-digit code login lives in `src/components/CodeLogin.jsx`, used by
   `/login` (`audience="student"`: university emails only) and `/employers`
   (`audience="employer"`: any email except a listed university's, which are
-  sent to `/login`). Change the flow there, once.
+  sent to `/login`). Change the flow there, once. Under its heading, a line
+  to the other login: "Hiring? Use the employer login" (students) and
+  "Looking for work? Student login" (employers).
 - Bot check: Cloudflare Turnstile (`src/components/Turnstile.jsx`,
   `src/lib/captcha.js`) on that same form, checked by Supabase Auth's CAPTCHA
   protection. Only on when the build variable `VITE_TURNSTILE_SITE_KEY` is
@@ -320,7 +348,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
-  (`/jobs`), then: logged out, "For employers" and "Log in"; a
+  (`/jobs`), then: logged out, "For employers" and "Student login" (the
+  button opens `/login`, the student login only); a
   student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
   and "Log out"; a company account, "Dashboard", the company name (a link to
   `/account`) and "Log out". The footer shows "For employers" when logged
@@ -358,7 +387,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   and at 375px (checked in `feedback.test.js`).
 - `src/styles/site.css`: tokens, base styles and shared components; page
   styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
-  `account.css`, `employer.css`, `admin.css`, `error.css`).
+  `account.css`, `employer.css`, `admin.css`, `error.css`, `signup.css`, `info.css`).
   No CSS framework. The accent is the logo's purple `#A46BD6` (`--purple`,
   `--accent`): text on it is graphite (4.5:1), never white. No inline
   `style` attributes in `index.html` (the CSP has no 'unsafe-inline').

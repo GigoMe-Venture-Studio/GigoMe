@@ -4,6 +4,8 @@
   <url><loc>https://gigome.org/</loc><changefreq>daily</changefreq></url>
   <url><loc>https://gigome.org/jobs</loc><changefreq>daily</changefreq></url>
   <url><loc>https://gigome.org/employers</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://gigome.org/how-it-works</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://gigome.org/safety</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://gigome.org/privacy</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://gigome.org/terms</loc><changefreq>monthly</changefreq></url>
 </urlset>

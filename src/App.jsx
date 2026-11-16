@@ -25,6 +25,8 @@ import NotFound from './pages/NotFound.jsx';
 // The legal texts are long: downloaded only when /privacy or /terms is opened.
 const Privacy = lazy(() => import('./pages/Privacy.jsx'));
 const Terms = lazy(() => import('./pages/Terms.jsx'));
+const HowItWorks = lazy(() => import('./pages/HowItWorks.jsx'));
+const Safety = lazy(() => import('./pages/Safety.jsx'));
 const loadingPage = <main className="wrap legal-main"><p className="muted">Loading…</p></main>;
 
 export default function App() {
@@ -54,6 +56,8 @@ export default function App() {
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/privacy" element={<Suspense fallback={loadingPage}><Privacy /></Suspense>} />
             <Route path="/terms" element={<Suspense fallback={loadingPage}><Terms /></Suspense>} />
+            <Route path="/how-it-works" element={<Suspense fallback={loadingPage}><HowItWorks /></Suspense>} />
+            <Route path="/safety" element={<Suspense fallback={loadingPage}><Safety /></Suspense>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TermsGate>

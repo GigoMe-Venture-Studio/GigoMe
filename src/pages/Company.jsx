@@ -1,3 +1,4 @@
+import JobText from '../components/JobText.jsx';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
@@ -82,7 +83,7 @@ function CompanyPage() {
         <h1 className="page-title">{company.name}</h1>
         <FollowButton company={company} />
       </div>
-      {company.description && <p className="job-text company-about">{company.description}</p>}
+      {company.description && <JobText text={company.description} className="company-about" />}
       {site && (
         <p className="company-site">
           <a href={site} target="_blank" rel="noopener noreferrer">{websiteText(company.website)}</a>

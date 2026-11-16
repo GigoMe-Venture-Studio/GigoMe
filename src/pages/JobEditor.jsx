@@ -43,6 +43,11 @@ async function nearestStation(lat, lon) {
 }
 
 // /dashboard/jobs/new and /dashboard/jobs/:id/edit
+// The structure suggested for descriptions; job pages show the headings and
+// lists it makes (src/lib/description.js).
+const DESCRIPTION_PLACEHOLDER =
+  "What you'll do:\n- …\n- …\n\nWho we're looking for:\n- …\n\nPractical details:\n- Where and when: …\n- What to bring: …";
+
 export default function JobEditor() {
   return <PageShell className="dashboard-main">{supabase ? <EditorPage /> : <ConfigError />}</PageShell>;
 }
@@ -400,9 +405,14 @@ function JobForm({ company, job }) {
           </label>
           <label className="field">
             <span>Description <span className="field-optional">(optional)</span></span>
-            <textarea className="input textarea" name="description" rows={8} maxLength={10000} value={v.description}
-              onChange={set('description')} placeholder="What the work is, who you're looking for, anything students should know."
-              aria-invalid={Boolean(errors.description)} />
+            <span className="field-hint" id="description-hint">
+              Students read it more easily in three short parts: <strong>What you'll do</strong>,{' '}
+              <strong>Who we're looking for</strong> and <strong>Practical details</strong> (where, when, what to bring).
+              Write each heading on its own line ending with ":", and start a line with "- " for a list.
+            </span>
+            <textarea className="input textarea" name="description" rows={10} maxLength={10000} value={v.description}
+              onChange={set('description')} placeholder={DESCRIPTION_PLACEHOLDER}
+              aria-invalid={Boolean(errors.description)} aria-describedby="description-hint" />
             {err('description')}
           </label>
           <label className="field">

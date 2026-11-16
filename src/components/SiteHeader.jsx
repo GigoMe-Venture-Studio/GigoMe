@@ -6,7 +6,7 @@ import { fetchMyCompany } from '../lib/employer.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
 // phones), Jobs, then
-//   logged out: "For employers" and "Log in";
+//   logged out: "For employers" and "Student login";
 //   student: "Saved jobs", their name (a link to /account) and "Log out";
 //   company account: "Dashboard", the company name (a link to /account) and
 //   "Log out".
@@ -108,7 +108,8 @@ export default function SiteHeader() {
               </button>
             </>
           ) : (
-            <Link className="btn btn-primary btn-sm" to="/login">Log in</Link>
+            /* It opens the student login only (employers log in on /employers). */
+            <Link className="btn btn-primary btn-sm" to="/login">Student login</Link>
           )}
           <button
             type="button"

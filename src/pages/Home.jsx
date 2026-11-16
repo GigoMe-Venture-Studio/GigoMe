@@ -51,6 +51,9 @@ export default function Home() {
           <p className="how-questions">
             Questions? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
+          <p className="how-more">
+            <Link to="/how-it-works">More about how GigoMe works</Link> · <Link to="/safety">Staying safe</Link>
+          </p>
         </div>
       </section>
     </main>
