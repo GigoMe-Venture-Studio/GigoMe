@@ -28,6 +28,10 @@
 .admin-checklist legend { padding: 0 var(--s1); font-weight: 600; font-size: 14px; }
 .admin-checklist .check { align-items: flex-start; }
 .admin-checklist .check input { margin-top: 4px; }
+/* Company review: what we promise to check (display only, Admin.jsx). */
+.admin-promise { margin-top: var(--s3); padding: var(--s3) var(--s4); border: 1px solid var(--line); border-radius: var(--r-md); }
+.admin-promise-title { font-weight: 600; font-size: 14px; }
+.admin-promise ul { margin-top: var(--s1); padding-left: 1.25em; overflow-wrap: anywhere; }
 .admin-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
 .admin-log { list-style: none; margin-top: var(--s3); font-size: 14px; }
 .admin-log li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }

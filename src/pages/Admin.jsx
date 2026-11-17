@@ -11,6 +11,7 @@ import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
   FEEDBACK_SHOWN,
   LOG_ACTION_LABEL,
+  COMPANY_CHECKS,
   REVIEW_CHECKLIST,
   checkIsAdmin,
   fetchOpenReports,
@@ -250,6 +251,11 @@ function CompanyItem({ company, onDone }) {
         <div><dt>Contact email</dt><dd className="auth-email">{company.contact_email}</dd></div>
         <div><dt>Logs in with</dt><dd className="auth-email">{company.login_email}</dd></div>
       </dl>
+      {/* What /how-it-works and /safety promise we check: a reminder, not a step. */}
+      <div className="admin-promise">
+        <p className="admin-promise-title">Check before approving</p>
+        <ul>{COMPANY_CHECKS.map((c) => <li key={c}>{c}</li>)}</ul>
+      </div>
       {error && <p className="err" role="alert">{error}</p>}
       <div className="admin-actions">
         <button type="button" className="btn btn-primary btn-sm" disabled={Boolean(busy)}

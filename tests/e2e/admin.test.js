@@ -58,6 +58,8 @@ const probe = (sel) => { const b = document.querySelector('.feedback-fab'); cons
     const c1 = p.locator('.admin-item', { hasText: 'Nebbia Coffee Bar' }).first();
     const c1t = await c1.innerText();
     ok(c1t.includes('hiring@nebbia.it') && c1t.includes('owner@nebbia.it') && c1t.includes('nebbia.it') && c1t.includes('Specialty coffee.'), 'company: website, description, contact and login email');
+    ok((await c1.locator('.admin-promise').innerText()).replace(/\s+/g, ' ').trim() === 'Check before approving Login email, website and description match'
+       && await c1.locator('.admin-promise input').count() === 0, 'company: what /how-it-works and /safety promise we check, display only (no box to tick)');
     await c1.locator('button:has-text("Approve")').click(); await p.waitForTimeout(600);
     ok(JSON.stringify(log.rpcs.filter((x) => x[0] === 'admin_set_company_status').pop()[1]) === JSON.stringify({ p_company_id: 'c1', p_status: 'approved' }), 'approve company');
     ok(!(await txt(p, '#admin-companies')).includes('Nebbia Coffee Bar') && (await txt(p, 'main')).includes('1 company,'), 'approved company leaves the queue');
@@ -69,6 +71,9 @@ const probe = (sel) => { const b = document.querySelector('.feedback-fab'); cons
     const j1t = await j1.innerText();
     ok(j1t.includes('Approved Co') && j1t.includes('€11/h') && j1t.includes('https://nebbia.it/jobs') && j1t.includes('Serve coffee.'), 'job: company, pay, how to apply, description');
     ok((await j1.locator('.admin-checklist label').count()) === 5, 'job: five-item review checklist');
+    const items = (await j1.locator('.admin-checklist label').allInnerTexts()).map((x) => x.trim());
+    ok(JSON.stringify(items) === JSON.stringify(['Company: login email, website and description match', 'Role clearly described', 'Pay and hours stated', 'Nothing asked of students up front (fees, deposits, documents)', 'Nothing discriminatory or unlawful']),
+       'job checklist: the same words /how-it-works and /safety promise: ' + JSON.stringify(items));
     const pub = j1.locator('button:has-text("Publish")');
     ok(await pub.isDisabled(), 'Publish disabled until the checklist is ticked');
     for (const box of await j1.locator('.admin-checklist input').all()) await box.check();
@@ -109,6 +114,16 @@ const probe = (sel) => { const b = document.querySelector('.feedback-fab'); cons
     ok(['Company approved', 'Company rejected', 'Changes requested', 'Job published', 'Job unpublished', 'Report resolved'].every((w) => lg.includes(w)) && lg.includes('Ana Rossi') && /\d{1,2} \w{3} \d{4}/.test(lg), 'recent decisions: every decision with who and when');
     ok(lg.includes('"Asked for a fee: unpublished."'), 'log shows notes');
     await ctx.close(); }
+
+  // ---- 320px and 375px: the review lists are not cut off
+  for (const width of [320, 375]) {
+    const ctx = await b.newContext({ viewport: { width, height: 640 }, isMobile: true, hasTouch: true }); await amock(ctx, { admin: true }); const p = await ctx.newPage();
+    await p.goto(E + '/login'); await login(p); await p.goto(E + '/admin'); await p.waitForSelector('.admin-promise');
+    const cut = await p.$$eval('.admin-promise, .admin-promise *, .admin-checklist, .admin-checklist *', (els) => els.filter((e) => e.offsetParent !== null).filter((e) => {
+      const r = e.getBoundingClientRect(); return e.scrollWidth > e.clientWidth + 1 || r.left < -0.5 || r.right > innerWidth + 0.5; }).map((e) => e.tagName + ' ' + e.textContent.trim().slice(0, 30)));
+    ok(cut.length === 0 && !(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `${width}px /admin: review lists not cut off, no sideways scroll: ${cut.join(', ')}`);
+    await ctx.close();
+  }
 
   // ---- phones
   for (const [name, dev] of [['iPhone SE', { viewport: { width: 320, height: 568 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }], ['iPhone 13', devices['iPhone 13']]]) {

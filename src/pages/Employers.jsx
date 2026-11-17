@@ -28,8 +28,9 @@ export default function Employers() {
             <li>Log in with your work email and tell us about your company. We review it, usually within 2 working days.</li>
             <li>Write your jobs. You can prepare drafts while we review your company.</li>
             <li>
-              Submit each job for review. We check that the role is real, pay and hours are stated, and nothing is asked
-              of students up front. Then it goes live.
+              Submit each job for review. A person reviews every job before it goes live: we check that the role is
+              clearly described, pay and hours are stated, nothing is asked of students up front, and nothing in it looks
+              discriminatory or unlawful.
             </li>
           </ol>
           <p className="muted">
