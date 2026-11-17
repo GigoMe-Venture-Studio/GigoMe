@@ -114,6 +114,8 @@ const STRUCTURED = "What you'll do:\n- Make coffee\n- Run the till\n\nWho we're 
     await p.goto(E + '/login'); await p.waitForSelector('input[name=email]');
     ok((await txt(p, '.login-switch')) === 'Hiring? Use the employer login' && await p.getAttribute('.login-switch a', 'href') === '/employers', '/login: "Hiring? Use the employer login"');
     await p.click('.login-switch a'); await p.waitForTimeout(500);
+    const pitch = await txt(p, '.employers-intro');
+    ok(pitch.includes('A person reviews every job before it goes live') && !/\b(real|verified|genuine|safe)\b/i.test(pitch), '/employers: no claim stronger than /safety: ' + (pitch.match(/.{0,30}\b(real|verified|genuine|safe)\b.{0,30}/i) || [''])[0]);
     ok(url(p).pathname === '/employers' && (await txt(p, '.login-switch')) === 'Looking for work? Student login' && await p.getAttribute('.login-switch a', 'href') === '/login', '/employers: "Looking for work? Student login"');
     await ctx.close(); }
 
@@ -135,6 +137,7 @@ const STRUCTURED = "What you'll do:\n- Make coffee\n- Run the till\n\nWho we're 
       await p.goto(E + path); await p.waitForSelector('.login-switch');
       ok((await cutOff(p, '.login-switch, .login-switch *')).length === 0 && !(await sideways(p)), `${width}px ${path}: the switch line fits`);
     }
+    ok((await cutOff(p, '.employers-intro, .employers-intro *')).length === 0, `${width}px /employers: the review steps are not cut off`);
     await ctx.close();
   }
 

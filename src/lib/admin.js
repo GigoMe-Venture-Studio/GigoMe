@@ -8,13 +8,18 @@ const JOB_COLUMNS =
   'pay_unit, pay_min, pay_max, pay_hourly, areas(name), ' +
   'companies(id, name, website, description, status)';
 
-export const REVIEW_CHECKLIST = [
-  'Employer identity is plausible (login email, website, description match)',
-  'The role is real and clearly described',
-  'Pay and hours are stated',
-  'Nothing is demanded from students (no payment, no documents up front)',
-  'Nothing discriminatory or illegal'
+// What reviewers check, in the same words /how-it-works and /safety promise
+// students and employers (change them together). Display only for
+// companies; the job review's five boxes (company + job) must all be ticked
+// before Publish, as before.
+export const COMPANY_CHECKS = ['Login email, website and description match'];
+export const JOB_CHECKS = [
+  'Role clearly described',
+  'Pay and hours stated',
+  'Nothing asked of students up front (fees, deposits, documents)',
+  'Nothing discriminatory or unlawful'
 ];
+export const REVIEW_CHECKLIST = ['Company: ' + COMPANY_CHECKS[0].charAt(0).toLowerCase() + COMPANY_CHECKS[0].slice(1), ...JOB_CHECKS];
 
 export const LOG_ACTION_LABEL = {
   company_approved: 'Company approved',

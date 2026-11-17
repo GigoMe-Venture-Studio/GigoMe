@@ -335,7 +335,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   Pending companies (approve/reject, with contact and login email from
   `admin_company_contact`), pending jobs (publish/request changes/reject, a
   note required for the last two, Publish only once the five-item review
-  checklist is ticked; how to apply from `admin_job_contact`), open reports
+  checklist is ticked; companies show "Check before approving", display
+  only; both lists, `COMPANY_CHECKS` and `JOB_CHECKS` in `admin.js`, use the
+  same words as what /how-it-works and /safety promise: change them
+  together; how to apply from `admin_job_contact`), open reports
   (unpublish the job = `admin_review_job(..., 'closed', note)`, reject the
   job's company = `admin_set_company_status(..., 'rejected')` for scams and
   payment demands, resolve with a note = `admin_resolve_report`), the newest
