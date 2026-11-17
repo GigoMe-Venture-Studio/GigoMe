@@ -477,7 +477,10 @@ of the built site before and after.
 - Login uses 6-digit email OTP codes (`signInWithOtp`, then `verifyOtp` with
   `type: 'email'`), never magic links. Brevo rewrites links in emails, so auth
   emails must not depend on a clickable link.
-- The sender for auth emails is `no-reply@gigome.org`.
+- The sender for auth emails is `GigoMe <hello@gigome.org>`. The login code
+  email (subject, HTML, plain text, and which dashboard templates it goes
+  in) lives in `docs/email/login-code.md`: change it there first, then the
+  owner pastes it into the dashboard. No links or images in it.
 - Brevo's free plan allows 300 emails a day for the whole account. Don't build
   any feature that sends email in bulk (newsletters, notifications to all
   users) without asking first.
