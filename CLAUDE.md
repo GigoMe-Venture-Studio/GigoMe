@@ -240,7 +240,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (`audience="employer"`: any email except a listed university's, which are
   sent to `/login`). Change the flow there, once. Under its heading, a line
   to the other login: "Hiring? Use the employer login" (students) and
-  "Looking for work? Student login" (employers).
+  "Looking for work? Student login" (employers). The code step says "Can't
+  find it? Check your Junk or Spam folder and mark it as 'Not junk', so the
+  next one arrives in your inbox."
+- Every "Log out" is `src/components/LogOutButton.jsx`: it first asks "Log
+  out?" ("You'll need a new code from your email to log back in.", Log out
+  and Cancel, Cancel focused) in a native `<dialog>`, then signs out this
+  device only. On phones it is the last item of the Menu panel, set apart
+  by a line (`.menu-logout`); the header bar has none under 768px.
 - Bot check: Cloudflare Turnstile (`src/components/Turnstile.jsx`,
   `src/lib/captcha.js`) on that same form, checked by Supabase Auth's CAPTCHA
   protection. Only on when the build variable `VITE_TURNSTILE_SITE_KEY` is

@@ -24,3 +24,7 @@
 .site-logo { display: flex; align-items: center; flex: none; text-decoration: none; border-radius: var(--r-sm); }
 .site-logo img { display: block; height: 30px; width: auto; }
 .site-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* Phone menu: "Log out" comes last, set apart by a line and some space, so
+   it isn't hit when aiming for the name (your account) just above it. */
+.menu-panel > .menu-logout { margin-top: var(--s3); border-top: 1px solid var(--line); border-radius: 0; }

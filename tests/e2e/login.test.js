@@ -94,7 +94,7 @@ async function mockSupabase(ctx, opts = {}) {
   ok(log.otp.length === 1 && log.otp[0].email === 'name.surname@studbocconi.it' && log.otp[0].create_user === true, 'listed university: code requested for the lowercased email, create_user true (' + JSON.stringify(log.otp[0] && { email: log.otp[0].email, create_user: log.otp[0].create_user }) + ')');
   ok(!('options' in (log.otp[0] || {})) && !JSON.stringify(log.otp[0]).includes('redirect'), 'no magic-link redirect in the request');
   ok((await txt(p, 'h1')) === 'Check your email' && (await txt(p, '.lead')).includes('name.surname@studbocconi.it'), 'code step shows the email');
-  ok((await txt(p, '#code-hint')).includes('spam'), 'spam folder hint shown');
+  ok((await txt(p, '#code-hint')).includes("Can't find it? Check your Junk or Spam folder and mark it as 'Not junk', so the next one arrives in your inbox."), 'junk folder hint shown');
   const resend = p.locator('text=/Send a new code/');
   ok(await resend.isDisabled() && /\(\d+s\)/.test(await resend.textContent()), 'resend disabled with countdown: ' + (await resend.textContent()));
   ok((await p.getAttribute('input[name=code]', 'inputmode')) === 'numeric' && (await p.getAttribute('input[name=code]', 'autocomplete')) === 'one-time-code', 'code field: number keyboard, one-time-code autofill');
@@ -139,8 +139,10 @@ async function mockSupabase(ctx, opts = {}) {
   await p.goto(ENV + '/login'); await p.waitForTimeout(300);
   ok((await txt(p, 'h1')) === "You're logged in", '/login while logged in offers "Go to GigoMe" and "Log out"');
   await p.goto(ENV + '/'); await p.waitForTimeout(400);
-  await p.click('#menu-btn'); ok((await p.$$eval('#menu-panel a, #menu-panel button', els => els.map(e => e.textContent.trim()).join(', '))) === 'Jobs, Saved jobs, Ana Rossi, Log out', 'phone menu when logged in: Jobs, Saved jobs, name, Log out');
-  await p.click('#menu-panel >> text=Log out'); await p.waitForTimeout(400);
+  await p.click('#menu-btn'); ok((await p.$$eval('#menu-panel > a, #menu-panel > button', els => els.map(e => e.textContent.trim()).join(', '))) === 'Jobs, Saved jobs, Ana Rossi, Log out', 'phone menu when logged in: Jobs, Saved jobs, name, Log out');
+  await p.click('#menu-panel >> text=Log out'); await p.waitForTimeout(200);
+  ok(log.logout.length === 0 && await p.locator('#menu-panel dialog.logout-dialog[open]').count() === 1, 'phone menu Log out: asks first, nothing logged out yet');
+  await p.click('dialog.logout-dialog[open] button:has-text("Log out")'); await p.waitForTimeout(400);
   ok(log.logout.length === 1 && log.logout[0].includes('scope=local') && (await txt(p, '.site-header')).includes('Student login') && await p.locator('.header-user').count() === 0, 'log out from the phone menu: this device only, header back to Student login');
   await p.goto(ENV + '/welcome'); await p.waitForTimeout(300);
   ok(new URL(p.url()).pathname === '/login', '/welcome when logged out redirects to /login');

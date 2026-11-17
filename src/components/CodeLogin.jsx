@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import LogOutButton from './LogOutButton.jsx';
 import { Link, useNavigate } from 'react-router';
 import { useSession } from '../lib/useSession.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
@@ -7,7 +8,6 @@ import {
   RESEND_SECONDS,
   fetchProfile,
   fetchUniversities,
-  logOut,
   looksLikeEmail,
   normalizeEmail,
   sendCode,
@@ -387,7 +387,7 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
           />
         </label>
         <p className="auth-small" id="code-hint">
-          It can take a minute to arrive. Not there? Check your spam or junk folder.
+          It can take a minute to arrive. Can't find it? Check your Junk or Spam folder and mark it as 'Not junk', so the next one arrives in your inbox.
         </p>
         {error && <p className="err" role="alert">{error}</p>}
         {info && !error && <p className="auth-small" role="status">{info}</p>}
@@ -418,9 +418,7 @@ export function LoggedIn({ email, next }) {
       </p>
       <div className="auth-buttons">
         <Link className="btn btn-primary" to={next || '/'}>{next ? 'Continue' : 'Go to GigoMe'}</Link>
-        <button type="button" className="btn btn-secondary" onClick={async () => setError((await logOut()) || '')}>
-          Log out
-        </button>
+        <LogOutButton className="btn btn-secondary" onError={setError} />
       </div>
       {error && <p className="err" role="alert">{error}</p>}
     </div>
