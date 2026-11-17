@@ -85,7 +85,7 @@ recovery codes in the same Bitwarden item.
 | GitHub: GigoMe-Venture-Studio | The code (`GigoMe-Venture-Studio/GigoMe`), pull requests | Organisation owners: **[fill in]**. Keep at least two. |
 | Cloudflare | Hosting (Worker `gigome`, built from `main`), the daily Supabase ping, Turnstile (bot check on login) | Whether DNS for gigome.org is also here: **[fill in]** |
 | Supabase | Database, logins, the GitHub integration that applies migrations | One project, in Frankfurt (its name and ID are on the dashboard's project list). Free plan. |
-| Brevo | Sends the login-code emails (SMTP), from `no-reply@gigome.org` | The SMTP key is pasted only in Supabase (see section 6). Free plan. |
+| Brevo | Sends the login-code emails (SMTP), from `GigoMe <hello@gigome.org>` | The SMTP key is pasted only in Supabase (see section 6). Free plan. |
 | Domain registrar for gigome.org | The domain | Registrar and renewal date: **[fill in]**. Turn on auto-renew. |
 | Mailbox hello@gigome.org | The public contact address on the site | Where it's hosted and who reads it: **[fill in]** |
 
@@ -242,7 +242,12 @@ the `moderation_log` table).
 
 - Login codes are sent by Supabase Auth through Brevo's SMTP. The SMTP
   settings (host, login, key) are only in Supabase > Authentication > Emails >
-  SMTP Settings. The sender is `no-reply@gigome.org`.
+  SMTP Settings. The sender is `GigoMe <hello@gigome.org>`, so replies reach
+  the team's inbox.
+- The email itself (subject, HTML and plain text) is in
+  `docs/email/login-code.md`, with which templates it goes in (Supabase >
+  Authentication > Emails > Templates: **Magic Link** and **Confirm
+  signup**). To change it, edit that file, then paste it into both.
 - **The Brevo SMTP key expires** after 90 days without use, and after 1 year
   at the most. When it expires, nobody can log in. Put a calendar reminder 11
   months after the key was created. To replace it: Brevo > SMTP & API > create
@@ -486,7 +491,7 @@ backups; until then, make one by hand:
 ## 10. The domain
 
 gigome.org must be renewed every year at the registrar (**[fill in]**). If it
-lapses, the site stops working, login emails from `no-reply@gigome.org` stop
+lapses, the site stops working, login emails from `hello@gigome.org` stop
 arriving (Brevo relies on the domain's DNS records), and anyone can buy the
 name. Turn on auto-renew, check the payment card on file hasn't expired,
 keep the registrar's contact email one the team reads, and put the renewal

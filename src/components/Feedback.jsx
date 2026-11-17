@@ -15,10 +15,36 @@ export function useOpenFeedback() {
 export function FeedbackProvider({ children }) {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  const openFeedback = useCallback(() => setOpen(true), []);
-  const closeFeedback = useCallback(() => setOpen(false), []);
+  // Focus goes back to whatever opened the panel (the floating button or the
+  // footer's "Give feedback") once it is closed. The dialog's own focus
+  // return can't be relied on: it runs the moment the dialog closes, while
+  // the floating button is still hidden (it hides while the panel is open),
+  // so focus could land nowhere. This runs after the button is shown again.
+  const opener = useRef(null);
+  const restore = useRef(false);
+  const openFeedback = useCallback((e) => {
+    const el = e && e.currentTarget instanceof HTMLElement ? e.currentTarget : document.activeElement;
+    opener.current = el instanceof HTMLElement && el !== document.body ? el : null;
+    setOpen(true);
+  }, []);
+  const closeFeedback = useCallback(() => {
+    restore.current = true;
+    setOpen(false);
+  }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
+  // Moving to another page closes it too, without moving the focus back.
+  useEffect(() => {
+    restore.current = false;
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (open || !restore.current) return;
+    restore.current = false;
+    const el = opener.current;
+    opener.current = null;
+    if (el && el.isConnected && document.activeElement !== el) el.focus();
+  }, [open]);
 
   return (
     <FeedbackContext.Provider value={openFeedback}>
