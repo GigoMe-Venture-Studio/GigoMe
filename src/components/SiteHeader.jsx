@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useSession } from '../lib/useSession.js';
-import { fetchProfile, logOut } from '../lib/auth.js';
+import { fetchProfile } from '../lib/auth.js';
+import LogOutButton from './LogOutButton.jsx';
 import { fetchMyCompany } from '../lib/employer.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
@@ -60,11 +61,6 @@ export default function SiteHeader() {
     return () => document.removeEventListener('keydown', onKey);
   }, [menuOpen]);
 
-  async function onLogOut() {
-    setMenuOpen(false);
-    setError((await logOut()) || '');
-  }
-
   const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
   const accountCurrent = pathname === '/account';
   const employersCurrent = pathname === '/employers' || pathname.startsWith('/employers/');
@@ -103,9 +99,7 @@ export default function SiteHeader() {
               >
                 {label}
               </Link>
-              <button type="button" className="btn btn-tertiary btn-sm signin" onClick={onLogOut}>
-                Log out
-              </button>
+              <LogOutButton className="btn btn-tertiary btn-sm signin" onError={setError} />
             </>
           ) : (
             /* It opens the student login only (employers log in on /employers). */
@@ -143,7 +137,8 @@ export default function SiteHeader() {
               >
                 {label}
               </Link>
-              <button type="button" onClick={onLogOut}>Log out</button>
+              {/* Last in the menu, set apart from the links above it. */}
+              <LogOutButton className="menu-logout" onError={setError} onDone={() => setMenuOpen(false)} />
             </>
           )}
         </nav>

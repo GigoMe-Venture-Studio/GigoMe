@@ -7,7 +7,8 @@ import { useSession } from '../lib/useSession.js';
 import ProfileFields from '../components/ProfileFields.jsx';
 import TermsCheckbox from '../components/TermsCheckbox.jsx';
 import { StudentReady } from '../components/SignupDone.jsx';
-import { fetchProfile, logOut, safeNext, saveProfile } from '../lib/auth.js';
+import { fetchProfile, safeNext, saveProfile } from '../lib/auth.js';
+import LogOutButton from '../components/LogOutButton.jsx';
 import { announceProfileChange, checkProfile } from '../lib/profile.js';
 import { TERMS_REQUIRED, acceptTerms, hasAcceptedTerms } from '../lib/terms.js';
 
@@ -109,9 +110,7 @@ function WelcomeForm({ user, next }) {
     <div className="auth-card">
       <p className="auth-small">
         Logged in as <strong className="auth-email">{user.email}</strong> ·{' '}
-        <button type="button" className="btn-link" onClick={async () => setSaveError((await logOut()) || '')}>
-          Log out
-        </button>
+        <LogOutButton className="btn-link" onError={setSaveError} />
       </p>
       {needs.termsOnly ? (
         <>

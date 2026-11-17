@@ -4,7 +4,8 @@ import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import CodeLogin from '../components/CodeLogin.jsx';
 import { supabase } from '../lib/supabase.js';
-import { logOut, safeNext } from '../lib/auth.js';
+import { safeNext } from '../lib/auth.js';
+import LogOutButton from '../components/LogOutButton.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
 
@@ -66,7 +67,7 @@ function AlreadyIn({ account, email, next }) {
           <strong className="auth-email">{email}</strong> is a student account. To list jobs, log out and log in here with
           your work email.
         </p>
-        <LogOutButton />
+        <LogOutArea />
       </div>
     );
   }
@@ -86,13 +87,11 @@ function AlreadyIn({ account, email, next }) {
   );
 }
 
-function LogOutButton() {
+function LogOutArea() {
   const [error, setError] = useState('');
   return (
     <div className="auth-buttons">
-      <button type="button" className="btn btn-secondary" onClick={async () => setError((await logOut()) || '')}>
-        Log out
-      </button>
+      <LogOutButton className="btn btn-secondary" onError={setError} />
       {error && <p className="err" role="alert">{error}</p>}
     </div>
   );

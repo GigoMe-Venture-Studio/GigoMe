@@ -55,3 +55,15 @@
   .auth-buttons { flex-direction: row; }
 }
 
+
+/* "Log out?" (LogOutButton.jsx): a small confirmation dialog. */
+.logout-dialog {
+  width: min(360px, calc(100vw - 2 * var(--gutter, 16px))); max-width: none; margin: auto; padding: var(--s5);
+  border: 0; border-radius: var(--r-md); background: var(--white); color: var(--ink);
+  box-shadow: 0 12px 32px rgba(29, 27, 46, .18);
+}
+.logout-dialog::backdrop { background: rgba(29, 27, 46, .3); }
+.logout-title { font-size: 18px; font-weight: 700; }
+.logout-text { margin-top: var(--s2); color: var(--muted); }
+.logout-buttons { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s5); }
+.logout-buttons .btn { flex: 1 1 120px; height: 44px; }
