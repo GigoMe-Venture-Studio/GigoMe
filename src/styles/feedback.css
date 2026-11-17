@@ -10,7 +10,12 @@
   box-shadow: var(--float);
   transition: opacity .15s, visibility .15s, background-color .15s;
 }
-.feedback-fab[data-away] { opacity: 0; visibility: hidden; pointer-events: none; }
+.feedback-fab[data-away] { opacity: 0; pointer-events: none; }
+/* Out of the way of a control: also unfocusable. While the panel is open it
+   only fades (the modal panel already makes it unreachable): hiding it with
+   visibility would make the browser drop its focus, and closing the panel
+   could then not give the focus back to it. */
+.feedback-fab[data-away]:not([data-panel-open]) { visibility: hidden; }
 /* Phones: a round icon button, so it covers less of the job cards. The label
    is kept for screen readers (same rules as .sr-only). */
 @media (max-width: 767px) {

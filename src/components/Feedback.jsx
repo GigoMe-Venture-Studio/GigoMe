@@ -138,8 +138,9 @@ function FeedbackButton({ hidden, onOpen }) {
       ref={ref}
       className="btn btn-secondary feedback-fab"
       data-away={away ? 'true' : undefined}
-      aria-hidden={away ? 'true' : undefined}
-      tabIndex={away ? -1 : undefined}
+      data-panel-open={hidden ? 'true' : undefined}
+      aria-hidden={covering ? 'true' : undefined}
+      tabIndex={covering ? -1 : undefined}
       onClick={onOpen}
     >
       <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
