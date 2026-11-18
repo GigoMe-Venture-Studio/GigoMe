@@ -47,6 +47,19 @@ select public.admin_set_company_status('d0000000-0000-4000-8000-0000000000c1', '
 reset role;
 select set_config('request.jwt.claims', '', false);
 
+-- Example rows with random ids, not from the seed (like older versions of
+-- it, whose ids differed): remove_examples.sql must remove them too, by
+-- is_example alone.
+with co as (
+  insert into public.companies (owner_id, name, status, is_example)
+  values (null, 'Check example from an older seed', 'approved', true) returning id
+)
+insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, is_example)
+select co.id, 'Check example job from an older seed', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10, true from co;
+-- An example job on a real company's page: flagged, so it goes too.
+insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, is_example)
+values ('d0000000-0000-4000-8000-0000000000c1', 'Check example job of a real company', 'gig', 10, 'published', 1, array['flexible'], 'hour', 10, true);
+
 -- An example job deleted by hand in the Table Editor: its report stays, with
 -- only the title and company name (job_reports_keep_job).
 delete from public.jobs where id = 'e1000000-0000-4000-8000-000000000003';
