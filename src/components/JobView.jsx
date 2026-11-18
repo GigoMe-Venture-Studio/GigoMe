@@ -1,13 +1,12 @@
 import JobText from './JobText.jsx';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import ExampleNotice from './ExampleNotice.jsx';
+import ExampleTag from './ExampleTag.jsx';
 import ReportJob from './ReportJob.jsx';
 import SaveButton from './SaveButton.jsx';
 import ShareButton from './ShareButton.jsx';
 import {
   CATEGORY_LABEL,
-  EXAMPLE_JOB_LABEL,
   ITALIAN_LABEL,
   JOB_TYPE_LABEL,
   dateLabel,
@@ -44,11 +43,6 @@ export default function JobView({ job, apply, preview = false }) {
   return (
     <article className="detail">
       <div className="detail-head">
-        {isExample(job) && (
-          <ExampleNotice label={EXAMPLE_JOB_LABEL}>
-            It's made up so testers can try GigoMe: {company.name} doesn't exist, and there's nobody to apply to.
-          </ExampleNotice>
-        )}
         <div className="detail-title-row">
           <h1 className="page-title">{job.title || <span className="muted">(No title yet)</span>}</h1>
           <div className="detail-actions">
@@ -72,6 +66,7 @@ export default function JobView({ job, apply, preview = false }) {
         </div>
         <p className="detail-co">{companyName}</p>
         <div className="tags">
+          {isExample(job) && <ExampleTag />}
           {isNew(job) && <span className="tag tag-new">New</span>}
           {JOB_TYPE_LABEL[job.job_type] && <span className="tag">{JOB_TYPE_LABEL[job.job_type]}</span>}
           {job.category && job.category !== 'other' && <span className="tag">{CATEGORY_LABEL[job.category]}</span>}

@@ -5,7 +5,8 @@ import PageShell from '../components/PageShell.jsx';
 import NotFound from './NotFound.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, languageLabels, payLabel, payNote, placeLabel, scheduleLabels, websiteHref, websiteText } from '../lib/jobs.js';
+import ExampleTag from '../components/ExampleTag.jsx';
+import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, isExample, languageLabels, payLabel, payNote, placeLabel, scheduleLabels, websiteHref, websiteText } from '../lib/jobs.js';
 import { JOB_STATUS, shownStatus } from '../lib/employer.js';
 import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
@@ -170,6 +171,7 @@ function AdminPage() {
                 <span className="muted tnum">{when(e.created_at)}</span> · {(e.admin && e.admin.full_name) || 'An admin'} ·{' '}
                 <strong>{LOG_ACTION_LABEL[e.action] || e.action}</strong>
                 {e.jobs ? `: ${e.jobs.title}` : e.companies ? `: ${e.companies.name}` : ''}
+                {((e.jobs && e.jobs.is_example) || (!e.jobs && e.companies && e.companies.is_example)) && <> <ExampleTag company={!e.jobs} /></>}
                 {e.note && <span className="admin-log-note">"{e.note}"</span>}
               </li>
             ))}
@@ -380,7 +382,7 @@ function ReportItem({ report, onDone }) {
       {job ? (
         <div className="admin-reported-job">
           <p className="review-note-label">
-            The job ({JOB_STATUS[status].label}){status === 'published' && <> · <Link to={`/jobs/${job.id}`}>open its page</Link></>}
+            The job ({JOB_STATUS[status].label}){isExample(job) && <> <ExampleTag /></>}{status === 'published' && <> · <Link to={`/jobs/${job.id}`}>open its page</Link></>}
           </p>
           <JobSummary job={job} />
         </div>

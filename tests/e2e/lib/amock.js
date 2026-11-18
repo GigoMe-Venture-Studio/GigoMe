@@ -24,6 +24,14 @@ async function amock(ctx, opts = {}) {
   };
   log.rpcs = [];
   if (opts.extraJobs) db.jobs.push(...opts.extraJobs);
+  // An example listing (supabase/seed/examples.sql) a tester reported, and a
+  // decision about it.
+  if (opts.exampleReport) {
+    db.companies.push(co('cx', 'Caffè Lumetto', 'approved', { is_example: true }));
+    db.jobs.push({ id: 'xj1', title: 'Barista, weekend mornings', description: "Example listing: this job isn't real.", job_type: 'part_time', location: null, remote: false, hours_per_week: 12, pay: null, italian_level: 'basic', start_date: null, expires_at: ago(-24 * 30), status: 'published', created_at: ago(30), review_note: null, reviewed_at: null, company_id: 'cx', is_example: true, area_id: 3, areas: { name: 'Porta Venezia' }, schedule: ['weekends'], languages: ['en'], pay_unit: 'hour', pay_min: 9, pay_max: null });
+    db.reports.push({ id: 'rx', reason: 'other', details: 'Testing the report button.', created_at: ago(1), reporter_id: 'u9', job_id: 'xj1', status: 'open' });
+    db.log.push({ id: 2, created_at: ago(3), admin_id: 'u1', action: 'job_closed', note: 'Testing', company_id: null, job_id: 'xj1' });
+  }
   await ctx.route(SB + '/rest/v1/**', async (r) => {
     const req = r.request(), url = new URL(req.url()), path = url.pathname, method = req.method(), p = url.searchParams;
     const j = (s, b) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(b) });
@@ -73,7 +81,9 @@ async function amock(ctx, opts = {}) {
     }
     if (path === '/rest/v1/moderation_log' && method === 'GET') {
       if (!opts.admin) return j(200, []);
-      return j(200, db.log.map((e) => ({ ...e, companies: e.company_id ? { name: db.companies.find((c) => c.id === e.company_id).name } : null, jobs: e.job_id ? { title: (db.jobs.find((x) => x.id === e.job_id) || {}).title } : null })));
+      return j(200, db.log.map((e) => ({ ...e,
+        companies: e.company_id ? { name: db.companies.find((c) => c.id === e.company_id).name, is_example: Boolean(db.companies.find((c) => c.id === e.company_id).is_example) } : null,
+        jobs: e.job_id ? { title: (db.jobs.find((x) => x.id === e.job_id) || {}).title, is_example: Boolean((db.jobs.find((x) => x.id === e.job_id) || {}).is_example) } : null })));
     }
     if (path === '/rest/v1/feedback' && method === 'GET') {
       log.feedbackReads = (log.feedbackReads || []).concat([url.search]);

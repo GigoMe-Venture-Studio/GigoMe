@@ -63,5 +63,4 @@ select 'Example companies left' as what, count(*) as left_behind from public.com
 union all select 'Example jobs left', count(*) from public.jobs where is_example
 union all select 'Jobs of companies without an owner', count(*) from public.jobs j
   join public.companies c on c.id = j.company_id where c.owner_id is null
-union all select 'Reports naming an example company', count(*) from public.job_reports where company_name like 'Example %'
 union all select 'Companies without an owner', count(*) from public.companies where owner_id is null;

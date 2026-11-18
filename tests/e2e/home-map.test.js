@@ -119,7 +119,7 @@ const scrollMapTo = (p, below) => p.evaluate((d) => { const t = document.querySe
     ok(await ex.getAttribute('class') === 'job-marker job-marker-example maplibregl-marker' || (await ex.getAttribute('class')).includes('job-marker-example'), name + ': example marker styled as an example');
     ok((await ex.innerText()).includes('Example') && (await ex.getAttribute('aria-label')).startsWith('Example listing, not a real job: '), name + ': example marker says "Example"');
     ok(await p.$$eval('.home-map .job-marker', (e) => e.findIndex((x) => x.classList.contains('job-marker-example')) === 0), name + ': example markers come first, so real ones are drawn over them');
-    ok(await p.$eval('.home-map .job-marker-example', (e) => { const s = getComputedStyle(e); return s.backgroundColor === 'rgb(29, 27, 46)'; }), name + ': example marker is graphite');
+    ok(await p.$eval('.home-map .job-marker-example', (e) => { const s = getComputedStyle(e); return s.backgroundColor === 'rgb(255, 255, 255)' && s.borderTopStyle === 'dashed'; }), name + ': example marker is a small dashed pill');
     // Tap a real job: title, company, pay and a link to the job.
     await p.locator(`.home-map .job-marker[data-id="${ID(1)}"]`).click(); await p.waitForTimeout(500);
     const card = name === 'phone' ? '.home-map .map-sheet' : '.home-map .maplibregl-popup';
@@ -130,7 +130,7 @@ const scrollMapTo = (p, below) => p.evaluate((d) => { const t = document.querySe
     if (name === 'phone') await p.click('.map-sheet-close'); else await p.click('.maplibregl-popup-close-button');
     await ex.click(); await p.waitForTimeout(500);
     const te = await p.innerText(card + ' .map-card-title >> xpath=..');
-    ok(te.startsWith('Example listing, not a real job') && te.includes(EXAMPLE_JOBS[0].title), name + ': the example\'s card starts with the badge');
+    ok(te.includes(EXAMPLE_JOBS[0].title) && await p.locator(card + ' .map-card-co .tag-example').count() === 1, name + ': the example\'s card has the "Example" tag');
     if (name === 'phone') await p.click('.map-sheet-close'); else await p.click('.maplibregl-popup-close-button');
     await p.locator(`.home-map .job-marker[data-id="${ID(1)}"]`).click(); await p.waitForTimeout(400);
     await p.click(card + ' a.map-card-title'); await p.waitForSelector('.detail', { timeout: 10000 });

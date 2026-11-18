@@ -150,19 +150,20 @@ A few details worth knowing:
 ## Example listings
 
 While the site is being tested, testers need listings to try search,
-filters and the map. `supabase/seed/examples.sql` loads 6 made-up companies
-and 19 published jobs covering every filter value and a few edge cases;
+filters and the map. `supabase/seed/examples.sql` loads 5 invented
+companies and 10 published jobs that read like real Milan student jobs;
 `supabase/seed/remove_examples.sql` deletes them again with everything that
 points at them. Both are run by hand in the SQL Editor (not migrations):
 remove them when testing ends, and before the public launch at the latest.
 
 - **Load:** SQL Editor > New query > paste all of
   `supabase/seed/examples.sql` > Run. The result lists what was loaded,
-  filter by filter (6 companies, 19 live jobs). It refuses to run while
+  filter by filter (5 companies, 10 live jobs). It refuses to run while
   examples are already there, and before the migration that adds
   `is_example` is applied.
-- **Refresh** ("New" badges and the job that expires in 2 days count from
-  the day they were loaded): run `remove_examples.sql`, then `examples.sql`.
+- **Refresh** ("New" badges and start dates count from the day they were
+  loaded), or load a newer version of the file: run `remove_examples.sql`,
+  then `examples.sql`.
 - **Remove:** SQL Editor > paste all of `supabase/seed/remove_examples.sql`
   > Run. Every row of its result must say 0. It deletes every example
   company and job and what points at them: students' saves and follows,
@@ -172,6 +173,18 @@ remove them when testing ends, and before the public launch at the latest.
   alone, and so are testers' saved searches (filters, not listings).
   Running it again does nothing.
 
+What they are:
+
+- Companies: Caffè Lumetto, Libreria Pennalunga, Centro Studi Lavagnetta,
+  Brusio Eventi and Ordito Labs. Invented names, meant not to be or resemble
+  real Milan businesses or brands; no website, phone or street address.
+- Jobs: realistic titles, pay (about €9 to €16 an hour, as Milan cafés,
+  shops, tutoring centres and events pay students), hours, schedules and
+  descriptions in the job form's structure. Every description starts
+  "Example listing: this job isn't real. It's here so you can try GigoMe
+  during our test." Locations are the area only, or a pin exactly on a
+  metro station (a public place), never a street address.
+
 How they're kept apart from real listings:
 
 - `companies.is_example` and `jobs.is_example` mark them (default false).
@@ -179,17 +192,19 @@ How they're kept apart from real listings:
   employer can turn a real listing into an example or the other way round.
 - Example companies have **no owner** (`owner_id` empty, allowed only for
   them by the check `companies_owner_unless_example`): no fake login
-  accounts, and nobody can edit them or their jobs through the API. Every
-  name starts with "Example "; the only contact detail is hello@gigome.org,
-  never shown.
-- The site shows "Example listing, not a real job" on every card, map card
-  and page (company pages: "Example company, not a real employer"), lists
-  them after the real listings everywhere (home page, /jobs, company pages,
-  saved jobs), asks search engines not to index them and gives them no
-  JobPosting data. `my_saved_jobs` says which saved jobs are examples, so
-  /saved can do the same for ones that are no longer live.
-- `reveal_job_contact` refuses example jobs, so no contact is shown and no
-  apply click is recorded.
+  accounts, and nobody can edit them or their jobs through the API. The
+  only contact detail stored is hello@gigome.org, never shown.
+- The site shows a small "Example" tag on every card, map card and job page
+  (screen readers hear "Example listing, not a real job"), a line on an
+  example company's page, lists them after the real listings everywhere
+  (home page, /jobs, company pages, saved jobs), asks search engines not to
+  index them and gives them no JobPosting data. `my_saved_jobs` says which
+  saved jobs are examples, so /saved can do the same for ones that are no
+  longer live.
+- "Apply" on an example opens a short demo of the real step, marked "Demo",
+  with a made-up link and email under `.example` (a domain that can never
+  belong to anyone), as plain text. `reveal_job_contact` refuses example
+  jobs anyway, so no contact is shown and no apply click is recorded.
 - `admin_stats()` and `supabase/queries/kpis.sql` leave example companies,
   jobs and any clicks on them out.
 - Every database rule applies to them as to real jobs: nothing is switched

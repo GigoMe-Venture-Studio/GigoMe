@@ -161,15 +161,21 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   in its usual order: `fetchJobs()` orders by `is_example` first (so limits
   like the home page's 5 take real ones first), and any list re-sorted on
   the page goes through `realFirst()` (distance, saved order, followed
-  companies, the map's multi-job card). Every
-  card (`JobCard`, first, before the title), map card and page shows the
-  graphite badge `EXAMPLE_JOB_LABEL` "Example listing, not a real job"
-  (`.tag-example`); job and company pages also start with
-  `ExampleNotice.jsx` (companies: "Example company, not a real employer").
-  Their pages are noindex and get no JobPosting data. "Apply" on an example
-  never calls `reveal_job_contact` (the database refuses it too) and opens
-  nothing: it explains instead. Anything new that shows a job or company
-  must show the badge too.
+  companies, the map's multi-job card). They read like real jobs (invented
+  company names, realistic pay), so the marking is what keeps them honest:
+  every card (right after the company), map card and marker, job page
+  (first tag), saved job, followed company and /admin report shows the
+  small dashed "Example" tag (`ExampleTag.jsx`, `.tag-example`; screen
+  readers and hovering get `EXAMPLE_JOB_LABEL` "Example listing, not a real
+  job", or "Example company, not a real employer"); an example company's
+  page adds one line under its name; every example description starts
+  "Example listing: this job isn't real. ..." (the seed). Their pages are
+  noindex and get no JobPosting data. "Apply" on an example never calls
+  `reveal_job_contact` (the database refuses it too) and opens nothing: it
+  opens `ApplyDemo.jsx`, a dialog marked "Demo" that shows the real "How to
+  apply" step with a made-up link and email under the reserved `.example`
+  domain (`demoContact()`), as plain text. Styles in `examples.css`.
+  Anything new that shows a job or company must show the tag too.
   Company pages: `src/pages/Company.jsx` (`/companies/:id`): approved
   companies only (asked for explicitly), name, description, website and open
   jobs with the map when some have a location; never the contact email.
@@ -396,7 +402,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   button must be fully visible at first load, logged in or out, on desktop
   and at 375px (checked in `feedback.test.js`).
 - `src/styles/site.css`: tokens, base styles and shared components; page
-  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `home.css`, `feedback.css`,
+  styles live next to it (`auth.css`, `header.css`, `jobs.css`, `examples.css`, `home.css`, `feedback.css`,
   `account.css`, `employer.css`, `admin.css`, `error.css`, `signup.css`, `info.css`).
   No CSS framework. The accent is the logo's purple `#A46BD6` (`--purple`,
   `--accent`): text on it is graphite (4.5:1), never white. No inline

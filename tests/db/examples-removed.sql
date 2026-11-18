@@ -7,6 +7,8 @@ create temporary table r (n serial, check_name text, expected text, actual text)
 insert into r (check_name, expected, actual) values
   ('Removal: no example company or job is left', '0, 0',
    (select count(*) from public.companies where is_example) || ', ' || (select count(*) from public.jobs where is_example)),
+  ('Removal: example rows from an older seed (other ids) and an example job of a real company are gone too', '0',
+   (select count(*) from public.jobs where title like 'Check example%') + (select count(*) from public.companies where name like 'Check example%') || ''),
   ('Removal: no company without an owner is left', '0',
    (select count(*) from public.companies where owner_id is null)::text),
   ('Removal: reports on examples are gone (also on one deleted by hand); the real one stays', 'A real report',

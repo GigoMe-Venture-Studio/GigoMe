@@ -4,9 +4,9 @@ import { Link, useNavigate, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
-import ExampleNotice from '../components/ExampleNotice.jsx';
+import ExampleTag from '../components/ExampleTag.jsx';
 import { supabase } from '../lib/supabase.js';
-import { EXAMPLE_COMPANY_LABEL, fetchCompany, fetchJobs, websiteHref, websiteText } from '../lib/jobs.js';
+import { fetchCompany, fetchJobs, websiteHref, websiteText } from '../lib/jobs.js';
 import { shortText, usePageMeta } from '../lib/seo.js';
 import { useSession } from '../lib/useSession.js';
 import { useSavedJobs } from '../lib/saved.js';
@@ -74,15 +74,15 @@ function CompanyPage() {
   const site = websiteHref(company.website);
   return (
     <article className="company-page">
-      {company.is_example && (
-        <ExampleNotice label={EXAMPLE_COMPANY_LABEL}>
-          It's made up so testers can try GigoMe: it doesn't exist, and its jobs aren't real.
-        </ExampleNotice>
-      )}
       <div className="company-title-row">
         <h1 className="page-title">{company.name}</h1>
         <FollowButton company={company} />
       </div>
+      {company.is_example && (
+        <p className="company-example muted">
+          <ExampleTag company /> This company isn't real. It's here so you can try GigoMe during our test.
+        </p>
+      )}
       {company.description && <JobText text={company.description} className="company-about" />}
       {site && (
         <p className="company-site">

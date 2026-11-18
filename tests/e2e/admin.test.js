@@ -151,6 +151,17 @@ const probe = (sel) => { const b = document.querySelector('.feedback-fab'); cons
        && await r2.locator('button:has-text("Resolve the report")').count() === 1, 'only "Resolve the report" is offered for it');
     await ctx.close();
   }
+
+  // ---- Example listings: realistic names, so /admin tags them
+  { const ctx = await b.newContext(desk); await amock(ctx, { admin: true, exampleReport: true }); const p = await ctx.newPage();
+    await p.goto(E + '/login'); await login(p); await p.goto(E + '/admin'); await p.waitForSelector('#admin-reports .admin-item');
+    const exItem = p.locator('#admin-reports .admin-item', { hasText: 'Testing the report button.' });
+    const realItem = p.locator('#admin-reports .admin-item', { hasText: 'They asked me for a €50 fee.' });
+    ok(await exItem.locator('.tag-example').count() === 1 && (await exItem.locator('.tag-example').textContent()) === 'Example listing, not a real job', 'admin: a report on an example job shows the "Example" tag');
+    ok(await realItem.locator('.tag-example').count() === 0, 'admin: a report on a real job has none');
+    const ex = p.locator('.admin-log li', { hasText: 'Barista, weekend mornings' });
+    ok(await ex.locator('.tag-example').count() === 1 && await p.locator('.admin-log li', { hasText: 'Approved Co' }).locator('.tag-example').count() === 0, 'admin: recent decisions tag the example, not the real company');
+    await ctx.close(); }
   await b.close();
   console.log(`\n${pass} passed, ${fail} failed`);
 })();

@@ -295,12 +295,21 @@ export function metroLabel(job) {
 }
 
 // Example listings (supabase/seed/examples.sql): made-up companies and jobs
-// for testers, until the public launch. Marked on every card and page, never
-// indexed, and Apply explains instead of opening anything. A job counts as an
-// example when it or its company is one.
+// for testers, until the public launch. A small "Example" tag on every card,
+// map card and page (ExampleTag.jsx; screen readers hear the whole label),
+// never indexed, and Apply opens a demo instead of anything real. A job
+// counts as an example when it or its company is one.
 export const EXAMPLE_JOB_LABEL = 'Example listing, not a real job';
 export const EXAMPLE_COMPANY_LABEL = 'Example company, not a real employer';
 export const isExample = (job) => Boolean(job && (job.is_example || (job.companies && job.companies.is_example)));
+// The made-up application link and email the Apply demo shows for an
+// example job. Always under .example, a domain reserved so it can never
+// belong to anyone (RFC 2606): nothing real could be reached even if copied.
+export function demoContact(job) {
+  const name = (job && job.companies && job.companies.name) || 'employer';
+  const slug = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'employer';
+  return { url: `https://${slug}.example/jobs`, email: `jobs@${slug}.example` };
+}
 // Real listings first, then example ones, each group in the order it had.
 // For every list sorted on the page (by distance, saved order, ...).
 export const realFirst = (jobs) => [...jobs.filter((j) => !isExample(j)), ...jobs.filter(isExample)];
