@@ -52,10 +52,10 @@ for (const j of JOBS) { j.is_example = false; j.area_id = j.area_id || null; j.l
 const CONTACT = { [ID(1)]: { apply_url: 'https://nebbia-example.it/jobs', apply_email: 'jobs@nebbia-example.it' } };
 // Example listings (supabase/seed/examples.sql), only with { examples: true }:
 // a made-up company without an owner and two of its jobs, one on the map.
-const EXAMPLE_CO = { id: 'e0000000-0000-4000-8000-0000000000c1', name: 'Example Café Immaginario', status: 'approved', website: null, description: 'A made-up café, invented to test GigoMe.', is_example: true };
+const EXAMPLE_CO = { id: 'e0000000-0000-4000-8000-0000000000c1', name: 'Caffè Lumetto', status: 'approved', website: null, description: 'A small café and bistro near Porta Venezia.', is_example: true };
 const EXAMPLE_JOBS = [
-  { id: 'e0000000-0000-4000-8000-000000000001', title: 'Evening waiter or waitress', job_type: 'part_time', category: 'hospitality', location: null, remote: false, hours_per_week: 16, pay: null, pay_unit: 'hour', pay_min: 9.5, pay_max: null, pay_hourly: 9.5, italian_level: 'basic', start_date: null, created_at: ago(2), published_at: ago(1), description: 'Example listing, made up for testing GigoMe.', schedule: ['weekday_evenings'], languages: ['en'], area_id: 1, areas: { name: 'Duomo / Centro' }, latitude: 45.4655, longitude: 9.1885, show_exact_location: true, nearest_station_m: 145, metro_stations: { name: 'Duomo', lines: ['M1', 'M3'], latitude: 45.464, longitude: 9.1895 } },
-  { id: 'e0000000-0000-4000-8000-000000000002', title: 'Online homework helper', job_type: 'part_time', category: 'tutoring_education', location: null, remote: true, hours_per_week: 10, pay: null, pay_unit: 'hour', pay_min: 12, pay_max: null, pay_hourly: 12, italian_level: 'none', start_date: null, created_at: ago(21), published_at: ago(20), description: 'Example listing, made up for testing GigoMe.', schedule: ['flexible'], languages: ['en'], area_id: null, areas: null, latitude: null, longitude: null, show_exact_location: true, nearest_station_m: null, metro_stations: null }
+  { id: 'e0000000-0000-4000-8000-000000000001', title: 'Evening waiter or waitress', job_type: 'part_time', category: 'hospitality', location: null, remote: false, hours_per_week: 16, pay: null, pay_unit: 'hour', pay_min: 9.5, pay_max: null, pay_hourly: 9.5, italian_level: 'basic', start_date: null, created_at: ago(2), published_at: ago(1), description: "Example listing: this job isn't real. It's here so you can try GigoMe during our test.\n\nWhat you'll do:\n- Take orders and serve tables", schedule: ['weekday_evenings'], languages: ['en'], area_id: 1, areas: { name: 'Duomo / Centro' }, latitude: 45.4655, longitude: 9.1885, show_exact_location: true, nearest_station_m: 145, metro_stations: { name: 'Duomo', lines: ['M1', 'M3'], latitude: 45.464, longitude: 9.1895 } },
+  { id: 'e0000000-0000-4000-8000-000000000002', title: 'Online homework helper', job_type: 'part_time', category: 'tutoring_education', location: null, remote: true, hours_per_week: 10, pay: null, pay_unit: 'hour', pay_min: 12, pay_max: null, pay_hourly: 12, italian_level: 'none', start_date: null, created_at: ago(21), published_at: ago(20), description: "Example listing: this job isn't real. It's here so you can try GigoMe during our test.\n\nWhat you'll do:\n- Take orders and serve tables", schedule: ['flexible'], languages: ['en'], area_id: null, areas: null, latitude: null, longitude: null, show_exact_location: true, nearest_station_m: null, metro_stations: null }
 ];
 for (const j of EXAMPLE_JOBS) Object.assign(j, { is_example: true, companies: EXAMPLE_CO, company_id: EXAMPLE_CO.id, expires_at: new Date(Date.now() + 40 * 86400000).toISOString() });
 
@@ -153,7 +153,7 @@ async function mock(ctx, opts = {}) {
       // Saved ids that aren't live jobs: closed ones, an example if its id starts like the examples'.
       return j(200, [...log.saved].map((id) => { const jb = JOBS.concat(opts.examples ? EXAMPLE_JOBS : []).find((x) => x.id === id);
         if (jb) return { job_id: id, saved_at: ago(1), title: jb.title, company_name: jb.companies.name, live: true, is_example: Boolean(jb.is_example) };
-        return id.startsWith('e0000000') ? { job_id: id, saved_at: ago(2), title: 'Stocktaking helper, one weekend', company_name: 'Example Libreria Finta', live: false, is_example: true }
+        return id.startsWith('e0000000') ? { job_id: id, saved_at: ago(2), title: 'Christmas gift wrapping and shop help', company_name: 'Libreria Pennalunga', live: false, is_example: true }
           : { job_id: id, saved_at: ago(2), title: 'Closed cafe job', company_name: 'Old Cafe', live: false, is_example: false }; }));
     }
     // ---- saved searches, follows, opened jobs (students)
@@ -173,7 +173,7 @@ async function mock(ctx, opts = {}) {
       const co = (id) => [NEBBIA, FINTRA, ...(opts.examples ? [EXAMPLE_CO] : [])].find((c) => c.id === id);
       if (method === 'GET') {
         let rows = log.follows; const eq = url.searchParams.get('company_id'); if (eq) rows = rows.filter((x) => x.company_id === eq.slice(3));
-        rows = rows.map((x) => ({ company_id: x.company_id, created_at: x.created_at, companies: co(x.company_id) ? { id: x.company_id, name: co(x.company_id).name } : null }));
+        rows = rows.map((x) => ({ company_id: x.company_id, created_at: x.created_at, companies: co(x.company_id) ? { id: x.company_id, name: co(x.company_id).name, is_example: Boolean(co(x.company_id).is_example) } : null }));
         const single = /vnd\.pgrst\.object/.test(req.headers()['accept'] || '');
         return single ? (rows[0] ? j(200, rows[0]) : j(406, { code: 'PGRST116' })) : j(200, rows);
       }

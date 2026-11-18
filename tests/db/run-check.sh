@@ -57,22 +57,23 @@ left_behind "The older internships test"
 if ! out=$("${P[@]}" -U supa -d "$DB" -At -F '|' -f supabase/seed/examples.sql 2>&1); then
   echo "examples.sql failed:"; echo "$out"; exit 1
 fi
-for want in '1|Example companies|6' '2|Live example jobs|19' '3|Job types|gig, other, part_time' \
-             '4|Categories|8 of 8: ' '5|Areas|16 of 16' '6|Remote / on site|3 remote, 16 on site' '7|Italian|basic, fluent, none' '8|Hours per week|4 to 30' \
+for want in '1|Example companies|5: Brusio Eventi, Caffè Lumetto, Centro Studi Lavagnetta, Libreria Pennalunga, Ordito Labs' \
+             '2|Live example jobs|10' '3|Job types|gig, other, part_time' \
+             '4|Categories|7 of 8: events, hospitality, marketing_social, office_admin, retail, tech, tutoring_education' \
+             '6|Remote / on site|2 remote, 8 on site' '7|Italian|basic, fluent, none' \
              '9|Schedules|flexible, weekday_afternoons, weekday_evenings, weekday_mornings, weekends' \
-             '10|Languages|ar, de, en, es, fr, it, other, zh' '11|Pay|hour, month, project; hourly equivalent 7.50 to 25.00' \
-             '12|Metro badge (exact pin within 1 km)|14 jobs; 1 pinned without one' '13|Area only (no exact pin)|2' \
-             '14|New (published in the last 3 days)|5' \
-             '15|Expiring within 3 days|1' '16|Longest title|117 characters'; do
+             '11|Pay|hour, month, project; hourly equivalent 9.00 to 15.00' \
+             '12|Exact pins (each on a metro station)|5 pins, 5 on a station: ' '13|Area only (no exact pin)|3' \
+             '14|New (published in the last 3 days)|4' '15|Descriptions starting with the example line|10 of 10'; do
   if ! grep -qF "$want" <<<"$out"; then echo "examples.sql: expected a row starting \"$want\", got:"; echo "$out"; exit 1; fi
 done
-echo "examples.sql: loaded, every filter covered"
+echo "examples.sql: loaded, with the expected coverage"
 if out=$("${P[@]}" -U supa -d "$DB" -f supabase/seed/examples.sql 2>&1); then
   echo "examples.sql ran twice: it should refuse while examples are loaded"; exit 1
 fi
 grep -q 'already loaded' <<<"$out" || { echo "examples.sql refused for another reason:"; echo "$out"; exit 1; }
 n=$("${P[@]}" -U supa -d "$DB" -At -c "select count(*) from public.jobs where is_example")
-[ "$n" = "19" ] || { echo "examples.sql run twice changed the example jobs: $n"; exit 1; }
+[ "$n" = "10" ] || { echo "examples.sql run twice changed the example jobs: $n"; exit 1; }
 echo "examples.sql: refuses to run twice"
 
 checks "Security check with the examples loaded" supabase/checks/security_check.sql

@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
+import ApplyDemo from '../components/ApplyDemo.jsx';
 import JobView from '../components/JobView.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
@@ -88,7 +89,7 @@ function JobPage() {
   return (
     <>
       <BackLink />
-      <JobView job={job} apply={<HowToApply jobId={job.id} jobTitle={job.title} example={isExample(job)} />} />
+      <JobView job={job} apply={<HowToApply jobId={job.id} jobTitle={job.title} demoJob={isExample(job) ? job : null} />} />
     </>
   );
 }
@@ -99,14 +100,19 @@ function mailtoFor(email, title) {
   return mailtoHref(email, `Application: ${title} (via GigoMe)`);
 }
 
-// example: a made-up listing. Everything looks as on a real job until a
-// student presses "Apply", which then explains instead: nothing opens, the
-// database isn't asked (it would refuse) and no apply click is counted.
-function HowToApply({ jobId, jobTitle, example = false }) {
+// demoJob: the job, when it's an example listing (made up for testers).
+// Everything looks as on a real job until a student presses "Apply", which
+// then opens a short demo of the real step (ApplyDemo.jsx) instead: nothing
+// opens, the database isn't asked (it would refuse) and no apply click is
+// counted.
+function HowToApply({ jobId, jobTitle, demoJob = null }) {
+  const example = Boolean(demoJob);
   const { session, loading } = useSession();
   const userId = session ? session.user.id : null;
   const [accountType, setAccountType] = useState(null);
   const [reveal, setReveal] = useState({ status: 'idle' });
+  const [demo, setDemo] = useState(false);
+  const applyButton = useRef(null);
 
   useEffect(() => {
     if (!userId) {
@@ -181,7 +187,7 @@ function HowToApply({ jobId, jobTitle, example = false }) {
   // once that's known, or closed again for an email-only job.
   async function onApply() {
     if (example) {
-      setReveal({ status: 'example' });
+      setDemo(true);
       return;
     }
     let tab = null;
@@ -226,18 +232,6 @@ function HowToApply({ jobId, jobTitle, example = false }) {
     setReveal({ status: 'done', ...result, opened });
   }
 
-  if (reveal.status === 'example') {
-    return frame(
-      <div className="apply-contact">
-        <p className="apply-heading">This is an example listing</p>
-        <p className="apply-note apply-opened" role="status">
-          It isn't a real job, so there's nobody to apply to: nothing opened and nothing was sent or counted. On a real
-          job, Apply opens the employer's application page or your email app, and shows their contact here.
-        </p>
-      </div>
-    );
-  }
-
   if (reveal.status === 'done') {
     if (!reveal.url && !reveal.email) {
       return frame(
@@ -279,13 +273,23 @@ function HowToApply({ jobId, jobTitle, example = false }) {
 
   return frame(
     <>
-      <button type="button" className="btn btn-primary" onClick={onApply} disabled={reveal.status === 'busy'}>
+      <button ref={applyButton} type="button" className="btn btn-primary" onClick={onApply} disabled={reveal.status === 'busy'}>
         {reveal.status === 'busy' ? 'Opening…' : 'Apply'}
       </button>
       {reveal.status === 'error' && <p className="err" role="alert">{reveal.message}</p>}
       <p className="apply-note">
-        {example ? 'An example listing: Apply only shows what would happen.' : 'Applications go straight to the employer.'}
+        {example ? 'An example listing: Apply opens a short demo, and nothing is sent.' : 'Applications go straight to the employer.'}
       </p>
+      {example && (
+        <ApplyDemo
+          open={demo}
+          job={demoJob}
+          onClose={() => {
+            setDemo(false);
+            if (applyButton.current) applyButton.current.focus();
+          }}
+        />
+      )}
     </>
   );
 }

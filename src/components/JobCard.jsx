@@ -1,8 +1,8 @@
 import { Link } from 'react-router';
+import ExampleTag from './ExampleTag.jsx';
 import SaveButton from './SaveButton.jsx';
 import {
   CATEGORY_LABEL,
-  EXAMPLE_JOB_LABEL,
   ITALIAN_LABEL,
   JOB_TYPE_LABEL,
   hoursLabel,
@@ -21,7 +21,8 @@ import {
 // distance: "1.2 km away" when the person chose "Use my location" (worked
 // out on their device), else null.
 // save false: no Save button on the card (the home page).
-// An example listing (made up for testers) says so first, before the title.
+// An example listing (made up for testers) has a small "Example" tag right
+// after the company, before the other tags.
 export default function JobCard({ job, distance = null, save = true }) {
   const metro = metroLabel(job);
   const when = scheduleItems(job);
@@ -30,10 +31,10 @@ export default function JobCard({ job, distance = null, save = true }) {
     <li className="job-card">
       <Link className="role-row" to={`/jobs/${job.id}`}>
         <div>
-          {example && <div className="role-example"><span className="tag tag-example">{EXAMPLE_JOB_LABEL}</span></div>}
           <div className="role-l1">
             <span className="role-title">{job.title}</span>
             {job.companies && <span className="role-co">{job.companies.name}</span>}
+            {example && <ExampleTag />}
             {isNew(job) && <span className="tag tag-new">New</span>}
             <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>
               {ITALIAN_LABEL[job.italian_level]}

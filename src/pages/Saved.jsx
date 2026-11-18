@@ -5,7 +5,8 @@ import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
-import { EXAMPLE_JOB_LABEL, fetchJobs, isExample, realFirst } from '../lib/jobs.js';
+import ExampleTag from '../components/ExampleTag.jsx';
+import { fetchJobs, isExample, realFirst } from '../lib/jobs.js';
 import { fetchAreas } from '../lib/areas.js';
 import { fetchSavedList, setSaved, useSavedJobs } from '../lib/saved.js';
 import {
@@ -108,9 +109,8 @@ function GoneRow({ row }) {
   return (
     <li className="saved-gone-row">
       <div>
-        {isExample(row) && <div className="role-example"><span className="tag tag-example">{EXAMPLE_JOB_LABEL}</span></div>}
         <p className="role-title">{row.title}</p>
-        <p className="role-co">{row.company_name} · <span className="muted">No longer available</span></p>
+        <p className="role-co">{row.company_name}{isExample(row) && <> <ExampleTag /></>} · <span className="muted">No longer available</span></p>
         {error && <p className="err" role="alert">{error}</p>}
       </div>
       <button type="button" className="btn btn-tertiary btn-sm" onClick={async () => setError((await setSaved(row.job_id, false)) || '')}
@@ -219,7 +219,10 @@ function Following() {
           <ul className="saved-rows">
             {state.data.follows.map((f) => (
               <li key={f.company_id} className="saved-row">
-                <Link className="saved-row-title" to={`/companies/${f.company_id}`}>{f.companies.name}</Link>
+                <div>
+                  <Link className="saved-row-title" to={`/companies/${f.company_id}`}>{f.companies.name}</Link>
+                  {f.companies.is_example && <> <ExampleTag company /></>}
+                </div>
                 <button type="button" className="btn btn-tertiary btn-sm" aria-label={`Unfollow ${f.companies.name}`}
                   onClick={async () => {
                     setError('');

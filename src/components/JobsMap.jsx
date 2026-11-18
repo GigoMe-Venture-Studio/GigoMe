@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import ExampleTag from './ExampleTag.jsx';
 import { createMap, maplibregl } from '../lib/map.js';
 import { EXAMPLE_JOB_LABEL, isExample, markerPay, metroLabel, payLabel, placeLabel, realFirst } from '../lib/jobs.js';
 import { mapParam } from '../lib/geo.js';
@@ -58,15 +59,21 @@ function cardFor(job, onOpenJob) {
     e.preventDefault();
     onOpenJob(job.id);
   });
-  if (isExample(job)) {
-    const ex = document.createElement('span');
-    ex.className = 'tag tag-example map-card-example';
-    ex.textContent = EXAMPLE_JOB_LABEL;
-    box.append(ex);
-  }
   const co = document.createElement('p');
   co.className = 'map-card-co';
   co.textContent = job.companies ? job.companies.name : '';
+  // Example listings: the small "Example" tag after the company (as ExampleTag).
+  if (isExample(job)) {
+    const ex = document.createElement('span');
+    ex.className = 'tag tag-example';
+    ex.title = EXAMPLE_JOB_LABEL;
+    ex.textContent = 'Example';
+    const rest = document.createElement('span');
+    rest.className = 'sr-only';
+    rest.textContent = EXAMPLE_JOB_LABEL.slice('Example'.length);
+    ex.append(rest);
+    co.append(' ', ex);
+  }
   const meta = document.createElement('p');
   meta.className = 'map-card-meta';
   meta.textContent = `${payLabel(job)} · ${placeLabel(job)}`;
@@ -322,9 +329,8 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
           <ul className="map-sheet-list">
             {shown.map((job) => (
               <li key={job.id}>
-                {isExample(job) && <span className="tag tag-example map-card-example">{EXAMPLE_JOB_LABEL}</span>}
                 <Link className="map-card-title" to={`/jobs/${job.id}`}>{job.title}</Link>
-                <p className="map-card-co">{job.companies ? job.companies.name : ''}</p>
+                <p className="map-card-co">{job.companies ? job.companies.name : ''}{isExample(job) && <> <ExampleTag /></>}</p>
                 <p className="map-card-meta">{payLabel(job)} · {placeLabel(job)}</p>
                 {metroLabel(job) && <p className="map-card-meta">{metroLabel(job)}</p>}
               </li>

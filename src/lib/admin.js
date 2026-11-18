@@ -5,8 +5,8 @@ import { supabase } from './supabase.js';
 const JOB_COLUMNS =
   'id, title, description, job_type, location, remote, hours_per_week, pay, italian_level, start_date, expires_at, ' +
   'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages, ' +
-  'pay_unit, pay_min, pay_max, pay_hourly, areas(name), ' +
-  'companies(id, name, website, description, status)';
+  'pay_unit, pay_min, pay_max, pay_hourly, is_example, areas(name), ' +
+  'companies(id, name, website, description, status, is_example)';
 
 // What reviewers check, in the same words /how-it-works and /safety promise
 // students and employers (change them together). Display only for
@@ -120,7 +120,7 @@ export async function fetchOpenReports() {
 export async function fetchRecentDecisions(limit = 30) {
   const { data, error } = await supabase
     .from('moderation_log')
-    .select('id, created_at, admin_id, action, note, companies(name), jobs(title)')
+    .select('id, created_at, admin_id, action, note, companies(name, is_example), jobs(title, is_example)')
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) throw error;

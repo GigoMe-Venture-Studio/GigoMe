@@ -85,7 +85,7 @@ export async function deleteSearch(id) {
 export async function fetchFollows() {
   const { data, error } = await supabase
     .from('company_follows')
-    .select('company_id, created_at, companies(id, name)')
+    .select('company_id, created_at, companies(id, name, is_example)')
     .order('created_at', { ascending: false });
   if (error) throw error;
   return data || [];

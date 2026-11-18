@@ -22,31 +22,31 @@ insert into public.job_contacts (job_id, apply_email) values ('d0000000-0000-400
 -- and presses Apply on the real one (an example one is refused).
 set role authenticated;
 select set_config('request.jwt.claims', '{"sub":"d0000000-0000-4000-8000-000000000001","role":"authenticated"}', false);
-insert into public.saved_jobs (job_id) values ('e0000000-0000-4000-8000-000000000001'), ('d0000000-0000-4000-8000-0000000000a1');
-insert into public.company_follows (company_id) values ('e0000000-0000-4000-8000-0000000000c1'), ('d0000000-0000-4000-8000-0000000000c1');
+insert into public.saved_jobs (job_id) values ('e1000000-0000-4000-8000-000000000001'), ('d0000000-0000-4000-8000-0000000000a1');
+insert into public.company_follows (company_id) values ('e1000000-0000-4000-8000-0000000000c1'), ('d0000000-0000-4000-8000-0000000000c1');
 insert into public.job_reports (job_id, reason, details) values
-  ('e0000000-0000-4000-8000-000000000001', 'other', 'Testing reports on an example'),
-  ('e0000000-0000-4000-8000-000000000002', 'misleading', 'Testing reports on an example'),
-  ('e0000000-0000-4000-8000-000000000003', 'other', 'Report on an example job deleted by hand later'),
+  ('e1000000-0000-4000-8000-000000000001', 'other', 'Testing reports on an example'),
+  ('e1000000-0000-4000-8000-000000000002', 'misleading', 'Testing reports on an example'),
+  ('e1000000-0000-4000-8000-000000000003', 'other', 'Report on an example job deleted by hand later'),
   ('d0000000-0000-4000-8000-0000000000a1', 'other', 'A real report');
 select * from public.reveal_job_contact('d0000000-0000-4000-8000-0000000000a1');
 do $$
 begin
-  perform * from public.reveal_job_contact('e0000000-0000-4000-8000-000000000001');
+  perform * from public.reveal_job_contact('e1000000-0000-4000-8000-000000000001');
   raise exception 'reveal_job_contact gave the contact of an example job';
 exception when no_data_found then null;  -- P0002: refused, as it should be
 end $$;
 
 -- The admin tries /admin on examples (and makes one real decision).
 select set_config('request.jwt.claims', '{"sub":"d0000000-0000-4000-8000-000000000002","role":"authenticated"}', false);
-select public.admin_review_job('e0000000-0000-4000-8000-000000000004', 'closed', 'Testing unpublish on an example');
-select public.admin_set_company_status('e0000000-0000-4000-8000-0000000000c6', 'rejected');
+select public.admin_review_job('e1000000-0000-4000-8000-000000000004', 'closed', 'Testing unpublish on an example');
+select public.admin_set_company_status('e1000000-0000-4000-8000-0000000000c5', 'rejected');
 select public.admin_resolve_report(id, 'Testing resolve on an example') from public.job_reports
-  where job_id = 'e0000000-0000-4000-8000-000000000001';
+  where job_id = 'e1000000-0000-4000-8000-000000000001';
 select public.admin_set_company_status('d0000000-0000-4000-8000-0000000000c1', 'approved');
 reset role;
 select set_config('request.jwt.claims', '', false);
 
 -- An example job deleted by hand in the Table Editor: its report stays, with
 -- only the title and company name (job_reports_keep_job).
-delete from public.jobs where id = 'e0000000-0000-4000-8000-000000000003';
+delete from public.jobs where id = 'e1000000-0000-4000-8000-000000000003';
