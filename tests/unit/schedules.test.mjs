@@ -1,21 +1,21 @@
 // The "When" values and what each one means (src/lib/schedules.js).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SCHEDULES, SCHEDULE_HOURS, SCHEDULE_HOURS_LINE, scheduleItems, scheduleLabels } from '../../src/lib/schedules.js';
+import { SCHEDULES, SCHEDULE_HOURS, scheduleHoursLine, scheduleItems, scheduleLabels } from '../../src/lib/schedules.js';
 
 test('every schedule has exactly one definition', () => {
   assert.deepEqual(Object.keys(SCHEDULE_HOURS), SCHEDULES.map(([v]) => v));
 });
 
 test('the definitions testers asked for, word for word', () => {
-  assert.deepEqual(SCHEDULE_HOURS, {
+  assert.deepEqual({ ...SCHEDULE_HOURS }, {
     weekday_mornings: 'Mon to Fri, before 12:00',
     weekday_afternoons: 'Mon to Fri, 12:00 to 18:00',
     weekday_evenings: 'Mon to Fri, after 18:00',
     weekends: 'Saturday and Sunday, any time',
     flexible: 'Hours agreed with the employer'
   });
-  assert.equal(SCHEDULE_HOURS_LINE, 'Mornings before 12 · Afternoons 12 to 18 · Evenings after 18');
+  assert.equal(scheduleHoursLine(), 'Mornings before 12 · Afternoons 12 to 18 · Evenings after 18');
 });
 
 test('a job\'s schedule reads in list order, with its hours', () => {

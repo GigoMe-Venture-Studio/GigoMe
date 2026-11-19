@@ -11,25 +11,30 @@ import { CONTACT_EMAIL } from '../lib/contact.js';
 import { fetchJob, isExample, revealContact } from '../lib/jobs.js';
 import { mailtoHref } from '../lib/links.js';
 import { jobPostingData, shortText, useJsonLd, usePageMeta } from '../lib/seo.js';
+import { t as tr } from '../lib/i18n.js';
+import { useT } from '../lib/useLang.js';
 
 export default function JobDetail() {
+  const t = useT();
   return (
     <PageShell className="jobs-main">
-      {supabase ? <JobPage /> : <ConfigError title="This job can't be shown right now" />}
+      {supabase ? <JobPage /> : <ConfigError title={t('jobPage.configError')} />}
     </PageShell>
   );
 }
 
 function BackLink() {
+  const t = useT();
   return (
     <Link className="back" to="/jobs">
       <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
-      All jobs
+      {t('jobPage.allJobs')}
     </Link>
   );
 }
 
 function JobPage() {
+  const t = useT();
   const { id } = useParams();
   const [state, setState] = useState({ status: 'loading', job: null });
   const [retry, setRetry] = useState(0);
@@ -53,24 +58,24 @@ function JobPage() {
   usePageMeta(
     ready
       ? {
-          title: `${ready.title} at ${ready.companies.name}`,
-          description: shortText(`${ready.title} at ${ready.companies.name}, Milan. ${ready.description || ''}`),
+          title: t('jobPage.metaTitle', { title: ready.title, company: ready.companies.name }),
+          description: shortText(t('jobPage.metaDescription', { title: ready.title, company: ready.companies.name, description: ready.description || '' })),
           index: !example
         }
       : state.status === 'missing'
-        ? { title: "This job isn't available", index: false }
+        ? { title: t('jobPage.missingTitle'), index: false }
         : null
   );
   useJsonLd(ready && !example ? jobPostingData(ready) : null);
 
-  if (state.status === 'loading') return <p className="muted">Loading the job…</p>;
+  if (state.status === 'loading') return <p className="muted">{t('jobPage.loading')}</p>;
   if (state.status === 'error') {
     return (
       <div className="empty-state page-empty" role="alert">
         <BackLink />
-        <p><strong>We couldn't load this job.</strong></p>
-        <p className="muted">Check your connection and try again.</p>
-        <button type="button" className="btn btn-secondary btn-sm" onClick={() => setRetry((n) => n + 1)}>Try again</button>
+        <p><strong>{t('jobPage.loadError')}</strong></p>
+        <p className="muted">{t('jobs.checkConnection')}</p>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={() => setRetry((n) => n + 1)}>{t('common.tryAgain')}</button>
       </div>
     );
   }
@@ -78,9 +83,9 @@ function JobPage() {
     return (
       <div className="empty-state page-empty">
         <BackLink />
-        <h1 className="page-title">This job isn't available</h1>
-        <p className="muted">It may have been filled, closed or expired.</p>
-        <Link className="btn btn-primary" to="/jobs">See all jobs</Link>
+        <h1 className="page-title">{t('jobPage.missingTitle')}</h1>
+        <p className="muted">{t('jobPage.missingText')}</p>
+        <Link className="btn btn-primary" to="/jobs">{t('jobPage.seeAll')}</Link>
       </div>
     );
   }
@@ -95,9 +100,10 @@ function JobPage() {
 }
 
 // The email students send from the "Apply" button (null unless the address
-// is plain, so nothing else can ride along in the link).
+// is plain, so nothing else can ride along in the link). The subject is in
+// the site's language: the student writes the email in it too.
 function mailtoFor(email, title) {
-  return mailtoHref(email, `Application: ${title} (via GigoMe)`);
+  return mailtoHref(email, tr('jobPage.mailSubject', { title }));
 }
 
 // demoJob: the job, when it's an example listing (made up for testers).
@@ -106,6 +112,7 @@ function mailtoFor(email, title) {
 // opens, the database isn't asked (it would refuse) and no apply click is
 // counted.
 function HowToApply({ jobId, jobTitle, demoJob = null }) {
+  const t = useT();
   const example = Boolean(demoJob);
   const { session, loading } = useSession();
   const userId = session ? session.user.id : null;
@@ -156,10 +163,10 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
   if (settling) {
     return frame(
       <>
-        <p className="muted apply-loading">Loading…</p>
+        <p className="muted apply-loading">{t('common.loading')}</p>
         <div className="apply-sizer" aria-hidden="true">
-          <span className="btn btn-primary">Log in to see how to apply</span>
-          <p className="apply-note">Log in as a student to see how to apply.</p>
+          <span className="btn btn-primary">{t('jobPage.loginToApply')}</span>
+          <p className="apply-note">{t('jobPage.loginNote')}</p>
         </div>
       </>
     );
@@ -169,15 +176,15 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
     return frame(
       <>
         <Link className="btn btn-primary" to={`/login?next=${encodeURIComponent('/jobs/' + jobId)}`}>
-          Log in to see how to apply
+          {t('jobPage.loginToApply')}
         </Link>
-        <p className="apply-note">Log in as a student to see how to apply.</p>
+        <p className="apply-note">{t('jobPage.loginNote')}</p>
       </>
     );
   }
 
   if (accountType === 'company') {
-    return frame(<p className="apply-note apply-company">Only students can apply for jobs on GigoMe. You're logged in with a company account.</p>);
+    return frame(<p className="apply-note apply-company">{t('jobPage.companyAccount')}</p>);
   }
 
   // Called only when the student presses "Apply": each call counts an apply
@@ -199,8 +206,8 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
     if (tab) {
       try {
         tab.opener = null;
-        tab.document.title = 'Opening…';
-        tab.document.body.textContent = 'Opening the application page…';
+        tab.document.title = t('jobPage.opening');
+        tab.document.body.textContent = t('jobPage.openingPage');
       } catch {
         /* the tab still works without the message */
       }
@@ -236,29 +243,28 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
     if (!reveal.url && !reveal.email) {
       return frame(
         <p className="apply-note">
-          This employer hasn't added how to apply yet. Write to{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we'll pass your interest on.
+          {t('jobPage.noContact', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
         </p>
       );
     }
     return frame(
       <div className="apply-contact">
-        <p className="apply-heading">How to apply</p>
+        <p className="apply-heading">{t('jobPage.howToApply')}</p>
         <p className="apply-note apply-opened" role="status">
           {reveal.url
-            ? "The application page should have opened in a new tab. If it didn't, use the link below."
+            ? t('jobPage.openedTab')
             : reveal.opened === 'mail'
-              ? 'Your email app should have opened with the subject filled in. If it didn\'t, write to the address below.'
-              : 'Write to the address below to apply.'}
+              ? t('jobPage.openedMail')
+              : t('jobPage.writeToApply')}
         </p>
         {reveal.url && (
           <a className="btn btn-primary" href={reveal.url} target="_blank" rel="noopener noreferrer">
-            Open the application page
+            {t('jobPage.openApplication')}
           </a>
         )}
         {reveal.email && (
           <p>
-            Email:{' '}
+            {t('jobPage.email')}{' '}
             {mailtoFor(reveal.email, jobTitle) ? (
               <a className="apply-email" href={mailtoFor(reveal.email, jobTitle)}>{reveal.email}</a>
             ) : (
@@ -266,7 +272,7 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
             )}
           </p>
         )}
-        <p className="apply-note">Applications go straight to the employer.</p>
+        <p className="apply-note">{t('jobPage.straightToEmployer')}</p>
       </div>
     );
   }
@@ -274,11 +280,11 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
   return frame(
     <>
       <button ref={applyButton} type="button" className="btn btn-primary" onClick={onApply} disabled={reveal.status === 'busy'}>
-        {reveal.status === 'busy' ? 'Opening…' : 'Apply'}
+        {reveal.status === 'busy' ? t('jobPage.opening') : t('jobPage.apply')}
       </button>
       {reveal.status === 'error' && <p className="err" role="alert">{reveal.message}</p>}
       <p className="apply-note">
-        {example ? 'An example listing: Apply opens a short demo, and nothing is sent.' : 'Applications go straight to the employer.'}
+        {example ? t('jobPage.exampleNote') : t('jobPage.straightToEmployer')}
       </p>
       {example && (
         <ApplyDemo

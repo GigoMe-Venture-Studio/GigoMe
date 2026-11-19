@@ -1,0 +1,1411 @@
+{
+ "source": "docs/legal/published/privacy-notice-v1.0.html",
+ "title": "GigoMe | Informativa sulla privacy",
+ "toc": [
+  {
+   "href": "#section-1",
+   "label": "La privacy in breve",
+   "sub": false
+  },
+  {
+   "href": "#section-2",
+   "label": "1. Chi è il titolare del trattamento dei dati personali dell'Utente?",
+   "sub": false
+  },
+  {
+   "href": "#section-3",
+   "label": "2. Quali persone e quali dati riguarda la presente Informativa?",
+   "sub": false
+  },
+  {
+   "href": "#section-4",
+   "label": "3. Per quali finalità sono utilizzati i dati e su quale base giuridica?",
+   "sub": false
+  },
+  {
+   "href": "#section-5",
+   "label": "4. Visualizzazione del contatto: cosa succede esattamente?",
+   "sub": false
+  },
+  {
+   "href": "#section-6",
+   "label": "5. Chi può accedere ai dati?",
+   "sub": false
+  },
+  {
+   "href": "#section-7",
+   "label": "6. Fornitori di tecnologia e di servizi",
+   "sub": false
+  },
+  {
+   "href": "#section-8",
+   "label": "7. Dove sono conservate o trattate le informazioni?",
+   "sub": false
+  },
+  {
+   "href": "#section-9",
+   "label": "8. Autenticazione, archiviazione locale e cookie",
+   "sub": false
+  },
+  {
+   "href": "#section-10",
+   "label": "9. Per quanto tempo sono conservate le informazioni?",
+   "sub": false
+  },
+  {
+   "href": "#section-11",
+   "label": "10. Chiusura dell'account e cancellazione dei dati",
+   "sub": false
+  },
+  {
+   "href": "#section-12",
+   "label": "11. Diritti dell'interessato in materia di protezione dei dati",
+   "sub": false
+  },
+  {
+   "href": "#section-13",
+   "label": "12. Minori e informazioni particolarmente sensibili",
+   "sub": false
+  },
+  {
+   "href": "#section-14",
+   "label": "13. Processo decisionale automatizzato e profilazione",
+   "sub": false
+  },
+  {
+   "href": "#section-15",
+   "label": "14. Sicurezza e incidenti",
+   "sub": false
+  },
+  {
+   "href": "#section-16",
+   "label": "15. Candidature esterne e servizi di terzi",
+   "sub": false
+  },
+  {
+   "href": "#section-17",
+   "label": "16. Modifiche alla presente Informativa",
+   "sub": false
+  },
+  {
+   "href": "#section-18",
+   "label": "17. Contatti",
+   "sub": false
+  }
+ ],
+ "body": [
+  [
+   "h1",
+   null,
+   "GigoMe | Informativa sulla privacy"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Versione 1.0 | Ultimo aggiornamento: 11 novembre 2026"
+   ],
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Titolare del trattamento:"
+   ],
+   " Matteo Maria Scarano, che agisce a titolo personale",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Indirizzo di contatto:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italia",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Richieste in materia di privacy:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Altre richieste:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Sito web:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/"
+    },
+    "https://gigome.org/"
+   ]
+  ],
+  [
+   "h2",
+   {
+    "id": "section-1"
+   },
+   "La privacy in breve"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe consente agli studenti di scoprire opportunità di lavoro e di visualizzare le informazioni di contatto o i link per candidarsi forniti dagli inserzionisti. ",
+   [
+    "strong",
+    null,
+    "Gli studenti non si candidano tramite GigoMe. GigoMe non inoltra i profili o le candidature degli studenti agli inserzionisti, e gli inserzionisti non possono cercare né visualizzare i profili degli studenti."
+   ],
+   " Gli studenti che scelgono di contattare un inserzionista lo fanno in modo autonomo via email, telefono o tramite un sito web esterno."
+  ],
+  [
+   "p",
+   null,
+   "Quando uno studente registrato seleziona ",
+   [
+    "strong",
+    null,
+    "Mostra contatto"
+   ],
+   ", GigoMe registra quale account studente ha visualizzato le informazioni di contatto di quale annuncio e il momento dell'azione. ",
+   [
+    "strong",
+    null,
+    "Questo registro non viene fornito agli inserzionisti e può essere consultato solo dagli amministratori autorizzati di GigoMe."
+   ],
+   " Viene utilizzato per le finalità limitate descritte di seguito."
+  ],
+  [
+   "p",
+   null,
+   "GigoMe utilizza Supabase per il database e l'autenticazione, Cloudflare per l'hosting e i servizi relativi al dominio, Brevo per le email di autenticazione e un servizio di casella email per la corrispondenza di assistenza e in materia di privacy. Il progetto Supabase principale è ospitato a ",
+   [
+    "strong",
+    null,
+    "Francoforte, Germania (eu-central-1)"
+   ],
+   "; altre operazioni dei fornitori di servizi possono comportare un trattamento altrove."
+  ],
+  [
+   "p",
+   null,
+   "La presente Informativa illustra il trattamento effettuato dal Gestore ai sensi del Regolamento (UE) 2016/679 (GDPR) e delle pertinenti norme italiane in materia di protezione dei dati personali. Deve essere letta unitamente ai Termini e condizioni di GigoMe."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-2"
+   },
+   "1. Chi è il titolare del trattamento dei dati personali dell'Utente?"
+  ],
+  [
+   "p",
+   null,
+   "Il titolare del trattamento per le attività di trattamento proprie di GigoMe è:"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Matteo Maria Scarano"
+   ],
+   [
+    "br",
+    null
+   ],
+   " Via Dante Alighieri 14",
+   [
+    "br",
+    null
+   ],
+   " 20091 Bresso (MI), Italia",
+   [
+    "br",
+    null
+   ],
+   " Email: ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ]
+  ],
+  [
+   "p",
+   null,
+   "GigoMe è il nome del servizio, non un'entità giuridica costituita separatamente. Il titolare determina le finalità e i mezzi essenziali del trattamento qui descritto. I fornitori di infrastruttura possono trattare informazioni per conto del titolare, ma il loro ruolo non elimina le responsabilità giuridiche di quest'ultimo."
+  ],
+  [
+   "p",
+   null,
+   "I datori di lavoro e gli inserzionisti privati decidono autonomamente come utilizzare i dati personali che uno studente fornisce loro volontariamente ",
+   [
+    "strong",
+    null,
+    "al di fuori di GigoMe"
+   ],
+   ". Tali terzi sono generalmente responsabili in modo autonomo del proprio trattamento, fatte salve le circostanze e la legge applicabile."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-3"
+   },
+   "2. Quali persone e quali dati riguarda la presente Informativa?"
+  ],
+  [
+   "p",
+   null,
+   "La presente Informativa riguarda visitatori, studenti, inserzionisti professionali e privati, rappresentanti degli account e persone che contattano GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "A seconda delle funzionalità effettivamente utilizzate e dei campi compilati, GigoMe può trattare:"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Informazioni sull'account e sull'identità:"
+   ],
+   " nome o nome visualizzato, indirizzo email, identificativo dell'account, ruolo (studente, inserzionista professionale o privato), affiliazione universitaria o email universitaria verificata ove abilitata, e informazioni sulla creazione e sullo stato dell'account."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Informazioni del profilo dello studente:"
+   ],
+   " percorso formativo (facoltativo), corso di studi, lingue, competenze, esperienze passate, preferenze generali e, se tali campi sono abilitati, età o nazionalità. Questi dati non sono resi disponibili agli inserzionisti tramite GigoMe. Per la normale creazione del profilo non sono necessari documenti d'identità, dati relativi alla salute o altre informazioni sensibili."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Informazioni sugli inserzionisti e sugli annunci:"
+   ],
+   " identità dell'impresa o della persona fisica, dati dell'organizzazione, recapiti professionali, descrizioni degli annunci, luogo di lavoro, informazioni pertinenti su retribuzione e condizioni contrattuali, indirizzo email, numero di telefono o URL esterno per la candidatura scelti, date di pubblicazione e stato di moderazione. Le informazioni destinate a essere mostrate in un annuncio possono essere visibili agli Utenti o ai visitatori della Piattaforma secondo le impostazioni di pubblicazione applicabili."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Registrazioni delle visualizzazioni del contatto:"
+   ],
+   " identificativo dell'account studente, identificativo dell'annuncio, marca temporale e le informazioni tecniche ragionevolmente necessarie per proteggere o sottoporre a verifica l'operazione. Solo gli amministratori autorizzati possono consultare queste registrazioni. Il Gestore non informa automaticamente gli inserzionisti delle singole visualizzazioni."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Informazioni di autenticazione e sicurezza:"
+   ],
+   " email di accesso, invio dei codici monouso ed eventi di autenticazione, identificativi o token di sessione, log tecnici pertinenti e, ove necessario, indirizzo IP, dati sul dispositivo/browser e indicatori di abuso. Agli Utenti non viene chiesto di creare una password GigoMe, e il normale profilo dell'Utente non comprende una password memorizzata né un CV caricato."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Comunicazioni e segnalazioni:"
+   ],
+   " email inviate a hello@gigome.org o privacy@gigome.org, richieste di aiuto, reclami, segnalazioni di frode e le informazioni ragionevolmente necessarie per esaminarli."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Registrazioni contrattuali e di conformità:"
+   ],
+   " data e versione dei Termini accettati, comunicazioni pertinenti relative all'account e registrazioni necessarie per dimostrare la conformità o gestire una controversia."
+  ],
+  [
+   "p",
+   null,
+   "Si chiede all'Utente di non inviare informazioni su salute, religione, opinioni politiche, minori, documenti d'identità, status migratorio o altri dati sensibili non necessari nei campi di testo libero o nelle normali richieste di assistenza. Se tali informazioni vengono ricevute incidentalmente, il Gestore valuterà se debbano essere limitate o rimosse."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-4"
+   },
+   "3. Per quali finalità sono utilizzati i dati e su quale base giuridica?"
+  ],
+  [
+   "table",
+   null,
+   [
+    "thead",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "th",
+      null,
+      "Finalità"
+     ],
+     [
+      "th",
+      null,
+      "Principali dati coinvolti"
+     ],
+     [
+      "th",
+      null,
+      "Base giuridica ai sensi del GDPR"
+     ]
+    ]
+   ],
+   [
+    "tbody",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Creare e gestire gli account e i ruoli degli Utenti"
+     ],
+     [
+      "td",
+      null,
+      "Email, nome, ruolo, ID dell'account e dati del profilo necessari"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. b): esecuzione del servizio richiesto dall'Utente"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Autenticare gli Utenti e inviare i codici di accesso"
+     ],
+     [
+      "td",
+      null,
+      "Email, eventi di autenticazione/sessione"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. b), con l'art. 6, par. 1, lett. f) per misure di sicurezza proporzionate"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Pubblicare e mostrare gli annunci degli inserzionisti e i recapiti scelti"
+     ],
+     [
+      "td",
+      null,
+      "Identità dell'inserzionista, contenuto dell'annuncio e campi di contatto scelti"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. b); ove la pubblicazione di recapiti personali facoltativi non sia necessaria per il servizio, art. 6, par. 1, lett. a) o altra base giuridica applicabile, come documentato"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Mostrare i recapiti dell'inserzionista quando uno Studente sceglie Mostra contatto"
+     ],
+     [
+      "td",
+      null,
+      "ID dell'account studente, informazioni sull'annuncio/di contatto"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. b)"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Registrare e proteggere le visualizzazioni del contatto, rilevare abusi e risolvere problemi"
+     ],
+     [
+      "td",
+      null,
+      "ID dello studente, ID dell'annuncio, ora e informazioni tecniche pertinenti"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. f): legittimi interessi alla sicurezza, alla prevenzione delle frodi e al funzionamento affidabile, previa valutazione di bilanciamento"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Proteggere la Piattaforma, prevenire le frodi e moderare i contenuti illeciti"
+     ],
+     [
+      "td",
+      null,
+      "Log tecnici, dati dell'account/dell'annuncio, segnalazioni"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. f) e, ove si applichino obblighi specifici, art. 6, par. 1, lett. c)"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Rispondere alle richieste di assistenza e in materia di privacy"
+     ],
+     [
+      "td",
+      null,
+      "Corrispondenza, informazioni sull'account e di verifica"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. b), art. 6, par. 1, lett. c) o art. 6, par. 1, lett. f), a seconda della richiesta"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Conservare le registrazioni necessarie per la conformità normativa e per le pretese legali"
+     ],
+     [
+      "td",
+      null,
+      "Registrazioni delle accettazioni, corrispondenza pertinente e prove relative alla sicurezza"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. c) o art. 6, par. 1, lett. f), a seconda dei casi"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Inviare messaggi promozionali facoltativi, solo se introdotti"
+     ],
+     [
+      "td",
+      null,
+      "Recapiti e preferenze registrate"
+     ],
+     [
+      "td",
+      null,
+      "Consenso ai sensi dell'art. 6, par. 1, lett. a) e delle norme applicabili in materia di marketing elettronico, ove richiesto"
+     ]
+    ]
+   ]
+  ],
+  [
+   "p",
+   null,
+   "I legittimi interessi del Gestore comprendono il mantenimento di un servizio sicuro e affidabile, la prevenzione dell'uso improprio dei recapiti, la risposta alle segnalazioni e la tutela dei diritti legali. Tali interessi devono essere bilanciati con i diritti e le ragionevoli aspettative degli Utenti. Gli Utenti possono opporsi al trattamento basato sull'art. 6, par. 1, lett. f) conformemente all'art. 21 GDPR."
+  ],
+  [
+   "p",
+   null,
+   "Il Gestore non si basa sull'accettazione dei Termini come consenso generale a ogni trattamento. Se una nuova attività richiede il consenso, il Gestore lo chiederà separatamente prima di avviare tale trattamento."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-5"
+   },
+   "4. Visualizzazione del contatto: cosa succede esattamente?"
+  ],
+  [
+   "ol",
+   null,
+   [
+    "li",
+    null,
+    "Uno Studente registrato visualizza un Annuncio di Lavoro."
+   ],
+   [
+    "li",
+    null,
+    "Lo Studente seleziona volontariamente ",
+    [
+     "strong",
+     null,
+     "Mostra contatto"
+    ],
+    "."
+   ],
+   [
+    "li",
+    null,
+    "GigoMe mostra le informazioni di contatto dell'Inserzionista o il link esterno per la candidatura associati a quell'annuncio."
+   ],
+   [
+    "li",
+    null,
+    "GigoMe registra l'identificativo dell'account dello Studente, l'identificativo dell'annuncio e l'ora della visualizzazione in un registro accessibile solo agli amministratori."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "Nessun profilo dello studente, CV, candidatura o registro delle visualizzazioni viene inviato automaticamente all'Inserzionista."
+    ]
+   ],
+   [
+    "li",
+    null,
+    "Qualsiasi contatto o candidatura successivi sono avviati direttamente dallo Studente al di fuori di GigoMe e sono disciplinati dalle informazioni sulla privacy applicabili della parte che li riceve."
+   ]
+  ],
+  [
+   "p",
+   null,
+   "La registrazione della visualizzazione del contatto costituisce un dato personale anche se non viene comunicata agli inserzionisti. È utilizzata solo per le finalità limitate operative, di prevenzione degli abusi e di sicurezza descritte nella presente Informativa. Il Gestore non la utilizza per creare classifiche pubbliche né per vendere profili."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-6"
+   },
+   "5. Chi può accedere ai dati?"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "L'intestatario dell'account"
+   ],
+   " può accedere alle proprie informazioni tramite le funzionalità del servizio disponibili."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Gli Inserzionisti"
+   ],
+   " non possono cercare, consultare né accedere ai profili degli Studenti o ai registri delle visualizzazioni del contatto tramite GigoMe. Uno Studente può scegliere autonomamente di contattare un inserzionista al di fuori della Piattaforma."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Gli amministratori autorizzati di GigoMe"
+   ],
+   " possono accedere alle limitate informazioni relative ad account, annunci, visualizzazioni e segnalazioni necessarie per le responsabilità loro assegnate, nel rispetto di restrizioni di accesso e garanzie di riservatezza."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Gli altri Utenti e i visitatori"
+   ],
+   " possono vedere gli annunci e le informazioni di contatto che gli Inserzionisti hanno scelto di mostrare tramite le relative funzionalità del servizio. Il Gestore non intende pubblicare i profili privati degli Studenti."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "I fornitori di servizi"
+   ],
+   " possono trattare dati ove necessario per fornire i servizi indicati di seguito, conformemente ai ruoli, agli accordi e ai requisiti in materia di privacy applicabili."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Le autorità e i consulenti professionali"
+   ],
+   " possono ricevere informazioni ove la comunicazione sia richiesta dalla legge o comunque consentita e necessaria per accertare, esercitare o difendere un diritto in sede giudiziaria."
+  ],
+  [
+   "p",
+   null,
+   "Il Gestore non vende i profili degli Studenti né li comunica agli Inserzionisti dietro pagamento."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-7"
+   },
+   "6. Fornitori di tecnologia e di servizi"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Supabase:"
+   ],
+   " database, autenticazione degli Utenti e servizi di backend. Il progetto di GigoMe è configurato a ",
+   [
+    "strong",
+    null,
+    "Francoforte (eu-central-1)"
+   ],
+   ". Supabase tratta i dati del servizio pertinenti in base al proprio accordo sul trattamento dei dati (Data Processing Addendum) applicabile. I suoi sub-responsabili del trattamento possono fornire servizi tecnici o di assistenza nei limiti consentiti da tale accordo. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://supabase.com/legal"
+    },
+    "https://supabase.com/legal"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Cloudflare:"
+   ],
+   " servizi di dominio, hosting, distribuzione web, sicurezza e inoltro email. Cloudflare può trattare informazioni sulla connessione e altri dati tecnici necessari per tali funzioni in base ai relativi accordi contrattuali e in materia di privacy. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://www.cloudflare.com/privacypolicy/"
+    },
+    "https://www.cloudflare.com/privacypolicy/"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Brevo:"
+   ],
+   " invio dei codici di accesso monouso e di alcune email operative. Brevo riceve gli indirizzi email e le informazioni tecniche di consegna necessari per tali messaggi. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://www.brevo.com/legal/privacypolicy/"
+    },
+    "https://www.brevo.com/legal/privacypolicy/"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Google Gmail:"
+   ],
+   " le comunicazioni in entrata inviate agli indirizzi email di assistenza e privacy di GigoMe arrivano attualmente in una casella fornita tramite un account Gmail consumer. Google tratta le informazioni in base ai propri termini consumer e alla propria informativa sulla privacy applicabili; per Gmail consumer non offre ai clienti un accordo con il responsabile del trattamento ai sensi del GDPR. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://policies.google.com/privacy"
+    },
+    "https://policies.google.com/privacy"
+   ],
+   ". Gli Utenti dovrebbero evitare di includere informazioni sensibili non necessarie nelle normali email. Il Gestore riesaminerà o sostituirà questa soluzione ove necessario per adempiere ai propri obblighi in materia di protezione dei dati."
+  ],
+  [
+   "p",
+   null,
+   "A seconda del fornitore e della specifica attività di trattamento, un fornitore può agire in qualità di responsabile del trattamento o di titolare autonomo del trattamento. Il Gestore manterrà con i responsabili del trattamento gli accordi richiesti dalla legge e fornirà ulteriori dettagli su richiesta, ove opportuno."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-8"
+   },
+   "7. Dove sono conservate o trattate le informazioni?"
+  ],
+  [
+   "p",
+   null,
+   "Il database del progetto Supabase principale si trova a ",
+   [
+    "strong",
+    null,
+    "Francoforte, Germania (eu-central-1)"
+   ],
+   ", all'interno dell'Unione europea. Ciò non significa che ogni fornitore, evento tecnico, operazione di invio email, interazione di assistenza o sub-responsabile del trattamento si trovi esclusivamente nell'UE/SEE."
+  ],
+  [
+   "p",
+   null,
+   "Qualora i dati personali siano trasferiti al di fuori dello Spazio economico europeo, GigoMe valuterà il trasferimento e utilizzerà, ove richiesto, il pertinente meccanismo giuridico di trasferimento, come una decisione di adeguatezza o garanzie contrattuali adeguate, incluse le clausole contrattuali tipo ove applicabili. I dettagli sulle garanzie pertinenti possono essere richiesti a privacy@gigome.org."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-9"
+   },
+   "8. Autenticazione, archiviazione locale e cookie"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe utilizza attualmente codici di accesso monouso a sei cifre inviati via email. Dopo l'autenticazione, le informazioni necessarie per mantenere la sessione di accesso sono memorizzate nell'",
+   [
+    "strong",
+    null,
+    "archiviazione locale"
+   ],
+   " del browser. Questa tecnologia è funzionale all'autenticazione e alla continuità della sessione; GigoMe non la utilizza per la pubblicità comportamentale."
+  ],
+  [
+   "p",
+   null,
+   "In base all'attuale configurazione tecnica, GigoMe non utilizza intenzionalmente cookie pubblicitari, di profilazione o analitici non essenziali. L'archiviazione tecnica strettamente necessaria e le tecnologie analoghe possono generalmente essere utilizzate senza previo consenso ai cookie, ferma restando la necessità di trasparenza."
+  ],
+  [
+   "p",
+   null,
+   "Anche i fornitori di infrastruttura possono utilizzare meccanismi tecnici o di sicurezza strettamente necessari. Se la Piattaforma introdurrà strumenti analitici facoltativi, tracker pubblicitari o altre tecnologie di archiviazione/accesso non essenziali, il Gestore aggiornerà la presente Informativa e implementerà i necessari controlli di consenso e di preferenza prima di attivarli."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-10"
+   },
+   "9. Per quanto tempo sono conservate le informazioni?"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe applica il principio secondo cui i dati personali non devono essere conservati più a lungo del necessario rispetto alle finalità dichiarate. I seguenti periodi di conservazione si applicano ai dati sotto il controllo del Gestore, fatte salve le precisazioni indicate di seguito."
+  ],
+  [
+   "table",
+   null,
+   [
+    "thead",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "th",
+      null,
+      "Categoria"
+     ],
+     [
+      "th",
+      null,
+      "Regola di conservazione"
+     ]
+    ]
+   ],
+   [
+    "tbody",
+    null,
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Registrazioni incomplete/non verificate"
+     ],
+     [
+      "td",
+      null,
+      "Cancellazione entro ",
+      [
+       "strong",
+       null,
+       "30 giorni"
+      ],
+      " se la registrazione non viene completata, salvo che sia opportuno un periodo più breve"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Account attivi di Studenti e Inserzionisti e relativi dati del profilo necessari"
+     ],
+     [
+      "td",
+      null,
+      "Fino alla chiusura dell'account o ",
+      [
+       "strong",
+       null,
+       "24 mesi dopo l'ultima attività dell'account"
+      ],
+      "; invio di un avviso preventivo di inattività ove possibile"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Annunci degli inserzionisti"
+     ],
+     [
+      "td",
+      null,
+      "Finché attivi; rimozione dalla visualizzazione pubblica quando scaduti o ritirati; cancellazione o anonimizzazione dei dati non essenziali degli annunci archiviati entro ",
+      [
+       "strong",
+       null,
+       "90 giorni"
+      ],
+      " dalla rimozione"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Registri delle visualizzazioni del contatto"
+     ],
+     [
+      "td",
+      null,
+      "Cancellazione o anonimizzazione irreversibile entro ",
+      [
+       "strong",
+       null,
+       "180 giorni"
+      ],
+      " dalla visualizzazione, salvo che un incidente documentato o una pretesa legale giustifichi una conservazione più lunga"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Log ordinari di autenticazione e sicurezza sotto il controllo del Gestore"
+     ],
+     [
+      "td",
+      null,
+      "Di norma ",
+      [
+       "strong",
+       null,
+       "90 giorni"
+      ],
+      ", salvo che un incidente specifico richieda una proroga giustificata"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Normale corrispondenza di assistenza e in materia di privacy"
+     ],
+     [
+      "td",
+      null,
+      "Di norma ",
+      [
+       "strong",
+       null,
+       "12 mesi dopo la chiusura della richiesta"
+      ],
+      ", salvo che si applichi un periodo di conservazione legale più lungo"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Registrazioni relative a frodi, sicurezza e reclami legali"
+     ],
+     [
+      "td",
+      null,
+      "Di norma ",
+      [
+       "strong",
+       null,
+       "24 mesi dopo la risoluzione"
+      ],
+      ", salvo che siano necessarie per una controversia in corso o per un obbligo di legge"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Registrazioni che provano l'accettazione dei Termini e le comunicazioni rilevanti relative all'account"
+     ],
+     [
+      "td",
+      null,
+      "Per tutta la durata dell'account e fino a ",
+      [
+       "strong",
+       null,
+       "36 mesi dopo la chiusura"
+      ],
+      ", ove ragionevolmente necessario per dimostrare la conformità o difendersi da pretese"
+     ]
+    ]
+   ]
+  ],
+  [
+   "p",
+   null,
+   "Questi periodi non prevalgono sugli obblighi di conservazione vincolanti previsti dalla legge né sull'obbligo di conservare le prove pertinenti in una controversia effettiva. Le proroghe saranno limitate, documentate e riesaminate. I fornitori di servizi tecnici possono conservare propri log operativi di breve durata in base ai loro termini applicabili; il Gestore valuterà e documenterà tali soluzioni."
+  ],
+  [
+   "p",
+   null,
+   "Non vi è ",
+   [
+    "strong",
+    null,
+    "alcuna garanzia di backup automatici del database"
+   ],
+   " con l'attuale piano di servizio di GigoMe. Il Gestore deve adottare misure ragionevoli di disponibilità, sicurezza e ripristino adeguate ai rischi del servizio. Questa dichiarazione non riduce i diritti degli Utenti previsti dalla legge."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-11"
+   },
+   "10. Chiusura dell'account e cancellazione dei dati"
+  ],
+  [
+   "p",
+   null,
+   "Gli Utenti possono chiedere la chiusura dell'account, l'accesso, la rettifica o la cancellazione dei dati personali scrivendo a ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ],
+   ". La cancellazione dell'account è attualmente gestita ",
+   [
+    "strong",
+    null,
+    "manualmente da un amministratore autorizzato"
+   ],
+   "; non viene presentata come una funzione automatica self-service."
+  ],
+  [
+   "p",
+   null,
+   "Il Gestore verificherà la richiesta nella misura necessaria, risponderà senza ingiustificato ritardo ed entro i termini applicabili previsti dal GDPR, e cancellerà o limiterà i dati personali pertinenti quando la legge lo richiede, fatte salve le eccezioni giustificate alla cancellazione per esigenze di conservazione."
+  ],
+  [
+   "p",
+   null,
+   "La chiusura di un account non rimuove automaticamente i dati che uno Studente ha inviato autonomamente a un Inserzionista al di fuori di GigoMe; il destinatario è responsabile del proprio trattamento. Inoltre, non comporta necessariamente la cancellazione delle registrazioni conservate lecitamente per finalità di sicurezza, di conformità o relative a pretese legali."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-12"
+   },
+   "11. Diritti dell'interessato in materia di protezione dei dati"
+  ],
+  [
+   "p",
+   null,
+   "Alle condizioni e con le eccezioni previste dal GDPR, l'interessato può chiedere:"
+  ],
+  [
+   "ul",
+   null,
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "L'accesso"
+    ],
+    " ai dati personali che lo riguardano."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "La rettifica"
+    ],
+    " dei dati inesatti o incompleti."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "La cancellazione"
+    ],
+    " dei dati quando ricorrono i requisiti di legge."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "La limitazione"
+    ],
+    " del trattamento nelle circostanze previste."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "La portabilità dei dati"
+    ],
+    " ove applicabile."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "L'opposizione"
+    ],
+    " al trattamento basato sui legittimi interessi."
+   ],
+   [
+    "li",
+    null,
+    [
+     "strong",
+     null,
+     "La revoca del consenso"
+    ],
+    " in qualsiasi momento, per qualsiasi trattamento basato sul consenso, senza pregiudicare la liceità del trattamento effettuato in precedenza."
+   ],
+   [
+    "li",
+    null,
+    "Informazioni su eventuali processi decisionali automatizzati applicabili ai sensi dell'art. 22 GDPR."
+   ]
+  ],
+  [
+   "p",
+   null,
+   "Le richieste possono essere inviate a ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ],
+   ". Di norma il Gestore risponde entro ",
+   [
+    "strong",
+    null,
+    "un mese"
+   ],
+   ", fatte salve la proroga consentita dalla legge nei casi complessi e le garanzie di identificazione applicabili."
+  ],
+  [
+   "p",
+   null,
+   "L'interessato può inoltre proporre reclamo al ",
+   [
+    "strong",
+    null,
+    "Garante per la protezione dei dati personali"
+   ],
+   " (",
+   [
+    "a",
+    {
+     "href": "https://www.garanteprivacy.it/"
+    },
+    "https://www.garanteprivacy.it/"
+   ],
+   ") o a un'altra autorità di controllo competente dell'UE."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-13"
+   },
+   "12. Minori e informazioni particolarmente sensibili"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe è destinato a persone di età pari o superiore a ",
+   [
+    "strong",
+    null,
+    "18 anni"
+   ],
+   ". Il Gestore non offre intenzionalmente account ai minori. Qualora venga a conoscenza del fatto che un minore si è registrato in violazione dei presenti Termini, adotterà le misure appropriate conformemente alla legge applicabile."
+  ],
+  [
+   "p",
+   null,
+   "Per l'uso ordinario il Gestore non richiede categorie particolari di dati. Gli Utenti non dovrebbero includere nei profili, negli annunci o nei messaggi di assistenza informazioni relative a salute, religione, opinioni politiche, appartenenza sindacale, vita sessuale o altri aspetti sensibili non necessari."
+  ],
+  [
+   "p",
+   null,
+   "Gli Inserzionisti privati e le famiglie non devono pubblicare negli annunci di lavoro nomi, fotografie o dati identificativi di bambini, né informazioni non necessarie sul nucleo familiare."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-14"
+   },
+   "13. Processo decisionale automatizzato e profilazione"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe attualmente non utilizza processi decisionali automatizzati che producano effetti giuridici o effetti analogamente significativi sugli Studenti, e non stila automaticamente classifiche degli Studenti per gli Inserzionisti né decide chi viene assunto. Se il servizio dovesse cambiare in modo sostanziale, il Gestore valuterà i requisiti di legge applicabili e aggiornerà le relative informazioni prima di introdurre tali funzionalità."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-15"
+   },
+   "14. Sicurezza e incidenti"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe utilizza restrizioni di accesso e l'autenticazione per proteggere le informazioni. Il team tecnico riferisce che la ",
+   [
+    "strong",
+    null,
+    "Row Level Security"
+   ],
+   " è abilitata per le tabelle del database del progetto e che gli account degli studenti e le registrazioni delle visualizzazioni del contatto non sono accessibili agli Inserzionisti tramite i permessi previsti dell'applicazione. Restano necessari test e monitoraggio tecnici."
+  ],
+  [
+   "p",
+   null,
+   "Gli amministratori autorizzati hanno accesso solo alle informazioni necessarie per le loro responsabilità. Sebbene misure ragionevoli possano ridurre i rischi, nessun servizio internet è completamente privo di rischi."
+  ],
+  [
+   "p",
+   null,
+   "In caso di violazione dei dati personali, GigoMe la valuterà, la documenterà e la notificherà all'autorità di controllo o alle persone interessate ove richiesto dagli artt. 33 e 34 GDPR. Le segnalazioni di sospette vulnerabilità o di accessi non autorizzati possono essere inviate a privacy@gigome.org."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-16"
+   },
+   "15. Candidature esterne e servizi di terzi"
+  ],
+  [
+   "p",
+   null,
+   "Quando uno Studente segue un link esterno per la candidatura, invia un'email o telefona a un Inserzionista, tali interazioni avvengono al di fuori di GigoMe. Il destinatario esterno stabilisce le proprie procedure di selezione e può trattare le informazioni fornite direttamente dallo Studente."
+  ],
+  [
+   "p",
+   null,
+   "GigoMe non riceve automaticamente copie di tali candidature, dei relativi CV, delle decisioni di assunzione, dei contratti o dei pagamenti. Gli Studenti dovrebbero consultare le eventuali informative sulla privacy applicabili ed evitare di comunicare informazioni personali non necessarie quando contattano una parte esterna."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-17"
+   },
+   "16. Modifiche alla presente Informativa"
+  ],
+  [
+   "p",
+   null,
+   "Il Gestore può aggiornare la presente Informativa per tenere conto di modifiche tecniche, nuove funzioni, requisiti di legge o cambiamenti dei propri fornitori. L'ultima versione e la relativa data saranno pubblicate su GigoMe. Ove richiesto, il Gestore fornirà un'ulteriore comunicazione o chiederà il consenso prima di introdurre nuovi trattamenti."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-18"
+   },
+   "17. Contatti"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Titolare del trattamento:"
+   ],
+   " Matteo Maria Scarano",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Indirizzo:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italia",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Richieste in materia di privacy:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Altra corrispondenza:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Termini e condizioni:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/terms"
+    },
+    "https://gigome.org/terms"
+   ]
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Fine dell'Informativa sulla privacy, versione 1.0."
+   ]
+  ]
+ ]
+}

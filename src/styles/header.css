@@ -28,3 +28,28 @@
 /* Phone menu: "Log out" comes last, set apart by a line and some space, so
    it isn't hit when aiming for the name (your account) just above it. */
 .menu-panel > .menu-logout { margin-top: var(--s3); border-top: 1px solid var(--line); border-radius: 0; }
+
+/* "EN | IT" (LangSwitch.jsx): small, but each button is 44px tall to tap.
+   The chosen language is bold and underlined in the accent. */
+.lang-switch { display: flex; align-items: center; flex: none; font-size: 13px; color: var(--muted); }
+.lang-switch button {
+  min-width: 30px; min-height: 44px; padding: 0 var(--s1); border: 0; background: none;
+  font: inherit; font-weight: 500; color: var(--muted); cursor: pointer;
+  text-decoration: underline; text-decoration-color: transparent;
+  text-decoration-thickness: 2px; text-underline-offset: 4px;
+}
+.lang-switch button:hover { color: var(--ink); }
+.lang-switch button[aria-pressed=true] { color: var(--ink); font-weight: 700; text-decoration-color: var(--accent); }
+.lang-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: var(--r-sm); }
+.header-actions .header-lang { margin-right: var(--s1); }
+.menu-panel > .menu-lang { padding: 0 var(--s2); font-size: 15px; }
+@media (max-width: 767px) {
+  .site-header .wrap { gap: var(--s3); }
+  .lang-switch button { min-width: 28px; }
+  .header-actions .header-lang { margin-right: 0; }
+}
+/* Under 440px the header keeps the wordmark, "Student login" and Menu: the
+   switch is only in the Menu panel there. */
+@media (max-width: 439px) {
+  .header-actions .header-lang { display: none; }
+}

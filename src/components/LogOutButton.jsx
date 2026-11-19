@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react';
 import { logOut } from '../lib/auth.js';
+import { useT } from '../lib/useLang.js';
 
 // "Log out" everywhere (header, phone menu, the "You're logged in" cards,
 // /welcome): it first asks "Log out?" in a small dialog (native <dialog>),
@@ -12,6 +13,7 @@ export default function LogOutButton({ className = '', onDone, onError }) {
   const cancel = useRef(null);
   const [busy, setBusy] = useState(false);
   const id = useId();
+  const t = useT();
 
   function open() {
     if (!dialog.current) return;
@@ -31,16 +33,16 @@ export default function LogOutButton({ className = '', onDone, onError }) {
 
   return (
     <>
-      <button type="button" className={className} onClick={open}>Log out</button>
+      <button type="button" className={className} onClick={open}>{t('logout.button')}</button>
       <dialog ref={dialog} className="logout-dialog" aria-labelledby={id + 't'} aria-describedby={id + 'd'}>
-        <p className="logout-title" id={id + 't'}>Log out?</p>
-        <p className="logout-text" id={id + 'd'}>You'll need a new code from your email to log back in.</p>
+        <p className="logout-title" id={id + 't'}>{t('logout.title')}</p>
+        <p className="logout-text" id={id + 'd'}>{t('logout.text')}</p>
         <div className="logout-buttons">
           <button type="button" className="btn btn-primary" onClick={confirm} disabled={busy}>
-            {busy ? 'Logging out…' : 'Log out'}
+            {busy ? t('logout.busy') : t('logout.button')}
           </button>
           <button type="button" ref={cancel} className="btn btn-secondary" onClick={() => dialog.current.close()} disabled={busy}>
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       </dialog>

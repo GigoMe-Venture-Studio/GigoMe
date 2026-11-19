@@ -2,6 +2,7 @@
 // companies and the jobs they opened. All in the app only: nothing is ever
 // emailed. The database lets each student see only their own rows, and
 // deletes them with the account.
+import { t } from './i18n.js';
 import { dailyLimitMessage } from './limits.js';
 import { supabase } from './supabase.js';
 import {
@@ -11,6 +12,7 @@ import {
   SCHEDULE_LABEL,
   fetchJobs,
   filtersToParams,
+  longDate,
   readFilters,
   realFirst
 } from './jobs.js';
@@ -25,25 +27,26 @@ export const searchParamsText = (filters) => new URLSearchParams(filtersToParams
 // "“barista” · Porta Venezia · Weekends": the filters in words.
 export function searchSummary(filters, areas = []) {
   const parts = [];
+  const or = ` ${t('student.summary.or')} `;
   if (filters.q) parts.push(`“${filters.q}”`);
-  if (filters.area) parts.push((areas.find((a) => String(a.id) === filters.area) || {}).name || 'One area');
+  if (filters.area) parts.push((areas.find((a) => String(a.id) === filters.area) || {}).name || t('student.summary.oneArea'));
   if (filters.category) parts.push(CATEGORY_LABEL[filters.category]);
   if (filters.type) parts.push(JOB_TYPE_LABEL[filters.type]);
-  if (filters.remote) parts.push(filters.remote === 'yes' ? 'Remote' : 'On site');
-  if (filters.italian) parts.push(filters.italian === 'none' ? 'No Italian needed' : 'Basic Italian at most');
-  if (filters.hours) parts.push(`Up to ${filters.hours} h/week`);
-  if (filters.when.length) parts.push(filters.when.map((w) => SCHEDULE_LABEL[w]).join(' or '));
-  if (filters.lang.length) parts.push(filters.lang.map((l) => LANGUAGE_LABEL[l]).join(' or '));
-  if (filters.minpay) parts.push(`€${filters.minpay}/h or more${filters.nohourly ? ' (and jobs without an hourly pay)' : ''}`);
-  return parts.join(' · ') || 'All jobs';
+  if (filters.remote) parts.push(filters.remote === 'yes' ? t('place.remote') : t('student.summary.onSite'));
+  if (filters.italian) parts.push(filters.italian === 'none' ? t('italian.none') : t('student.summary.basicItalian'));
+  if (filters.hours) parts.push(t('student.summary.hours', { hours: filters.hours }));
+  if (filters.when.length) parts.push(filters.when.map((w) => SCHEDULE_LABEL[w]).join(or));
+  if (filters.lang.length) parts.push(filters.lang.map((l) => LANGUAGE_LABEL[l]).join(or));
+  if (filters.minpay) parts.push(t(filters.nohourly ? 'student.summary.minPayAndOthers' : 'student.summary.minPay', { amount: filters.minpay }));
+  return parts.join(' · ') || t('student.summary.all');
 }
 
 export async function saveSearch(name, filters) {
   const { error } = await supabase.from('saved_searches').insert({ name: name.trim().slice(0, 60), params: searchParamsText(filters) });
   if (error) {
     if (dailyLimitMessage(error)) throw new Error(dailyLimitMessage(error));
-    if (/up to 20/i.test(error.message || '')) throw new Error(`You can save up to ${MAX_SAVED_SEARCHES} searches. Delete one on Saved jobs first.`);
-    throw new Error("We couldn't save this search. Try again.");
+    if (/up to 20/i.test(error.message || '')) throw new Error(t('student.save.limit', { max: MAX_SAVED_SEARCHES }));
+    throw new Error(t('student.save.failed'));
   }
 }
 
@@ -126,5 +129,5 @@ export async function fetchOpenedJobs() {
   return data || [];
 }
 
-export const openedLabel = (iso) =>
-  `You opened the application on ${new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+// "You opened the application on 1 November 2026": never "applied".
+export const openedLabel = (iso) => t('student.opened', { date: longDate(iso) });

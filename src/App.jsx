@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import TermsGate from './components/TermsGate.jsx';
 import { PageErrorBoundary } from './components/ErrorBoundary.jsx';
 import { RouteMeta } from './lib/seo.js';
+import { useLang, useT } from './lib/useLang.js';
 import Home from './pages/Home.jsx';
 import Jobs from './pages/Jobs.jsx';
 import JobDetail from './pages/JobDetail.jsx';
@@ -27,9 +28,16 @@ const Privacy = lazy(() => import('./pages/Privacy.jsx'));
 const Terms = lazy(() => import('./pages/Terms.jsx'));
 const HowItWorks = lazy(() => import('./pages/HowItWorks.jsx'));
 const Safety = lazy(() => import('./pages/Safety.jsx'));
-const loadingPage = <main className="wrap legal-main"><p className="muted">Loading…</p></main>;
+function LoadingPage() {
+  const t = useT();
+  return <main className="wrap legal-main"><p className="muted">{t('common.loading')}</p></main>;
+}
+const loadingPage = <LoadingPage />;
 
 export default function App() {
+  // Everything renders again in the new language when it changes (labels
+  // made by plain functions like payLabel() included).
+  useLang();
   return (
     <FeedbackProvider>
       <ScrollToTop />

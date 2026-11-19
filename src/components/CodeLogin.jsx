@@ -20,6 +20,7 @@ import { fetchMyCompany } from '../lib/employer.js';
 import { hasAcceptedTerms } from '../lib/terms.js';
 import { captchaEnabled } from '../lib/captcha.js';
 import Turnstile from './Turnstile.jsx';
+import { useT } from '../lib/useLang.js';
 
 // The 6-digit email code login, used by /login (students) and /employers
 // (companies). Same steps for both; what differs is which emails are
@@ -60,6 +61,7 @@ function writePending(audience, p) {
 
 export default function CodeLogin({ audience = 'student', next = '', loggedIn }) {
   const navigate = useNavigate();
+  const t = useT();
   const { session, loading } = useSession();
   const pending = useRef(readPending(audience)).current;
   const employer = audience === 'employer';
@@ -85,17 +87,17 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   const [captchaFailed, setCaptchaFailed] = useState(false);
   const newCaptcha = () => setCaptchaReset((n) => n + 1);
   const captchaProps = {
-    onToken: (t) => {
-      setCaptchaToken(t);
-      if (t) setCaptchaFailed(false);
+    onToken: (token) => {
+      setCaptchaToken(token);
+      if (token) setCaptchaFailed(false);
     },
     onError: () => setCaptchaFailed(true),
     resetSignal: captchaReset
   };
   const waitingForCaptcha = captchaEnabled && !captchaToken;
 
-  if (loading) return <p className="auth-card muted">Loading…</p>;
-  if (finishing) return <p className="auth-card muted" role="status">Logging you in…</p>;
+  if (loading) return <p className="auth-card muted">{t('common.loading')}</p>;
+  if (finishing) return <p className="auth-card muted" role="status">{t('codeLogin.loggingIn')}</p>;
   if (session) return loggedIn ? loggedIn(session) : <LoggedIn userId={session.user.id} email={session.user.email} next={next} />;
 
   // "Which emails verify you as a student?": the list, read once when first opened.
@@ -118,7 +120,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     setEmailInvalid(false);
     const value = normalizeEmail(email);
     if (!looksLikeEmail(value)) {
-      setError(employer ? 'Enter your full email address, like name@company.it.' : 'Enter your full email address, like name@university.it.');
+      setError(employer ? t('codeLogin.errFullEmailEmployer') : t('codeLogin.errFullEmailStudent'));
       setEmailInvalid(true);
       return;
     }
@@ -131,7 +133,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         try {
           university = universityFor(value, await fetchUniversities());
         } catch {
-          setError("We couldn't check your email right now. Check your connection and try again.");
+          setError(t('codeLogin.errCheckEmail'));
           return;
         }
         if (university) {
@@ -161,7 +163,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     setError('');
     setInfo('');
     if (value.length !== CODE_LENGTH) {
-      setError(`Enter the ${CODE_LENGTH}-digit code from the email.`);
+      setError(t('codeLogin.errCodeLength', { n: CODE_LENGTH }));
       return;
     }
     setBusy(true);
@@ -207,7 +209,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     setSentAt(now);
     setCode('');
     writePending(audience, { email, sentAt: now });
-    setInfo('We sent you a new code. Only the newest code works.');
+    setInfo(t('codeLogin.newCodeSent'));
   }
 
   function onDifferentEmail() {
@@ -218,10 +220,14 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     setInfo('');
   }
 
+  // "6-digit", kept on one line.
+  const digitCode = <span className="nowrap">{t('codeLogin.digitCode', { n: CODE_LENGTH })}</span>;
+
   if (step === 'code') {
     return (
       <CodeStep
         email={email}
+        digitCode={digitCode}
         sentAt={sentAt}
         code={code}
         setCode={setCode}
@@ -239,54 +245,43 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
 
   return (
     <div className="auth-card">
-      <h1>{employer ? 'Employer login' : 'Log in or sign up'}</h1>
-      <p className="lead">
-        {employer ? 'Use your work email.' : 'Use any email. A university email verifies that you\'re a student.'} We'll
-        send you a <span className="nowrap">{CODE_LENGTH}-digit</span> code, no password needed.
-      </p>
+      <h1>{employer ? t('codeLogin.titleEmployer') : t('codeLogin.titleStudent')}</h1>
+      <p className="lead">{t(employer ? 'codeLogin.leadEmployer' : 'codeLogin.leadStudent', { code: digitCode })}</p>
       {/* This line is always on the student login, above the only place a
           university is named: "Which emails verify you as a student?"
           (folded, CLAUDE.md). */}
       {/* Which login is which: the other one, in one line. */}
       <p className="auth-small login-switch">
-        {employer ? (
-          <>Looking for work? <Link to="/login">Student login</Link></>
-        ) : (
-          <>Hiring? <Link to="/employers">Use the employer login</Link></>
-        )}
+        {employer
+          ? t('codeLogin.switchEmployer', { link: (s) => <Link to="/login">{s}</Link> })
+          : t('codeLogin.switchStudent', { link: (s) => <Link to="/employers">{s}</Link> })}
       </p>
       {!employer && (
-        <p className="auth-small login-disclaimer">
-          GigoMe is an independent student project, not affiliated with or endorsed by any university.
-        </p>
+        <p className="auth-small login-disclaimer">{t('codeLogin.disclaimer')}</p>
       )}
       {!employer && (
         <details className="uni-details" onToggle={onUniListToggle}>
-          <summary className="tap-44">Which emails verify you as a student?</summary>
+          <summary className="tap-44">{t('codeLogin.uniSummary')}</summary>
           <div className="uni-details-body">
             {uniListState === 'ready' && universities.length > 0 && (
               <>
-                <p>A student email from one of these universities verifies that you're a student:</p>
+                <p>{t('codeLogin.uniListIntro')}</p>
                 <UniversityList universities={universities} />
               </>
             )}
-            {uniListState === 'loading' && <p className="muted" role="status">Loading…</p>}
-            {uniListState === 'error' && (
-              <p role="alert">We couldn't load the list right now. Check your connection, then close this and open it again.</p>
-            )}
+            {uniListState === 'loading' && <p className="muted" role="status">{t('common.loading')}</p>}
+            {uniListState === 'error' && <p role="alert">{t('codeLogin.uniListError')}</p>}
+            <p>{t('codeLogin.uniOtherEmail')}</p>
             <p>
-              Any other email works too: after logging in, you tell us that you're a student and at which university.
-            </p>
-            <p>
-              Is your university missing?{' '}
-              <a href={mailtoHref(CONTACT_EMAIL, 'Add my university to GigoMe')}>Email {CONTACT_EMAIL}</a>
+              {t('codeLogin.uniMissing')}{' '}
+              <a href={mailtoHref(CONTACT_EMAIL, t('codeLogin.uniMissingSubject'))}>{t('codeLogin.uniMissingLink', { email: CONTACT_EMAIL })}</a>
             </p>
           </div>
         </details>
       )}
       <form className="auth-form" onSubmit={onSubmitEmail} noValidate>
         <label className="field">
-          {employer ? 'Work email' : 'Email'}
+          {employer ? t('codeLogin.labelWorkEmail') : t('codeLogin.labelEmail')}
           <input
             className="input"
             type="email"
@@ -295,7 +290,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
             autoComplete="email"
             autoCapitalize="none"
             spellCheck="false"
-            placeholder={employer ? 'name@company.it' : 'name@university.it'}
+            placeholder={employer ? t('codeLogin.placeholderEmployer') : t('codeLogin.placeholderStudent')}
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -311,25 +306,18 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
           />
         </label>
         <p className="auth-small" id="login-privacy">
-          {employer
-            ? 'We use your email to log you in and, if needed, to contact you about your company.'
-            : 'We use your email to log you in and to check whether it\'s a university email on our list.'}{' '}
-          See our <Link to="/privacy">Privacy Notice</Link>.
+          {t(employer ? 'codeLogin.privacyEmployer' : 'codeLogin.privacyStudent', { link: (s) => <Link to="/privacy">{s}</Link> })}
         </p>
         {error && <p className="err" role="alert">{error}</p>}
         {isStudentEmail && (
           <div className="note auth-notice" role="alert">
-            <p>
-              That's a university email. Students <Link to="/login">log in here</Link>.
-            </p>
-            <p>
-              Hiring for a company? Use your work email instead.
-            </p>
+            <p>{t('codeLogin.uniEmailNotice', { link: (s) => <Link to="/login">{s}</Link> })}</p>
+            <p>{t('codeLogin.uniEmailHiring')}</p>
           </div>
         )}
         <CaptchaCheck props={captchaProps} failed={captchaFailed} waiting={waitingForCaptcha} />
         <button type="submit" className="btn btn-primary" disabled={busy || waitingForCaptcha}>
-          {busy ? 'Checking…' : 'Send me a code'}
+          {busy ? t('codeLogin.checking') : t('codeLogin.sendCode')}
         </button>
       </form>
     </div>
@@ -339,23 +327,23 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
 // The Turnstile widget plus what to tell the person while it works or if it
 // can't load. Renders nothing when Turnstile isn't configured.
 function CaptchaCheck({ props, failed, waiting }) {
+  const t = useT();
   if (!captchaEnabled) return null;
   return (
     <div className="captcha-check">
       <Turnstile {...props} />
       {failed ? (
-        <p className="err" role="alert">
-          We couldn't load the check that keeps bots out. Reload the page, or try another browser or network.
-        </p>
+        <p className="err" role="alert">{t('codeLogin.captchaFailed')}</p>
       ) : (
-        waiting && <p className="auth-small" role="status">One moment: checking you're not a bot…</p>
+        waiting && <p className="auth-small" role="status">{t('codeLogin.captchaWaiting')}</p>
       )}
     </div>
   );
 }
 
-function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, onResend, onDifferentEmail, captcha, waitingForCaptcha }) {
+function CodeStep({ email, digitCode, sentAt, code, setCode, busy, error, info, onVerify, onResend, onDifferentEmail, captcha, waitingForCaptcha }) {
   const inputRef = useRef(null);
+  const t = useT();
   const [now, setNow] = useState(Date.now());
   const waitLeft = Math.max(0, Math.ceil((sentAt + RESEND_SECONDS * 1000 - now) / 1000));
 
@@ -378,10 +366,8 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
 
   return (
     <div className="auth-card">
-      <h1>Check your email</h1>
-      <p className="lead">
-        We sent a <span className="nowrap">{CODE_LENGTH}-digit</span> code to <strong className="auth-email">{email}</strong>.
-      </p>
+      <h1>{t('codeLogin.checkEmail')}</h1>
+      <p className="lead">{t('codeLogin.sentTo', { code: digitCode, email: <strong className="auth-email">{email}</strong> })}</p>
       <form
         className="auth-form"
         onSubmit={(e) => {
@@ -391,7 +377,7 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
         noValidate
       >
         <label className="field">
-          Your code
+          {t('codeLogin.yourCode')}
           <input
             ref={inputRef}
             className="input code-input"
@@ -408,22 +394,20 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
             aria-describedby="code-hint"
           />
         </label>
-        <p className="auth-small" id="code-hint">
-          It can take a minute to arrive. Can't find it? Check your Junk or Spam folder and mark it as 'Not junk', so the next one arrives in your inbox.
-        </p>
+        <p className="auth-small" id="code-hint">{t('codeLogin.codeHint')}</p>
         {error && <p className="err" role="alert">{error}</p>}
         {info && !error && <p className="auth-small" role="status">{info}</p>}
         {captcha}
         <button type="submit" className="btn btn-primary" disabled={busy}>
-          {busy ? 'Checking…' : 'Log in'}
+          {busy ? t('codeLogin.checking') : t('codeLogin.logIn')}
         </button>
       </form>
       <div className="auth-links">
         <button type="button" className="btn btn-secondary btn-sm" onClick={onResend} disabled={busy || waitLeft > 0 || waitingForCaptcha}>
-          {waitLeft > 0 ? `Send a new code (${waitLeft}s)` : 'Send a new code'}
+          {waitLeft > 0 ? t('codeLogin.resendWait', { s: waitLeft }) : t('codeLogin.resend')}
         </button>
         <button type="button" className="btn-link tap-44" onClick={onDifferentEmail} disabled={busy}>
-          Use a different email
+          {t('codeLogin.differentEmail')}
         </button>
       </div>
     </div>
@@ -433,6 +417,7 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
 // The student login when already logged in. An email with a company account
 // stays one (one email, one role): say so and point to the employer login.
 export function LoggedIn({ userId, email, next }) {
+  const t = useT();
   const [error, setError] = useState('');
   const [type, setType] = useState('');
   useEffect(() => {
@@ -444,21 +429,15 @@ export function LoggedIn({ userId, email, next }) {
       active = false;
     };
   }, [userId]);
-  if (!type) return <p className="auth-card muted">Loading…</p>;
+  if (!type) return <p className="auth-card muted">{t('common.loading')}</p>;
   if (type === 'company') {
     return (
       <div className="auth-card wrong-role">
-        <h1>This email has an employer account</h1>
-        <p className="lead">
-          <strong className="auth-email">{email}</strong> is registered as an employer. Each email has one role on GigoMe,
-          so it can't also be a student account.
-        </p>
-        <p>
-          To hire, use the <Link to="/employers">employer login</Link>. To look for work, log out and sign up here with a
-          different email, like your university email.
-        </p>
+        <h1>{t('codeLogin.wrongRoleTitle')}</h1>
+        <p className="lead">{t('codeLogin.wrongRoleLead', { email: <strong className="auth-email">{email}</strong> })}</p>
+        <p>{t('codeLogin.wrongRoleHelp', { link: (s) => <Link to="/employers">{s}</Link> })}</p>
         <div className="auth-buttons">
-          <Link className="btn btn-primary" to="/employers">Go to the employer login</Link>
+          <Link className="btn btn-primary" to="/employers">{t('codeLogin.goEmployerLogin')}</Link>
           <LogOutButton className="btn btn-secondary" onError={setError} />
         </div>
         {error && <p className="err" role="alert">{error}</p>}
@@ -467,12 +446,10 @@ export function LoggedIn({ userId, email, next }) {
   }
   return (
     <div className="auth-card">
-      <h1>You're logged in</h1>
-      <p className="lead">
-        Logged in as <strong className="auth-email">{email}</strong>.
-      </p>
+      <h1>{t('codeLogin.loggedInTitle')}</h1>
+      <p className="lead">{t('codeLogin.loggedInAs', { email: <strong className="auth-email">{email}</strong> })}</p>
       <div className="auth-buttons">
-        <Link className="btn btn-primary" to={next || '/'}>{next ? 'Continue' : 'Go to GigoMe'}</Link>
+        <Link className="btn btn-primary" to={next || '/'}>{next ? t('codeLogin.continue') : t('codeLogin.goHome')}</Link>
         <LogOutButton className="btn btn-secondary" onError={setError} />
       </div>
       {error && <p className="err" role="alert">{error}</p>}
@@ -503,11 +480,12 @@ async function destination(audience, profile, userId, next) {
 // The universities whose student emails verify a student, each with its
 // domains: "Bocconi University (@studbocconi.it)".
 function UniversityList({ universities }) {
+  const t = useT();
   return (
     <ul className="uni-list">
       {universities.map((u) => (
         <li key={u.id}>
-          {u.name} <span className="uni-domains">({u.domains.map((d) => '@' + d).join(' or ')})</span>
+          {u.name} <span className="uni-domains">({u.domains.map((d) => '@' + d).join(' ' + t('common.or') + ' ')})</span>
         </li>
       ))}
     </ul>

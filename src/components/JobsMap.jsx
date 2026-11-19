@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import ExampleTag from './ExampleTag.jsx';
 import { createMap, maplibregl } from '../lib/map.js';
-import { EXAMPLE_JOB_LABEL, isExample, markerPay, metroLabel, payLabel, placeLabel, realFirst } from '../lib/jobs.js';
+import { t } from '../lib/i18n.js';
+import { useLang } from '../lib/useLang.js';
+import { exampleJobLabel, isExample, markerPay, metroLabel, payLabel, placeLabel, realFirst } from '../lib/jobs.js';
 import { mapParam } from '../lib/geo.js';
 
 // The map on /jobs and on company pages. Loaded with React.lazy, so MapLibre
@@ -66,11 +68,11 @@ function cardFor(job, onOpenJob) {
   if (isExample(job)) {
     const ex = document.createElement('span');
     ex.className = 'tag tag-example';
-    ex.title = EXAMPLE_JOB_LABEL;
-    ex.textContent = 'Example';
+    ex.title = exampleJobLabel();
+    ex.textContent = t('example.tag');
     const rest = document.createElement('span');
     rest.className = 'sr-only';
-    rest.textContent = EXAMPLE_JOB_LABEL.slice('Example'.length);
+    rest.textContent = t('example.jobRest');
     ex.append(rest);
     co.append(' ', ex);
   }
@@ -90,7 +92,9 @@ function cardFor(job, onOpenJob) {
 
 const isPhone = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
 
-export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', view = null, autoFit = true, onViewChange, you = null, cooperative = false, fitPadding = 48, errorNote = "The map can't be shown right now. The list has every job.", children }) {
+export default function JobsMap({ jobs, onOpenJob, label, view = null, autoFit = true, onViewChange, you = null, cooperative = false, fitPadding = 48, errorNote, children }) {
+  // Renders again when the language changes (the markers follow, below).
+  const lang = useLang();
   const box = useRef(null);
   const map = useRef(null);
   const popup = useRef(null);
@@ -109,6 +113,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
   latest.current = { jobs, onOpenJob, onViewChange, autoFit, fitPadding };
   const [state, setState] = useState('loading');
   const [sheet, setSheet] = useState(null); // job ids shown in the phone card
+  const resync = useRef(null); // draws the markers again (their labels are text)
 
   // Create the map once.
   useEffect(() => {
@@ -162,21 +167,21 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
         el.className = example ? 'job-marker job-marker-example' : 'job-marker';
         el.dataset.id = id;
         const pay = markerPay(job);
-        el.setAttribute('aria-label', `${example ? `${EXAMPLE_JOB_LABEL}: ` : ''}${job.title}${job.companies ? `, ${job.companies.name}` : ''}${pay ? `, ${payLabel(job)}` : ''}`);
+        el.setAttribute('aria-label', `${example ? `${exampleJobLabel()}: ` : ''}${job.title}${job.companies ? `, ${job.companies.name}` : ''}${pay ? `, ${payLabel(job)}` : ''}`);
         const dot = document.createElement('span');
         dot.className = 'job-marker-dot';
         el.append(dot);
         if (example) {
-          const t = document.createElement('span');
-          t.className = 'job-marker-ex';
-          t.textContent = 'Example';
-          el.append(t);
+          const tag = document.createElement('span');
+          tag.className = 'job-marker-ex';
+          tag.textContent = t('example.tag');
+          el.append(tag);
         }
         if (pay) {
-          const t = document.createElement('span');
-          t.className = 'job-marker-pay';
-          t.textContent = pay;
-          el.append(t);
+          const tag = document.createElement('span');
+          tag.className = 'job-marker-pay';
+          tag.textContent = pay;
+          el.append(tag);
         }
         el.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -198,6 +203,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
       }
       if (box.current) box.current.dataset.markers = String(markers.current.size);
     };
+    resync.current = syncMarkers;
     const payShown = () => box.current && box.current.classList.toggle('show-pay', m.getZoom() >= PAY_ZOOM);
 
     m.on('load', () => {
@@ -219,6 +225,7 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
         type: 'symbol',
         source: 'jobs',
         filter: ['has', 'point_count'],
+        // i18n-ignore: a font name
         layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true },
         paint: { 'text-color': INK }
       });
@@ -295,6 +302,23 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
     if (latest.current.autoFit) fitQuietly(m, jobs);
   }, [jobs]);
 
+  // Another language: markers, the open popup and "You are here" are plain
+  // DOM with text in them, so they are made again.
+  const firstLang = useRef(lang);
+  useEffect(() => {
+    if (lang === firstLang.current) return;
+    firstLang.current = lang;
+    if (popup.current) popup.current.remove();
+    for (const mk of markers.current.values()) mk.remove();
+    markers.current.clear();
+    if (resync.current) resync.current();
+    const dot = youMarker.current && youMarker.current.getElement();
+    if (dot) {
+      dot.setAttribute('aria-label', t('map.youAreHere'));
+      dot.title = t('map.youAreHere');
+    }
+  }, [lang]);
+
   // "You are here": a dot, and the map moves there.
   useEffect(() => {
     const m = map.current;
@@ -305,8 +329,8 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
     const el = document.createElement('div');
     el.className = 'you-dot';
     el.setAttribute('role', 'img');
-    el.setAttribute('aria-label', 'You are here');
-    el.title = 'You are here';
+    el.setAttribute('aria-label', t('map.youAreHere'));
+    el.title = t('map.youAreHere');
     youMarker.current = new maplibregl.Marker({ element: el }).setLngLat(you).addTo(m);
     m.easeTo({ center: you, zoom: Math.max(m.getZoom(), 14) });
   }, [you]);
@@ -315,17 +339,17 @@ export default function JobsMap({ jobs, onOpenJob, label = 'Map of the jobs', vi
   const shown = sheet ? sheet.map((id) => byId.current.get(id)).filter(Boolean) : [];
   return (
     <div className="jobs-map-wrap">
-      <div ref={box} className="jobs-map" role="region" aria-label={label} data-state={state} data-points={count} />
+      <div ref={box} className="jobs-map" role="region" aria-label={label || t('map.label')} data-state={state} data-points={count} />
       {children}
       {state === 'error' && (
-        <p className="jobs-map-note" role="alert">{errorNote}</p>
+        <p className="jobs-map-note" role="alert">{errorNote || t('map.errorNote')}</p>
       )}
       {state === 'ready' && count === 0 && (
-        <p className="jobs-map-note">None of these jobs has a place on the map.</p>
+        <p className="jobs-map-note">{t('map.noPlaces')}</p>
       )}
       {shown.length > 0 && (
-        <div className="map-sheet" role="dialog" aria-label={shown.length === 1 ? shown[0].title : `${shown.length} jobs here`}>
-          <button type="button" className="map-sheet-close" aria-label="Close" onClick={() => setSheet(null)}>×</button>
+        <div className="map-sheet" role="dialog" aria-label={shown.length === 1 ? shown[0].title : t('map.jobsHere', { count: shown.length })}>
+          <button type="button" className="map-sheet-close" aria-label={t('common.close')} onClick={() => setSheet(null)}>×</button>
           <ul className="map-sheet-list">
             {shown.map((job) => (
               <li key={job.id}>

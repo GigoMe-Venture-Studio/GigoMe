@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import { useT } from '../lib/useLang.js';
 
 // /safety ("Staying safe"): what GigoMe checks, just as clearly what it
 // can't (Terms 15.2 and 19), tips for meeting an employer, and what to do if
@@ -15,104 +16,66 @@ import { CONTACT_EMAIL } from '../lib/contact.js';
 const PERMIT_SOURCE = 'https://www.integrazionemigranti.gov.it/';
 
 export default function Safety() {
+  const t = useT();
+  const to = (path) => (s) => <Link to={path}>{s}</Link>;
+  const strong = (s) => <strong>{s}</strong>;
   return (
     <PageShell className="info-main">
       <article className="info">
-        <h1>Staying safe</h1>
-        <p className="lead">
-          Some jobs mean meeting an employer at an address you don't know. Here's what GigoMe checks, what it can't,
-          and how to look after yourself.
-        </p>
+        <h1>{t('safety.title')}</h1>
+        <p className="lead">{t('safety.lead')}</p>
 
         <section aria-labelledby="checks-title">
-          <h2 id="checks-title">What GigoMe checks</h2>
+          <h2 id="checks-title">{t('safety.checksTitle')}</h2>
           <ul className="info-list">
-            <li>
-              Every company is reviewed by a person at GigoMe before its jobs can go live. We compare its login email,
-              website and description.
-            </li>
-            <li>
-              Every job is reviewed by a person before students see it. We check that the role is clearly described,
-              that pay and hours are stated, that nothing is asked of students up front, and that nothing in it looks
-              discriminatory or unlawful.
-            </li>
-            <li>Every report is read by a person. We can take a job down, or remove a company and all its jobs.</li>
+            <li>{t('safety.check1')}</li>
+            <li>{t('safety.check2')}</li>
+            <li>{t('safety.check3')}</li>
           </ul>
         </section>
 
         <section aria-labelledby="limits-title">
-          <h2 id="limits-title">What GigoMe can't do</h2>
+          <h2 id="limits-title">{t('safety.limitsTitle')}</h2>
           <ul className="info-list">
-            <li>
-              A review checks what the employer tells us. It can't verify every employer or show that every listing is
-              genuine or lawful (<Link to="/terms#section-21">Terms, section 15.2</Link>).
-            </li>
-            <li>
-              GigoMe isn't part of the work. It doesn't supervise any job, isn't a party to what you agree with an
-              employer, and can't guarantee pay or how anyone behaves (<Link to="/terms#section-26">Terms, section
-              19</Link>).
-            </li>
-            <li>So follow the tips below for every job, even one that looks fine.</li>
+            <li>{t('safety.limit1', { link: to('/terms#section-21') })}</li>
+            <li>{t('safety.limit2', { link: to('/terms#section-26') })}</li>
+            <li>{t('safety.limit3')}</li>
           </ul>
         </section>
 
         <section aria-labelledby="tips-title">
-          <h2 id="tips-title">Tips</h2>
+          <h2 id="tips-title">{t('safety.tipsTitle')}</h2>
           <ul className="info-list">
+            <li>{t('safety.tip1', { strong })}</li>
+            <li>{t('safety.tip2', { strong })}</li>
+            <li>{t('safety.tip3', { strong })}</li>
+            <li>{t('safety.tip4', { strong, link: to('/terms#section-11') })}</li>
+            <li>{t('safety.tip5', { strong })}</li>
+            <li>{t('safety.tip6', { strong })}</li>
+            <li>{t('safety.tip7', { strong })}</li>
             <li>
-              <strong>Never pay to get a job.</strong> No registration fees, deposits, training you pay for or kits you
-              must buy. If anyone asks, stop and report the job.
-            </li>
-            <li>
-              <strong>Look the business up before you go:</strong> its website, its reviews and the address on a map.
-              Check that the name and the place match the listing.
-            </li>
-            <li>
-              <strong>Meeting at an address for the first time?</strong> Tell someone where you're going and when you'll
-              be back, and go during the business's opening hours.
-            </li>
-            <li>
-              <strong>Get the essential terms in writing before you start:</strong> what you'll do, the hours, the
-              place, the pay and the type of contract (<Link to="/terms#section-11">Terms, section 8.1</Link>).
-            </li>
-            <li>
-              <strong>Unpaid "trial shifts" doing real work are a red flag.</strong> Work should be paid.
-            </li>
-            <li>
-              <strong>Never share passwords or login codes.</strong> GigoMe never asks for your login code.
-            </li>
-            <li>
-              <strong>Keep your bank details to yourself until you have the written terms of a real job.</strong> An
-              employer needs your bank account only to pay you, and never needs your card number or PIN.
-            </li>
-            <li>
-              <strong>From outside the EU?</strong> Check how many hours your residence permit lets you work on an
-              official source, such as the{' '}
-              <a href={PERMIT_SOURCE} target="_blank" rel="noopener noreferrer">Italian government's portal for migrants</a>,
-              or ask your university's international office.
+              {t('safety.tip8', {
+                strong,
+                link: (s) => (
+                  <a href={PERMIT_SOURCE} target="_blank" rel="noopener noreferrer">
+                    {s}
+                  </a>
+                )
+              })}
             </li>
           </ul>
         </section>
 
         <section aria-labelledby="wrong-title">
-          <h2 id="wrong-title">If something's wrong</h2>
+          <h2 id="wrong-title">{t('safety.wrongTitle')}</h2>
           <ul className="info-list">
-            <li>
-              On the job's page, press "Report this job" (you need to be logged in). A person at GigoMe reads every
-              report.
-            </li>
-            <li>
-              Or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-            </li>
-            <li>
-              <strong>In an emergency, call 112.</strong> It's free.
-            </li>
+            <li>{t('safety.wrong1')}</li>
+            <li>{t('safety.wrong2', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}</li>
+            <li>{t('safety.wrong3', { strong })}</li>
           </ul>
         </section>
 
-        <p className="info-more">
-          See also <Link to="/how-it-works">How GigoMe works</Link>.
-        </p>
+        <p className="info-more">{t('safety.more', { link: to('/how-it-works') })}</p>
       </article>
     </PageShell>
   );

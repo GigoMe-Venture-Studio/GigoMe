@@ -2,51 +2,31 @@
 import { safeHttpUrl } from './links.js';
 import { supabase } from './supabase.js';
 import { SCHEDULES } from './schedules.js';
+import { labelMap, labelPairs, locale, t } from './i18n.js';
+import { areaName } from './areas.js';
 
 // Values allowed by the database (jobs.job_type, jobs.italian_level).
 // GigoMe lists only paid part-time jobs and gigs: no internships (the
 // database refuses new ones, migration 20261112180000_no_internships.sql).
-export const JOB_TYPES = [
-  ['gig', 'Gig'],
-  ['part_time', 'Part-time'],
-  ['other', 'Other']
-];
-export const JOB_TYPE_LABEL = Object.fromEntries(JOB_TYPES);
-export const ITALIAN_LABEL = { none: 'No Italian needed', basic: 'Basic Italian', fluent: 'Fluent Italian' };
+// Labels: the translation files (jobType.*, italian.*, category.*, language.*, payUnit.*).
+const JOB_TYPE_VALUES = ['gig', 'part_time', 'other'];
+export const JOB_TYPES = labelPairs('jobType', JOB_TYPE_VALUES);
+export const JOB_TYPE_LABEL = labelMap('jobType', JOB_TYPE_VALUES);
+export const ITALIAN_LABEL = labelMap('italian', ['none', 'basic', 'fluent']);
 export const MAX_HOURS_OPTIONS = [10, 15, 20, 25, 30];
 // Values allowed by jobs.category.
-export const CATEGORIES = [
-  ['hospitality', 'Hospitality'],
-  ['retail', 'Retail'],
-  ['tutoring_education', 'Tutoring & education'],
-  ['office_admin', 'Office & admin'],
-  ['marketing_social', 'Marketing & social media'],
-  ['events', 'Events'],
-  ['tech', 'Tech'],
-  ['other', 'Other']
-];
-export const CATEGORY_LABEL = Object.fromEntries(CATEGORIES);
+const CATEGORY_VALUES = ['hospitality', 'retail', 'tutoring_education', 'office_admin', 'marketing_social', 'events', 'tech', 'other'];
+export const CATEGORIES = labelPairs('category', CATEGORY_VALUES);
+export const CATEGORY_LABEL = labelMap('category', CATEGORY_VALUES);
 // When a job happens (jobs.schedule) and what each value means: src/lib/schedules.js.
-export { SCHEDULES, SCHEDULE_LABEL, SCHEDULE_HOURS, SCHEDULE_HOURS_LINE, scheduleLabels, scheduleItems } from './schedules.js';
+export { SCHEDULES, SCHEDULE_LABEL, SCHEDULE_HOURS, scheduleHoursLine, scheduleLabels, scheduleItems } from './schedules.js';
 // Values allowed by jobs.languages (languages used at work; optional).
-export const LANGUAGES = [
-  ['en', 'English'],
-  ['it', 'Italian'],
-  ['es', 'Spanish'],
-  ['fr', 'French'],
-  ['de', 'German'],
-  ['zh', 'Chinese'],
-  ['ar', 'Arabic'],
-  ['other', 'Other']
-];
-export const LANGUAGE_LABEL = Object.fromEntries(LANGUAGES);
+const LANGUAGE_VALUES = ['en', 'it', 'es', 'fr', 'de', 'zh', 'ar', 'other'];
+export const LANGUAGES = labelPairs('language', LANGUAGE_VALUES);
+export const LANGUAGE_LABEL = labelMap('language', LANGUAGE_VALUES);
 // Values allowed by jobs.pay_unit. Every job is paid: nothing unpaid.
-export const PAY_UNITS = [
-  ['hour', 'Per hour'],
-  ['month', 'Per month'],
-  ['project', 'Per project']
-];
-export const PAY_UNIT_LABEL = Object.fromEntries(PAY_UNITS);
+export const PAY_UNITS = labelPairs('payUnit', ['hour', 'month', 'project']);
+export const PAY_UNIT_LABEL = labelMap('payUnit', ['hour', 'month', 'project']);
 export const MAX_MIN_PAY = 30; // the "Minimum pay" slider goes from €0 to €30 an hour
 // In the order of the list, so labels always read the same way.
 export const languageLabels = (job) => LANGUAGES.filter(([v]) => (job.languages || []).includes(v)).map(([, l]) => l);
@@ -218,8 +198,10 @@ export async function fetchHiddenByPay(filters) {
 
 // "paid per project or pay not specified": the kinds that are there.
 export function hiddenKinds(h) {
-  const kinds = [h.project && 'paid per project', h.unspecified && 'pay not specified'].filter(Boolean);
-  return kinds.length > 1 ? `${kinds.slice(0, -1).join(', ')} or ${kinds[kinds.length - 1]}` : kinds[0] || '';
+  if (h.project && h.unspecified) return t('pay.hiddenBoth');
+  if (h.project) return t('pay.hiddenProject');
+  if (h.unspecified) return t('pay.hiddenUnspecified');
+  return '';
 }
 
 function filtered(query, filters) {
@@ -269,9 +251,9 @@ export async function fetchJob(id) {
 export async function revealContact(jobId) {
   const { data, error } = await supabase.rpc('reveal_job_contact', { p_job_id: jobId });
   if (error) {
-    if (error.code === '42501') return { error: 'Only student accounts can see how to apply.' };
-    if (error.code === 'P0002') return { error: "This job isn't available any more." };
-    return { error: "We couldn't load how to apply. Check your connection and try again." };
+    if (error.code === '42501') return { error: t('apply.studentsOnly') };
+    if (error.code === 'P0002') return { error: t('apply.gone') };
+    return { error: t('apply.loadFailed') };
   }
   const row = (data || [])[0] || {};
   // Only an http(s) link is ever opened (the database refuses anything else
@@ -281,9 +263,9 @@ export async function revealContact(jobId) {
 
 // The place as written by the employer, or else the area's name.
 export function placeLabel(job) {
-  const place = job.location || (job.areas && job.areas.name) || '';
-  if (job.remote) return place ? `Remote or ${place}` : 'Remote';
-  return place || 'Location not listed';
+  const place = job.location || (job.areas && areaName(job.areas.name)) || '';
+  if (job.remote) return place ? t('place.remoteOr', { place }) : t('place.remote');
+  return place || t('place.notListed');
 }
 // "M1 Porta Venezia · 4 min walk" for an exact location within about 1 km of
 // a station (walking about 80 m a minute), otherwise null.
@@ -291,7 +273,7 @@ export function metroLabel(job) {
   const s = job.metro_stations;
   const m = job.nearest_station_m;
   if (!job.show_exact_location || !s || m == null || m > 1000) return null;
-  return `${s.lines.join(' ')} ${s.name} · ${Math.max(1, Math.round(m / 80))} min walk`;
+  return t('place.metro', { lines: s.lines.join(' '), station: s.name, minutes: Math.max(1, Math.round(m / 80)) });
 }
 
 // Example listings (supabase/seed/examples.sql): made-up companies and jobs
@@ -299,8 +281,10 @@ export function metroLabel(job) {
 // map card and page (ExampleTag.jsx; screen readers hear the whole label),
 // never indexed, and Apply opens a demo instead of anything real. A job
 // counts as an example when it or its company is one.
-export const EXAMPLE_JOB_LABEL = 'Example listing, not a real job';
-export const EXAMPLE_COMPANY_LABEL = 'Example company, not a real employer';
+// The tag shows example.tag ("Example"); screen readers also hear the rest
+// (example.jobRest: " listing, not a real job").
+export const exampleJobLabel = () => t('example.tag') + t('example.jobRest');
+export const exampleCompanyLabel = () => t('example.tag') + t('example.companyRest');
 export const isExample = (job) => Boolean(job && (job.is_example || (job.companies && job.companies.is_example)));
 // The made-up application link and email the Apply demo shows for an
 // example job. Always under .example, a domain reserved so it can never
@@ -321,7 +305,7 @@ export function isNew(job) {
 }
 
 export function hoursLabel(job) {
-  return `${job.hours_per_week} h/week`;
+  return t('job.hoursPerWeek', { hours: job.hours_per_week });
 }
 // "€11/h" for a map marker: the first amount in the pay text (with its "/h",
 // "/day", "per month"...) when there is one, else the text, shortened.
@@ -332,10 +316,10 @@ export function shortPay(pay) {
   const out = m ? m[1].replace(/€\s/, '€').replace(/ per | a | an | al /i, '/') : s;
   return out.length > 12 ? out.slice(0, 11).trimEnd() + '…' : out;
 }
-// Amounts: "11", "11.50", "1,200".
+// Amounts: "11", "11.50", "1,200" (Italian: "11", "11,50", "1200").
 const euros = (n) => {
   const v = Number(n);
-  return v.toLocaleString('en-GB', { minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 });
+  return v.toLocaleString(locale(), { minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 });
 };
 const range = (a, b) => (b != null && Number(b) !== Number(a) ? `${euros(a)}–${euros(b)}` : euros(a));
 // Hours in a month at this many hours a week (52 weeks / 12 months).
@@ -346,19 +330,19 @@ export const monthlyHours = (hoursPerWeek) => (hoursPerWeek * 52) / 12;
 export function payLabel(job) {
   switch (job.pay_unit) {
     case 'hour':
-      return `€${range(job.pay_min, job.pay_max)}/h`;
+      return t('pay.hour', { amount: range(job.pay_min, job.pay_max) });
     case 'month': {
       const h = Number(job.hours_per_week);
       const per = (x) => Math.round(Number(x) / monthlyHours(h));
-      const approx = Number.isInteger(h) && h > 0
-        ? ` (≈ €${job.pay_max != null && per(job.pay_max) !== per(job.pay_min) ? `${per(job.pay_min)}–${per(job.pay_max)}` : per(job.pay_min)}/h)`
-        : '';
-      return `€${range(job.pay_min, job.pay_max)}/month${approx}`;
+      const amount = range(job.pay_min, job.pay_max);
+      if (!(Number.isInteger(h) && h > 0)) return t('pay.month', { amount });
+      const hourly = job.pay_max != null && per(job.pay_max) !== per(job.pay_min) ? `${per(job.pay_min)}–${per(job.pay_max)}` : String(per(job.pay_min));
+      return t('pay.monthHourly', { amount, hourly });
     }
     case 'project':
-      return `€${range(job.pay_min, job.pay_max)} per project`;
+      return t('pay.project', { amount: range(job.pay_min, job.pay_max) });
     default:
-      return job.pay || 'Pay not listed';
+      return job.pay || t('pay.notListed');
   }
 }
 // The free-text pay is a note ("+ tips") once the pay is structured.
@@ -368,11 +352,11 @@ export function markerPay(job) {
   const plus = job.pay_max != null && Number(job.pay_max) !== Number(job.pay_min) ? '+' : '';
   switch (job.pay_unit) {
     case 'hour':
-      return `€${range(job.pay_min, job.pay_max)}/h`;
+      return t('pay.hour', { amount: range(job.pay_min, job.pay_max) });
     case 'month':
-      return `€${euros(job.pay_min)}${plus}/mo`;
+      return t('pay.markerMonth', { amount: euros(job.pay_min) + plus });
     case 'project':
-      return `€${euros(job.pay_min)}${plus}/proj`;
+      return t('pay.markerProject', { amount: euros(job.pay_min) + plus });
     default:
       return shortPay(job.pay);
   }
@@ -382,15 +366,17 @@ export function markerPay(job) {
 export const postedAt = (job) => job.published_at || job.created_at;
 export function postedLabel(iso) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-  if (days <= 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  return `${days} days ago`;
+  if (days <= 0) return t('time.today');
+  if (days === 1) return t('time.yesterday');
+  return t('time.daysAgo', { count: days });
 }
 // start_date is a plain date (YYYY-MM-DD); read it as a local date.
 export function dateLabel(isoDate) {
   const [y, m, d] = String(isoDate).split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  return longDate(new Date(y, m - 1, d));
 }
+// "3 December 2026" / "3 dicembre 2026".
+export const longDate = (date) => new Date(date).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' });
 // Company websites may be stored without https://. Only http(s) is linked.
 export function websiteHref(site) {
   const s = String(site || '').trim();

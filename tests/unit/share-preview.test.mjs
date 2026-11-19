@@ -40,6 +40,9 @@ test('the image line, its description and the home page headline say the same', 
   assert.equal(tagline, line, 'scripts/build-og-image.mjs TAGLINE');
   assert.equal(meta('property', 'og:image:alt'), 'The GigoMe logo with the line: ' + line);
   const home = readFileSync(new URL('src/pages/Home.jsx', root), 'utf8');
-  assert.ok(home.includes(`<h1 id="home-title">${line}</h1>`), 'home page headline');
+  // The headline is the English text of home.title (src/i18n/en.json).
+  const en = JSON.parse(readFileSync(new URL('src/i18n/en.json', root), 'utf8'));
+  assert.ok(home.includes(`<h1 id="home-title">{t('home.title')}</h1>`), 'home page headline');
+  assert.equal(en['home.title'], line, 'home page headline (English)');
   assert.doesNotMatch(html, /internship|unpaid/i, 'index.html never mentions internships');
 });

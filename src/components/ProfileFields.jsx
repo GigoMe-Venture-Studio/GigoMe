@@ -1,14 +1,16 @@
 import { DEGREE_LEVELS } from '../lib/auth.js';
 import { yearOptions } from '../lib/profile.js';
+import { useT } from '../lib/useLang.js';
 
 // Full name, degree level and graduation year, as on /welcome and /account.
 // values: { fullName, degree, year }; onChange(key, value); errors by key.
 // Company accounts (student = false) only get the name.
 export default function ProfileFields({ values, onChange, errors, student = true }) {
+  const t = useT();
   return (
     <>
       <label className="field">
-        Full name
+        {t('profile.fullName')}
         <input
           className="input"
           type="text"
@@ -25,7 +27,7 @@ export default function ProfileFields({ values, onChange, errors, student = true
       {student && (
         <>
           <label className="field">
-            Degree level
+            {t('profile.degree')}
             <select
               className="select"
               name="degree_level"
@@ -34,7 +36,7 @@ export default function ProfileFields({ values, onChange, errors, student = true
               aria-invalid={Boolean(errors.degree)}
               required
             >
-              <option value="">Choose…</option>
+              <option value="">{t('profile.choose')}</option>
               {DEGREE_LEVELS.map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
@@ -42,7 +44,7 @@ export default function ProfileFields({ values, onChange, errors, student = true
             {errors.degree && <span className="err">{errors.degree}</span>}
           </label>
           <label className="field">
-            Expected graduation year
+            {t('profile.gradYear')}
             <select
               className="select"
               name="graduation_year"
@@ -51,7 +53,7 @@ export default function ProfileFields({ values, onChange, errors, student = true
               aria-invalid={Boolean(errors.year)}
               required
             >
-              <option value="">Choose…</option>
+              <option value="">{t('profile.choose')}</option>
               {yearOptions(Number(values.year) || null).map((y) => (
                 <option key={y} value={String(y)}>{y}</option>
               ))}

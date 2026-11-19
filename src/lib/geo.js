@@ -1,5 +1,6 @@
 // Small geometry helpers for pages that may not show a map. Kept apart from
 // map.js so importing them never pulls MapLibre into the page's code.
+import { locale, t } from './i18n.js';
 
 // Distance in metres between two [lng, lat] points (haversine).
 export function metresBetween(a, b) {
@@ -9,10 +10,11 @@ export function metresBetween(a, b) {
   return 2 * 6371000 * Math.asin(Math.sqrt(h));
 }
 
-// "350 m away", "1.2 km away".
+// "350 m away", "1.2 km away" ("a 350 m", "a 1,2 km").
 export function distanceLabel(m) {
-  if (m < 1000) return `${Math.max(50, Math.round(m / 50) * 50)} m away`;
-  return `${(m / 1000).toFixed(m < 10000 ? 1 : 0)} km away`;
+  if (m < 1000) return t('map.distanceM', { distance: Math.max(50, Math.round(m / 50) * 50) });
+  const digits = m < 10000 ? 1 : 0;
+  return t('map.distanceKm', { distance: (m / 1000).toLocaleString(locale(), { minimumFractionDigits: digits, maximumFractionDigits: digits }) });
 }
 
 // Where the map can go (a little more than the Milan metro area).

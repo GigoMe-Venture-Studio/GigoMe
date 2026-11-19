@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useT } from '../lib/useLang.js';
 
 // "Share" on job pages. On phones (touch screens that can share), the
 // phone's own share sheet; elsewhere "Copy link", with a confirmation. The
@@ -8,6 +9,7 @@ const phoneShare = () =>
   typeof navigator !== 'undefined' && typeof navigator.share === 'function' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 
 export default function ShareButton({ title, url, disabled = false }) {
+  const t = useT();
   const [state, setState] = useState('idle'); // idle | copied | manual
   const field = useRef(null);
   const timer = useRef(0);
@@ -46,11 +48,11 @@ export default function ShareButton({ title, url, disabled = false }) {
             <path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
           )}
         </svg>
-        <span>{sheet ? 'Share' : state === 'copied' ? 'Link copied' : 'Copy link'}</span>
+        <span>{sheet ? t('share.share') : state === 'copied' ? t('share.copied') : t('share.copy')}</span>
       </button>
-      <span className="share-status" role="status">{state === 'copied' ? 'Link copied to the clipboard.' : ''}</span>
+      <span className="share-status" role="status">{state === 'copied' ? t('share.copiedStatus') : ''}</span>
       {state === 'manual' && (
-        <input ref={field} className="input share-field" readOnly value={url} aria-label="Link to this job" onFocus={(e) => e.target.select()} />
+        <input ref={field} className="input share-field" readOnly value={url} aria-label={t('share.fieldLabel')} onFocus={(e) => e.target.select()} />
       )}
     </span>
   );

@@ -118,11 +118,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   from `src/lib/geocode.js`, bounded to Milan, never autocomplete, credited
   on the form), or "Only show the area".
 - "When" (`jobs.schedule`): values, labels and what each means are in
-  `src/lib/schedules.js` only (no imports, unit-tested; re-exported by
-  `jobs.js`): `SCHEDULE_HOURS` (weekday mornings = Mon to Fri, before 12:00;
+  `src/lib/schedules.js` only (imports only `i18n.js`, unit-tested;
+  re-exported by `jobs.js`; the words are the translation files'
+  `schedule.*` / `scheduleHours.*`): `SCHEDULE_HOURS` (weekday mornings = Mon to Fri, before 12:00;
   afternoons 12:00 to 18:00; evenings after 18:00; weekends = Saturday and
   Sunday, any time; flexible = hours agreed with the employer) and
-  `SCHEDULE_HOURS_LINE`. Shown as visible text wherever "When" appears,
+  `scheduleHoursLine()`. Shown as visible text wherever "When" appears,
   never as a hover tooltip (phones have none): in the "When" heading line
   of the /jobs filters (its own line on phones; inline from 768px so the
   filters get no taller and the Feedback button stays clear of the first
@@ -169,8 +170,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   every card (right after the company), map card and marker, job page
   (first tag), saved job, followed company and /admin report shows the
   small dashed "Example" tag (`ExampleTag.jsx`, `.tag-example`; screen
-  readers and hovering get `EXAMPLE_JOB_LABEL` "Example listing, not a real
-  job", or "Example company, not a real employer"); an example company's
+  readers and hovering get `exampleJobLabel()` "Example listing, not a real
+  job", or "Example company, not a real employer": `example.tag` +
+  `example.jobRest` / `example.companyRest`); an example company's
   page adds one line under its name; every example description starts
   "Example listing: this job isn't real. ..." (the seed). Their pages are
   noindex and get no JobPosting data. "Apply" on an example never calls
@@ -389,7 +391,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   into `job_reports`.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
-  `header-mark.webp` under 360px; alt "GigoMe", links to `/`), Jobs
+  `header-mark.webp` under 360px; alt "GigoMe", links to `/`), the "EN | IT"
+  switch (from 440px; under 440px only in the Menu panel), Jobs
   (`/jobs`), then: logged out, "For employers" and "Student login" (the
   button opens `/login`, the student login only); a
   student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
@@ -497,6 +500,57 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (the home page shows its hero and a short notice instead of the jobs).
 - `src/lib/contact.js`: `CONTACT_EMAIL`, the only place the contact address
   is set.
+
+## English and Italian
+
+- Every text the site shows is in `src/i18n/en.json` and `src/i18n/it.json`
+  (flat keys, the same keys in both), read with `t(key, vars)` from
+  `src/lib/i18n.js` (plain modules, called when the text is needed, never
+  at module load) or `useT()` from `src/lib/useLang.js` (components). Never
+  write visible English into the code: `tests/unit/i18n.test.mjs` parses
+  every file in `src/` and fails on JSX text, words passed to JSX props and
+  sentence-like strings outside the translation files (a line that truly
+  isn't screen text says `i18n-ignore` and why), and on any key missing,
+  empty, or with different `{placeholders}`/`<tags>` in either language.
+  A new text gets a key in both files; a new key prefix gets a page in
+  `scripts/i18n-review.mjs`.
+- `{name}` is filled in as given (format amounts and dates first:
+  `locale()`, `longDate()` in `jobs.js`); `t('k', { count })` picks `k_one`
+  / `k_other`; `<link>words</link>` with `link: (s) => <Link …>{s}</Link>`
+  for elements inside a sentence. Option lists with labels use
+  `labelPairs()` / `labelMap()`, so `LIST.map(([v, l]) …)` and `LABEL[v]`
+  read the current language. In Italian, "il 1 / il 8 / al 11 <month>"
+  become "il 1º / l'8 / all'11" by themselves.
+- English is the default and the source; Italian is downloaded only when
+  chosen. The "EN | IT" switch (`LangSwitch.jsx`) is in the header from
+  440px and in the phone menu (the only place under 440px, where the
+  wordmark, "Student login" and Menu leave no room); the choice is kept in localStorage
+  (`gigome-lang`, try/catch) and `<html lang>` follows it. Nothing reads the
+  browser's language. Prices and dates follow it ("€9,50/h", "3 giorni
+  fa").
+- Never translated: what users write (jobs, companies, the example
+  listings, feedback, reports, names), database values (universities,
+  metro stations, area names except "Elsewhere in Milan", `areaName()` in
+  `areas.js`), the database's own messages other than the daily limits
+  (`limits.js` gives their Italian). Italian wording rules and the product
+  terms ("Candidati", "Salva", "Esempio", "Segnala questa offerta",
+  "offerta"/"annuncio", "tu" everywhere except the legal translations,
+  which are formal and impersonal: "l'Utente", "il Gestore"):
+  `docs/i18n/README.md`.
+- `/privacy` and `/terms` in Italian show `src/legal/*.it.json`, courtesy
+  translations with exactly the English JSON's structure, ids and links
+  (`tests/unit/legal-it.test.mjs`), under "Traduzione di cortesia. In caso di
+  differenze, prevale la versione inglese." (`LegalPage.jsx`). A new English
+  version needs a new Italian one from the translator before release.
+- Review files for the translator and the legal person:
+  `docs/i18n/review-it.csv` and `review-legal-it.csv`, written by
+  `node scripts/i18n-review.mjs` (a unit test fails while they're out of
+  date). The native speaker and the legal person approve every Italian text
+  before the switch goes live; tell the owner when you change one.
+- `tests/e2e/i18n.test.js`: the switch, Italian formats, the legal pages,
+  and every page in Italian for each kind of account at 1280, 375 and 320px
+  with no English left (except users' text) and nothing cut off or off
+  screen. Italian runs longer: check new buttons and tags at 320px.
 
 A PR that only restructures must not change the look: compare screenshots
 of the built site before and after.

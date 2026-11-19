@@ -6,6 +6,7 @@
 // stores the version each account accepted and its own time
 // (accept_terms() in supabase/migrations/20261111120000_data_protection.sql).
 import { supabase } from './supabase.js';
+import { subscribeLang, t } from './i18n.js';
 
 export const TERMS_VERSION = '2.0';
 
@@ -24,4 +25,11 @@ export async function acceptTerms(userId) {
   acceptedHere.add(userId);
 }
 
-export const TERMS_REQUIRED = 'Tick this box to continue.';
+// The message under an unticked Terms box, in the current language.
+export const termsRequired = () => t('termsBox.required');
+// The same as a value, kept up to date when the language changes (an ES
+// module export is a live binding), for code that reads TERMS_REQUIRED.
+export let TERMS_REQUIRED = termsRequired();
+subscribeLang(() => {
+  TERMS_REQUIRED = termsRequired();
+});

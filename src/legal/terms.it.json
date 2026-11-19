@@ -1,0 +1,1067 @@
+{
+ "source": "docs/legal/published/terms-and-conditions-v2.0.html",
+ "title": "GigoMe | Termini e condizioni",
+ "toc": [
+  {
+   "href": "#section-1",
+   "label": "IMPORTANTE: come funziona davvero GigoMe",
+   "sub": false
+  },
+  {
+   "href": "#section-2",
+   "label": "A. Condizioni generali",
+   "sub": false
+  },
+  {
+   "href": "#section-3",
+   "label": "1. Gestore, utenti e ambito di applicazione",
+   "sub": true
+  },
+  {
+   "href": "#section-4",
+   "label": "2. Requisiti e accettazione",
+   "sub": true
+  },
+  {
+   "href": "#section-5",
+   "label": "3. Funzionalità e limiti del servizio",
+   "sub": true
+  },
+  {
+   "href": "#section-6",
+   "label": "4. Sicurezza dell'account e del sistema",
+   "sub": true
+  },
+  {
+   "href": "#section-7",
+   "label": "5. Condotte vietate in generale",
+   "sub": true
+  },
+  {
+   "href": "#section-8",
+   "label": "B. Studenti e ricerca di offerte di lavoro",
+   "sub": false
+  },
+  {
+   "href": "#section-9",
+   "label": "6. Profili degli studenti",
+   "sub": true
+  },
+  {
+   "href": "#section-10",
+   "label": "7. Mostra contatto e candidature esterne",
+   "sub": true
+  },
+  {
+   "href": "#section-11",
+   "label": "8. Lavoro e sicurezza personale",
+   "sub": true
+  },
+  {
+   "href": "#section-12",
+   "label": "C. Inserzionisti aziendali e professionali",
+   "sub": false
+  },
+  {
+   "href": "#section-13",
+   "label": "9. Identità, poteri e annunci",
+   "sub": true
+  },
+  {
+   "href": "#section-14",
+   "label": "10. Obblighi inderogabili in materia di lavoro",
+   "sub": true
+  },
+  {
+   "href": "#section-15",
+   "label": "11. Recapiti degli inserzionisti e candidature esterne",
+   "sub": true
+  },
+  {
+   "href": "#section-16",
+   "label": "12. Manleva da parte degli utenti professionali",
+   "sub": true
+  },
+  {
+   "href": "#section-17",
+   "label": "D. Inserzionisti privati e famiglie",
+   "sub": false
+  },
+  {
+   "href": "#section-18",
+   "label": "13. Opportunità offerte da privati",
+   "sub": true
+  },
+  {
+   "href": "#section-19",
+   "label": "E. Valutazioni, segnalazioni e informazioni",
+   "sub": false
+  },
+  {
+   "href": "#section-20",
+   "label": "14. Recensioni e valutazioni, se attivate",
+   "sub": true
+  },
+  {
+   "href": "#section-21",
+   "label": "15. Segnalazioni e moderazione",
+   "sub": true
+  },
+  {
+   "href": "#section-22",
+   "label": "16. Dati personali e servizi di terzi",
+   "sub": true
+  },
+  {
+   "href": "#section-23",
+   "label": "17. Proprietà intellettuale e contenuti inviati",
+   "sub": true
+  },
+  {
+   "href": "#section-24",
+   "label": "F. Corrispettivi, responsabilità e disposizioni legali",
+   "sub": false
+  },
+  {
+   "href": "#section-25",
+   "label": "18. Gratuità e disponibilità del servizio",
+   "sub": true
+  },
+  {
+   "href": "#section-26",
+   "label": "19. Nessuna garanzia sui risultati dipendenti da terzi",
+   "sub": true
+  },
+  {
+   "href": "#section-27",
+   "label": "20. Chiusura dell'account e cancellazione dei dati",
+   "sub": true
+  },
+  {
+   "href": "#section-28",
+   "label": "21. Modifiche ai Termini",
+   "sub": true
+  },
+  {
+   "href": "#section-29",
+   "label": "22. Legge applicabile, controversie e diritti dei consumatori",
+   "sub": true
+  },
+  {
+   "href": "#section-30",
+   "label": "23. Contatti",
+   "sub": true
+  }
+ ],
+ "body": [
+  [
+   "h1",
+   null,
+   "GigoMe | Termini e condizioni"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Versione 2.0 | Ultimo aggiornamento: 11 novembre 2026"
+   ],
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Gestore:"
+   ],
+   " Matteo Maria Scarano, che agisce a titolo personale",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Indirizzo di contatto:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italia",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Contatto generale:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Richieste in materia di privacy:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Sito web:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/"
+    },
+    "https://gigome.org/"
+   ]
+  ],
+  [
+   "h2",
+   {
+    "id": "section-1"
+   },
+   "IMPORTANTE: come funziona davvero GigoMe"
+  ],
+  [
+   "p",
+   null,
+   "GigoMe è un servizio online gratuito che permette di scoprire opportunità di lavoro e di ottenere i recapiti o i link di candidatura esterni forniti dall'inserzionista di riferimento. ",
+   [
+    "strong",
+    null,
+    "GigoMe non accetta, non inoltra e non gestisce candidature di lavoro; non condivide i profili degli studenti con gli inserzionisti."
+   ],
+   " Quando uno studente sceglie ",
+   [
+    "strong",
+    null,
+    "Mostra contatto"
+   ],
+   ", GigoMe mostra le informazioni di contatto o il link esterno relativi a quell'annuncio. Lo studente decide poi in autonomia se e come contattare l'inserzionista o candidarsi presso di lui al di fuori di GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "Per fornire, proteggere e valutare questa funzionalità, GigoMe tiene traccia di quale studente registrato ha visualizzato i recapiti di quale annuncio, e di quando. ",
+   [
+    "strong",
+    null,
+    "Questo registro è accessibile solo agli amministratori autorizzati di GigoMe, non agli inserzionisti."
+   ],
+   " Si invita l'Utente a leggere l'Informativa sulla privacy, fornita separatamente."
+  ],
+  [
+   "p",
+   null,
+   "I datori di lavoro e gli inserzionisti privati sono responsabili dell'accuratezza e della liceità dei propri annunci e degli obblighi in materia di lavoro applicabili a qualsiasi successivo rapporto. GigoMe non è parte di alcun contratto di lavoro e non garantisce l'assunzione, la retribuzione né il comportamento degli utenti. I presenti Termini non possono derogare ad alcun obbligo di legge che si applichi a GigoMe stesso."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-2"
+   },
+   "A. Condizioni generali"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-3"
+   },
+   "1. Gestore, utenti e ambito di applicazione"
+  ],
+  [
+   "p",
+   null,
+   "1.1. GigoMe (la ",
+   [
+    "strong",
+    null,
+    "Piattaforma"
+   ],
+   ") è gestita da ",
+   [
+    "strong",
+    null,
+    "Matteo Maria Scarano"
+   ],
+   ", che agisce a titolo personale (il ",
+   [
+    "strong",
+    null,
+    "Gestore"
+   ],
+   " o ",
+   [
+    "strong",
+    null,
+    "GigoMe"
+   ],
+   ", indicato anche con i pronomi ",
+   [
+    "strong",
+    null,
+    "noi"
+   ],
+   " e ",
+   [
+    "strong",
+    null,
+    "ci"
+   ],
+   "). GigoMe è il nome di un servizio, non un soggetto giuridico costituito autonomamente."
+  ],
+  [
+   "p",
+   null,
+   "1.2. I presenti Termini si applicano (a) agli studenti e alle altre persone in possesso dei requisiti che utilizzano il servizio per scoprire opportunità (",
+   [
+    "strong",
+    null,
+    "Studenti"
+   ],
+   "), (b) alle imprese, alle organizzazioni e ai professionisti che pubblicano opportunità (",
+   [
+    "strong",
+    null,
+    "Inserzionisti Professionali"
+   ],
+   ") e (c) ai privati e alle famiglie che pubblicano opportunità consentite (",
+   [
+    "strong",
+    null,
+    "Inserzionisti Privati"
+   ],
+   "). Queste ultime due categorie sono denominate congiuntamente ",
+   [
+    "strong",
+    null,
+    "Inserzionisti"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   "1.3. Le parti di qualsiasi successivo rapporto di lavoro o di prestazione di servizi sono individuate in base al rapporto effettivamente instaurato e alla legge applicabile. I presenti Termini disciplinano l'utilizzo di GigoMe, non gli accordi conclusi autonomamente tra uno Studente e un Inserzionista."
+  ],
+  [
+   "p",
+   null,
+   "1.4. La qualificazione giuridica di GigoMe dipende dalle attività che effettivamente svolge. I presenti Termini non costituiscono un'esenzione da alcun obbligo inderogabile di registrazione o autorizzazione né da altri requisiti normativi."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-4"
+   },
+   "2. Requisiti e accettazione"
+  ],
+  [
+   "p",
+   null,
+   "2.1. Gli Utenti devono avere ",
+   [
+    "strong",
+    null,
+    "almeno 18 anni"
+   ],
+   ", possedere la capacità di agire necessaria per utilizzare la Piattaforma e fornire informazioni accurate. Chiunque si registri per conto di un'organizzazione garantisce di essere autorizzato ad agire in suo nome."
+  ],
+  [
+   "p",
+   null,
+   "2.2. Un account può essere creato solo dopo che l'Utente ha potuto consultare e accettare attivamente i presenti Termini. Traccia della versione applicabile e dell'accettazione può essere conservata come spiegato nell'Informativa sulla privacy. L'Informativa sulla privacy è fornita separatamente; l'accettazione dei presenti Termini non costituisce un consenso generalizzato al trattamento dei dati o al marketing."
+  ],
+  [
+   "p",
+   null,
+   "2.3. I presenti Termini si applicano a ogni successivo utilizzo del servizio, compresi ogni annuncio pubblicato da un Inserzionista e ogni contatto visualizzato da uno Studente. Non è necessariamente richiesta una casella di spunta contrattuale separata per ciascuna azione. L'Utente deve tuttavia compiere l'azione in questione volontariamente e ricevere tutte le informazioni richieste in quel momento."
+  ],
+  [
+   "p",
+   null,
+   "2.4. Le clausole che richiedono un'approvazione specifica ai sensi della legge applicabile, compreso, ove pertinente, l'articolo 1341 del Codice civile italiano, saranno sottoposte a un'approvazione separata giuridicamente efficace. Una normale casella di spunta generale non rende automaticamente valida una clausola altrimenti inefficace."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-5"
+   },
+   "3. Funzionalità e limiti del servizio"
+  ],
+  [
+   "p",
+   null,
+   "3.1. GigoMe può fornire account utente, annunci, strumenti di ricerca e filtro, informazioni di profilo limitate, funzioni di visualizzazione dei contatti degli inserzionisti e strumenti di segnalazione dei contenuti."
+  ],
+  [
+   "p",
+   null,
+   "3.2. ",
+   [
+    "strong",
+    null,
+    "Nessuna candidatura sulla piattaforma:"
+   ],
+   " GigoMe non riceve moduli di candidatura, CV o candidature di lavoro per conto degli Inserzionisti, non inoltra i profili degli studenti, non informa gli Inserzionisti delle singole visualizzazioni dei contatti, non gestisce le conversazioni tra datori di lavoro e candidati e non seleziona candidati. Eventuali email, moduli, telefonate, colloqui o candidature esterni sono gestiti direttamente dalle parti coinvolte."
+  ],
+  [
+   "p",
+   null,
+   "3.3. ",
+   [
+    "strong",
+    null,
+    "Nessun accesso dei datori di lavoro ai profili degli studenti:"
+   ],
+   " gli Inserzionisti non possono consultare, cercare o accedere ai profili GigoMe degli Studenti né ai registri amministrativi delle visualizzazioni dei contatti."
+  ],
+  [
+   "p",
+   null,
+   "3.4. GigoMe non assume, non somministra, non sottopone a colloquio, non valuta e non preseleziona lavoratori; non negozia retribuzioni o condizioni; non redige né gestisce contratti di lavoro; non elabora buste paga; non si occupa di contributi o assicurazioni; non supervisiona il lavoro; non garantisce alcun incarico. Non offre consulenza individuale in materia legale, di lavoro o di immigrazione."
+  ],
+  [
+   "p",
+   null,
+   "3.5. La Piattaforma è inizialmente destinata a opportunità da svolgersi in Italia. GigoMe può limitare determinate categorie di lavoro o località in attesa di adeguate verifiche legali e di sicurezza."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-6"
+   },
+   "4. Sicurezza dell'account e del sistema"
+  ],
+  [
+   "p",
+   null,
+   "4.1. Gli Utenti devono proteggere l'accesso ai propri account email e ai codici di autenticazione, comunicare tempestivamente a GigoMe qualsiasi accesso non autorizzato ed evitare di fornire ad altri i codici di accesso."
+  ],
+  [
+   "p",
+   null,
+   "4.2. Attualmente GigoMe autentica gli utenti con un codice monouso inviato via email. Non chiede agli Utenti di creare una password GigoMe. Gli Utenti non devono condividere i codici di autenticazione né spacciarsi per altri."
+  ],
+  [
+   "p",
+   null,
+   "4.3. Sono vietati l'elusione dei controlli di accesso, la ricerca o lo sfruttamento di vulnerabilità, lo scraping di dati personali, l'uso di strumenti automatizzati in violazione della legge applicabile, la diffusione di malware e le interferenze con il servizio."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-7"
+   },
+   "5. Condotte vietate in generale"
+  ],
+  [
+   "p",
+   null,
+   "Gli Utenti non devono utilizzare la Piattaforma per commettere frodi; spacciarsi per un altro soggetto; pubblicare opportunità inventate; porre in essere molestie o discriminazioni; richiedere compensi illeciti; promuovere lavoro non dichiarato, di sfruttamento o illecito; violare diritti di proprietà intellettuale; raccogliere con l'inganno credenziali o dati sensibili; o utilizzare annunci o informazioni di contatto per spam, scraping o marketing non pertinente."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-8"
+   },
+   "B. Studenti e ricerca di offerte di lavoro"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-9"
+   },
+   "6. Profili degli studenti"
+  ],
+  [
+   "p",
+   null,
+   "6.1. Gli Studenti devono fornire informazioni veritiere e mantenerle ragionevolmente aggiornate. La verifica tramite email universitaria, se utilizzata, conferma il controllo di quella casella di posta nel momento in questione, non necessariamente l'iscrizione in corso, i titoli di studio o l'autorizzazione a lavorare."
+  ],
+  [
+   "p",
+   null,
+   "6.2. Gli Studenti non dovrebbero inserire nei campi generici del profilo informazioni sensibili, documenti d'identità, credenziali bancarie o documentazione dettagliata relativa all'immigrazione. I profili degli Studenti ",
+   [
+    "strong",
+    null,
+    "non sono accessibili agli Inserzionisti"
+   ],
+   " tramite GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "6.3. GigoMe può raccogliere dettagli facoltativi del profilo, come il percorso di studi, le competenze o le preferenze generali, solo in conformità alla propria Informativa sulla privacy. Le opzioni di visibilità del profilo devono rispecchiare le funzionalità effettive della Piattaforma."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-10"
+   },
+   "7. Mostra contatto e candidature esterne"
+  ],
+  [
+   "p",
+   null,
+   "7.1. Uno Studente può selezionare ",
+   [
+    "strong",
+    null,
+    "Mostra contatto"
+   ],
+   " su un determinato Annuncio di Lavoro per accedere a un indirizzo email, un numero di telefono, un sito web o un link di candidatura esterno fornito dall'Inserzionista. Questa azione ",
+   [
+    "strong",
+    null,
+    "non"
+   ],
+   " invia il profilo o la candidatura dello Studente all'Inserzionista."
+  ],
+  [
+   "p",
+   null,
+   "7.2. Le informazioni di contatto vengono mostrate allo Studente. GigoMe registra l'identificativo dell'account dello Studente, l'identificativo dell'annuncio in questione e il momento della visualizzazione per le finalità descritte nell'Informativa sulla privacy. L'inserzionista non riceve tale registro tramite GigoMe."
+  ],
+  [
+   "p",
+   null,
+   "7.3. Quando lo Studente contatta l'Inserzionista o utilizza un sito web esterno, le relative comunicazioni e la procedura di candidatura si svolgono ",
+   [
+    "strong",
+    null,
+    "al di fuori di GigoMe"
+   ],
+   ". Il destinatario può diventare titolare autonomo del trattamento delle informazioni personali che lo Studente gli fornisce direttamente. Gli Studenti dovrebbero consultare le informazioni sulla privacy del destinatario prima di inviare dati all'esterno."
+  ],
+  [
+   "p",
+   null,
+   "7.4. Visualizzare un contatto non costituisce una candidatura, un'accettazione, un'offerta di lavoro, un impegno a prestare lavoro né una garanzia di risposta. GigoMe non conferma se uno Studente abbia effettivamente contattato l'Inserzionista, sostenuto un colloquio o sia stato assunto."
+  ],
+  [
+   "p",
+   null,
+   "7.5. Gli Studenti dovrebbero verificare l'identità del destinatario e valutare con attenzione i link esterni, i documenti richiesti, le condizioni di lavoro e la legittimità dell'opportunità. Non devono mai inviare denaro per ottenere un lavoro né condividere password o codici di autenticazione."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-11"
+   },
+   "8. Lavoro e sicurezza personale"
+  ],
+  [
+   "p",
+   null,
+   "8.1. Prima di iniziare un incarico, gli Studenti dovrebbero ottenere dal soggetto giuridicamente responsabile una dichiarazione scritta delle condizioni essenziali, compresi mansioni, orario, luogo, retribuzione e inquadramento contrattuale. Tale dichiarazione non sostituisce alcun contratto di lavoro né alcuna comunicazione obbligatoria prevista dalla legge."
+  ],
+  [
+   "p",
+   null,
+   "8.2. Gli Studenti conservano tutti i diritti inderogabili in materia di retribuzione, sicurezza sul lavoro, non discriminazione e previdenza sociale, nonché le altre tutele applicabili. Nessuna disposizione impone loro di rinunciare a tali diritti né presuppone che siano responsabili dell'inadempimento, da parte del Datore di Lavoro, degli obblighi che la legge pone a suo carico."
+  ],
+  [
+   "p",
+   null,
+   "8.3. Gli Studenti non devono presentare consapevolmente credenziali false né partecipare a falsificazioni o condotte fraudolente. Sono invitati a segnalare sospetti casi di lavoro illecito, truffe legate ai pagamenti, condizioni pericolose o molestie a GigoMe e alle autorità competenti, ove opportuno."
+  ],
+  [
+   "p",
+   null,
+   "8.4. Il Datore di Lavoro resta responsabile delle verifiche sull'autorizzazione al lavoro e degli altri adempimenti relativi all'assunzione che la legge pone a suo carico. GigoMe non certifica il diritto di lavorare."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-12"
+   },
+   "C. Inserzionisti aziendali e professionali"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-13"
+   },
+   "9. Identità, poteri e annunci"
+  ],
+  [
+   "p",
+   null,
+   "9.1. Gli Inserzionisti Professionali devono essere legittimati a pubblicare l'opportunità, ad agire per conto dell'organizzazione indicata e, ove applicabile, ad avvalersi di lavoratori. Qualsiasi selezionatore o intermediario che agisca per conto di un altro soggetto deve dichiarare il proprio ruolo ed essere in possesso di ogni autorizzazione richiesta dalla legge."
+  ],
+  [
+   "p",
+   null,
+   "9.2. Gli annunci devono essere autentici, accurati, aggiornati, trasparenti e leciti. Gli Inserzionisti devono indicare il soggetto che effettivamente assume o il committente effettivo e fornire tutte le informazioni richieste dalla legge applicabile, compresi, ove pertinente, mansioni, luogo, orario, durata, inquadramento del rapporto di lavoro, retribuzione o fascia retributiva, riferimenti ai contratti collettivi applicabili e condizioni rilevanti."
+  ],
+  [
+   "p",
+   null,
+   "9.3. Gli Inserzionisti devono modificare o rimuovere tempestivamente le opportunità scadute, non più disponibili o sostanzialmente inesatte. La Piattaforma può richiedere ulteriori prove e respingere, limitare o rimuovere annunci in conformità alla legge applicabile e alle proprie regole di moderazione."
+  ],
+  [
+   "p",
+   null,
+   "9.4. ",
+   [
+    "strong",
+    null,
+    "Dichiarazione continuativa."
+   ],
+   " Accettando i presenti Termini e ogni volta che pubblica un Annuncio di Lavoro, l'Inserzionista dichiara che l'opportunità è autentica e lecita, che le informazioni sono accurate e che l'effettivo Datore di Lavoro o committente adempirà a tutti gli obblighi inderogabili di natura contrattuale, di assunzione, fiscale, previdenziale, assicurativa e di sicurezza sul lavoro. Tale obbligo si applica senza che sia richiesta una nuova casella di spunta contrattuale per ogni annuncio."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-14"
+   },
+   "10. Obblighi inderogabili in materia di lavoro"
+  ],
+  [
+   "p",
+   null,
+   "10.1. L'effettivo Datore di Lavoro o committente è l'unico responsabile, ",
+   [
+    "strong",
+    null,
+    "nella misura stabilita dalla legge"
+   ],
+   ", della scelta di una forma contrattuale lecita, dell'effettuazione delle comunicazioni obbligatorie di assunzione, della consegna delle informazioni scritte obbligatorie, del pagamento della retribuzione e dei contributi, del rispetto delle norme fiscali e assicurative applicabili e della tutela della sicurezza sul luogo di lavoro."
+  ],
+  [
+   "p",
+   null,
+   "10.2. Prima dell'inizio del lavoro, l'Inserzionista deve fornire allo Studente, o fare in modo che il soggetto giuridicamente responsabile gli fornisca, una conferma scritta delle condizioni essenziali dell'incarico. Ciò non sostituisce ulteriori documenti o procedure obbligatori."
+  ],
+  [
+   "p",
+   null,
+   "10.3. ",
+   [
+    "strong",
+    null,
+    "Il lavoro non dichiarato o illecito è severamente vietato."
+   ],
+   " Gli Inserzionisti non devono eludere gli adempimenti relativi all'assunzione, occultare retribuzioni, falsificare l'orario di lavoro, mascherare un rapporto di lavoro subordinato come falso lavoro autonomo o volontariato, pretendere compensi illeciti, imporre prove di lavoro produttive non retribuite e illecite o eludere in altro modo le tutele dei lavoratori."
+  ],
+  [
+   "p",
+   null,
+   "10.4. La breve durata, il pagamento in contanti, la programmazione occasionale del lavoro o l'utilizzo di una piattaforma online non esentano di per sé un incarico dagli obblighi inderogabili in materia di lavoro, fiscali o contributivi."
+  ],
+  [
+   "p",
+   null,
+   "10.5. Gli Inserzionisti devono rispettare, ove applicabili, gli obblighi in materia di non discriminazione, selezione lecita del personale e trasparenza retributiva. I requisiti linguistici o di qualifica devono essere pertinenti e proporzionati."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-15"
+   },
+   "11. Recapiti degli inserzionisti e candidature esterne"
+  ],
+  [
+   "p",
+   null,
+   "11.1. Gli Inserzionisti autorizzano GigoMe a mostrare i canali di contatto o i link di candidatura esterni che scelgono di pubblicare con i propri annunci. Garantiscono di avere il diritto di divulgarli e si impegnano a mantenerli aggiornati."
+  ],
+  [
+   "p",
+   null,
+   "11.2. Un Inserzionista non deve inserire, ai fini della visualizzazione pubblica, il numero di telefono privato, l'indirizzo di residenza o informazioni di contatto individualmente identificabili di un'altra persona senza un'adeguata base giuridica e senza le informative o le autorizzazioni eventualmente richieste."
+  ],
+  [
+   "p",
+   null,
+   "11.3. GigoMe può comunicare i recapiti scelti da un Inserzionista agli Studenti registrati che utilizzano la funzione Mostra contatto. Non comunica all'Inserzionista quali Studenti hanno visualizzato tali recapiti."
+  ],
+  [
+   "p",
+   null,
+   "11.4. Gli Inserzionisti gestiscono in autonomia tutte le comunicazioni successive, le candidature, le decisioni di selezione e il trattamento delle informazioni personali. Quando ricevono direttamente i dati dei candidati, devono fornire l'eventuale informativa sulla privacy e le altre informazioni richieste dalla legge."
+  ],
+  [
+   "p",
+   null,
+   "11.5. Gli Inserzionisti non devono utilizzare le comunicazioni degli studenti per spam non pertinente, frodi, marketing non autorizzato o raccolta illecita di dati."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-16"
+   },
+   "12. Manleva da parte degli utenti professionali"
+  ],
+  [
+   "p",
+   null,
+   "12.1. Nei limiti consentiti dalla legge, gli Inserzionisti Professionali sono tenuti a rimborsare al Gestore le perdite ragionevoli e documentate, le spese legali e le passività derivanti direttamente dalla propria condotta illecita o da una violazione rilevante dei presenti Termini, nella misura in cui siano giuridicamente imputabili a tale Inserzionista. Ciò non copre le perdite derivanti dalla condotta illecita del Gestore stesso né le passività che non possono essere lecitamente trasferite."
+  ],
+  [
+   "p",
+   null,
+   "12.2. Il Gestore è tenuto a comunicare all'Inserzionista Professionale ogni pretesa di terzi rilevante entro un termine ragionevole, a fornirgli le informazioni pertinenti e a consentirgli una ragionevole partecipazione alla difesa. Nessuna transazione che imponga all'Inserzionista un obbligo di rimborso può essere conclusa senza il suo previo consenso, che non potrà essere irragionevolmente negato, salvo che norme inderogabili dispongano diversamente. I costi rimborsabili devono essere proporzionati e documentati."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-17"
+   },
+   "D. Inserzionisti privati e famiglie"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-18"
+   },
+   "13. Opportunità offerte da privati"
+  ],
+  [
+   "p",
+   null,
+   "13.1. Gli Inserzionisti Privati devono avere almeno 18 anni, fornire dati identificativi veritieri e pubblicare solo nelle categorie espressamente abilitate da GigoMe. Non devono spacciarsi per un'impresa né occultare un'attività svolta a titolo professionale."
+  ],
+  [
+   "p",
+   null,
+   "13.2. Gli Inserzionisti Privati sono responsabili di valutare e rispettare il quadro giuridico effettivamente applicabile a qualsiasi incarico domestico, di ripetizioni, di assistenza o occasionale, compresi gli obblighi applicabili in materia di lavoro, INPS, assicurazione, fisco, autorizzazione al lavoro e sicurezza."
+  ],
+  [
+   "p",
+   null,
+   "13.3. Le eventuali comunicazioni obbligatorie relative al lavoro domestico, i contributi e la documentazione richiesta restano a carico del Datore di Lavoro giuridicamente responsabile. La possibilità di ricorrere al Libretto Famiglia o ad altre modalità semplificate dipende dalla legge e dalle circostanze specifiche; GigoMe non accerta chi ne abbia i requisiti né espleta tali procedure."
+  ],
+  [
+   "p",
+   null,
+   "13.4. Gli Inserzionisti ",
+   [
+    "strong",
+    null,
+    "non devono"
+   ],
+   " pubblicare negli annunci pubblici nomi, fotografie o informazioni identificative di bambini, indicazioni precise per accedere all'abitazione o informazioni sensibili non necessarie sul nucleo familiare. Per la cura dei bambini, l'assistenza a persone vulnerabili e l'accesso alle abitazioni possono applicarsi ulteriori requisiti di tutela."
+  ],
+  [
+   "p",
+   null,
+   "13.5. Gli Inserzionisti Privati conservano tutte le tutele inderogabili previste per i consumatori, ove applicabili per legge. Qualsiasi manleva o limitazione di responsabilità si applica nei loro confronti solo entro tali limiti inderogabili."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-19"
+   },
+   "E. Valutazioni, segnalazioni e informazioni"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-20"
+   },
+   "14. Recensioni e valutazioni, se attivate"
+  ],
+  [
+   "p",
+   null,
+   "14.1. Se la Piattaforma mette a disposizione una funzione di valutazioni o recensioni, gli Utenti possono pubblicare solo resoconti veritieri e di prima mano relativi a un'esperienza reale e pertinente e non devono inventare, acquistare, scambiare o coordinare recensioni ingannevoli."
+  ],
+  [
+   "p",
+   null,
+   "14.2. GigoMe può richiedere prove proporzionate, esaminare le segnalazioni, rimuovere recensioni ingannevoli o illecite e limitare gli account in caso di grave manipolazione, nel rispetto della legge applicabile. Salvo ove espressamente indicato, GigoMe non garantisce la verifica indipendente di ogni esperienza."
+  ],
+  [
+   "p",
+   null,
+   "14.3. Le recensioni non devono contenere dati personali sensibili, accuse illecite, minacce, molestie o elementi identificativi personali non pertinenti. Il solo fatto di aver visualizzato un contatto non dimostra che uno Studente abbia svolto un lavoro o sia legittimato a recensire un'esperienza lavorativa."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-21"
+   },
+   "15. Segnalazioni e moderazione"
+  ],
+  [
+   "p",
+   null,
+   "15.1. Frodi, lavoro non dichiarato, annunci discriminatori, uso improprio di dati, sostituzione di persona e contenuti illeciti possono essere segnalati a ",
+   [
+    "strong",
+    null,
+    "hello@gigome.org"
+   ],
+   ". Le segnalazioni dovrebbero indicare l'annuncio o l'account in questione e spiegare il problema."
+  ],
+  [
+   "p",
+   null,
+   "15.2. GigoMe può effettuare controlli manuali proporzionati prima della pubblicazione ed esaminare le segnalazioni. Può richiedere informazioni, limitare temporaneamente o rimuovere contenuti, sospendere account e contattare le autorità competenti, ove opportuno, nel rispetto della legge applicabile. La revisione degli annunci non garantisce che ogni annuncio sia stato verificato o sia lecito."
+  ],
+  [
+   "p",
+   null,
+   "15.3. Ove applicabile, gli Utenti saranno informati delle limitazioni pertinenti e potranno chiederne il riesame contattando hello@gigome.org. GigoMe seguirà le procedure obbligatorie in materia di trasparenza, di segnalazione e azione e di ricorso, comprese quelle previste dal Digital Services Act nella misura in cui sia applicabile."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-22"
+   },
+   "16. Dati personali e servizi di terzi"
+  ],
+  [
+   "p",
+   null,
+   "16.1. I dati personali sono trattati come descritto nell'",
+   [
+    "strong",
+    null,
+    "Informativa sulla privacy di GigoMe"
+   ],
+   ", che indica il Gestore, le finalità del trattamento, le basi giuridiche, i fornitori, i tempi di conservazione e i diritti degli Utenti."
+  ],
+  [
+   "p",
+   null,
+   "16.2. Il servizio si avvale di fornitori tecnici per l'autenticazione, l'hosting, la gestione del database e le comunicazioni. La responsabilità tecnica di un fornitore non trasferisce a quest'ultimo gli obblighi inderogabili in materia di protezione dei dati che gravano sul Gestore."
+  ],
+  [
+   "p",
+   null,
+   "16.3. I siti web e i canali di contatto esterni sono controllati in modo indipendente dai rispettivi gestori. GigoMe non può garantire le informative sulla privacy, la sicurezza o il comportamento di ogni sito web di terzi; resta responsabile di qualsiasi obbligo che la legge pone a suo carico."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-23"
+   },
+   "17. Proprietà intellettuale e contenuti inviati"
+  ],
+  [
+   "p",
+   null,
+   "17.1. La Piattaforma e il relativo software originale, il design e gli elementi del marchio sono tutelati dalla normativa applicabile in materia di proprietà intellettuale e restano di proprietà dei rispettivi legittimi titolari."
+  ],
+  [
+   "p",
+   null,
+   "17.2. Gli Utenti conservano i diritti sui contenuti che forniscono lecitamente e concedono al Gestore una licenza limitata, non esclusiva e gratuita per ospitarli, formattarli e mostrarli nella misura necessaria a fornire il servizio richiesto e ad adempiere agli obblighi di legge."
+  ],
+  [
+   "p",
+   null,
+   "17.3. Gli Utenti non devono inviare contenuti che violino diritti d'autore, marchi, la privacy, la riservatezza o altri diritti di terzi."
+  ],
+  [
+   "h2",
+   {
+    "id": "section-24"
+   },
+   "F. Corrispettivi, responsabilità e disposizioni legali"
+  ],
+  [
+   "h3",
+   {
+    "id": "section-25"
+   },
+   "18. Gratuità e disponibilità del servizio"
+  ],
+  [
+   "p",
+   null,
+   "18.1. La registrazione di base, la consultazione degli annunci e la visualizzazione dei contatti sono attualmente gratuite. Eventuali future funzionalità a pagamento richiederanno un'adeguata informativa e, ove necessario, un'accettazione separata. Non saranno applicati retroattivamente corrispettivi per l'uso gratuito pregresso."
+  ],
+  [
+   "p",
+   null,
+   "18.2. GigoMe è un servizio in evoluzione. Le funzionalità possono cambiare o diventare non disponibili per motivi di manutenzione, sicurezza, tecnici o legali, con preavviso ove richiesto. Agli Utenti non vengono offerti tempi di disponibilità garantiti, conservazione permanente né un servizio di backup automatico."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-26"
+   },
+   "19. Nessuna garanzia sui risultati dipendenti da terzi"
+  ],
+  [
+   "p",
+   null,
+   "19.1. GigoMe non garantisce che un annuncio sia autentico, resti aperto, generi contatti, porti a un colloquio o si traduca in un lavoro retribuito. Non garantisce la solvibilità degli Inserzionisti, il rendimento degli studenti, la liceità delle condotte né il pagamento nell'ambito di un incarico concordato autonomamente."
+  ],
+  [
+   "p",
+   null,
+   "19.2. Nei limiti consentiti dalla legge, il Gestore non è responsabile, per il solo fatto che gli Utenti si siano trovati tramite GigoMe, delle violazioni derivanti esclusivamente dai loro contratti o comportamenti autonomi, compresi il mancato pagamento della retribuzione, la mancata regolarizzazione del lavoro e gli incidenti sul luogo di lavoro imputabili ai soggetti giuridicamente responsabili."
+  ],
+  [
+   "p",
+   null,
+   "19.3. ",
+   [
+    "strong",
+    null,
+    "Nessuna disposizione dei presenti Termini limita la responsabilità per dolo, colpa grave, violazione di obblighi inderogabili di ordine pubblico o qualsiasi altra responsabilità che non possa essere esclusa per legge"
+   ],
+   ", comprese le tutele applicabili in materia di privacy, sicurezza e protezione dei consumatori."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-27"
+   },
+   "20. Chiusura dell'account e cancellazione dei dati"
+  ],
+  [
+   "p",
+   null,
+   "20.1. Gli Utenti possono richiedere la chiusura dell'account e la cancellazione dei propri dati personali, ove previsto dalla legge, scrivendo a ",
+   [
+    "strong",
+    null,
+    "privacy@gigome.org"
+   ],
+   ". Le richieste sono attualmente gestite manualmente. GigoMe deve verificare l'identità ove opportuno e rispettare i termini di risposta e le condizioni previsti dalla legge."
+  ],
+  [
+   "p",
+   null,
+   "20.2. Alcune informazioni minime possono essere conservate quando una specifica base giuridica o un obbligo lo richiedono, come spiegato nell'Informativa sulla privacy. La chiusura dell'account non annulla le comunicazioni autonome inviate in precedenza a terzi al di fuori di GigoMe."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-28"
+   },
+   "21. Modifiche ai Termini"
+  ],
+  [
+   "p",
+   null,
+   "21.1. GigoMe può modificare i presenti Termini per legittimi motivi legali, di sicurezza o legati al servizio, dandone adeguato preavviso ove richiesto. Le modifiche sostanziali che richiedono una nuova accettazione non diventeranno vincolanti per il solo fatto del proseguimento dell'utilizzo, qualora la legge richieda un'azione positiva."
+  ],
+  [
+   "p",
+   null,
+   "21.2. La versione applicabile e la relativa data di entrata in vigore resteranno accessibili. Il Gestore può conservare registrazioni proporzionate delle accettazioni."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-29"
+   },
+   "22. Legge applicabile, controversie e diritti dei consumatori"
+  ],
+  [
+   "p",
+   null,
+   "22.1. I presenti Termini sono regolati dalla legge italiana, fatte salve le norme imperative dell'UE applicabili, la tutela dei consumatori, i diritti in materia di lavoro e le norme inderogabili sulla giurisdizione e sulla competenza."
+  ],
+  [
+   "p",
+   null,
+   "22.2. Le controversie sono devolute ai giudici competenti per legge. Nessun foro esclusivo né alcuna rinuncia può privare i consumatori delle tutele inderogabili."
+  ],
+  [
+   "p",
+   null,
+   "22.3. Se una disposizione è illecita o non azionabile, le restanti disposizioni continuano ad applicarsi nei limiti consentiti dalla legge. La mancata applicazione di una disposizione non comporta automaticamente la rinuncia a un diritto altrimenti valido."
+  ],
+  [
+   "h3",
+   {
+    "id": "section-30"
+   },
+   "23. Contatti"
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Gestore e contatto per questioni legali:"
+   ],
+   " Matteo Maria Scarano",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Indirizzo:"
+   ],
+   " Via Dante Alighieri 14, 20091 Bresso (MI), Italia",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Assistenza e segnalazioni di sicurezza:"
+   ],
+   " hello@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Richieste in materia di privacy:"
+   ],
+   " privacy@gigome.org",
+   [
+    "br",
+    null
+   ],
+   " ",
+   [
+    "strong",
+    null,
+    "Informativa sulla privacy:"
+   ],
+   " ",
+   [
+    "a",
+    {
+     "href": "https://gigome.org/privacy"
+    },
+    "https://gigome.org/privacy"
+   ]
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Fine dei Termini e condizioni, versione 2.0."
+   ]
+  ]
+ ]
+}

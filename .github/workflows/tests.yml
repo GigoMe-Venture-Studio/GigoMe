@@ -31,6 +31,9 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
+      # tests/unit/i18n.test.mjs parses the code with Rolldown (installed with Vite).
+      - run: npm ci
       - run: node --test tests/unit/*.test.mjs
 
   database:

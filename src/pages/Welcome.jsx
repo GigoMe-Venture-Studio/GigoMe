@@ -19,7 +19,8 @@ import { deleteMyAccount, endDeletedSession } from '../lib/account.js';
 import LogOutButton from '../components/LogOutButton.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { announceProfileChange, checkProfile } from '../lib/profile.js';
-import { TERMS_REQUIRED, acceptTerms, hasAcceptedTerms } from '../lib/terms.js';
+import { acceptTerms, hasAcceptedTerms, termsRequired } from '../lib/terms.js';
+import { useT } from '../lib/useLang.js';
 
 // /welcome: a new student's name, degree and graduation year, and for every
 // account (students and companies) the Terms ("I'm 18 or older and I accept
@@ -45,8 +46,9 @@ function WelcomeGate() {
   // "No, I'm not a student": the account is deleted and the session ends;
   // show why instead of sending them to the login.
   const [notStudent, setNotStudent] = useState(false);
+  const t = useT();
   if (notStudent && !session) return <NotAStudent />;
-  if (loading) return <p className="auth-card muted">Loading…</p>;
+  if (loading) return <p className="auth-card muted">{t('common.loading')}</p>;
   if (!session) return <Navigate to={'/login' + (next ? '?next=' + encodeURIComponent(next) : '')} replace />;
   return <WelcomeForm user={session.user} next={next} onNotStudent={() => setNotStudent(true)} />;
 }
@@ -55,6 +57,7 @@ const OTHER = 'other';
 
 function WelcomeForm({ user, next, onNotStudent }) {
   const navigate = useNavigate();
+  const t = useT();
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [fullName, setFullName] = useState('');
@@ -96,7 +99,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
         setNeeds({ profile: student && !p.full_name, terms: !hasAcceptedTerms(p), answers });
         setLoaded(true);
       })
-      .catch(() => active && setLoadError("We couldn't load your profile. Check your connection and reload the page."));
+      .catch(() => active && setLoadError('welcome.loadError'));
     return () => {
       active = false;
     };
@@ -113,11 +116,11 @@ function WelcomeForm({ user, next, onNotStudent }) {
     let found = {};
     let answer = null;
     if (needs.answers) {
-      if (!isStudent) found.isStudent = 'Choose Yes or No.';
-      else if (!uniChoice) found.university = 'Choose your university, or "Other".';
+      if (!isStudent) found.isStudent = t('welcome.errYesNo');
+      else if (!uniChoice) found.university = t('welcome.errUniversity');
       else if (uniChoice === OTHER) {
         const name = otherName.trim().replace(/\s+/g, ' ');
-        if (name.length < 2) found.otherName = "Type your university's name.";
+        if (name.length < 2) found.otherName = t('welcome.errOtherName');
         else answer = { otherName: name };
       } else answer = { universityId: uniChoice };
     }
@@ -126,7 +129,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
       found = { ...found, ...checked.errors };
       fields = checked.fields;
     }
-    if (needs.terms && !termsTicked) found = { ...found, terms: TERMS_REQUIRED };
+    if (needs.terms && !termsTicked) found = { ...found, terms: termsRequired() };
     setErrors(found);
     if (Object.keys(found).length) return;
     setBusy(true);
@@ -145,9 +148,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
       }
       navigate(next || '/', { replace: true });
     } catch {
-      setSaveError(needs.profile || needs.answers
-        ? "We couldn't save your details. Check your connection and try again."
-        : "We couldn't save that. Check your connection and try again.");
+      setSaveError(needs.profile || needs.answers ? t('welcome.saveErrorDetails') : t('welcome.saveError'));
       setBusy(false);
     }
   }
@@ -158,7 +159,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
     setBusy(true);
     const error = await deleteMyAccount();
     if (error) {
-      setSaveError("We couldn't finish this. Check your connection and try again.");
+      setSaveError(t('welcome.declineError'));
       setBusy(false);
       return;
     }
@@ -167,27 +168,27 @@ function WelcomeForm({ user, next, onNotStudent }) {
   }
 
   if (done) return <StudentReady firstName={done} email={user.email} next={next} />;
-  if (loadError) return <p className="auth-card err" role="alert">{loadError}</p>;
-  if (!loaded) return <p className="auth-card muted">Loading…</p>;
+  if (loadError) return <p className="auth-card err" role="alert">{t(loadError)}</p>;
+  if (!loaded) return <p className="auth-card muted">{t('common.loading')}</p>;
 
   const termsOnly = !needs.profile && !needs.answers;
 
   return (
     <div className="auth-card">
       <p className="auth-small">
-        Logged in as <strong className="auth-email">{user.email}</strong> ·{' '}
+        {t('welcome.loggedInAs', { email: <strong className="auth-email">{user.email}</strong> })} ·{' '}
         <LogOutButton className="btn-link" onError={setSaveError} />
       </p>
       {termsOnly ? (
         <>
-          <h1 className="auth-title-gap">Before you continue</h1>
-          <p className="lead">To use GigoMe, please confirm the following. We only ask once.</p>
+          <h1 className="auth-title-gap">{t('welcome.beforeTitle')}</h1>
+          <p className="lead">{t('welcome.beforeLead')}</p>
         </>
       ) : (
         <>
-          <h1 className="auth-title-gap">Welcome to GigoMe</h1>
+          <h1 className="auth-title-gap">{t('welcome.title')}</h1>
           <p className="lead">
-            Tell us a little about yourself.{needs.profile ? ' You can change your details later.' : ''}
+            {t('welcome.lead')}{needs.profile ? ' ' + t('welcome.leadChange') : ''}
           </p>
         </>
       )}
@@ -209,14 +210,9 @@ function WelcomeForm({ user, next, onNotStudent }) {
         )}
         {declining ? (
           <div className="note auth-notice not-student" role="status">
-            <p>
-              GigoMe is for university students, so we won't create a student account for{' '}
-              <strong className="auth-email">{user.email}</strong>.
-            </p>
-            <p>You can still browse every job without an account.</p>
-            <p>
-              Hiring? Use the <Link to="/employers">employer login</Link>.
-            </p>
+            <p>{t('welcome.declineNoAccount', { email: <strong className="auth-email">{user.email}</strong> })}</p>
+            <p>{t('welcome.declineBrowse')}</p>
+            <p>{t('welcome.declineHiring', { link: (s) => <Link to="/employers">{s}</Link> })}</p>
           </div>
         ) : (
           <>
@@ -233,8 +229,8 @@ function WelcomeForm({ user, next, onNotStudent }) {
         {saveError && <p className="err" role="alert">{saveError}</p>}
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {declining
-            ? busy ? 'One moment…' : "Don't create my account"
-            : busy ? 'Saving…' : termsOnly ? 'Continue' : 'Save and continue'}
+            ? busy ? t('welcome.oneMoment') : t('welcome.dontCreate')
+            : busy ? t('welcome.saving') : termsOnly ? t('welcome.continue') : t('welcome.saveContinue')}
         </button>
       </form>
     </div>
@@ -244,12 +240,13 @@ function WelcomeForm({ user, next, onNotStudent }) {
 // "Are you currently a university student?" and, for Yes, "Which
 // university?": the listed universities and "Other" with a name.
 function StudentQuestions({ isStudent, setIsStudent, universities, uniChoice, setUniChoice, otherName, setOtherName, errors }) {
+  const t = useT();
   return (
     <>
       <fieldset className="student-question" aria-invalid={Boolean(errors.isStudent)}>
-        <legend>Are you currently a university student?</legend>
+        <legend>{t('welcome.isStudent')}</legend>
         <div className="student-question-options">
-          {[['yes', 'Yes'], ['no', 'No']].map(([value, label]) => (
+          {[['yes', t('welcome.yes')], ['no', t('welcome.no')]].map(([value, label]) => (
             <label key={value} className="check">
               <input type="radio" name="is_student" value={value} checked={isStudent === value} onChange={() => setIsStudent(value)} />{' '}
               {label}
@@ -261,7 +258,7 @@ function StudentQuestions({ isStudent, setIsStudent, universities, uniChoice, se
       {isStudent === 'yes' && (
         <>
           <label className="field">
-            Which university?
+            {t('welcome.whichUniversity')}
             <select
               className="select"
               name="university"
@@ -270,17 +267,17 @@ function StudentQuestions({ isStudent, setIsStudent, universities, uniChoice, se
               aria-invalid={Boolean(errors.university)}
               required
             >
-              <option value="">Choose…</option>
+              <option value="">{t('profile.choose')}</option>
               {universities.map((u) => (
                 <option key={u.id} value={u.id}>{u.name}</option>
               ))}
-              <option value={OTHER}>Other</option>
+              <option value={OTHER}>{t('welcome.otherUniversity')}</option>
             </select>
             {errors.university && <span className="err">{errors.university}</span>}
           </label>
           {uniChoice === OTHER && (
             <label className="field">
-              Your university's name
+              {t('welcome.otherName')}
               <input
                 className="input"
                 type="text"
@@ -295,8 +292,7 @@ function StudentQuestions({ isStudent, setIsStudent, universities, uniChoice, se
             </label>
           )}
           <p className="auth-small">
-            You can't change this yourself later. If it's wrong, write to{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            {t('welcome.cantChange', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
           </p>
         </>
       )}
@@ -306,14 +302,15 @@ function StudentQuestions({ isStudent, setIsStudent, universities, uniChoice, se
 
 // After "No": the account is gone and this device is logged out.
 function NotAStudent() {
+  const t = useT();
   return (
     <div className="auth-card">
-      <h1>GigoMe is for university students</h1>
-      <p className="lead">We haven't created a student account, and we've deleted the login we started for your email.</p>
-      <p>You can still browse every job on GigoMe without an account.</p>
+      <h1>{t('welcome.notStudentTitle')}</h1>
+      <p className="lead">{t('welcome.notStudentLead')}</p>
+      <p>{t('welcome.notStudentBrowse')}</p>
       <div className="auth-buttons">
-        <Link className="btn btn-primary" to="/jobs">Browse jobs</Link>
-        <Link className="btn btn-secondary" to="/employers">Hiring? Employer login</Link>
+        <Link className="btn btn-primary" to="/jobs">{t('welcome.browseJobs')}</Link>
+        <Link className="btn btn-secondary" to="/employers">{t('welcome.hiringEmployerLogin')}</Link>
       </div>
     </div>
   );

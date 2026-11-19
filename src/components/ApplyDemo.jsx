@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { demoContact } from '../lib/jobs.js';
+import { useT } from '../lib/useLang.js';
 
 // "Apply" on an example listing: a short demo of the real step, clearly
 // marked. Nothing opens, nothing is sent and no apply click is counted (the
@@ -7,6 +8,7 @@ import { demoContact } from '../lib/jobs.js';
 // real job, with a made-up link and email under the reserved .example
 // domain (demoContact()), as plain text: no link, nothing to click.
 export default function ApplyDemo({ open, job, onClose }) {
+  const t = useT();
   const ref = useRef(null);
 
   useEffect(() => {
@@ -28,26 +30,22 @@ export default function ApplyDemo({ open, job, onClose }) {
       {open && (
         <div className="apply-demo-inner">
           <div className="apply-demo-head">
-            <h2 id="apply-demo-title"><span className="tag tag-demo">Demo</span> What applying looks like</h2>
-            <button type="button" className="apply-demo-close" aria-label="Close the demo" onClick={onClose}>×</button>
+            <h2 id="apply-demo-title"><span className="tag tag-demo">{t('applyDemo.tag')}</span> {t('applyDemo.title')}</h2>
+            <button type="button" className="apply-demo-close" aria-label={t('applyDemo.closeLabel')} onClick={onClose}>×</button>
           </div>
-          <p>
-            This is an example listing, so nothing opened, nothing was sent and no apply click was counted. On a real
-            job, Apply opens the employer's application page in a new tab, or your email app with the subject filled in,
-            and shows this under the button:
-          </p>
-          <div className="apply-demo-mock" role="group" aria-label="Demo of the real step">
-            <span className="apply-demo-mock-label" aria-hidden="true">Demo</span>
-            <p className="apply-heading">How to apply</p>
-            <span className="btn btn-primary apply-demo-btn" aria-disabled="true">Open the application page</span>
+          <p>{t('applyDemo.intro')}</p>
+          <div className="apply-demo-mock" role="group" aria-label={t('applyDemo.mockLabel')}>
+            <span className="apply-demo-mock-label" aria-hidden="true">{t('applyDemo.tag')}</span>
+            <p className="apply-heading">{t('jobPage.howToApply')}</p>
+            <span className="btn btn-primary apply-demo-btn" aria-disabled>{t('jobPage.openApplication')}</span>
             <p className="apply-demo-url">{url}</p>
-            <p>Email: <span className="apply-demo-email">{email}</span></p>
-            <p className="apply-demo-url">Subject: Application: {job.title} (via GigoMe)</p>
-            <p className="apply-note">Applications go straight to the employer.</p>
+            <p>{t('jobPage.email')} <span className="apply-demo-email">{email}</span></p>
+            <p className="apply-demo-url">{t('applyDemo.subject', { subject: t('jobPage.mailSubject', { title: job.title }) })}</p>
+            <p className="apply-note">{t('jobPage.straightToEmployer')}</p>
           </div>
-          <p className="muted apply-demo-small">The link and address above are made up: they don't work.</p>
+          <p className="muted apply-demo-small">{t('applyDemo.madeUp')}</p>
           <div className="apply-demo-actions">
-            <button type="button" className="btn btn-primary" onClick={onClose}>Close</button>
+            <button type="button" className="btn btn-primary" onClick={onClose}>{t('common.close')}</button>
           </div>
         </div>
       )}

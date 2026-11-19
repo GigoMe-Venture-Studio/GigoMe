@@ -3,6 +3,7 @@
 // user read only their own) and saved as a JSON file. Nothing new is stored
 // and nothing is sent anywhere else.
 import { supabase } from './supabase.js';
+import { t } from './i18n.js';
 
 const JOB_COLUMNS =
   'id, title, description, job_type, category, location, remote, area_id, latitude, longitude, show_exact_location, ' +
@@ -22,9 +23,8 @@ export async function collectMyData(user) {
     .eq('id', user.id)
     .maybeSingle());
   const data = {
-    about_this_file:
-      'Everything GigoMe (gigome.org) holds about your account, as of the time below. ' +
-      'Your login session on this device is kept by your browser and is not included.',
+    // The one sentence for people, in the current language; keys and values stay as they are.
+    about_this_file: t('myData.aboutFile'),
     exported_at: new Date().toISOString(),
     account: {
       email: user.email,

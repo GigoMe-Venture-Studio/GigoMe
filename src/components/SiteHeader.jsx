@@ -4,6 +4,8 @@ import { useSession } from '../lib/useSession.js';
 import { fetchProfile } from '../lib/auth.js';
 import LogOutButton from './LogOutButton.jsx';
 import { fetchMyCompany } from '../lib/employer.js';
+import LangSwitch from './LangSwitch.jsx';
+import { useT } from '../lib/useLang.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
 // phones), Jobs, then
@@ -11,8 +13,11 @@ import { fetchMyCompany } from '../lib/employer.js';
 //   student: "Saved jobs", their name (a link to /account) and "Log out";
 //   company account: "Dashboard", the company name (a link to /account) and
 //   "Log out".
+// "EN | IT" (LangSwitch) sits before the buttons from 440px, and in the
+// Menu panel (the only place under 440px, where the header has no room).
 // Under 768px the links move into a Menu panel (site.css).
 export default function SiteHeader() {
+  const t = useT();
   const { pathname } = useLocation();
   const { session, loading } = useSession();
   const userId = session ? session.user.id : null;
@@ -69,10 +74,10 @@ export default function SiteHeader() {
   const label = (who.isCompany && who.company) || who.name || (session ? session.user.email : '');
   // Logged out: "For employers". Company accounts: "Dashboard".
   const extra = !session
-    ? loading ? null : { to: '/employers', text: 'For employers', current: employersCurrent }
+    ? loading ? null : { to: '/employers', text: t('header.forEmployers'), current: employersCurrent }
     : who.isCompany
-      ? { to: '/dashboard', text: 'Dashboard', current: dashboardCurrent }
-      : { to: '/saved', text: 'Saved jobs', current: savedCurrent };
+      ? { to: '/dashboard', text: t('header.dashboard'), current: dashboardCurrent }
+      : { to: '/saved', text: t('header.savedJobs'), current: savedCurrent };
 
   return (
     <header className="site-header">
@@ -83,18 +88,19 @@ export default function SiteHeader() {
             <img src="/brand/header-wordmark.webp" alt="GigoMe" width="132" height="30" />
           </picture>
         </Link>
-        <nav className="main-nav" aria-label="Main">
-          <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>Jobs</Link>
+        <nav className="main-nav" aria-label={t('header.mainNav')}>
+          <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined}>{t('header.jobs')}</Link>
           {extra && <Link to={extra.to} aria-current={extra.current ? 'page' : undefined}>{extra.text}</Link>}
         </nav>
         <div className="header-actions">
+          <LangSwitch className="header-lang" />
           {session ? (
             <>
               <Link
                 className="header-user"
                 to="/account"
-                title={`${label}: your account`}
-                aria-label={`Your account (${label})`}
+                title={t('header.accountTitle', { name: label })}
+                aria-label={t('header.accountLabel', { name: label })}
                 aria-current={accountCurrent ? 'page' : undefined}
               >
                 {label}
@@ -103,7 +109,7 @@ export default function SiteHeader() {
             </>
           ) : (
             /* It opens the student login only (employers log in on /employers). */
-            <Link className="btn btn-primary btn-sm" to="/login">Student login</Link>
+            <Link className="btn btn-primary btn-sm" to="/login">{t('header.studentLogin')}</Link>
           )}
           <button
             type="button"
@@ -114,24 +120,25 @@ export default function SiteHeader() {
             aria-controls="menu-panel"
             onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? 'Close' : 'Menu'}
+            {menuOpen ? t('common.close') : t('header.menu')}
           </button>
         </div>
       </div>
       {menuOpen && (
-        <nav className="menu-panel" id="menu-panel" aria-label="Mobile">
-          <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>Jobs</Link>
+        <nav className="menu-panel" id="menu-panel" aria-label={t('header.mobileNav')}>
+          <Link to="/jobs" aria-current={jobsCurrent ? 'page' : undefined} onClick={() => setMenuOpen(false)}>{t('header.jobs')}</Link>
           {extra && (
             <Link to={extra.to} aria-current={extra.current ? 'page' : undefined} onClick={() => setMenuOpen(false)}>
               {extra.text}
             </Link>
           )}
+          <LangSwitch className="menu-lang" />
           {session && (
             <>
               <Link
                 className="menu-user"
                 to="/account"
-                aria-label={`Your account (${label})`}
+                aria-label={t('header.accountLabel', { name: label })}
                 aria-current={accountCurrent ? 'page' : undefined}
                 onClick={() => setMenuOpen(false)}
               >

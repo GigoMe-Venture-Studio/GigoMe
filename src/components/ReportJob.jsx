@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { useSession } from '../lib/useSession.js';
 import { REPORT_DETAILS_MAX, REPORT_REASONS, reportJob } from '../lib/reports.js';
+import { useT } from '../lib/useLang.js';
 
 // "Report this job" at the bottom of a job page.
 export default function ReportJob({ jobId }) {
+  const t = useT();
   const { session, loading } = useSession();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
@@ -15,8 +17,7 @@ export default function ReportJob({ jobId }) {
   if (!session) {
     return (
       <p className="report-job report-job-out">
-        Something wrong with this job?{' '}
-        <Link to={`/login?next=${encodeURIComponent('/jobs/' + jobId)}`}>Log in to report it</Link>.
+        {t('report.loggedOut', { link: (s) => <Link to={`/login?next=${encodeURIComponent('/jobs/' + jobId)}`}>{s}</Link> })}
       </p>
     );
   }
@@ -27,7 +28,7 @@ export default function ReportJob({ jobId }) {
     return (
       <p className="report-job">
         <button type="button" className="btn-link tap-44" onClick={() => setOpen(true)} aria-expanded="false">
-          Report this job
+          {t('report.title')}
         </button>
       </p>
     );
@@ -36,23 +37,24 @@ export default function ReportJob({ jobId }) {
   async function onSubmit(e) {
     e.preventDefault();
     if (!reason) {
-      setState({ status: 'error', message: 'Choose a reason.' });
+      setState({ status: 'error', message: t('report.chooseReason') });
       return;
     }
     setState({ status: 'busy', message: '' });
     const error = await reportJob(jobId, reason, details);
-    if (error && !/already reported/.test(error)) {
+    // Already reported: said as the confirmation, not as an error.
+    if (error && error !== t('report.already')) {
       setState({ status: 'error', message: error });
       return;
     }
-    setState({ status: 'sent', message: error || "Thanks for telling us. We'll look into it." });
+    setState({ status: 'sent', message: error || t('report.thanks') });
   }
 
   return (
     <form className="report-job report-form" onSubmit={onSubmit} noValidate aria-labelledby="report-title">
-      <h2 id="report-title" className="report-title">Report this job</h2>
+      <h2 id="report-title" className="report-title">{t('report.title')}</h2>
       <fieldset className="report-reasons">
-        <legend>What's wrong?</legend>
+        <legend>{t('report.whatsWrong')}</legend>
         {REPORT_REASONS.map(([value, label]) => (
           <label key={value} className="check">
             <input type="radio" name="reason" value={value} checked={reason === value} onChange={() => { setReason(value); if (state.status === 'error') setState({ status: 'idle', message: '' }); }} /> {label}
@@ -60,17 +62,17 @@ export default function ReportJob({ jobId }) {
         ))}
       </fieldset>
       <label className="field">
-        <span>Details <span className="field-optional">(optional)</span></span>
+        <span>{t('report.details')} <span className="field-optional">{t('report.optional')}</span></span>
         <textarea className="input textarea" name="details" rows={4} maxLength={REPORT_DETAILS_MAX} value={details}
-          onChange={(e) => setDetails(e.target.value)} placeholder="What happened? Only the GigoMe team sees this." />
+          onChange={(e) => setDetails(e.target.value)} placeholder={t('report.placeholder')} />
       </label>
       {state.status === 'error' && <p className="err" role="alert">{state.message}</p>}
       <div className="form-buttons">
         <button type="submit" className="btn btn-primary" disabled={state.status === 'busy'}>
-          {state.status === 'busy' ? 'Sending…' : 'Send report'}
+          {state.status === 'busy' ? t('report.sending') : t('report.send')}
         </button>
         <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)} disabled={state.status === 'busy'}>
-          Cancel
+          {t('common.cancel')}
         </button>
       </div>
     </form>

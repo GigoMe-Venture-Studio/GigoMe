@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router';
 import { useSession } from '../lib/useSession.js';
 import { FEEDBACK_MAX, sendFeedback } from '../lib/feedback.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import { useT } from '../lib/useLang.js';
 
 const FeedbackContext = createContext(() => {});
 
@@ -79,6 +80,7 @@ const overlaps = (a, b, pad) =>
 // would overlap a button, link or field, e.g. "Apply" or "Search jobs"
 // on a phone, and comes back once that has scrolled past.
 function FeedbackButton({ hidden, onOpen }) {
+  const t = useT();
   const ref = useRef(null);
   const [covering, setCovering] = useState(false);
 
@@ -148,7 +150,7 @@ function FeedbackButton({ hidden, onOpen }) {
       </svg>
       {/* Under 768px only the icon shows (feedback.css), so the button covers
           less of the job cards; the word stays for screen readers. */}
-      <span className="feedback-fab-label">Feedback</span>
+      <span className="feedback-fab-label">{t('feedback.button')}</span>
     </button>
   );
 }
@@ -180,6 +182,7 @@ function FeedbackPanel({ open, onClose }) {
 let draft = '';
 
 function FeedbackBody({ onClose }) {
+  const t = useT();
   const { session, loading } = useSession();
   const { pathname, search } = useLocation();
   const [text, setText] = useState(draft);
@@ -216,14 +219,16 @@ function FeedbackBody({ onClose }) {
 
   let body;
   if (state.status === 'sent') {
-    body = <p className="feedback-thanks" role="status">Thanks, we read every message.</p>;
+    body = <p className="feedback-thanks" role="status">{t('feedback.thanks')}</p>;
   } else if (loading) {
-    body = <p className="muted">Loading…</p>;
+    body = <p className="muted">{t('common.loading')}</p>;
   } else if (!session) {
     body = (
       <p>
-        <Link to={`/login?next=${encodeURIComponent(pathname + search)}`}>Log in</Link> to send feedback, or write to{' '}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        {t('feedback.loggedOut', {
+          link: (s) => <Link to={`/login?next=${encodeURIComponent(pathname + search)}`}>{s}</Link>,
+          email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        })}
       </p>
     );
   } else {
@@ -231,7 +236,7 @@ function FeedbackBody({ onClose }) {
     body = (
       <form className="feedback-form" onSubmit={onSubmit} noValidate>
         <label className="feedback-label" htmlFor="feedback-message">
-          What worked, what didn't, what's missing?
+          {t('feedback.question')}
         </label>
         <textarea
           ref={field}
@@ -250,7 +255,7 @@ function FeedbackBody({ onClose }) {
         {state.error && <p className="err" role="alert">{state.error}</p>}
         <div className="feedback-actions">
           <button type="submit" className="btn btn-primary" disabled={busy || !text.trim()}>
-            {busy ? 'Sending…' : 'Send'}
+            {busy ? t('feedback.sending') : t('feedback.send')}
           </button>
         </div>
       </form>
@@ -260,8 +265,8 @@ function FeedbackBody({ onClose }) {
   return (
     <div className="feedback-inner">
       <div className="feedback-head">
-        <h2 id="feedback-title">Feedback</h2>
-        <button type="button" className="btn btn-tertiary btn-sm" onClick={onClose}>Close</button>
+        <h2 id="feedback-title">{t('feedback.title')}</h2>
+        <button type="button" className="btn btn-tertiary btn-sm" onClick={onClose}>{t('common.close')}</button>
       </div>
       {body}
     </div>
