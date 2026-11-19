@@ -233,7 +233,9 @@ end;
 $$;
 
 -- The names typed under "Other", with how many students typed each (ignoring
--- capitals and extra spaces; the spelling shown is the most common one), so
+-- capitals and extra spaces; the spelling shown is the most common one, and
+-- on a tie the one that sorts first byte by byte, so capitals win: "Accademia"
+-- over "accademia", the same on every database whatever its collation), so
 -- the team can look up their student domains and add them. Admins only.
 create function public.admin_other_universities()
 returns table (name text, students bigint)
@@ -247,7 +249,7 @@ begin
     raise exception 'Only admins can read the numbers.' using errcode = '42501';
   end if;
   return query
-  select mode() within group (order by p.other_university), count(*)
+  select mode() within group (order by p.other_university collate "C"), count(*)
   from public.profiles p
   where p.account_type = 'student' and p.other_university is not null
   group by lower(p.other_university)
