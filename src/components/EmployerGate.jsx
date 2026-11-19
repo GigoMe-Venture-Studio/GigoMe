@@ -1,24 +1,26 @@
 import { Link, Navigate } from 'react-router';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import { useT } from '../lib/useLang.js';
 
 // What the employer pages show before the account is ready. Returns null when
 // the page can render.
 export default function EmployerGate({ account, here, allowNoCompany = false }) {
+  const t = useT();
   const { status } = account;
-  if (status === 'loading') return <p className="muted">Loading…</p>;
+  if (status === 'loading') return <p className="muted">{t('common.loading')}</p>;
   if (status === 'loggedOut') return <Navigate to={'/employers?next=' + encodeURIComponent(here)} replace />;
   if (status === 'error') {
-    return <p className="err" role="alert">We couldn't load your company. Check your connection and reload the page.</p>;
+    return <p className="err" role="alert">{t('employerGate.loadError')}</p>;
   }
   if (status === 'student') {
     return (
       <div className="auth-card">
-        <h1>This page is for employers</h1>
+        <h1>{t('employerGate.studentTitle')}</h1>
         <p className="lead">
-          You're logged in with a student account, and each email has one role on GigoMe. To list jobs for a company,
-          log out and log in on the <Link to="/employers">employers page</Link> with a different email, like your work
-          email. Questions? Write to{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+          {t('employerGate.studentText', {
+            link: (words) => <Link to="/employers">{words}</Link>,
+            email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          })}
         </p>
       </div>
     );

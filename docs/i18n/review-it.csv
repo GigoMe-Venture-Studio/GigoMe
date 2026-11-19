@@ -1,0 +1,1067 @@
+﻿page,key,English,Italian
+Everywhere,common.loading,Loading…,Caricamento…
+Everywhere,common.cancel,Cancel,Annulla
+Everywhere,common.close,Close,Chiudi
+Everywhere,common.save,Save,Salva
+Everywhere,common.tryAgain,Try again,Riprova
+Everywhere,common.or,or,oppure
+Job lists and job pages (labels),jobType.gig,Gig,Lavoretto
+Job lists and job pages (labels),jobType.part_time,Part-time,Part-time
+Job lists and job pages (labels),jobType.other,Other,Altro
+Job lists and job pages (labels),italian.none,No Italian needed,Italiano non richiesto
+Job lists and job pages (labels),italian.basic,Basic Italian,Italiano base
+Job lists and job pages (labels),italian.fluent,Fluent Italian,Italiano fluente
+Job lists and job pages (labels),category.hospitality,Hospitality,Ristorazione e hotel
+Job lists and job pages (labels),category.retail,Retail,Vendita
+Job lists and job pages (labels),category.tutoring_education,Tutoring & education,Ripetizioni e formazione
+Job lists and job pages (labels),category.office_admin,Office & admin,Ufficio e amministrazione
+Job lists and job pages (labels),category.marketing_social,Marketing & social media,Marketing e social media
+Job lists and job pages (labels),category.events,Events,Eventi
+Job lists and job pages (labels),category.tech,Tech,Tecnologia
+Job lists and job pages (labels),category.other,Other,Altro
+Job lists and job pages (labels),language.en,English,Inglese
+Job lists and job pages (labels),language.it,Italian,Italiano
+Job lists and job pages (labels),language.es,Spanish,Spagnolo
+Job lists and job pages (labels),language.fr,French,Francese
+Job lists and job pages (labels),language.de,German,Tedesco
+Job lists and job pages (labels),language.zh,Chinese,Cinese
+Job lists and job pages (labels),language.ar,Arabic,Arabo
+Job lists and job pages (labels),language.other,Other,Altro
+Job lists and job pages (labels),payUnit.hour,Per hour,All'ora
+Job lists and job pages (labels),payUnit.month,Per month,Al mese
+Job lists and job pages (labels),payUnit.project,Per project,A progetto
+Job lists and job pages (labels),schedule.weekday_mornings,Weekday mornings,Mattine in settimana
+Job lists and job pages (labels),schedule.weekday_afternoons,Weekday afternoons,Pomeriggi in settimana
+Job lists and job pages (labels),schedule.weekday_evenings,Weekday evenings,Sere in settimana
+Job lists and job pages (labels),schedule.weekends,Weekends,Weekend
+Job lists and job pages (labels),schedule.flexible,Flexible,Flessibile
+Job lists and job pages (labels),scheduleHours.weekday_mornings,"Mon to Fri, before 12:00","Lun–ven, prima delle 12:00"
+Job lists and job pages (labels),scheduleHours.weekday_afternoons,"Mon to Fri, 12:00 to 18:00","Lun–ven, dalle 12:00 alle 18:00"
+Job lists and job pages (labels),scheduleHours.weekday_evenings,"Mon to Fri, after 18:00","Lun–ven, dopo le 18:00"
+Job lists and job pages (labels),scheduleHours.weekends,"Saturday and Sunday, any time","Sabato e domenica, a qualsiasi ora"
+Job lists and job pages (labels),scheduleHours.flexible,Hours agreed with the employer,Orari da concordare con il datore di lavoro
+Job lists and job pages (labels),scheduleHours.line,Mornings before 12 · Afternoons 12 to 18 · Evenings after 18,Mattine prima delle 12 · Pomeriggi 12–18 · Sere dopo le 18
+Job lists and job pages (labels),pay.hour,€{amount}/h,€{amount}/h
+Job lists and job pages (labels),pay.month,€{amount}/month,€{amount}/mese
+Job lists and job pages (labels),pay.monthHourly,€{amount}/month (≈ €{hourly}/h),€{amount}/mese (≈ €{hourly}/h)
+Job lists and job pages (labels),pay.project,€{amount} per project,€{amount} a progetto
+Job lists and job pages (labels),pay.notListed,Pay not listed,Paga non indicata
+Job lists and job pages (labels),pay.markerMonth,€{amount}/mo,€{amount}/mese
+Job lists and job pages (labels),pay.markerProject,€{amount}/proj,€{amount}/prog.
+Job lists and job pages (labels),pay.hiddenProject,paid per project,paga a progetto
+Job lists and job pages (labels),pay.hiddenUnspecified,pay not specified,paga non indicata
+Job lists and job pages (labels),pay.hiddenBoth,paid per project or pay not specified,paga a progetto o non indicata
+Job lists and job pages (labels),apply.studentsOnly,Only student accounts can see how to apply.,Solo gli account studente possono vedere come candidarsi.
+Job lists and job pages (labels),apply.gone,This job isn't available any more.,Questa offerta non è più disponibile.
+Job lists and job pages (labels),apply.loadFailed,We couldn't load how to apply. Check your connection and try again.,Non siamo riusciti a caricare come candidarti. Controlla la connessione e riprova.
+Job lists and job pages (labels),place.remote,Remote,Da remoto
+Job lists and job pages (labels),place.remoteOr,Remote or {place},Da remoto o {place}
+Job lists and job pages (labels),place.notListed,Location not listed,Luogo non indicato
+Job lists and job pages (labels),place.metro,{lines} {station} · {minutes} min walk,{lines} {station} · {minutes} min a piedi
+Job lists and job pages (labels),example.tag,Example,Esempio
+Job lists and job pages (labels),example.jobRest," listing, not a real job"," di annuncio, non è un'offerta vera"
+Job lists and job pages (labels),example.companyRest," company, not a real employer"," di azienda, non è un vero datore di lavoro"
+Job lists and job pages (labels),job.hoursPerWeek,{hours} h/week,{hours} h/sett.
+Everywhere,time.today,Today,Oggi
+Everywhere,time.yesterday,Yesterday,Ieri
+Everywhere,time.daysAgo_one,{count} day ago,{count} giorno fa
+Everywhere,time.daysAgo_other,{count} days ago,{count} giorni fa
+Everywhere,langSwitch.label,Language,Lingua
+Everywhere,langSwitch.en,English,English
+Everywhere,langSwitch.it,Italiano,Italiano
+Header,header.forEmployers,For employers,Per le aziende
+Header,header.dashboard,Dashboard,Dashboard
+Header,header.savedJobs,Saved jobs,Offerte salvate
+Header,header.mainNav,Main,Principale
+Header,header.mobileNav,Mobile,Menu mobile
+Header,header.jobs,Jobs,Offerte
+Header,header.accountTitle,{name}: your account,{name}: il tuo account
+Header,header.accountLabel,Your account ({name}),Il tuo account ({name})
+Header,header.studentLogin,Student login,Accedi
+Header,header.menu,Menu,Menu
+Footer,footer.tagline,A student project in Milan. Free for students.,Un progetto studentesco a Milano. Gratis per gli studenti.
+Footer,footer.nav,Footer,Piè di pagina
+Footer,footer.howItWorks,How it works,Come funziona
+Footer,footer.safety,Staying safe,Sicurezza
+Footer,footer.privacy,Privacy notice,Informativa sulla privacy
+Footer,footer.terms,Terms,Termini
+Footer,footer.feedback,Give feedback,Lascia un feedback
+Footer,footer.help,Questions or need help?,Domande o serve aiuto?
+Feedback button and panel,feedback.button,Feedback,Feedback
+Feedback button and panel,feedback.title,Feedback,Feedback
+Feedback button and panel,feedback.thanks,"Thanks, we read every message.","Grazie, leggiamo ogni messaggio."
+Feedback button and panel,feedback.loggedOut,"<link>Log in</link> to send feedback, or write to {email}.","<link>Accedi</link> per inviare un feedback, oppure scrivi a {email}."
+Feedback button and panel,feedback.question,"What worked, what didn't, what's missing?","Cosa ha funzionato, cosa no, cosa manca?"
+Feedback button and panel,feedback.sending,Sending…,Invio…
+Feedback button and panel,feedback.send,Send,Invia
+Feedback button and panel,feedback.errEmpty,Write a message first.,Scrivi prima un messaggio.
+Feedback button and panel,feedback.errTooLong,Keep it under {max} characters.,Resta sotto i {max} caratteri.
+Feedback button and panel,feedback.errUnavailable,Feedback can't be sent right now.,Al momento non è possibile inviare feedback.
+Feedback button and panel,feedback.errSend,We couldn't send your message. Check your connection and try again.,Non siamo riusciti a inviare il messaggio. Controlla la connessione e riprova.
+Daily limit messages,limits.feedback,Daily limit reached: you can send feedback up to {max} times a day. Try again tomorrow.,Limite giornaliero raggiunto: puoi inviare un feedback fino a {max} volte al giorno. Riprova domani.
+Daily limit messages,limits.report,Daily limit reached: you can report a job up to {max} times a day. Try again tomorrow.,Limite giornaliero raggiunto: puoi segnalare un'offerta fino a {max} volte al giorno. Riprova domani.
+Daily limit messages,limits.saves,Daily limit reached: you can save jobs or searches and follow companies up to {max} times a day. Try again tomorrow.,Limite giornaliero raggiunto: puoi salvare offerte o ricerche e seguire aziende fino a {max} volte al giorno. Riprova domani.
+Daily limit messages,limits.submit,Daily limit reached: you can submit jobs for review up to {max} times a day. Try again tomorrow.,Limite giornaliero raggiunto: puoi inviare offerte in revisione fino a {max} volte al giorno. Riprova domani.
+Daily limit messages,limits.generic,Daily limit reached. Try again tomorrow.,Limite giornaliero raggiunto. Riprova domani.
+Error pages,notFound.title,Page not found,Pagina non trovata
+Error pages,notFound.text,"There's nothing at this address. It may have moved, or the link may be mistyped.","A questo indirizzo non c'è niente. La pagina potrebbe essere stata spostata, o il link potrebbe contenere un errore."
+Error pages,notFound.home,Go to the home page,Vai alla home
+Error pages,configError.title,Logging in isn't available right now,Al momento non è possibile accedere
+Error pages,configError.text,"GigoMe can't reach its database. Please try again later, or write to {email}.","GigoMe non riesce a raggiungere il suo database. Riprova più tardi, oppure scrivi a {email}."
+Error pages,configError.team,For the GigoMe team:,Per il team di GigoMe:
+Error pages,error.title,Something went wrong,Qualcosa è andato storto
+Error pages,error.appText,"GigoMe hit an error and couldn't show this page. Reloading usually fixes it. If it keeps happening, write to {email}.","GigoMe ha avuto un errore e non è riuscito a mostrare questa pagina. Di solito basta ricaricarla. Se succede ancora, scrivi a {email}."
+Error pages,error.pageText,"This page hit an error and couldn't be shown. Reloading usually fixes it, for example after we've put out a new version of the site.","Questa pagina ha avuto un errore e non è stato possibile mostrarla. Di solito basta ricaricarla, per esempio dopo che abbiamo pubblicato una nuova versione del sito."
+Error pages,error.reload,Reload the page,Ricarica la pagina
+Error pages,error.tellUs,"If it keeps happening, <link>tell us what you were doing</link> so we can fix it.","Se succede ancora, <link>raccontaci cosa stavi facendo</link> così possiamo sistemarlo."
+Browser tab titles and search results,seo.description,"Part-time jobs and gigs in Milan, in English. A free, student-run job board for international students.","Lavori part-time e lavoretti a Milano, in inglese. Una bacheca di offerte gratuita, gestita da studenti, per studenti internazionali."
+Browser tab titles and search results,seo.home.title,"GigoMe: part-time jobs and gigs in Milan, in English","GigoMe: lavori part-time e lavoretti a Milano, in inglese"
+Browser tab titles and search results,seo.jobs.title,Jobs in Milan in English,Offerte di lavoro a Milano in inglese
+Browser tab titles and search results,seo.jobs.description,"Part-time jobs and gigs in Milan you can do in English. Filter by area, schedule, pay and how much Italian is needed.","Lavori part-time e lavoretti a Milano che puoi fare in inglese. Filtra per zona, orari, paga e livello di italiano richiesto."
+Browser tab titles and search results,seo.employers.title,Hire international students in Milan,Assumi studenti internazionali a Milano
+Browser tab titles and search results,seo.employers.description,"Post paid part-time jobs and gigs for international students in Milan who work in English. Free, reviewed by the GigoMe team.","Pubblica lavori part-time e lavoretti retribuiti per studenti internazionali a Milano che lavorano in inglese. Gratis, con revisione del team di GigoMe."
+Browser tab titles and search results,seo.privacy.title,Privacy Notice,Informativa sulla privacy
+Browser tab titles and search results,seo.privacy.description,"How GigoMe handles personal data: who is responsible, what is collected and why, who can see it, how long it is kept, and your rights.","Come GigoMe tratta i dati personali: chi è responsabile, cosa raccogliamo e perché, chi può vederli, per quanto tempo li conserviamo e quali sono i tuoi diritti."
+Browser tab titles and search results,seo.howItWorks.title,How GigoMe works,Come funziona GigoMe
+Browser tab titles and search results,seo.howItWorks.description,"How GigoMe works for students and employers: finding jobs, applying directly with employers, company and job review, and what GigoMe sees.","Come funziona GigoMe per studenti e aziende: trovare offerte, candidarsi direttamente con il datore di lavoro, la revisione di aziende e offerte e cosa vede GigoMe."
+Browser tab titles and search results,seo.safety.title,Staying safe,Sicurezza
+Browser tab titles and search results,seo.safety.description,"What GigoMe checks and what it can't, tips for meeting an employer, and what to do if something is wrong.","Cosa controlla GigoMe e cosa non può controllare, consigli per incontrare un datore di lavoro e cosa fare se qualcosa non va."
+Browser tab titles and search results,seo.terms.title,Terms and Conditions,Termini e condizioni
+Browser tab titles and search results,seo.terms.description,"The terms for using GigoMe, for students and for employers and other advertisers.","Le condizioni per usare GigoMe, per gli studenti, per le aziende e per gli altri inserzionisti."
+Browser tab titles and search results,seo.login.title,Log in,Accedi
+Browser tab titles and search results,seo.login.description,"Log in or sign up to GigoMe as a student, with any email.","Accedi o registrati a GigoMe come studente, con qualsiasi email."
+Browser tab titles and search results,seo.welcome.title,Welcome,Ti diamo il benvenuto
+Browser tab titles and search results,seo.account.title,Your account,Il tuo account
+Browser tab titles and search results,seo.saved.title,Saved jobs,Offerte salvate
+Browser tab titles and search results,seo.setup.title,Set up your company,Configura la tua azienda
+Browser tab titles and search results,seo.dashboard.title,Dashboard,Dashboard
+Browser tab titles and search results,seo.admin.title,Moderation,Moderazione
+Browser tab titles and search results,seo.yourJob.title,Your job,La tua offerta
+Browser tab titles and search results,seo.notFound.title,Page not found,Pagina non trovata
+/privacy and /terms,legal.courtesy,"Courtesy translation. If there are any differences, the English version prevails.","Traduzione di cortesia. In caso di differenze, prevale la versione inglese."
+/privacy and /terms,legal.onThisPage,On this page,In questa pagina
+/privacy and /terms,legal.table,Table,Tabella
+/privacy and /terms,legal.loadFailed,"The Italian translation couldn't be loaded, so the English text is shown.","Non è stato possibile caricare la traduzione italiana, quindi è mostrato il testo inglese."
+Job lists and job pages (labels),area.elsewhere,Elsewhere in Milan,Altrove a Milano
+/jobs,jobs.configError,Jobs can't be shown right now,Non riusciamo a mostrare le offerte in questo momento
+/jobs,jobs.title,Jobs in Milan,Offerte di lavoro a Milano
+/jobs,jobs.lead,"Part-time jobs and gigs for students, in English.","Lavori part-time e lavoretti per studenti, in inglese."
+/jobs,jobs.filtersLabel,Filter jobs,Filtra le offerte
+/jobs,jobs.keyword,Keyword,Parola chiave
+/jobs,jobs.keywordPlaceholder,"e.g. barista, tutor","es. barista, ripetizioni"
+/jobs,jobs.filters,Filters,Filtri
+/jobs,jobs.filtersActive_one,", {count} active",", {count} attivo"
+/jobs,jobs.filtersActive_other,", {count} active",", {count} attivi"
+/jobs,jobs.area,Area,Zona
+/jobs,jobs.allAreas,All areas,Tutte le zone
+/jobs,jobs.chosenArea,Chosen area,Zona scelta
+/jobs,jobs.category,Category,Categoria
+/jobs,jobs.any,Any,Qualsiasi
+/jobs,jobs.type,Type of job,Tipo di lavoro
+/jobs,jobs.anyType,Any type,Qualsiasi tipo
+/jobs,jobs.italian,Italian,Italiano
+/jobs,jobs.anyLevel,Any level,Qualsiasi livello
+/jobs,jobs.basicAtMost,Basic Italian at most,Al massimo italiano base
+/jobs,jobs.remote,Remote,Da remoto
+/jobs,jobs.remoteYes,Remote,Da remoto
+/jobs,jobs.onSite,On site,In presenza
+/jobs,jobs.hours,Hours per week,Ore a settimana
+/jobs,jobs.anyHours,Any hours,Qualsiasi
+/jobs,jobs.upToHours,Up to {hours} hours,Fino a {hours} ore
+/jobs,jobs.minPay,Minimum pay,Paga minima
+/jobs,jobs.minPayValue,{amount} euros an hour or more,{amount} euro all'ora o più
+/jobs,jobs.anyPay,Any pay,Qualsiasi paga
+/jobs,jobs.minPayHint,Monthly pay counts by its hourly equivalent.,La paga mensile conta per il suo equivalente orario.
+/jobs,jobs.when,When,Quando
+/jobs,jobs.whenNote,flexible jobs always match,orari flessibili sempre inclusi
+/jobs,jobs.languages,Languages at work,Lingue sul lavoro
+/jobs,jobs.inArea_one,{count} job in this map area,{count} offerta in quest'area della mappa
+/jobs,jobs.inArea_other,{count} jobs in this map area,{count} offerte in quest'area della mappa
+/jobs,jobs.elsewhereCount_one,{count} remote or without a location,{count} da remoto o senza posizione
+/jobs,jobs.elsewhereCount_other,{count} remote or without a location,{count} da remoto o senza posizione
+/jobs,jobs.count_one,{count} job,{count} offerta
+/jobs,jobs.count_other,{count} jobs,{count} offerte
+/jobs,jobs.loading,Loading jobs…,Caricamento offerte…
+/jobs,jobs.showAll,Show all jobs,Mostra tutte le offerte
+/jobs,jobs.clearFilters,Clear filters,Cancella filtri
+/jobs,jobs.sort,Sort,Ordina
+/jobs,jobs.sortNewest,Newest,Più recenti
+/jobs,jobs.sortPay,Highest pay,Paga più alta
+/jobs,jobs.viewLabel,Show jobs as,Mostra le offerte come
+/jobs,jobs.list,List,Elenco
+/jobs,jobs.map,Map,Mappa
+/jobs,jobs.hidden_one,{count} job hidden: {kinds}.,{count} offerta nascosta: {kinds}.
+/jobs,jobs.hidden_other,{count} jobs hidden: {kinds}.,{count} offerte nascoste: {kinds}.
+/jobs,jobs.showHidden_one,Show it,Mostrala
+/jobs,jobs.showHidden_other,Show them,Mostrale
+/jobs,jobs.alsoShowing,Also showing jobs paid per project or with pay not specified.,Sono incluse anche le offerte pagate a progetto o senza paga indicata.
+/jobs,jobs.hideThem,Hide them,Nascondile
+/jobs,jobs.findingYou,Finding you…,Ti stiamo cercando…
+/jobs,jobs.useLocation,Use my location,Usa la mia posizione
+/jobs,jobs.sortDistance,Sort by distance,Ordina per distanza
+/jobs,jobs.stopLocation,Stop using my location,Non usare più la mia posizione
+/jobs,jobs.locationNote,Stays on your device: never sent to GigoMe or saved.,Resta sul tuo dispositivo: non viene mai inviata a GigoMe né salvata.
+/jobs,jobs.locDenied,Location is turned off for this site in your browser. You can still move the map.,La posizione è disattivata per questo sito nel tuo browser. Puoi comunque spostare la mappa.
+/jobs,jobs.locError,"We couldn't find your location. Try again, or move the map.",Non siamo riusciti a trovare la tua posizione. Riprova o sposta la mappa.
+/jobs,jobs.locUnavailable,This browser can't share a location.,Questo browser non può condividere la posizione.
+/jobs,jobs.locOutside,"You seem to be outside Milan, so the map stays on Milan.","Sembra che tu sia fuori Milano, quindi la mappa resta su Milano."
+/jobs,jobs.loadError,We couldn't load the jobs.,Non siamo riusciti a caricare le offerte.
+/jobs,jobs.checkConnection,Check your connection and try again.,Controlla la connessione e riprova.
+/jobs,jobs.noneTitle,No jobs yet.,Ancora nessuna offerta.
+/jobs,jobs.noneText,"New jobs are added as employers join GigoMe, so check back soon. Know a business that's hiring? Tell us at {email}.",Le nuove offerte arrivano man mano che le aziende si uniscono a GigoMe: ripassa presto. Conosci un'attività che sta assumendo? Scrivici a {email}.
+/jobs,jobs.noneInAreaTitle,No jobs in this part of the map.,Nessuna offerta in questa parte della mappa.
+/jobs,jobs.noneInAreaText,Zoom out or move the map.,Riduci lo zoom o sposta la mappa.
+/jobs,jobs.noneInAreaTextRemote,"Zoom out or move the map, or see the remote jobs below.","Riduci lo zoom o sposta la mappa, oppure guarda le offerte da remoto qui sotto."
+/jobs,jobs.elsewhereTitle,Remote / no location,Da remoto / senza posizione
+/jobs,jobs.elsewhereNote,"Not on the map, so not limited to the map area.","Non sono sulla mappa, quindi non sono limitate all'area della mappa."
+/jobs,jobs.mapAside_one,{count} of these jobs is remote or without a place on the map; it is in the list.,{count} di queste offerte è da remoto o senza un punto sulla mappa: la trovi nell'elenco.
+/jobs,jobs.mapAside_other,{count} of these jobs are remote or without a place on the map; they are in the list.,{count} di queste offerte sono da remoto o senza un punto sulla mappa: le trovi nell'elenco.
+/jobs,jobs.filterWord.area,area,zona
+/jobs,jobs.filterWord.category,category,categoria
+/jobs,jobs.filterWord.type,type of job,tipo di lavoro
+/jobs,jobs.filterWord.italian,Italian,italiano
+/jobs,jobs.filterWord.remote,remote,da remoto
+/jobs,jobs.filterWord.hours,hours per week,ore a settimana
+/jobs,jobs.filterWord.when,days and times,giorni e orari
+/jobs,jobs.filterWord.lang,languages,lingue
+/jobs,jobs.filterWord.minpay,minimum pay,paga minima
+/jobs,jobs.orList,{first} or {last},{first} o {last}
+/jobs,jobs.noMatchQ,No jobs match “{q}”.,Nessuna offerta corrisponde a “{q}”.
+/jobs,jobs.noMatchQAdvice,"Check the spelling, or try a shorter or more general word, like “barista” or “tutor”.","Controlla l'ortografia o prova una parola più corta o più generica, come “barista” o “ripetizioni”."
+/jobs,jobs.noMatchQFilters,No jobs match “{q}” with these filters.,Nessuna offerta corrisponde a “{q}” con questi filtri.
+/jobs,jobs.noMatchQFiltersAdvice,"Try another keyword, or remove a filter: {filters}.",Prova un'altra parola chiave o togli un filtro: {filters}.
+/jobs,jobs.noMatch,No jobs match these filters.,Nessuna offerta corrisponde a questi filtri.
+/jobs,jobs.removeOne,Try removing one: {filters}.,Prova a toglierne uno: {filters}.
+/jobs,jobs.removeThe,Try removing the {filter} filter.,Prova a togliere il filtro {filter}.
+/jobs,jobs.clearKeyword,Clear the keyword,Cancella la parola chiave
+/jobs,jobs.searchSaved,Search saved. Find it on <link>Saved jobs</link>.,Ricerca salvata. La trovi in <link>Offerte salvate</link>.
+/jobs,jobs.saveSearch,Save this search,Salva questa ricerca
+/jobs,jobs.searchNameRequired,Give the search a name.,Dai un nome alla ricerca.
+/jobs,jobs.searchName,Name this search,Nome della ricerca
+/jobs,jobs.saving,Saving…,Salvataggio…
+/jobs,jobs.searchHint,"Shown only to you, on Saved jobs, with how many jobs are new since you last opened it. No emails.","La vedi solo tu, in Offerte salvate, con quante offerte nuove ci sono dall'ultima volta che l'hai aperta. Nessuna email."
+/jobs/<id> (job page),jobPage.configError,This job can't be shown right now,Non riusciamo a mostrare questa offerta in questo momento
+/jobs/<id> (job page),jobPage.allJobs,All jobs,Tutte le offerte
+/jobs/<id> (job page),jobPage.metaTitle,{title} at {company},{title} presso {company}
+/jobs/<id> (job page),jobPage.metaDescription,"{title} at {company}, Milan. {description}","{title} presso {company}, Milano. {description}"
+/jobs/<id> (job page),jobPage.missingTitle,This job isn't available,Questa offerta non è disponibile
+/jobs/<id> (job page),jobPage.loading,Loading the job…,Caricamento dell'offerta…
+/jobs/<id> (job page),jobPage.loadError,We couldn't load this job.,Non siamo riusciti a caricare questa offerta.
+/jobs/<id> (job page),jobPage.missingText,"It may have been filled, closed or expired.","Potrebbe essere già stata assegnata, chiusa o scaduta."
+/jobs/<id> (job page),jobPage.seeAll,See all jobs,Vedi tutte le offerte
+/jobs/<id> (job page),jobPage.noTitle,(No title yet),(Ancora senza titolo)
+/jobs/<id> (job page),jobPage.previewSaveTitle,Students can save the job here,Qui gli studenti possono salvare l'offerta
+/jobs/<id> (job page),jobPage.pay,Pay,Paga
+/jobs/<id> (job page),jobPage.hours,Hours,Ore
+/jobs/<id> (job page),jobPage.location,Location,Luogo
+/jobs/<id> (job page),jobPage.start,Start,Inizio
+/jobs/<id> (job page),jobPage.flexible,Flexible,Flessibile
+/jobs/<id> (job page),jobPage.howToApply,How to apply,Come candidarsi
+/jobs/<id> (job page),jobPage.loginToApply,Log in to see how to apply,Accedi per vedere come candidarti
+/jobs/<id> (job page),jobPage.loginNote,Log in as a student to see how to apply.,Accedi con un account studente per vedere come candidarti.
+/jobs/<id> (job page),jobPage.companyAccount,Only students can apply for jobs on GigoMe. You're logged in with a company account.,Su GigoMe solo gli studenti possono candidarsi alle offerte. Hai effettuato l'accesso con un account aziendale.
+/jobs/<id> (job page),jobPage.apply,Apply,Candidati
+/jobs/<id> (job page),jobPage.opening,Opening…,Apertura…
+/jobs/<id> (job page),jobPage.openingPage,Opening the application page…,Apertura della pagina di candidatura…
+/jobs/<id> (job page),jobPage.mailSubject,Application: {title} (via GigoMe),Candidatura: {title} (tramite GigoMe)
+/jobs/<id> (job page),jobPage.noContact,This employer hasn't added how to apply yet. Write to {email} and we'll pass your interest on.,Questo datore di lavoro non ha ancora indicato come candidarsi. Scrivi a {email} e gli faremo sapere che ti interessa.
+/jobs/<id> (job page),jobPage.openedTab,"The application page should have opened in a new tab. If it didn't, use the link below.","La pagina di candidatura dovrebbe essersi aperta in una nuova scheda. Se non è successo, usa il link qui sotto."
+/jobs/<id> (job page),jobPage.openedMail,"Your email app should have opened with the subject filled in. If it didn't, write to the address below.","La tua app di posta dovrebbe essersi aperta con l'oggetto già compilato. Se non è successo, scrivi all'indirizzo qui sotto."
+/jobs/<id> (job page),jobPage.writeToApply,Write to the address below to apply.,Scrivi all'indirizzo qui sotto per candidarti.
+/jobs/<id> (job page),jobPage.openApplication,Open the application page,Apri la pagina di candidatura
+/jobs/<id> (job page),jobPage.email,Email:,Email:
+/jobs/<id> (job page),jobPage.straightToEmployer,Applications go straight to the employer.,Le candidature arrivano direttamente al datore di lavoro.
+/jobs/<id> (job page),jobPage.exampleNote,"An example listing: Apply opens a short demo, and nothing is sent.",Annuncio di esempio: “Candidati” apre una breve demo e non viene inviato nulla.
+/jobs/<id> (job page),jobPage.safety,Meeting an employer in person? <link>Read our safety tips.</link>,Incontri un datore di lavoro di persona? <link>Leggi i nostri consigli per la sicurezza.</link>
+/jobs/<id> (job page),jobPage.aboutJob,About the job,Informazioni sull'offerta
+/jobs/<id> (job page),jobPage.noDescription,The employer hasn't added a description yet.,Il datore di lavoro non ha ancora aggiunto una descrizione.
+/jobs/<id> (job page),jobPage.posted,Posted {when}.,Pubblicata {when}.
+/jobs/<id> (job page),jobPage.aboutCompany,About {name},Informazioni su {name}
+/jobs/<id> (job page),jobPage.noCompanyDetails,No company details yet.,Ancora nessuna informazione sull'azienda.
+/jobs/<id> (job page),jobPage.allFromCompany,All jobs from {name},Tutte le offerte di {name}
+/jobs/<id> (job page),jobPage.where,Where,Dove
+/jobs/<id> (job page),jobPage.areaOnly,"{area}: the employer shows only the area, not the exact address.","{area}: il datore di lavoro indica solo la zona, non l'indirizzo esatto."
+/jobs/<id> (job page),jobPage.openGoogle,Open in Google Maps,Apri in Google Maps
+/jobs/<id> (job page),jobPage.openAreaGoogle,Open the area in Google Maps,Apri la zona in Google Maps
+Job cards,jobCard.new,New,Nuova
+Maps,map.label,Map of the jobs,Mappa delle offerte
+Maps,map.loading,Loading the map…,Caricamento della mappa…
+Maps,map.errorNote,The map can't be shown right now. The list has every job.,Non riusciamo a mostrare la mappa in questo momento. Nell'elenco ci sono tutte le offerte.
+Maps,map.noPlaces,None of these jobs has a place on the map.,Nessuna di queste offerte ha un punto sulla mappa.
+Maps,map.jobsHere_one,{count} job here,{count} offerta qui
+Maps,map.jobsHere_other,{count} jobs here,{count} offerte qui
+Maps,map.youAreHere,You are here,Sei qui
+Maps,map.followSearch,Search as I move the map,Cerca mentre sposto la mappa
+Maps,map.searchArea,Search this area,Cerca in quest'area
+Maps,map.distanceM,{distance} m away,a {distance} m
+Maps,map.distanceKm,{distance} km away,a {distance} km
+Maps,map.jobRegion,Map: where the job is,Mappa: dove si trova l'offerta
+Maps,map.areaRegion,Map: the area of the job,Mappa: la zona dell'offerta
+Maps,map.pinLabel,"Where ""{title}"" is","Dove si trova ""{title}"""
+Maps,map.cantShow,The map can't be shown right now.,Non riusciamo a mostrare la mappa in questo momento.
+Maps,map.metro,Metro,Metro
+Maps,map.metroTitle,Show or hide the metro lines,Mostra o nascondi le linee della metro
+Maps,map.ml.title,Map,Mappa
+Maps,map.ml.zoomIn,Zoom in,Aumenta lo zoom
+Maps,map.ml.zoomOut,Zoom out,Riduci lo zoom
+Maps,map.ml.closePopup,Close popup,Chiudi il riquadro
+Maps,map.ml.toggleAttribution,Toggle attribution,Mostra o nascondi i crediti
+Maps,map.ml.mapFeedback,Map feedback,Segnala un problema sulla mappa
+Maps,map.ml.windowsHelp,Use Ctrl + scroll to zoom the map,Usa Ctrl + rotellina per lo zoom della mappa
+Maps,map.ml.macHelp,Use ⌘ + scroll to zoom the map,Usa ⌘ + scorrimento per lo zoom della mappa
+Maps,map.ml.mobileHelp,Use two fingers to move the map,Usa due dita per spostare la mappa
+Save button,save.save,Save,Salva
+Save button,save.saved,Saved,Salvata
+Save button,save.loginAria,Log in to save {title},Accedi per salvare {title}
+Save button,save.loginTitle,Log in to save this job,Accedi per salvare questa offerta
+Save button,save.saveAria,Save {title},Salva {title}
+Save button,save.removeAria,Remove {title} from saved jobs,Togli {title} dalle offerte salvate
+Save button,save.savedTitle,Saved: press to remove,Salvata: premi per toglierla
+Save button,save.saveTitle,Save this job,Salva questa offerta
+Save button,save.loadError,We couldn't load your saved jobs.,Non siamo riusciti a caricare le tue offerte salvate.
+Save button,save.saveError,We couldn't save this job. Try again.,Non siamo riusciti a salvare questa offerta. Riprova.
+Save button,save.removeError,We couldn't remove this job. Try again.,Non siamo riusciti a togliere questa offerta. Riprova.
+Share button,share.share,Share,Condividi
+Share button,share.copy,Copy link,Copia link
+Share button,share.copied,Link copied,Link copiato
+Share button,share.copiedStatus,Link copied to the clipboard.,Link copiato negli appunti.
+Share button,share.fieldLabel,Link to this job,Link a questa offerta
+Report this job,report.loggedOut,Something wrong with this job? <link>Log in to report it</link>.,Qualcosa non va in questa offerta? <link>Accedi per segnalarla</link>.
+Report this job,report.title,Report this job,Segnala questa offerta
+Report this job,report.whatsWrong,What's wrong?,Qual è il problema?
+Report this job,report.reason.scam,"Scam, or payment demanded from students","Truffa, o pagamento chiesto agli studenti"
+Report this job,report.reason.illegal,Illegal or unsafe,Illegale o pericolosa
+Report this job,report.reason.misleading,Misleading pay or hours,Paga o orari ingannevoli
+Report this job,report.reason.discriminatory,Discriminatory,Discriminatoria
+Report this job,report.reason.other,Something else,Altro
+Report this job,report.details,Details,Dettagli
+Report this job,report.optional,(optional),(facoltativo)
+Report this job,report.placeholder,What happened? Only the GigoMe team sees this.,Cos'è successo? Lo vede solo il team di GigoMe.
+Report this job,report.chooseReason,Choose a reason.,Scegli un motivo.
+Report this job,report.send,Send report,Invia segnalazione
+Report this job,report.sending,Sending…,Invio…
+Report this job,report.thanks,Thanks for telling us. We'll look into it.,Grazie per la segnalazione. La controlleremo.
+Report this job,report.already,You've already reported this job. We're looking into it.,Hai già segnalato questa offerta. La stiamo controllando.
+Report this job,report.sendError,We couldn't send your report. Check your connection and try again.,Non siamo riusciti a inviare la segnalazione. Controlla la connessione e riprova.
+Apply on example listings (demo),applyDemo.tag,Demo,Demo
+Apply on example listings (demo),applyDemo.title,What applying looks like,Come funziona la candidatura
+Apply on example listings (demo),applyDemo.closeLabel,Close the demo,Chiudi la demo
+Apply on example listings (demo),applyDemo.intro,"This is an example listing, so nothing opened, nothing was sent and no apply click was counted. On a real job, Apply opens the employer's application page in a new tab, or your email app with the subject filled in, and shows this under the button:","Questo è un annuncio di esempio: non si è aperto nulla, non è stato inviato nulla e nessun clic su “Candidati” è stato contato. In un'offerta vera, “Candidati” apre la pagina di candidatura del datore di lavoro in una nuova scheda, oppure la tua app di posta con l'oggetto già compilato, e mostra questo sotto il pulsante:"
+Apply on example listings (demo),applyDemo.mockLabel,Demo of the real step,Demo del passaggio reale
+Apply on example listings (demo),applyDemo.subject,Subject: {subject},Oggetto: {subject}
+Apply on example listings (demo),applyDemo.madeUp,The link and address above are made up: they don't work.,Il link e l'indirizzo qui sopra sono inventati: non funzionano.
+/companies/<id> (company page),company.configError,This page can't be shown right now,Non riusciamo a mostrare questa pagina in questo momento
+/companies/<id> (company page),company.metaTitle,{name}: jobs in Milan,{name}: offerte di lavoro a Milano
+/companies/<id> (company page),company.metaDescription,{name} on GigoMe: open jobs in Milan for students who work in English. {description},{name} su GigoMe: offerte di lavoro aperte a Milano per studenti che lavorano in inglese. {description}
+/companies/<id> (company page),company.missingTitle,This company isn't on GigoMe,Questa azienda non è su GigoMe
+/companies/<id> (company page),company.loadError,We couldn't load this company. Check your connection and reload the page.,Non siamo riusciti a caricare questa azienda. Controlla la connessione e ricarica la pagina.
+/companies/<id> (company page),company.missingText,"It may not be approved yet, or the link is wrong.","Potrebbe non essere ancora stata approvata, oppure il link è sbagliato."
+/companies/<id> (company page),company.exampleNote,This company isn't real. It's here so you can try GigoMe during our test.,Questa azienda non esiste. È qui per farti provare GigoMe durante il nostro test.
+/companies/<id> (company page),company.openJobs,Open jobs,Offerte aperte
+/companies/<id> (company page),company.openJobsCount,Open jobs ({count}),Offerte aperte ({count})
+/companies/<id> (company page),company.noJobs,No open jobs right now.,Nessuna offerta aperta al momento.
+/companies/<id> (company page),company.mapLabel,Map of {name}'s jobs,Mappa delle offerte di {name}
+/companies/<id> (company page),company.loginToFollow,Log in to follow,Accedi per seguire
+/companies/<id> (company page),company.follow,Follow,Segui
+/companies/<id> (company page),company.following,Following,Segui già
+/companies/<id> (company page),company.followingNote,Its new jobs show on Saved jobs.,Le sue nuove offerte compaiono in Offerte salvate.
+/companies/<id> (company page),company.followNote,See its new jobs on Saved jobs. No emails.,Vedi le sue nuove offerte in Offerte salvate. Nessuna email.
+/companies/<id> (company page),company.followError,We couldn't follow this company. Try again.,Non siamo riusciti a seguire questa azienda. Riprova.
+/companies/<id> (company page),company.unfollowError,We couldn't unfollow. Try again.,Non siamo riusciti a smettere di seguirla. Riprova.
+Job descriptions,description.headingDo,What you'll do,Cosa farai
+Job descriptions,description.headingWho,Who we're looking for,Chi cerchiamo
+Job descriptions,description.headingDetails,Practical details,Dettagli pratici
+/login and the employer login,codeLogin.loggingIn,Logging you in…,Accesso in corso…
+/login and the employer login,codeLogin.errFullEmailEmployer,"Enter your full email address, like name@company.it.","Inserisci l'indirizzo email completo, ad esempio nome@azienda.it."
+/login and the employer login,codeLogin.errFullEmailStudent,"Enter your full email address, like name@university.it.","Inserisci l'indirizzo email completo, ad esempio nome@universita.it."
+/login and the employer login,codeLogin.errCheckEmail,We couldn't check your email right now. Check your connection and try again.,Non riusciamo a controllare la tua email in questo momento. Controlla la connessione e riprova.
+/login and the employer login,codeLogin.errCodeLength,Enter the {n}-digit code from the email.,Inserisci il codice di {n} cifre che trovi nell'email.
+/login and the employer login,codeLogin.newCodeSent,We sent you a new code. Only the newest code works.,Ti abbiamo inviato un nuovo codice. Funziona solo il più recente.
+/login and the employer login,codeLogin.titleEmployer,Employer login,Accesso aziende
+/login and the employer login,codeLogin.titleStudent,Log in or sign up,Accedi o registrati
+/login and the employer login,codeLogin.digitCode,{n}-digit,di {n} cifre
+/login and the employer login,codeLogin.leadEmployer,"Use your work email. We'll send you a {code} code, no password needed.","Usa la tua email di lavoro. Ti invieremo un codice {code}, senza bisogno di password."
+/login and the employer login,codeLogin.leadStudent,"Use any email. A university email verifies that you're a student. We'll send you a {code} code, no password needed.","Usa qualsiasi email. Un'email universitaria verifica che sei studente. Ti invieremo un codice {code}, senza bisogno di password."
+/login and the employer login,codeLogin.switchEmployer,Looking for work? <link>Student login</link>,Cerchi lavoro? <link>Accesso studenti</link>
+/login and the employer login,codeLogin.switchStudent,Hiring? <link>Use the employer login</link>,Cerchi personale? <link>Usa l'accesso aziende</link>
+/login and the employer login,codeLogin.disclaimer,"GigoMe is an independent student project, not affiliated with or endorsed by any university.","GigoMe è un progetto studentesco indipendente, non affiliato ad alcuna università né approvato da alcuna di esse."
+/login and the employer login,codeLogin.uniSummary,Which emails verify you as a student?,Quali email verificano che sei studente?
+/login and the employer login,codeLogin.uniListIntro,A student email from one of these universities verifies that you're a student:,Un'email da studente di una di queste università verifica che sei studente:
+/login and the employer login,codeLogin.uniListError,"We couldn't load the list right now. Check your connection, then close this and open it again.","Non riusciamo a caricare l'elenco in questo momento. Controlla la connessione, poi chiudi questa sezione e riaprila."
+/login and the employer login,codeLogin.uniOtherEmail,"Any other email works too: after logging in, you tell us that you're a student and at which university.",Va bene anche qualsiasi altra email: dopo l'accesso ci dirai che sei studente e in quale università.
+/login and the employer login,codeLogin.uniMissing,Is your university missing?,Manca la tua università?
+/login and the employer login,codeLogin.uniMissingLink,Email {email},Scrivi a {email}
+/login and the employer login,codeLogin.uniMissingSubject,Add my university to GigoMe,Aggiungete la mia università a GigoMe
+/login and the employer login,codeLogin.labelWorkEmail,Work email,Email di lavoro
+/login and the employer login,codeLogin.labelEmail,Email,Email
+/login and the employer login,codeLogin.placeholderEmployer,name@company.it,nome@azienda.it
+/login and the employer login,codeLogin.placeholderStudent,name@university.it,nome@universita.it
+/login and the employer login,codeLogin.privacyEmployer,"We use your email to log you in and, if needed, to contact you about your company. See our <link>Privacy Notice</link>.","Usiamo la tua email per farti accedere e, se serve, per contattarti riguardo alla tua azienda. Leggi l'<link>Informativa sulla privacy</link>."
+/login and the employer login,codeLogin.privacyStudent,We use your email to log you in and to check whether it's a university email on our list. See our <link>Privacy Notice</link>.,Usiamo la tua email per farti accedere e per controllare se è un'email universitaria del nostro elenco. Leggi l'<link>Informativa sulla privacy</link>.
+/login and the employer login,codeLogin.uniEmailNotice,That's a university email. Students <link>log in here</link>.,"Questa è un'email universitaria. Se studi, <link>accedi qui</link>."
+/login and the employer login,codeLogin.uniEmailHiring,Hiring for a company? Use your work email instead.,Cerchi personale per un'azienda? Usa invece la tua email di lavoro.
+/login and the employer login,codeLogin.checking,Checking…,Verifica in corso…
+/login and the employer login,codeLogin.sendCode,Send me a code,Inviami un codice
+/login and the employer login,codeLogin.captchaFailed,"We couldn't load the check that keeps bots out. Reload the page, or try another browser or network.","Non riusciamo a caricare il controllo anti-bot. Ricarica la pagina, oppure prova con un altro browser o un'altra rete."
+/login and the employer login,codeLogin.captchaWaiting,One moment: checking you're not a bot…,Un attimo: stiamo verificando che tu non sia un bot…
+/login and the employer login,codeLogin.checkEmail,Check your email,Controlla la tua email
+/login and the employer login,codeLogin.sentTo,We sent a {code} code to {email}.,Abbiamo inviato un codice {code} a {email}.
+/login and the employer login,codeLogin.yourCode,Your code,Il tuo codice
+/login and the employer login,codeLogin.codeHint,"It can take a minute to arrive. Can't find it? Check your Junk or Spam folder and mark it as 'Not junk', so the next one arrives in your inbox.","Può volerci un minuto. Non lo trovi? Controlla la cartella Posta indesiderata o Spam e segna l'email come ""Non è posta indesiderata"", così il prossimo codice arriverà nella posta in arrivo."
+/login and the employer login,codeLogin.logIn,Log in,Accedi
+/login and the employer login,codeLogin.resendWait,Send a new code ({s}s),Invia un nuovo codice ({s}s)
+/login and the employer login,codeLogin.resend,Send a new code,Invia un nuovo codice
+/login and the employer login,codeLogin.differentEmail,Use a different email,Usa un'altra email
+/login and the employer login,codeLogin.wrongRoleTitle,This email has an employer account,Questa email ha un account aziendale
+/login and the employer login,codeLogin.wrongRoleLead,"{email} is registered as an employer. Each email has one role on GigoMe, so it can't also be a student account.","{email} è registrata come azienda. Su GigoMe ogni email ha un solo ruolo, quindi non può essere anche un account studente."
+/login and the employer login,codeLogin.wrongRoleHelp,"To hire, use the <link>employer login</link>. To look for work, log out and sign up here with a different email, like your university email.","Per assumere, usa l'<link>accesso aziende</link>. Per cercare lavoro, esci e registrati qui con un'altra email, ad esempio quella universitaria."
+/login and the employer login,codeLogin.goEmployerLogin,Go to the employer login,Vai all'accesso aziende
+/login and the employer login,codeLogin.loggedInTitle,You're logged in,Hai effettuato l'accesso
+/login and the employer login,codeLogin.loggedInAs,Logged in as {email}.,Accesso effettuato come {email}.
+/login and the employer login,codeLogin.continue,Continue,Continua
+/login and the employer login,codeLogin.goHome,Go to GigoMe,Vai a GigoMe
+/welcome,welcome.loadError,We couldn't load your profile. Check your connection and reload the page.,Non riusciamo a caricare il tuo profilo. Controlla la connessione e ricarica la pagina.
+/welcome,welcome.errYesNo,Choose Yes or No.,Scegli Sì o No.
+/welcome,welcome.errUniversity,"Choose your university, or ""Other"".","Scegli la tua università, oppure ""Altra""."
+/welcome,welcome.errOtherName,Type your university's name.,Scrivi il nome della tua università.
+/welcome,welcome.saveErrorDetails,We couldn't save your details. Check your connection and try again.,Non riusciamo a salvare i tuoi dati. Controlla la connessione e riprova.
+/welcome,welcome.saveError,We couldn't save that. Check your connection and try again.,Non riusciamo a salvare. Controlla la connessione e riprova.
+/welcome,welcome.declineError,We couldn't finish this. Check your connection and try again.,Non riusciamo a completare l'operazione. Controlla la connessione e riprova.
+/welcome,welcome.loggedInAs,Logged in as {email},Accesso effettuato come {email}
+/welcome,welcome.beforeTitle,Before you continue,Prima di continuare
+/welcome,welcome.beforeLead,"To use GigoMe, please confirm the following. We only ask once.","Per usare GigoMe, conferma quanto segue. Te lo chiediamo una volta sola."
+/welcome,welcome.title,Welcome to GigoMe,Ti diamo il benvenuto su GigoMe
+/welcome,welcome.lead,Tell us a little about yourself.,Raccontaci qualcosa di te.
+/welcome,welcome.leadChange,You can change your details later.,Potrai modificare i tuoi dati in seguito.
+/welcome,welcome.declineNoAccount,"GigoMe is for university students, so we won't create a student account for {email}.","GigoMe è per chi studia all'università, quindi non creeremo un account studente per {email}."
+/welcome,welcome.declineBrowse,You can still browse every job without an account.,Puoi comunque consultare tutte le offerte senza un account.
+/welcome,welcome.declineHiring,Hiring? Use the <link>employer login</link>.,Cerchi personale? Usa l'<link>accesso aziende</link>.
+/welcome,welcome.oneMoment,One moment…,Un attimo…
+/welcome,welcome.dontCreate,Don't create my account,Non creare il mio account
+/welcome,welcome.saving,Saving…,Salvataggio…
+/welcome,welcome.continue,Continue,Continua
+/welcome,welcome.saveContinue,Save and continue,Salva e continua
+/welcome,welcome.isStudent,Are you currently a university student?,Al momento studi all'università?
+/welcome,welcome.yes,Yes,Sì
+/welcome,welcome.no,No,No
+/welcome,welcome.whichUniversity,Which university?,Quale università?
+/welcome,welcome.otherUniversity,Other,Altra
+/welcome,welcome.otherName,Your university's name,Nome della tua università
+/welcome,welcome.cantChange,"You can't change this yourself later. If it's wrong, write to {email}.","In seguito non potrai modificarlo da te. Se è sbagliato, scrivi a {email}."
+/welcome,welcome.notStudentTitle,GigoMe is for university students,GigoMe è per chi studia all'università
+/welcome,welcome.notStudentLead,"We haven't created a student account, and we've deleted the login we started for your email.",Non abbiamo creato un account studente e abbiamo eliminato l'accesso avviato con la tua email.
+/welcome,welcome.notStudentBrowse,You can still browse every job on GigoMe without an account.,Puoi comunque consultare tutte le offerte su GigoMe senza un account.
+/welcome,welcome.browseJobs,Browse jobs,Sfoglia le offerte
+/welcome,welcome.hiringEmployerLogin,Hiring? Employer login,Cerchi personale? Accesso aziende
+/welcome and /account (profile fields),profile.fullName,Full name,Nome e cognome
+/welcome and /account (profile fields),profile.degree,Degree level,Livello di studi
+/welcome and /account (profile fields),profile.choose,Choose…,Scegli…
+/welcome and /account (profile fields),profile.gradYear,Expected graduation year,Anno di laurea previsto
+/welcome and /account (profile fields),profile.level.bachelor,Bachelor's degree,Laurea triennale
+/welcome and /account (profile fields),profile.level.master,Master's degree,Laurea magistrale
+/welcome and /account (profile fields),profile.level.single_cycle,Single-cycle degree (ciclo unico),Laurea magistrale a ciclo unico
+/welcome and /account (profile fields),profile.level.phd,PhD,Dottorato
+/welcome and /account (profile fields),profile.level.exchange,Exchange student,Programma di scambio (es. Erasmus)
+/welcome and /account (profile fields),profile.level.other,Other,Altro
+/welcome and /account (profile fields),profile.errName,Add your full name.,Inserisci nome e cognome.
+/welcome and /account (profile fields),profile.errNameLong,Keep your name under 120 characters.,Il nome deve avere meno di 120 caratteri.
+/welcome and /account (profile fields),profile.errDegree,Choose what you are studying.,Scegli cosa stai studiando.
+/welcome and /account (profile fields),profile.errYear,Choose the year you expect to graduate.,Scegli l'anno in cui prevedi di laurearti.
+/account,account.deleting,Deleting your account…,Eliminazione dell'account…
+/account,account.loadError,We couldn't load your account. Check your connection and reload the page.,Non riusciamo a caricare il tuo account. Controlla la connessione e ricarica la pagina.
+/account,account.title,Your account,Il tuo account
+/account,account.email,Email,Email
+/account,account.university,University,Università
+/account,account.noneCompany,None (company account),Nessuna (account aziendale)
+/account,account.none,None,Nessuna
+/account,account.studentStatus,Student status,Status di studente
+/account,account.verified,Verified by your university email,Verificato tramite la tua email universitaria
+/account,account.notVerified,Not verified: you told us when you signed up,Non verificato: l'hai indicato tu alla registrazione
+/account,account.fixedNote,Your email and university come from the address you log in with and can't be changed here.,Email e università dipendono dall'indirizzo con cui accedi e non si possono modificare qui.
+/account,account.fixedNoteDeclared,"Your email and university can't be changed here. If your university is wrong, write to {email}.","Email e università non si possono modificare qui. Se l'università è sbagliata, scrivi a {email}."
+/account,account.saved,Your changes are saved.,Modifiche salvate.
+/account,account.saveError,We couldn't save your changes. Check your connection and try again.,Non riusciamo a salvare le modifiche. Controlla la connessione e riprova.
+/account,account.detailsTitle,Your details,Il tuo profilo
+/account,account.saving,Saving…,Salvataggio…
+/account,account.saveChanges,Save changes,Salva le modifiche
+/account,account.downloaded,Your file has been downloaded.,Il file è stato scaricato.
+/account,account.dataError,We couldn't put your data together. Check your connection and try again.,Non riusciamo a raccogliere i tuoi dati. Controlla la connessione e riprova.
+/account,account.dataTitle,Your data,I tuoi dati
+/account,account.dataTextCompany,"Download a file (JSON) with everything GigoMe holds about your account: your email and profile, your company, its jobs with how to apply and their apply clicks, and any feedback and reports you sent.","Scarica un file (JSON) con tutto ciò che GigoMe conserva sul tuo account: email e profilo, la tua azienda, le sue offerte con le indicazioni per candidarsi e i relativi clic su ""Candidati"", e i feedback e le segnalazioni che hai inviato."
+/account,account.dataTextStudent,"Download a file (JSON) with everything GigoMe holds about you: your email and profile, saved jobs, saved searches, companies you follow, the jobs you opened with ""Apply"", and any feedback and reports you sent.","Scarica un file (JSON) con tutto ciò che GigoMe conserva su di te: email e profilo, offerte salvate, ricerche salvate, aziende che segui, le offerte che hai aperto con ""Candidati"", e i feedback e le segnalazioni che hai inviato."
+/account,account.preparing,Preparing…,Preparazione…
+/account,account.download,Download my data,Scarica i miei dati
+/account,account.deleteTitle,Delete my account,Elimina il mio account
+/account,account.deleteReminder,"Before you go, remember that new opportunities are added regularly. Still want to leave? You can delete your account below.","Prima di andare, ricorda che vengono aggiunte regolarmente nuove opportunità. Vuoi comunque andartene? Puoi eliminare il tuo account qui sotto."
+/account,account.kept,"Good, your account stays as it is.","Bene, il tuo account resta com'è."
+/account,account.keep,Keep my account,Mantieni il mio account
+/account,account.delete,Delete my account,Elimina il mio account
+/account,account.deleteBody,"This deletes your account, your profile and any feedback you sent.","Verranno eliminati il tuo account, il tuo profilo e i feedback che hai inviato."
+/account,account.deleteBodyCompany,"Your company, its jobs and how to apply for them are deleted too.","Verranno eliminate anche la tua azienda, le sue offerte e le indicazioni per candidarsi."
+/account,account.deleteUndone,It can't be undone.,L'operazione non si può annullare.
+/account,account.deleteClicks,"GigoMe counts apply clicks on each job (how often students pressed ""Apply""). Yours stay in those counts, but are no longer linked to you.","Per ogni offerta, GigoMe conta i clic su ""Candidati"" (quante volte gli studenti hanno premuto il pulsante). I tuoi restano in quei conteggi, ma non sono più collegati a te."
+/account,account.typeToConfirm,Type {word} to confirm,Scrivi {word} per confermare
+/account,account.deletingBtn,Deleting…,Eliminazione…
+/account,account.deleteError,We couldn't delete your account. Check your connection and try again.,Non riusciamo a eliminare il tuo account. Controlla la connessione e riprova.
+After signing up (confirmation),signup.loggedInAs,You're logged in as {email}.,Hai effettuato l'accesso come {email}.
+After signing up (confirmation),signup.nextTime,"Next time, enter this email on {page} and we'll send you a new 6-digit code. There's no password.","La prossima volta, inserisci questa email {page} e ti invieremo un nuovo codice di 6 cifre. Non serve nessuna password."
+After signing up (confirmation),signup.pageLogin,the login page,nella pagina di accesso
+After signing up (confirmation),signup.pageEmployers,the For employers page,nella pagina Per le aziende
+After signing up (confirmation),signup.accountLink,Edit or delete your account,Modifica o elimina il tuo account
+After signing up (confirmation),signup.allSet,"You're all set, {name}.","È tutto pronto, {name}."
+After signing up (confirmation),signup.ready,Your GigoMe account is ready.,Il tuo account GigoMe è pronto.
+After signing up (confirmation),signup.backToJob,Back to the job,Torna all'offerta
+After signing up (confirmation),signup.continue,Continue,Continua
+After signing up (confirmation),signup.browseJobs,Browse jobs,Sfoglia le offerte
+After signing up (confirmation),signup.seeMap,See jobs on the map,Vedi le offerte sulla mappa
+After signing up (confirmation),signup.companyTitle,Your company is submitted,La tua azienda è stata inviata
+After signing up (confirmation),signup.companyLead,"{name} is now in review. GigoMe checks every company by hand before its jobs can go live. We'll review your company, usually within 2 working days.","{name} è ora in revisione. GigoMe controlla a mano ogni azienda prima che le sue offerte possano andare online. Controlleremo la tua azienda, di solito entro 2 giorni lavorativi."
+After signing up (confirmation),signup.nextTitle,What happens next,Cosa succede ora
+After signing up (confirmation),signup.step1,You can already write your jobs. They stay drafts that only you can see.,Puoi già scrivere le tue offerte. Restano bozze visibili solo a te.
+After signing up (confirmation),signup.step2,"Once your company is approved, submit each job. Students see a job only after it has been reviewed too.","Quando la tua azienda sarà approvata, invia ogni offerta. Gli studenti vedono un'offerta solo dopo che è stata controllata anche quella."
+After signing up (confirmation),signup.step3,"Your dashboard shows your company's status. We don't send an email when it changes, so check there.","La dashboard mostra lo stato della tua azienda. Non inviamo email quando cambia, quindi controlla lì."
+After signing up (confirmation),signup.goDashboard,Go to your dashboard,Vai alla dashboard
+After signing up (confirmation),signup.writeDraft,Write a draft job,Scrivi una bozza di offerta
+Terms checkbox,termsBox.accept,I'm 18 or older and I accept the <link>Terms</link>,Ho almeno 18 anni e accetto i <link>Termini</link>
+Terms checkbox,termsBox.hint,How we use your data: <link>Privacy Notice</link>.,Come usiamo i tuoi dati: <link>Informativa sulla privacy</link>.
+Terms checkbox,termsBox.required,Tick this box to continue.,Spunta questa casella per continuare.
+Log out,logout.button,Log out,Esci
+Log out,logout.title,Log out?,Vuoi uscire?
+Log out,logout.text,You'll need a new code from your email to log back in.,Per accedere di nuovo ti servirà un nuovo codice via email.
+Log out,logout.busy,Logging out…,Uscita in corso…
+/login and the employer login,auth.captcha,We couldn't confirm you're not a bot. Please try again.,Non riusciamo a confermare che tu non sia un bot. Riprova.
+/login and the employer login,auth.overSendLimit,We're sending a lot of login emails right now. Please try again in a few minutes.,Stiamo inviando molte email di accesso in questo momento. Riprova tra qualche minuto.
+/login and the employer login,auth.paused,Logging in is paused right now. Please write to {email}.,L'accesso è sospeso in questo momento. Scrivi a {email}.
+/login and the employer login,auth.badEmail,That email address doesn't look right. Check it and try again.,Questo indirizzo email non sembra corretto. Controllalo e riprova.
+/login and the employer login,auth.waitMinute,Please wait a minute before asking for another code.,Aspetta un minuto prima di chiedere un altro codice.
+/login and the employer login,auth.sendFailed,We couldn't send your code. Check your connection and try again.,Non riusciamo a inviare il codice. Controlla la connessione e riprova.
+/login and the employer login,auth.tooMany,"Too many attempts. Please wait a few minutes, then try again or ask for a new code.","Troppi tentativi. Aspetta qualche minuto, poi riprova o chiedi un nuovo codice."
+/login and the employer login,auth.expired,This code has expired. Ask for a new one below.,Questo codice è scaduto. Chiedine uno nuovo qui sotto.
+/login and the employer login,auth.wrongCode,That code isn't right. Check the 6 digits in the latest email we sent you.,Il codice non è corretto. Controlla le 6 cifre nell'ultima email che ti abbiamo inviato.
+/login and the employer login,auth.verifyFailed,We couldn't check your code. Check your connection and try again.,Non riusciamo a verificare il codice. Controlla la connessione e riprova.
+/login and the employer login,auth.logOutFailed,We couldn't log you out. Check your connection and try again.,Non riusciamo a farti uscire. Controlla la connessione e riprova.
+/account,myData.aboutFile,"Everything GigoMe (gigome.org) holds about your account, as of the time below. Your login session on this device is kept by your browser and is not included.","Tutto ciò che GigoMe (gigome.org) conserva sul tuo account, alla data e ora indicate qui sotto. La sessione di accesso su questo dispositivo è conservata dal browser e non è inclusa."
+/employers,employers.title,Hire students in Milan who work in English,Assumi studenti a Milano che lavorano in inglese
+/employers,employers.lead,GigoMe is a job board for international students in Milan: paid part-time jobs and gigs they can do in English. We don't list internships or unpaid roles.,GigoMe è una bacheca di offerte di lavoro per studenti internazionali a Milano: lavori part-time e lavoretti retribuiti che si possono svolgere in inglese. Non pubblichiamo stage né ruoli non retribuiti.
+/employers,employers.freeTitle,Free to list jobs,Pubblicare offerte è gratis
+/employers,employers.freeText,"Listing jobs on GigoMe is free. Students apply directly with you, on your website or by email.","Pubblicare offerte su GigoMe è gratuito. Gli studenti si candidano direttamente con te, sul tuo sito o via email."
+/employers,employers.reviewTitle,How review works,Come funziona la revisione
+/employers,employers.step1,"Log in with your work email and tell us about your company. We review it, usually within 2 working days.","Accedi con la tua email di lavoro e raccontaci della tua azienda. La controlliamo, di solito entro 2 giorni lavorativi."
+/employers,employers.step2,Write your jobs. You can prepare drafts while we review your company.,Scrivi le tue offerte. Puoi preparare delle bozze mentre controlliamo la tua azienda.
+/employers,employers.step3,"Submit each job for review. A person reviews every job before it goes live: we check that the role is clearly described, pay and hours are stated, nothing is asked of students up front, and nothing in it looks discriminatory or unlawful.","Invia ogni offerta in revisione. Una persona esamina ogni offerta prima che vada online: controlliamo che il ruolo sia descritto chiaramente, che paga e orari siano indicati, che agli studenti non venga chiesto nulla in anticipo e che non ci sia nulla di discriminatorio o illecito."
+/employers,employers.questions,Questions? Write to {email}.,Domande? Scrivi a {email}.
+/employers,employers.studentTitle,You're logged in as a student,Hai effettuato l'accesso come studente
+/employers,employers.studentText,"{email} is a student account. Each email has one role on GigoMe, so to list jobs, log out and log in here with a different email, like your work email. Looking for work? <link>Browse jobs</link>.","{email} è un account studente. Su GigoMe ogni email ha un solo ruolo, quindi per pubblicare offerte esci e accedi qui con un'altra email, per esempio quella di lavoro. Cerchi lavoro? <link>Sfoglia le offerte</link>."
+/employers,employers.loggedInTitle,You're logged in,Hai effettuato l'accesso
+/employers,employers.loggedInAs,Logged in as {email}.,Accesso effettuato come {email}.
+/employers,employers.setUpCompany,Set up your company,Configura la tua azienda
+/employers,employers.goToDashboard,Go to your dashboard,Vai alla tua dashboard
+/employers/setup,setup.title,Tell us about your company,Raccontaci della tua azienda
+/employers/setup,setup.lead,We review every company before its jobs go live. This takes a minute.,Controlliamo ogni azienda prima che le sue offerte vadano online. Ci vuole un minuto.
+/employers/setup,setup.save,Save company,Salva l'azienda
+/employers/setup and /dashboard (company form),companyForm.nameLabel,Company name,Nome dell'azienda
+/employers/setup and /dashboard (company form),companyForm.websiteLabel,Website,Sito web
+/employers/setup and /dashboard (company form),companyForm.notAdded,Not added,Non aggiunto
+/employers/setup and /dashboard (company form),companyForm.changeThese,"To change these, write to {email}.","Per modificarli, scrivi a {email}."
+/employers/setup and /dashboard (company form),companyForm.optional,(optional),(facoltativo)
+/employers/setup and /dashboard (company form),companyForm.websitePlaceholder,www.yourcompany.it,www.tuaazienda.it
+/employers/setup and /dashboard (company form),companyForm.descriptionLabel,Short description,Breve descrizione
+/employers/setup and /dashboard (company form),companyForm.descriptionPlaceholder,"What you do, in a sentence or two. Students see this on your jobs.","Cosa fa la tua azienda, in una o due frasi. Gli studenti la vedono nelle tue offerte."
+/employers/setup and /dashboard (company form),companyForm.contactEmailLabel,Contact email,Email di contatto
+/employers/setup and /dashboard (company form),companyForm.contactEmailHint,Only the GigoMe team sees this. Students apply the way you set on each job.,La vede solo il team di GigoMe. Gli studenti si candidano nel modo che imposti per ogni offerta.
+/employers/setup and /dashboard (company form),companyForm.nameMissing,Add your company name.,Aggiungi il nome della tua azienda.
+/employers/setup and /dashboard (company form),companyForm.nameTooLong,Keep the name under 120 characters.,Il nome deve avere meno di 120 caratteri.
+/employers/setup and /dashboard (company form),companyForm.websiteInvalid,"Enter a web address like www.yourcompany.it, or leave it empty.","Inserisci un indirizzo web come www.tuaazienda.it, oppure lascia il campo vuoto."
+/employers/setup and /dashboard (company form),companyForm.descriptionTooLong,Keep it under {max} characters.,Deve avere meno di {max} caratteri.
+/employers/setup and /dashboard (company form),companyForm.emailMissing,Add an email address we can reach you at.,Aggiungi un indirizzo email a cui possiamo contattarti.
+/employers/setup and /dashboard (company form),companyForm.emailInvalid,That email address doesn't look right.,Questo indirizzo email non sembra corretto.
+/employers/setup and /dashboard (company form),companyForm.saveError,We couldn't save your company. Check your connection and try again.,Non siamo riusciti a salvare la tua azienda. Controlla la connessione e riprova.
+/employers/setup and /dashboard (company form),companyForm.saving,Saving…,Salvataggio…
+/dashboard,dashboard.yourCompany,Your company,La tua azienda
+/dashboard,dashboard.name,Name,Nome
+/dashboard,dashboard.website,Website,Sito web
+/dashboard,dashboard.websiteNone,Not added,Non aggiunto
+/dashboard,dashboard.changeThese,"To change these, write to {email}.","Per modificarli, scrivi a {email}."
+/dashboard,dashboard.description,Description,Descrizione
+/dashboard,dashboard.descriptionNone,Not added,Non aggiunta
+/dashboard,dashboard.contactEmail,Contact email,Email di contatto
+/dashboard,dashboard.saved,Your company details are saved.,I dati della tua azienda sono stati salvati.
+/dashboard,dashboard.editLocked,Edit description and contact email,Modifica descrizione ed email di contatto
+/dashboard,dashboard.editCompany,Edit company details,Modifica i dati dell'azienda
+/dashboard,dashboard.saveChanges,Save changes,Salva le modifiche
+/dashboard,dashboard.followers,Followers,Follower
+/dashboard,dashboard.followersError,Couldn't load,Impossibile caricare
+/dashboard,dashboard.followersCount_one,{count} student follows your company,{count} studente segue la tua azienda
+/dashboard,dashboard.followersCount_other,{count} students follow your company,{count} studenti seguono la tua azienda
+/dashboard,dashboard.followersHint,"Students see your new jobs on their Saved jobs page. You see how many, never who.","Gli studenti vedono le tue nuove offerte nella loro pagina Offerte salvate. Tu vedi quanti sono, mai chi."
+/dashboard,dashboard.yourJobs,Your jobs,Le tue offerte
+/dashboard,dashboard.newJob,New job,Nuova offerta
+/dashboard,dashboard.pendingNote,You can prepare drafts now and submit them once your company is approved.,Puoi preparare delle bozze già ora e inviarle quando la tua azienda sarà approvata.
+/dashboard,dashboard.notApprovedNote,Jobs can only be submitted by approved companies.,Solo le aziende approvate possono inviare offerte.
+/dashboard,dashboard.loadingJobs,Loading your jobs…,Caricamento delle tue offerte…
+/dashboard,dashboard.loadError,We couldn't load your jobs. Check your connection and reload the page.,Non siamo riusciti a caricare le tue offerte. Controlla la connessione e ricarica la pagina.
+/dashboard,dashboard.empty,"No jobs yet. Press ""New job"" to write your first one.","Ancora nessuna offerta. Premi ""Nuova offerta"" per scrivere la prima."
+/dashboard,dashboard.extended,"""{title}"" is now shown until {date}.","""{title}"" ora è visibile fino al {date}."
+/dashboard,dashboard.extendError,We couldn't extend the job. Try again.,Non siamo riusciti a prorogare l'offerta. Riprova.
+/dashboard,dashboard.confirmClose,"Close ""{title}""? Students will no longer see it. You can edit it and submit it again later.","Chiudere ""{title}""? Gli studenti non la vedranno più. Potrai modificarla e inviarla di nuovo più avanti."
+/dashboard,dashboard.confirmDelete,"Delete the draft ""{title}""? This can't be undone.","Eliminare la bozza ""{title}""? Non si può annullare."
+/dashboard,dashboard.closeError,We couldn't close the job. Try again.,Non siamo riusciti a chiudere l'offerta. Riprova.
+/dashboard,dashboard.deleteError,We couldn't delete the draft. Try again.,Non siamo riusciti a eliminare la bozza. Riprova.
+/dashboard,dashboard.chooseType,Choose a type,Scegli un tipo
+/dashboard,dashboard.until,until {date},fino al {date}
+/dashboard,dashboard.canStillExtend,"You can still extend it until {date}, without a new review.","Puoi ancora prorogarla fino al {date}, senza una nuova revisione."
+/dashboard,dashboard.expiredLongAgo,"It expired more than {days} days ago, so it can't be extended any more. To show it again, edit it (choose a new ""Show until"" date) and submit it for review.","È scaduta più di {days} giorni fa, quindi non può più essere prorogata. Per mostrarla di nuovo, modificala (scegli una nuova data in ""Mostra fino al"") e inviala in revisione."
+/dashboard,dashboard.applyClicks_one,apply click,"clic su ""Candidati"""
+/dashboard,dashboard.applyClicks_other,apply clicks,"clic su ""Candidati"""
+/dashboard,dashboard.reviewNote,Note from the reviewer,Nota della revisione
+/dashboard,dashboard.edit,Edit,Modifica
+/dashboard,dashboard.editAria,Edit {title},Modifica {title}
+/dashboard,dashboard.extend,Extend by 60 days,Proroga di 60 giorni
+/dashboard,dashboard.extendAria,Extend {title} by 60 days,Proroga {title} di 60 giorni
+/dashboard,dashboard.extendTitle,"Shown until 60 days from today, no new review","Visibile per 60 giorni da oggi, senza nuova revisione"
+/dashboard,dashboard.close,Close,Chiudi
+/dashboard,dashboard.closeAria,Close {title},Chiudi {title}
+/dashboard,dashboard.delete,Delete,Elimina
+/dashboard,dashboard.deleteAria,Delete {title},Elimina {title}
+/dashboard,employerGate.loadError,We couldn't load your company. Check your connection and reload the page.,Non siamo riusciti a caricare la tua azienda. Controlla la connessione e ricarica la pagina.
+/dashboard,employerGate.studentTitle,This page is for employers,Questa pagina è per le aziende
+/dashboard,employerGate.studentText,"You're logged in with a student account, and each email has one role on GigoMe. To list jobs for a company, log out and log in on the <link>employers page</link> with a different email, like your work email. Questions? Write to {email}.","Hai effettuato l'accesso con un account studente, e su GigoMe ogni email ha un solo ruolo. Per pubblicare offerte per un'azienda, esci e accedi dalla <link>pagina per le aziende</link> con un'altra email, per esempio quella di lavoro. Domande? Scrivi a {email}."
+/dashboard,employer.companyStatus.pending.label,In review,In revisione
+/dashboard,employer.companyStatus.pending.text,"We'll review your company, usually within 2 working days. Meanwhile you can prepare jobs as drafts.","Controlleremo la tua azienda, di solito entro 2 giorni lavorativi. Nel frattempo puoi preparare le offerte come bozze."
+/dashboard,employer.companyStatus.approved.label,Approved,Approvata
+/dashboard,employer.companyStatus.approved.text,You can submit jobs. Each job is reviewed before students see it.,Puoi inviare offerte. Ogni offerta viene controllata prima che gli studenti la vedano.
+/dashboard,employer.companyStatus.rejected.label,Not approved,Non approvata
+/dashboard,employer.companyStatus.rejected.text,"We couldn't approve your company. If you think this is a mistake, write to {email}.","Non abbiamo potuto approvare la tua azienda. Se pensi che sia un errore, scrivi a {email}."
+/dashboard,employer.jobStatus.draft.label,Draft,Bozza
+/dashboard,employer.jobStatus.draft.text,Only you can see it. Submit it for review when it is ready.,Solo tu puoi vederla. Inviala in revisione quando è pronta.
+/dashboard,employer.jobStatus.pending.label,In review,In revisione
+/dashboard,employer.jobStatus.pending.text,"We're checking it, usually within 2 working days.","La stiamo controllando, di solito entro 2 giorni lavorativi."
+/dashboard,employer.jobStatus.published.label,Live,Pubblicata
+/dashboard,employer.jobStatus.published.text,Students can see it and apply.,Gli studenti possono vederla e candidarsi.
+/dashboard,employer.jobStatus.expired.label,Expired,Scaduta
+/dashboard,employer.jobStatus.expired.text,"Its end date has passed, so students no longer see it.","La data di fine è passata, quindi gli studenti non la vedono più."
+/dashboard,employer.jobStatus.changes_requested.label,Changes requested,Modifiche richieste
+/dashboard,employer.jobStatus.changes_requested.text,"Edit it as the reviewer asked, then submit it again.","Modificala come richiesto nella revisione, poi inviala di nuovo."
+/dashboard,employer.jobStatus.rejected.label,Rejected,Rifiutata
+/dashboard,employer.jobStatus.rejected.text,It can't be published or resubmitted.,Non può essere pubblicata né inviata di nuovo.
+/dashboard,employer.jobStatus.closed.label,Closed,Chiusa
+/dashboard,employer.jobStatus.closed.text,Students no longer see it.,Gli studenti non la vedono più.
+/dashboard,employer.expiresToday,Expires today,Scade oggi
+/dashboard,employer.expiresTomorrow,Expires tomorrow,Scade domani
+/dashboard,employer.expiresIn_one,Expires in {count} day,Scade tra {count} giorno
+/dashboard,employer.expiresIn_other,Expires in {count} days,Scade tra {count} giorni
+/dashboard/jobs (job form),editor.loadingJob,Loading the job…,Caricamento dell'offerta…
+/dashboard/jobs (job form),editor.loadError,We couldn't load this job. Check your connection and reload the page.,Non siamo riusciti a caricare questa offerta. Controlla la connessione e ricarica la pagina.
+/dashboard/jobs (job form),editor.notFoundTitle,Job not found,Offerta non trovata
+/dashboard/jobs (job form),editor.notFoundText,"It may have been deleted, or it belongs to another company.","Potrebbe essere stata eliminata, oppure appartiene a un'altra azienda."
+/dashboard/jobs (job form),editor.rejectedText,"This job was rejected, so it can't be edited or submitted again.","Questa offerta è stata rifiutata, quindi non si può modificare né inviare di nuovo."
+/dashboard/jobs (job form),editor.reviewerNote,Note from the reviewer: {note},Nota della revisione: {note}
+/dashboard/jobs (job form),editor.back,Dashboard,Dashboard
+/dashboard/jobs (job form),editor.newTitle,New job,Nuova offerta
+/dashboard/jobs (job form),editor.editTitle,Edit job,Modifica offerta
+/dashboard/jobs (job form),editor.status,Status: {label}. {text},Stato: {label}. {text}
+/dashboard/jobs (job form),editor.reviewerNoteLabel,Note from the reviewer,Nota della revisione
+/dashboard/jobs (job form),editor.liveWarning,"This job is live. Saving changes sends it back to review, and students won't see it until it's approved again.","Questa offerta è online. Se salvi le modifiche torna in revisione, e gli studenti non la vedranno finché non sarà approvata di nuovo."
+/dashboard/jobs (job form),editor.groupJob,The job,L'offerta
+/dashboard/jobs (job form),editor.title,Job title,Titolo dell'offerta
+/dashboard/jobs (job form),editor.titlePlaceholder,e.g. Weekend barista,es. Barista nel weekend
+/dashboard/jobs (job form),editor.jobType,Type of job,Tipo di lavoro
+/dashboard/jobs (job form),editor.choose,Choose…,Scegli…
+/dashboard/jobs (job form),editor.category,Category,Categoria
+/dashboard/jobs (job form),editor.description,Description,Descrizione
+/dashboard/jobs (job form),editor.optional,(optional),(opzionale)
+/dashboard/jobs (job form),editor.descriptionHint,"Students read it more easily in three short parts: <b>What you'll do</b>, <b>Who we're looking for</b> and <b>Practical details</b> (where, when, what to bring). Write each heading on its own line ending with "":"", and start a line with ""- "" for a list.","Gli studenti la leggono più facilmente in tre brevi parti: <b>Cosa farai</b>, <b>Chi cerchiamo</b> e <b>Dettagli pratici</b> (dove, quando, cosa portare). Scrivi ogni titolo su una riga a sé che finisce con "":"", e inizia una riga con ""- "" per fare un elenco."
+/dashboard/jobs (job form),editor.descriptionPlaceholder,"What you'll do:
+- …
+- …
+
+Who we're looking for:
+- …
+
+Practical details:
+- Where and when: …
+- What to bring: …","Cosa farai:
+- …
+- …
+
+Chi cerchiamo:
+- …
+
+Dettagli pratici:
+- Dove e quando: …
+- Cosa portare: …"
+/dashboard/jobs (job form),editor.italian,Italian needed,Italiano richiesto
+/dashboard/jobs (job form),editor.languages,Languages used at work,Lingue usate al lavoro
+/dashboard/jobs (job form),editor.groupWhere,Where and when,Dove e quando
+/dashboard/jobs (job form),editor.location,Location,Luogo
+/dashboard/jobs (job form),editor.locationPlaceholder,"e.g. Porta Venezia, Milan","es. Porta Venezia, Milano"
+/dashboard/jobs (job form),editor.remote,Can be done remotely,Si può fare da remoto
+/dashboard/jobs (job form),editor.area,Area,Zona
+/dashboard/jobs (job form),editor.areaOptionalRemote,(optional for remote jobs),(opzionale per i lavori da remoto)
+/dashboard/jobs (job form),editor.onlyArea,"Only show the area, not the exact spot (e.g. jobs at a private home)","Mostra solo la zona, non il punto esatto (es. lavori in una casa privata)"
+/dashboard/jobs (job form),editor.onlyAreaHint,"Students see only the area. We store its centre, never the address.","Gli studenti vedono solo la zona. Salviamo il suo centro, mai l'indirizzo."
+/dashboard/jobs (job form),editor.exactSpot,Exact spot,Punto esatto
+/dashboard/jobs (job form),editor.exactSpotOptional,"(optional, shown on the map)","(opzionale, mostrato sulla mappa)"
+/dashboard/jobs (job form),editor.pinHint,"Tap the map to place the pin, then drag it to adjust.","Tocca la mappa per mettere il segnaposto, poi trascinalo per sistemarlo."
+/dashboard/jobs (job form),editor.findAddress,Find address,Trova indirizzo
+/dashboard/jobs (job form),editor.searching,Searching…,Ricerca…
+/dashboard/jobs (job form),editor.removePin,Remove pin,Togli segnaposto
+/dashboard/jobs (job form),editor.findHint,"""Find address"" looks up the location written above, once per press.","""Trova indirizzo"" cerca il luogo scritto sopra, una volta per ogni clic."
+/dashboard/jobs (job form),editor.geoFound,Found it. Check the pin and drag it if needed.,Trovato. Controlla il segnaposto e trascinalo se serve.
+/dashboard/jobs (job form),editor.geoNotFound,We couldn't find that address in Milan. Place the pin on the map instead.,Non abbiamo trovato quell'indirizzo a Milano. Metti invece il segnaposto sulla mappa.
+/dashboard/jobs (job form),editor.geoError,The address search isn't working right now. Place the pin on the map instead.,La ricerca degli indirizzi al momento non funziona. Metti invece il segnaposto sulla mappa.
+/dashboard/jobs (job form),editor.loadingMap,Loading the map…,Caricamento della mappa…
+/dashboard/jobs (job form),editor.osmCredit,"Address search by Nominatim, © OpenStreetMap contributors","Ricerca indirizzi con Nominatim, © contributori di OpenStreetMap"
+/dashboard/jobs (job form),editor.when,When,Quando
+/dashboard/jobs (job form),editor.whenRequired,"(at least one, to submit)","(almeno uno, per inviarla)"
+/dashboard/jobs (job form),editor.hours,Hours per week,Ore settimanali
+/dashboard/jobs (job form),editor.hoursWarning,Students with a non-EU study permit can usually work up to {hours} hours a week.,Chi studia con un permesso di soggiorno per studio extra UE di solito può lavorare fino a {hours} ore a settimana.
+/dashboard/jobs (job form),editor.hoursHint,From 1 to 40.,Da 1 a 40.
+/dashboard/jobs (job form),editor.pay,Pay,Paga
+/dashboard/jobs (job form),editor.payRequired,(required to submit),(obbligatoria per inviarla)
+/dashboard/jobs (job form),editor.payUnit,How it's paid,Tipo di paga
+/dashboard/jobs (job form),editor.perHour,€ an hour,€ l'ora
+/dashboard/jobs (job form),editor.perMonth,€ a month,€ al mese
+/dashboard/jobs (job form),editor.perProject,€ for the project,€ per il progetto
+/dashboard/jobs (job form),editor.payMinPlaceholder,e.g. 11,es. 11
+/dashboard/jobs (job form),editor.payMax,Up to €,Fino a €
+/dashboard/jobs (job form),editor.payMaxOptional,"(optional, for a range)","(opzionale, per una fascia)"
+/dashboard/jobs (job form),editor.payMaxPlaceholder,e.g. 13,es. 13
+/dashboard/jobs (job form),editor.hourlyNeedData,Add the amount and the hours per week to see the hourly equivalent.,Aggiungi l'importo e le ore settimanali per vedere l'equivalente orario.
+/dashboard/jobs (job form),editor.hourlyEquivalent,"≈ €{range} an hour at {hours} h/week. The ""Minimum pay"" filter and ""Highest pay"" use €{min}/h.","≈ €{range} l'ora con {hours} h/settimana. Il filtro ""Paga minima"" e l'ordine ""Paga più alta"" usano €{min}/h."
+/dashboard/jobs (job form),editor.payNote,Pay note,Nota sulla paga
+/dashboard/jobs (job form),editor.payNotePlaceholder,"e.g. + tips, meals included","es. + mance, pasti inclusi"
+/dashboard/jobs (job form),editor.startDate,Start date,Data di inizio
+/dashboard/jobs (job form),editor.showUntil,Show until,Mostra fino al
+/dashboard/jobs (job form),editor.endHint,Up to 60 days from today. Empty: 60 days. You can extend it from the dashboard.,Fino a 60 giorni da oggi. Se vuoto: 60 giorni. Puoi prolungarla dalla dashboard.
+/dashboard/jobs (job form),editor.groupApply,How students apply,Come si candidano gli studenti
+/dashboard/jobs (job form),editor.applyHint,"A link, an email address, or both. Students are sent there when they log in and press ""Apply"".","Un link, un indirizzo email o entrambi. Gli studenti ci arrivano quando accedono e premono ""Candidati""."
+/dashboard/jobs (job form),editor.applyUrl,Application link,Link per candidarsi
+/dashboard/jobs (job form),editor.applyUrlPlaceholder,www.yourcompany.it/jobs,www.tuaazienda.it/lavora-con-noi
+/dashboard/jobs (job form),editor.applyEmail,Application email,Email per candidarsi
+/dashboard/jobs (job form),editor.applyEmailPlaceholder,jobs@yourcompany.it,lavoro@tuaazienda.it
+/dashboard/jobs (job form),editor.pendingCompany,"You can submit jobs for review once your company is approved. For now, save it as a draft.",Potrai inviare offerte per la revisione quando la tua azienda sarà approvata. Per ora salvala come bozza.
+/dashboard/jobs (job form),editor.notApproved,Only approved companies can submit jobs.,Solo le aziende approvate possono inviare offerte.
+/dashboard/jobs (job form),editor.submit,Submit for review,Invia per la revisione
+/dashboard/jobs (job form),editor.saveAndSubmit,Save and submit for review,Salva e invia per la revisione
+/dashboard/jobs (job form),editor.submitting,Submitting…,Invio…
+/dashboard/jobs (job form),editor.saveDraft,Save as draft,Salva come bozza
+/dashboard/jobs (job form),editor.saveDraftLive,Save as draft (takes it offline),Salva come bozza (la toglie dal sito)
+/dashboard/jobs (job form),editor.saving,Saving…,Salvataggio…
+/dashboard/jobs (job form),editor.preview,Preview,Anteprima
+/dashboard/jobs (job form),editor.errTitle,Add a job title.,Aggiungi un titolo.
+/dashboard/jobs (job form),editor.errTitleLong,Keep the title under 120 characters.,Il titolo deve restare sotto i 120 caratteri.
+/dashboard/jobs (job form),editor.errJobType,Choose the type of job.,Scegli il tipo di lavoro.
+/dashboard/jobs (job form),editor.errCategory,Choose the category.,Scegli la categoria.
+/dashboard/jobs (job form),editor.errDescription,"Keep the description under 10,000 characters.",La descrizione deve restare sotto i 10.000 caratteri.
+/dashboard/jobs (job form),editor.errLocation,Keep the location under 200 characters.,Il luogo deve restare sotto i 200 caratteri.
+/dashboard/jobs (job form),editor.errHours,Add the hours per week.,Aggiungi le ore settimanali.
+/dashboard/jobs (job form),editor.errHoursRange,Hours per week must be a whole number from 1 to 40.,Le ore settimanali devono essere un numero intero da 1 a 40.
+/dashboard/jobs (job form),editor.errPayNote,Keep the pay note under 200 characters.,La nota sulla paga deve restare sotto i 200 caratteri.
+/dashboard/jobs (job form),editor.errPayUnit,Choose how the job is paid.,Scegli come viene pagato il lavoro.
+/dashboard/jobs (job form),editor.errPayMin,Add the amount in euros.,Aggiungi l'importo in euro.
+/dashboard/jobs (job form),editor.errPayMinFormat,"Enter an amount in euros, like 11 or 11.50.","Inserisci un importo in euro, come 11 o 11,50."
+/dashboard/jobs (job form),editor.errPayMaxFormat,"Enter an amount in euros, like 13 or 13.50.","Inserisci un importo in euro, come 13 o 13,50."
+/dashboard/jobs (job form),editor.errPayMaxLow,The maximum can't be less than the minimum.,Il massimo non può essere inferiore al minimo.
+/dashboard/jobs (job form),editor.errEndPast,Choose today or a later date.,Scegli oggi o una data successiva.
+/dashboard/jobs (job form),editor.errEndFar,Choose a date at most 60 days from today.,Scegli una data entro 60 giorni da oggi.
+/dashboard/jobs (job form),editor.errArea,"Choose the area (or ""Elsewhere in Milan"").","Scegli la zona (o ""Elsewhere in Milan"")."
+/dashboard/jobs (job form),editor.errSchedule,Choose when the job happens (at least one).,Scegli quando si lavora (almeno un'opzione).
+/dashboard/jobs (job form),editor.errApplyUrl,Enter a web address like www.yourcompany.it/jobs.,Inserisci un indirizzo web come www.tuaazienda.it/lavora-con-noi.
+/dashboard/jobs (job form),editor.errApplyEmail,That email address doesn't look right.,Questo indirizzo email non sembra corretto.
+/dashboard/jobs (job form),editor.errApply,Add a link or an email address (or both) so students can apply.,"Aggiungi un link o un indirizzo email (o entrambi), così gli studenti possono candidarsi."
+/dashboard/jobs (job form),editor.checkFields,Check the fields marked above.,Controlla i campi segnati sopra.
+/dashboard/jobs (job form),editor.flashSubmitted,"""{title}"" is submitted for review.","L'offerta ""{title}"" è stata inviata per la revisione."
+/dashboard/jobs (job form),editor.flashDraft,"""{title}"" is saved as a draft.","L'offerta ""{title}"" è stata salvata come bozza."
+/dashboard/jobs (job form),editor.err60Days,"A job can be shown for at most 60 days from today. Choose an earlier ""Show until"" date.","Un'offerta può restare visibile al massimo 60 giorni da oggi. Scegli una data ""Mostra fino al"" precedente."
+/dashboard/jobs (job form),editor.errNotApproved,Jobs can be submitted once your company is approved. Save it as a draft for now.,Potrai inviare offerte quando la tua azienda sarà approvata. Per ora salvala come bozza.
+/dashboard/jobs (job form),editor.errContact,"The job is saved, but we couldn't save how to apply. Try again.","L'offerta è salvata, ma non siamo riusciti a salvare come candidarsi. Riprova."
+/dashboard/jobs (job form),editor.errSave,We couldn't save the job. Check your connection and try again.,Non siamo riusciti a salvare l'offerta. Controlla la connessione e riprova.
+/dashboard/jobs (job form),editor.previewBanner,"<b>Preview.</b> This is how students will see the job once it's published. Nothing is saved yet. Students press ""Apply"" to open your application page or email.","<b>Anteprima.</b> Così gli studenti vedranno l'offerta una volta pubblicata. Non è ancora salvato nulla. Gli studenti premono ""Candidati"" per aprire la tua pagina di candidatura o la tua email."
+/dashboard/jobs (job form),editor.backToEditing,Back to editing,Torna alla modifica
+/dashboard/jobs (job form),editor.apply,Apply,Candidati
+/dashboard/jobs (job form),editor.applyNote,Applications go straight to the employer.,Le candidature arrivano direttamente all'azienda.
+/dashboard/jobs (job form),picker.mapLabel,"Map: tap to place the pin, drag it to adjust","Mappa: tocca per mettere il segnaposto, trascinalo per sistemarlo"
+/dashboard/jobs (job form),picker.error,The map can't be shown right now. You can still save the job with its area.,Al momento la mappa non si può mostrare. Puoi comunque salvare l'offerta con la sua zona.
+/admin (moderation),admin.check.company,"Login email, website and description match","Email di accesso, sito web e descrizione corrispondono"
+/admin (moderation),admin.check.role,Role clearly described,Ruolo descritto chiaramente
+/admin (moderation),admin.check.payHours,Pay and hours stated,Paga e orari indicati
+/admin (moderation),admin.check.upFront,"Nothing asked of students up front (fees, deposits, documents)","Nulla chiesto in anticipo agli studenti (quote, cauzioni, documenti)"
+/admin (moderation),admin.check.lawful,Nothing discriminatory or unlawful,Niente di discriminatorio o illecito
+/admin (moderation),admin.check.companyItem,Company: {check},Azienda: {check}
+/admin (moderation),admin.log.company_approved,Company approved,Azienda approvata
+/admin (moderation),admin.log.company_rejected,Company rejected,Azienda rifiutata
+/admin (moderation),admin.log.company_pending,Company set back to review,Azienda rimessa in revisione
+/admin (moderation),admin.log.job_published,Job published,Offerta pubblicata
+/admin (moderation),admin.log.job_changes_requested,Changes requested,Modifiche richieste
+/admin (moderation),admin.log.job_rejected,Job rejected,Offerta rifiutata
+/admin (moderation),admin.log.job_closed,Job unpublished,Offerta ritirata
+/admin (moderation),admin.log.job_draft,Job set to draft,Offerta riportata in bozza
+/admin (moderation),admin.log.job_pending,Job set back to review,Offerta rimessa in revisione
+/admin (moderation),admin.log.report_resolved,Report resolved,Segnalazione risolta
+/admin (moderation),admin.missing.area,no area,senza zona
+/admin (moderation),admin.missing.schedule,no schedule,senza orari
+/admin (moderation),admin.missing.pay,no structured pay,senza paga strutturata
+/admin (moderation),admin.verification.university_email,University email,Email universitaria
+/admin (moderation),admin.verification.self_declared,Told us (any email),Dichiarato (qualsiasi email)
+/admin (moderation),admin.loadingQueue,Loading the moderation queue…,Caricamento della coda di moderazione…
+/admin (moderation),admin.queueError,We couldn't load the moderation queue. Reload the page.,Non siamo riusciti a caricare la coda di moderazione. Ricarica la pagina.
+/admin (moderation),admin.title,Moderation,Moderazione
+/admin (moderation),admin.stats.title,Numbers,Numeri
+/admin (moderation),admin.stats.students,Students registered,Studenti registrati
+/admin (moderation),admin.stats.companies_approved,Companies approved,Aziende approvate
+/admin (moderation),admin.stats.companies_with_live_job,Companies with a live job,Aziende con un'offerta attiva
+/admin (moderation),admin.stats.live_jobs,Live jobs,Offerte attive
+/admin (moderation),admin.stats.apply_clicks_this_week,Apply clicks this week,"Clic su ""Candidati"" questa settimana"
+/admin (moderation),admin.stats.students_clicked_this_week,Students who clicked this week,Studenti che hanno cliccato questa settimana
+/admin (moderation),admin.stats.error,The numbers couldn't be loaded.,Non è stato possibile caricare i numeri.
+/admin (moderation),admin.stats.hint,"Live jobs: published, not expired, approved company. Weeks start on Monday (UTC).","Offerte attive: pubblicate, non scadute, di un'azienda approvata. Le settimane iniziano di lunedì (UTC)."
+/admin (moderation),admin.summary,"{companies}, {jobs} and {reports} waiting.","In attesa: {companies}, {jobs} e {reports}."
+/admin (moderation),admin.summary.companies_one,{count} company,{count} azienda
+/admin (moderation),admin.summary.companies_other,{count} companies,{count} aziende
+/admin (moderation),admin.summary.jobs_one,{count} job,{count} offerta
+/admin (moderation),admin.summary.jobs_other,{count} jobs,{count} offerte
+/admin (moderation),admin.summary.reports_one,{count} open report,{count} segnalazione aperta
+/admin (moderation),admin.summary.reports_other,{count} open reports,{count} segnalazioni aperte
+/admin (moderation),admin.summary.missing_one,"{count} live job is missing an area, a schedule or structured pay","{count} offerta attiva senza zona, orari o paga strutturata"
+/admin (moderation),admin.summary.missing_other,"{count} live jobs are missing an area, a schedule or structured pay","{count} offerte attive senza zona, orari o paga strutturata"
+/admin (moderation),admin.summary.feedback,Latest feedback,Feedback più recenti
+/admin (moderation),admin.companies.title,Companies waiting for review,Aziende in attesa di revisione
+/admin (moderation),admin.jobs.title,Jobs waiting for review,Offerte in attesa di revisione
+/admin (moderation),admin.reports.title,Open reports,Segnalazioni aperte
+/admin (moderation),admin.none,None.,Nessuna.
+/admin (moderation),admin.noneYet,None yet.,Ancora nessuno.
+/admin (moderation),admin.missing.title,"Live jobs missing an area, a schedule or structured pay","Offerte attive senza zona, orari o paga strutturata"
+/admin (moderation),admin.missing.text,"Published before these became required. Without an area a job isn't on the map or in area searches; without a schedule it doesn't match the ""When"" filter; without structured pay it doesn't match ""Minimum pay"". Ask the employer to add them (editing sends the job back for review).","Pubblicate prima che diventassero obbligatori. Senza zona un'offerta non compare sulla mappa né nelle ricerche per zona; senza orari non corrisponde al filtro ""Quando""; senza paga strutturata non corrisponde a ""Paga minima"". Chiedi all'azienda di aggiungerli (modificandola, l'offerta torna in revisione)."
+/admin (moderation),admin.missing.created,Created {date},Creata il {date}
+/admin (moderation),admin.openPage,open its page,apri la pagina
+/admin (moderation),admin.feedback.title,Feedback,Feedback
+/admin (moderation),admin.feedback.error,We couldn't load the feedback. Reload the page.,Non siamo riusciti a caricare i feedback. Ricarica la pagina.
+/admin (moderation),admin.feedback.lead,"The newest {count} messages, newest first. Senders aren't shown.","I {count} messaggi più recenti, dal più nuovo. I mittenti non sono mostrati."
+/admin (moderation),admin.feedback.on, · on {page}, · su {page}
+/admin (moderation),admin.log.title,Recent decisions,Decisioni recenti
+/admin (moderation),admin.log.anAdmin,An admin,Un admin
+/admin (moderation),admin.students.title,Students,Studenti
+/admin (moderation),admin.students.error,We couldn't load the students' numbers. Reload the page.,Non siamo riusciti a caricare i numeri degli studenti. Ricarica la pagina.
+/admin (moderation),admin.students.none,No students yet.,Ancora nessuno studente.
+/admin (moderation),admin.students.caption,Students by university and how they signed up,Studenti per università e modalità di iscrizione
+/admin (moderation),admin.students.university,University,Università
+/admin (moderation),admin.students.total,Total,Totale
+/admin (moderation),admin.students.notAnswered,Not answered yet,Non ha ancora risposto
+/admin (moderation),admin.students.other,Other,Altra
+/admin (moderation),admin.students.all,All students,Tutti gli studenti
+/admin (moderation),admin.students.hint,"University email: verified by an email of a listed university. Told us: signed up with another email and chose their university on /welcome, unchecked. Not answered yet: signed up, hasn't answered.","Email universitaria: verificato con l'email di un'università in elenco. Dichiarato: iscritto con un'altra email, ha scelto l'università su /welcome, senza verifica. Non ha ancora risposto: iscritto, non ha risposto."
+/admin (moderation),admin.students.othersTitle,"""Other"" universities","Università ""Altra"""
+/admin (moderation),admin.students.othersHint,"As typed (capitals and spaces ignored when counting). To add one, find its student email domain on the university's own site and add it in the Table Editor (SUPABASE.md, ""Universities"").","Come sono state scritte (maiuscole e spazi ignorati nel conteggio). Per aggiungerne una, trova il dominio email degli studenti sul sito dell'università e aggiungilo nel Table Editor (SUPABASE.md, ""Universities"")."
+/admin (moderation),admin.actionFailed,That didn't work. Try again.,Non ha funzionato. Riprova.
+/admin (moderation),admin.company.signedUp,Signed up {date},Iscritta il {date}
+/admin (moderation),admin.company.website,Website,Sito web
+/admin (moderation),admin.description,Description,Descrizione
+/admin (moderation),admin.noneGiven,None given,Non indicato
+/admin (moderation),admin.company.contactEmail,Contact email,Email di contatto
+/admin (moderation),admin.company.loginEmail,Logs in with,Accede con
+/admin (moderation),admin.company.checkTitle,Check before approving,Da controllare prima di approvare
+/admin (moderation),admin.approve,Approve,Approva
+/admin (moderation),admin.approving,Approving…,Approvazione…
+/admin (moderation),admin.reject,Reject,Rifiuta
+/admin (moderation),admin.rejecting,Rejecting…,Rifiuto in corso…
+/admin (moderation),admin.company.confirmReject,Reject {name}? Its jobs can't be submitted.,Rifiutare {name}? Le sue offerte non potranno essere inviate.
+/admin (moderation),admin.companyStatus.pending,pending,in revisione
+/admin (moderation),admin.companyStatus.approved,approved,approvata
+/admin (moderation),admin.companyStatus.rejected,rejected,rifiutata
+/admin (moderation),admin.job.meta,{company} (company {status}) · created {date},{company} (azienda {status}) · creata il {date}
+/admin (moderation),admin.job.unknownCompany,Unknown company,Azienda sconosciuta
+/admin (moderation),admin.job.unknownStatus,unknown,sconosciuto
+/admin (moderation),admin.job.type,Type,Tipo
+/admin (moderation),admin.job.hours,Hours,Ore
+/admin (moderation),admin.job.over20, (over 20), (oltre 20)
+/admin (moderation),admin.job.pay,Pay,Paga
+/admin (moderation),admin.job.notStructured,Not structured,Non strutturata
+/admin (moderation),admin.job.notStructuredNote,"Not structured: ""{note}""","Non strutturata: ""{note}"""
+/admin (moderation),admin.job.where,Where,Dove
+/admin (moderation),admin.job.area,Area,Zona
+/admin (moderation),admin.notSet,Not set,Non indicato
+/admin (moderation),admin.job.exactSpot,", exact spot on the map",", punto esatto sulla mappa"
+/admin (moderation),admin.job.noPin,", no pin",", senza segnaposto"
+/admin (moderation),admin.job.areaOnly,", area only (private)",", solo la zona (posizione privata)"
+/admin (moderation),admin.job.italian,Italian,Italiano
+/admin (moderation),admin.job.when,When,Quando
+/admin (moderation),admin.job.languages,Languages,Lingue
+/admin (moderation),admin.job.notStated,Not stated,Non indicate
+/admin (moderation),admin.job.dates,Dates,Date
+/admin (moderation),admin.job.datesStart,"Starts {start}, shown until {end}","Inizia il {start}, visibile fino al {end}"
+/admin (moderation),admin.job.datesNoStart,shown until {end},visibile fino al {end}
+/admin (moderation),admin.job.howToApply,How to apply,Come candidarsi
+/admin (moderation),admin.job.nothingSet,Nothing set,Niente di indicato
+/admin (moderation),admin.job.noDescription,None,Nessuna
+/admin (moderation),admin.job.noteFirst,Write a note for the employer first: it is required to request changes or reject.,Prima scrivi una nota per l'azienda: serve per richiedere modifiche o rifiutare.
+/admin (moderation),admin.job.confirmReject,"Reject ""{title}""? The employer can't resubmit it.","Rifiutare ""{title}""? L'azienda non potrà inviarla di nuovo."
+/admin (moderation),admin.job.earlierNote,"Earlier note: ""{note}""","Nota precedente: ""{note}"""
+/admin (moderation),admin.job.missingFlag_one,It can't be published without one. Request changes and ask the employer to add it.,Senza questo dato non si può pubblicare. Richiedi modifiche e chiedi all'azienda di aggiungerlo.
+/admin (moderation),admin.job.missingFlag_other,It can't be published without them. Request changes and ask the employer to add them.,Senza questi dati non si può pubblicare. Richiedi modifiche e chiedi all'azienda di aggiungerli.
+/admin (moderation),admin.job.checklist,Review checklist,Checklist di revisione
+/admin (moderation),admin.job.noteLabel,Note for the employer,Nota per l'azienda
+/admin (moderation),admin.job.noteHint,(required to request changes or reject),(obbligatoria per richiedere modifiche o rifiutare)
+/admin (moderation),admin.publish,Publish,Pubblica
+/admin (moderation),admin.publishing,Publishing…,Pubblicazione…
+/admin (moderation),admin.requestChanges,Request changes,Richiedi modifiche
+/admin (moderation),admin.sending,Sending…,Invio…
+/admin (moderation),admin.job.tickAll,Tick every item on the checklist to publish.,Spunta ogni voce della checklist per pubblicare.
+/admin (moderation),admin.report.reporter,{name} ({kind}),{name} ({kind})
+/admin (moderation),admin.report.noName,No name,Senza nome
+/admin (moderation),admin.report.companyAccount,company account,account aziendale
+/admin (moderation),admin.report.student,student,studente
+/admin (moderation),admin.report.deletedAccount,A deleted account,Un account eliminato
+/admin (moderation),admin.report.noteFirstUnpublish,Write a note first: it is required to unpublish the job.,Prima scrivi una nota: serve per ritirare l'offerta.
+/admin (moderation),admin.report.noteFirstResolve,Write a note first: it is required to resolve the report.,Prima scrivi una nota: serve per risolvere la segnalazione.
+/admin (moderation),admin.report.reported,Reported {date} by {reporter},Segnalata il {date} da {reporter}
+/admin (moderation),admin.report.theJob,The job ({status}),L'offerta ({status})
+/admin (moderation),admin.report.gone,The job no longer exists.,L'offerta non esiste più.
+/admin (moderation),admin.report.goneTitle,"The job no longer exists: ""{title}"".","L'offerta non esiste più: ""{title}""."
+/admin (moderation),admin.report.goneTitleCompany,"The job no longer exists: ""{title}"" at {company}.","L'offerta non esiste più: ""{title}"" di {company}."
+/admin (moderation),admin.report.noteLabel,Note,Nota
+/admin (moderation),admin.report.noteHint,(required; the employer sees it if you unpublish),(obbligatoria; l'azienda la vede se ritiri l'offerta)
+/admin (moderation),admin.report.confirmUnpublish,"Unpublish ""{title}""?","Ritirare ""{title}""?"
+/admin (moderation),admin.report.unpublish,Unpublish the job,Ritira l'offerta
+/admin (moderation),admin.report.unpublishing,Unpublishing…,Ritiro in corso…
+/admin (moderation),admin.report.confirmRejectCompany,"Reject {name}? All its jobs disappear from the site at once, and it can't submit new ones. Use this for scams and payment demands, not just for one bad job.","Rifiutare {name}? Tutte le sue offerte spariscono subito dal sito e non potrà inviarne di nuove. Usalo per truffe e richieste di denaro, non solo per un'offerta sbagliata."
+/admin (moderation),admin.report.rejectCompany,Reject the company,Rifiuta l'azienda
+/admin (moderation),admin.report.resolve,Resolve the report,Risolvi la segnalazione
+/admin (moderation),admin.report.resolving,Resolving…,Risoluzione…
+/admin (moderation),admin.report.hint,"Scam or payment demanded from students: reject the company, not just the job. Then resolve the report.","Truffa o denaro chiesto agli studenti: rifiuta l'azienda, non solo l'offerta. Poi risolvi la segnalazione."
+/saved,saved.studentsOnly,Saving jobs is for student accounts.,Salvare le offerte è per gli account studente.
+/saved,saved.lead,Only you can see this page. Nothing here is emailed.,Solo tu puoi vedere questa pagina. Niente di quello che c'è qui viene inviato per email.
+/saved,saved.loading,Loading your saved jobs…,Caricamento delle offerte salvate…
+/saved,saved.error,We couldn't load your saved jobs. Check your connection and reload the page.,Non siamo riusciti a caricare le tue offerte salvate. Controlla la connessione e ricarica la pagina.
+/saved,saved.empty,No saved jobs yet.,Ancora nessuna offerta salvata.
+/saved,saved.emptyHint,Press the bookmark on a job to keep it here.,Premi il segnalibro su un'offerta per tenerla qui.
+/saved,saved.browse,Browse jobs,Sfoglia le offerte
+/saved,saved.gone,No longer available,Non più disponibile
+/saved,saved.remove,Remove,Rimuovi
+/saved,saved.removeLabel,Remove {title} from saved jobs,Rimuovi {title} dalle offerte salvate
+/saved,saved.searches.title,Saved searches,Ricerche salvate
+/saved,saved.searches.error,We couldn't load your saved searches.,Non siamo riusciti a caricare le tue ricerche salvate.
+/saved,saved.searches.none,"None yet. On <link>Jobs</link>, choose some filters and press ""Save this search"".","Ancora nessuna. Su <link>Offerte</link>, scegli dei filtri e premi ""Salva questa ricerca""."
+/saved,saved.searches.countFailed,Couldn't count new jobs,Impossibile contare le nuove offerte
+/saved,saved.searches.new_one,{count} new since your last visit,{count} nuova dall'ultima visita
+/saved,saved.searches.new_other,{count} new since your last visit,{count} nuove dall'ultima visita
+/saved,saved.searches.nothingNew,Nothing new since your last visit,Niente di nuovo dall'ultima visita
+/saved,saved.searches.deleteLabel,Delete the saved search {name},Elimina la ricerca salvata {name}
+/saved,saved.searches.deleteFailed,We couldn't delete that search. Try again.,Non siamo riusciti a eliminare la ricerca. Riprova.
+/saved,saved.searches.delete,Delete,Elimina
+/saved,saved.following.title,New from companies you follow,Novità dalle aziende che segui
+/saved,saved.following.error,We couldn't load the companies you follow.,Non siamo riusciti a caricare le aziende che segui.
+/saved,saved.following.none,"You don't follow any companies yet. Press ""Follow"" on a company's page.","Non segui ancora nessuna azienda. Premi ""Segui"" sulla pagina di un'azienda."
+/saved,saved.following.noNew,No new jobs from them in the last {days} days.,Nessuna nuova offerta da loro negli ultimi {days} giorni.
+/saved,saved.following.companies,Companies you follow,Aziende che segui
+/saved,saved.following.unfollowLabel,Unfollow {name},Smetti di seguire {name}
+/saved,saved.following.unfollowFailed,We couldn't unfollow. Try again.,Non siamo riusciti a smettere di seguirla. Riprova.
+/saved,saved.following.unfollow,Unfollow,Non seguire più
+/saved,saved.opened.title,Jobs you opened,Offerte che hai aperto
+/saved,saved.opened.note,"Jobs where you pressed ""Apply"". GigoMe only sees that you opened the application, not what happened next.","Offerte in cui hai premuto ""Candidati"". GigoMe vede solo che hai aperto la candidatura, non cosa è successo dopo."
+/saved,saved.opened.error,We couldn't load this list.,Non siamo riusciti a caricare questo elenco.
+/saved,saved.opened.none,None yet.,Ancora nessuna.
+/saved,student.summary.or,or,o
+/saved,student.summary.oneArea,One area,Una zona
+/saved,student.summary.onSite,On site,In sede
+/saved,student.summary.basicItalian,Basic Italian at most,Al massimo italiano base
+/saved,student.summary.hours,Up to {hours} h/week,Fino a {hours} h/sett.
+/saved,student.summary.minPay,€{amount}/h or more,€{amount}/h o più
+/saved,student.summary.minPayAndOthers,€{amount}/h or more (and jobs without an hourly pay),€{amount}/h o più (e offerte senza paga oraria)
+/saved,student.summary.all,All jobs,Tutte le offerte
+/saved,student.save.limit,You can save up to {max} searches. Delete one on Saved jobs first.,Puoi salvare fino a {max} ricerche. Prima eliminane una su Offerte salvate.
+/saved,student.save.failed,We couldn't save this search. Try again.,Non siamo riusciti a salvare questa ricerca. Riprova.
+/saved,student.opened,You opened the application on {date},Hai aperto la candidatura il {date}
+/ (home page),home.title,"Part-time jobs and gigs in Milan, in English.","Lavori part-time e lavoretti a Milano, in inglese."
+/ (home page),home.lead,"For international students who don't speak fluent Italian. Free for students, always.",Per studenti internazionali che non parlano bene l'italiano. Sempre gratis per gli studenti.
+/ (home page),home.newestTitle,Newest jobs,Offerte più recenti
+/ (home page),home.howTitle,How it works,Come funziona
+/ (home page),home.forStudents,For students,Per gli studenti
+/ (home page),home.step1,<link>Browse jobs</link>: part-time jobs and gigs you can do in English.,<link>Sfoglia le offerte</link>: lavori part-time e lavoretti che puoi fare in inglese.
+/ (home page),home.step2,"Log in with any email: a university email verifies that you're a student. We send you a 6-digit code, no password needed.","Accedi con qualsiasi email: un'email universitaria verifica il tuo status di studente. Ti mandiamo un codice di 6 cifre, senza bisogno di password."
+/ (home page),home.step3,"Apply directly with the employer, on their website or by email.","Candidati direttamente presso il datore di lavoro, sul suo sito o via email."
+/ (home page),home.forEmployers,For employers,Per le aziende
+/ (home page),home.employers,Want to list a job? It's free: <link>see how it works for employers</link>.,Vuoi pubblicare un'offerta? È gratis: <link>scopri come funziona per le aziende</link>.
+/ (home page),home.questions,Questions? Write to {email}.,Domande? Scrivi a {email}.
+/ (home page),home.moreHow,More about how GigoMe works,Scopri di più su come funziona GigoMe
+/ (home page),home.safety,Staying safe,Sicurezza
+/ (home page),home.deleted,Your account has been deleted.,Il tuo account è stato eliminato.
+/ (home page),home.keywordLabel,Role or keyword,Ruolo o parola chiave
+/ (home page),home.keywordPlaceholder,"Role or keyword, e.g. tutor","Ruolo o parola chiave, es. tutor"
+/ (home page),home.areaLabel,Area,Zona
+/ (home page),home.allAreas,All areas,Tutte le zone
+/ (home page),home.search,Search jobs,Cerca offerte
+/ (home page),home.loadingJobs,Loading jobs…,Caricamento offerte…
+/ (home page),home.loadErrorTitle,Jobs can't be shown right now.,Al momento non è possibile mostrare le offerte.
+/ (home page),home.loadErrorText,"Please try again in a moment, or <link>open the job list</link>.","Riprova tra poco, oppure <link>apri l'elenco delle offerte</link>."
+/ (home page),home.emptyTitle,No jobs yet.,Ancora nessuna offerta.
+/ (home page),home.emptyText,"New jobs are added as employers join GigoMe, so check back soon. Know a business that's hiring? Tell us at {email}.",Le nuove offerte arrivano man mano che le aziende si uniscono a GigoMe: ripassa presto. Conosci un'attività che sta assumendo? Scrivici a {email}.
+/ (home page),home.seeAll,See all jobs,Vedi tutte le offerte
+/ (home page),home.mapFailed,The map can't be shown right now. <link>See all jobs in the list</link>.,Al momento non è possibile mostrare la mappa. <link>Vedi tutte le offerte nell'elenco</link>.
+/ (home page),home.mapNone,No current job has an exact address to pin. <link>See all jobs</link>.,Nessuna offerta attuale ha un indirizzo esatto da segnare sulla mappa. <link>Vedi tutte le offerte</link>.
+/ (home page),home.mapLoading,Loading the map…,Caricamento della mappa…
+/ (home page),home.mapErrorNote,The map can't be shown right now. Every job is in the job list.,Al momento non è possibile mostrare la mappa. Tutte le offerte sono nell'elenco.
+/ (home page),home.mapTitle,Map of current jobs,Mappa delle offerte attuali
+/ (home page),home.mapLead,"Jobs with an exact address. Jobs that show only their area, and remote jobs, are in the <link>job list</link>.","Offerte con un indirizzo esatto. Quelle che mostrano solo la zona, e quelle da remoto, sono nell'<link>elenco delle offerte</link>."
+/how-it-works,how.title,How GigoMe works,Come funziona GigoMe
+/how-it-works,how.lead,"GigoMe lists paid part-time jobs and gigs in Milan that you can do in English. You find a job here, then contact the employer directly: GigoMe isn't part of the application or the work.","GigoMe pubblica lavori part-time e lavoretti retribuiti a Milano che puoi fare in inglese. Trovi un'offerta qui, poi contatti direttamente il datore di lavoro: GigoMe non partecipa alla candidatura né al lavoro."
+/how-it-works,how.aside,Some jobs mean meeting an employer at an address. <link>Read Staying safe</link>.,Per alcune offerte devi incontrare un datore di lavoro a un indirizzo. <link>Leggi la pagina Sicurezza</link>.
+/how-it-works,how.studentsTitle,For students,Per gli studenti
+/how-it-works,how.findQ,How do I find jobs?,Come trovo le offerte?
+/how-it-works,how.findA1,"Browse the list or the map on the <link>Jobs</link> page: you don't need an account for that. Filter by area, category, when the work happens, pay, hours, languages and how much Italian you need.","Sfoglia l'elenco o la mappa nella pagina <link>Offerte</link>: per questo non serve un account. Filtra per zona, categoria, quando si lavora, paga, ore, lingue e quanto italiano ti serve."
+/how-it-works,how.findA2,Log in to save jobs and searches and to follow companies. They stay on GigoMe: we don't email you about them.,Accedi per salvare offerte e ricerche e per seguire le aziende. Restano su GigoMe: non ti mandiamo email al riguardo.
+/how-it-works,how.emailQ,Do I need a university email?,Mi serve un'email universitaria?
+/how-it-works,how.emailA1,"No, any email works. GigoMe is for university students, and a student email from a university on our list verifies that you're a student. To see the list, open ""Which emails verify you as a student?"" on the <link>student login</link>. With any other email, you tell us after logging in that you're a university student and which university; we don't check that answer.","No, va bene qualsiasi email. GigoMe è per chi studia all'università, e un'email studentesca di un'università del nostro elenco verifica il tuo status di studente. Per vedere l'elenco, apri ""Quali email verificano che sei studente?"" nella pagina di <link>accesso studenti</link>. Con qualsiasi altra email, dopo l'accesso ci dici che studi all'università e in quale; non controlliamo questa risposta."
+/how-it-works,how.emailA2,"When you log in, we send a 6-digit code to your email; there's no password. The code only shows that you can read that inbox. It doesn't check that you're enrolled or that you're allowed to work in Italy. Is your university missing from the list? Write to {email}.","Quando accedi, ti mandiamo un codice di 6 cifre via email; non c'è nessuna password. Il codice dimostra solo che puoi leggere quella casella di posta. Non controlla la tua iscrizione né il tuo diritto a lavorare in Italia. La tua università non è nell'elenco? Scrivi a {email}."
+/how-it-works,how.applyQ,"What happens when I press ""Apply""?","Cosa succede quando premo ""Candidati""?"
+/how-it-works,how.applyA1,"GigoMe shows you how to apply for that job, the employer's application page or email address, and opens it. You then contact the employer directly, outside GigoMe. GigoMe doesn't send them your profile, your CV or anything else, and pressing Apply isn't an application.","GigoMe ti mostra come candidarti per quell'offerta, cioè la pagina di candidatura o l'indirizzo email del datore di lavoro, e la apre. Poi contatti direttamente il datore di lavoro, fuori da GigoMe. GigoMe non gli invia il tuo profilo, il tuo CV né nient'altro, e premere ""Candidati"" non è una candidatura."
+/how-it-works,how.applyA2,"GigoMe records that your account pressed Apply on that job, and when. You see it under ""Jobs you opened"" on your Saved jobs page. The employer only sees how many times Apply was pressed on their job, never by whom. Within 180 days, the record no longer shows who pressed it.","GigoMe registra che il tuo account ha premuto ""Candidati"" su quell'offerta, e quando. Lo vedi in ""Offerte che hai aperto"" nella pagina Offerte salvate. Il datore di lavoro vede solo quante volte è stato premuto ""Candidati"" sulla sua offerta, mai da chi. Entro 180 giorni, il dato non mostra più chi l'ha premuto."
+/how-it-works,how.seesQ,"What does GigoMe see, and what doesn't it?","Cosa vede GigoMe, e cosa no?"
+/how-it-works,how.seesA1,"GigoMe sees your email, your university (from your university email, or as you told us), name, degree and graduation year; the jobs you save, your saved searches and the companies you follow; which jobs you pressed Apply on; and any reports or feedback you send. It also keeps the technical records needed to run the site. The <link>Privacy Notice</link> has the full list.","GigoMe vede la tua email, la tua università (dalla tua email universitaria, o come ce l'hai indicata), nome, tipo di laurea e anno di laurea; le offerte che salvi, le tue ricerche salvate e le aziende che segui; su quali offerte hai premuto ""Candidati""; e le segnalazioni o i feedback che invii. Conserva anche i dati tecnici necessari per far funzionare il sito. L'<link>Informativa sulla privacy</link> contiene l'elenco completo."
+/how-it-works,how.seesA2,"GigoMe doesn't see your applications, your CV or your messages to employers, whether you had an interview or got the job, or anything you agree with an employer.","GigoMe non vede le tue candidature, il tuo CV o i tuoi messaggi ai datori di lavoro, se hai fatto un colloquio o hai ottenuto il lavoro, né nulla di ciò che concordi con un datore di lavoro."
+/how-it-works,how.seesA3,Employers can't see or search your profile. They never get your name or email from GigoMe.,I datori di lavoro non possono vedere né cercare il tuo profilo. Non ricevono mai da GigoMe il tuo nome o la tua email.
+/how-it-works,how.deleteQ,How do I delete my account?,Come elimino il mio account?
+/how-it-works,how.deleteA1,"Open your <link>Account</link> page (your name in the header) and press ""Delete my account"", then type DELETE. Your account is deleted straight away. You can press ""Download my data"" first to keep a copy.","Apri la pagina <link>Account</link> (il tuo nome in alto nella pagina) e premi ""Elimina il mio account"", poi scrivi DELETE. Il tuo account viene eliminato subito. Prima puoi premere ""Scarica i miei dati"" per tenerne una copia."
+/how-it-works,how.deleteA2,"Some records stay without your name, such as that Apply was pressed on a job, or a report you sent. Anything you sent to an employer stays with them. You can also write to {email}.","Alcuni dati restano senza il tuo nome, come il fatto che è stato premuto ""Candidati"" su un'offerta, o una segnalazione che hai inviato. Ciò che hai inviato a un datore di lavoro resta a lui. Puoi anche scrivere a {email}."
+/how-it-works,how.employersTitle,For employers,Per le aziende
+/how-it-works,how.signupQ,How do I sign up?,Come mi registro?
+/how-it-works,how.signupA1,"Go to <link>For employers</link> and log in with your work email. We send you a 6-digit code; there's no password. University email addresses are for student accounts, and each email has one role: an email that already has a student account can't also be an employer account.","Vai su <link>Per le aziende</link> e accedi con la tua email di lavoro. Ti mandiamo un codice di 6 cifre; non c'è nessuna password. Gli indirizzi email universitari sono per gli account studente, e ogni email ha un solo ruolo: un'email che ha già un account studente non può essere anche un account azienda."
+/how-it-works,how.signupA2,"Then tell us about your company: its name, website and a short description, and a contact email that only the GigoMe team sees. Tick the box to accept the Terms. Listing jobs is free.","Poi parlaci della tua azienda: nome, sito web e una breve descrizione, e un'email di contatto che vede solo il team di GigoMe. Spunta la casella per accettare i Termini. Pubblicare offerte è gratis."
+/how-it-works,how.reviewQ,How does the company review work?,Come funziona la revisione dell'azienda?
+/how-it-works,how.reviewA1,"A person at GigoMe reviews every new company before its jobs can go live, usually within 2 working days. Your dashboard shows the status: In review, Approved or Not approved. We don't email you when it changes.","Una persona di GigoMe controlla ogni nuova azienda prima che le sue offerte possano essere pubblicate, di solito entro 2 giorni lavorativi. La tua dashboard mostra lo stato: In revisione, Approvata o Non approvata. Non ti mandiamo email quando cambia."
+/how-it-works,how.reviewA2,"While you wait, you can write your jobs as drafts. Only you can see them.",Nel frattempo puoi scrivere le tue offerte come bozze. Solo tu puoi vederle.
+/how-it-works,how.postQ,How do I post a job?,Come pubblico un'offerta?
+/how-it-works,how.postA1,"On your dashboard, press ""New job"". GigoMe lists paid part-time jobs and gigs only: no internships and no unpaid work.","Nella tua dashboard, premi ""Nuova offerta"". GigoMe pubblica solo lavori part-time e lavoretti retribuiti: niente tirocini e niente lavoro non retribuito."
+/how-it-works,how.postA2,"Say what the work is, where and when it happens, the hours, the pay (per hour, per month or per project) and how students apply: a link to your application page or an email address.","Indica in cosa consiste il lavoro, dove e quando si svolge, le ore, la paga (all'ora, al mese o a progetto) e come candidarsi: un link alla tua pagina di candidatura o un indirizzo email."
+/how-it-works,how.postA3,"A job is shown for up to 60 days. While it's live, and up to 14 days after it ends, you can extend it by 60 days without a new review.","Un'offerta resta visibile per un massimo di 60 giorni. Finché è pubblicata, e fino a 14 giorni dopo la fine, puoi prolungarla di 60 giorni senza una nuova revisione."
+/how-it-works,how.jobReviewQ,Is every job reviewed before it's published?,Ogni offerta viene controllata prima della pubblicazione?
+/how-it-works,how.jobReviewA1,"Yes. Once your company is approved, submit each job: a person at GigoMe reviews it before students see it, usually within 2 working days.","Sì. Una volta approvata la tua azienda, invia ogni offerta: una persona di GigoMe la controlla prima che gli studenti la vedano, di solito entro 2 giorni lavorativi."
+/how-it-works,how.jobReviewA2,"We check that the role is clearly described, that pay and hours are stated, that nothing is asked of students up front (no fees, deposits or documents), and that nothing in it looks discriminatory or unlawful. If something needs fixing, we ask for changes with a note on your dashboard. Editing a live job sends it back to review.","Controlliamo che il ruolo sia descritto chiaramente, che paga e orari siano indicati, che agli studenti non venga chiesto nulla in anticipo (niente quote, cauzioni o documenti) e che nell'offerta nulla sembri discriminatorio o illecito. Se c'è qualcosa da correggere, chiediamo modifiche con una nota nella tua dashboard. Modificare un'offerta pubblicata la rimanda in revisione."
+/how-it-works,how.contactQ,How do students contact me?,Come mi contattano gli studenti?
+/how-it-works,how.contactA1,"Students who press Apply see the application link or email address you gave for that job, and contact you directly. GigoMe doesn't forward applications or CVs and isn't part of the hiring.","Gli studenti che premono ""Candidati"" vedono il link di candidatura o l'indirizzo email che hai indicato per quell'offerta e ti contattano direttamente. GigoMe non inoltra candidature né CV e non partecipa all'assunzione."
+/how-it-works,how.contactA2,"You handle applications yourself, and the written terms and other obligations of any work you agree (<link>Terms</link>, sections 9 to 11). You can't see student profiles. Your dashboard shows how many times Apply was pressed on each job, never by whom.","Le candidature le gestisci tu, così come le condizioni scritte e gli altri obblighi di qualsiasi lavoro che concordi (<link>Termini</link>, sezioni da 9 a 11). Non puoi vedere i profili degli studenti. La tua dashboard mostra quante volte è stato premuto ""Candidati"" su ogni offerta, mai da chi."
+/how-it-works,how.more,"More questions? Write to {email}. See also <safety>Staying safe</safety>, the <terms>Terms</terms> and the <privacy>Privacy Notice</privacy>.","Altre domande? Scrivi a {email}. Vedi anche <safety>Sicurezza</safety>, i <terms>Termini</terms> e l'<privacy>Informativa sulla privacy</privacy>."
+/safety,safety.title,Staying safe,Sicurezza
+/safety,safety.lead,"Some jobs mean meeting an employer at an address you don't know. Here's what GigoMe checks, what it can't, and how to look after yourself.","Per alcune offerte devi incontrare un datore di lavoro a un indirizzo che non conosci. Ecco cosa controlla GigoMe, cosa non può controllare e come tutelarti."
+/safety,safety.checksTitle,What GigoMe checks,Cosa controlla GigoMe
+/safety,safety.check1,"Every company is reviewed by a person at GigoMe before its jobs can go live. We compare its login email, website and description.","Ogni azienda viene controllata da una persona di GigoMe prima che le sue offerte possano essere pubblicate. Confrontiamo la sua email di accesso, il sito web e la descrizione."
+/safety,safety.check2,"Every job is reviewed by a person before students see it. We check that the role is clearly described, that pay and hours are stated, that nothing is asked of students up front, and that nothing in it looks discriminatory or unlawful.","Ogni offerta viene controllata da una persona prima che gli studenti la vedano. Controlliamo che il ruolo sia descritto chiaramente, che paga e orari siano indicati, che agli studenti non venga chiesto nulla in anticipo e che nell'offerta nulla sembri discriminatorio o illecito."
+/safety,safety.check3,"Every report is read by a person. We can take a job down, or remove a company and all its jobs.","Ogni segnalazione viene letta da una persona. Possiamo ritirare un'offerta, oppure rimuovere un'azienda e tutte le sue offerte."
+/safety,safety.limitsTitle,What GigoMe can't do,Cosa GigoMe non può fare
+/safety,safety.limit1,"A review checks what the employer tells us. It can't verify every employer or show that every listing is genuine or lawful (<link>Terms, section 15.2</link>).","La revisione controlla ciò che il datore di lavoro ci dice. Non può verificare ogni datore di lavoro né dimostrare che ogni annuncio sia autentico o lecito (<link>Termini, sezione 15.2</link>)."
+/safety,safety.limit2,"GigoMe isn't part of the work. It doesn't supervise any job, isn't a party to what you agree with an employer, and can't guarantee pay or how anyone behaves (<link>Terms, section 19</link>).","GigoMe non partecipa al lavoro. Non supervisiona nessun lavoro, non è parte di ciò che concordi con un datore di lavoro e non può garantire la paga né il comportamento di nessuno (<link>Termini, sezione 19</link>)."
+/safety,safety.limit3,"So follow the tips below for every job, even one that looks fine.","Quindi segui i consigli qui sotto per ogni offerta, anche quando sembra a posto."
+/safety,safety.tipsTitle,Tips,Consigli
+/safety,safety.tip1,"<strong>Never pay to get a job.</strong> No registration fees, deposits, training you pay for or kits you must buy. If anyone asks, stop and report the job.","<strong>Non pagare mai per ottenere un lavoro.</strong> Niente quote di iscrizione, cauzioni, corsi di formazione a pagamento o kit da comprare. Se qualcuno te lo chiede, fermati e segnala l'offerta."
+/safety,safety.tip2,"<strong>Look the business up before you go:</strong> its website, its reviews and the address on a map. Check that the name and the place match the listing.","<strong>Informati sull'attività prima di andare:</strong> il suo sito web, le recensioni e l'indirizzo su una mappa. Controlla che il nome e il luogo corrispondano all'annuncio."
+/safety,safety.tip3,"<strong>Meeting at an address for the first time?</strong> Tell someone where you're going and when you'll be back, and go during the business's opening hours.","<strong>Primo incontro a un indirizzo?</strong> Di' a qualcuno dove vai e quando torni, e vai durante l'orario di apertura dell'attività."
+/safety,safety.tip4,"<strong>Get the essential terms in writing before you start:</strong> what you'll do, the hours, the place, the pay and the type of contract (<link>Terms, section 8.1</link>).","<strong>Fatti dare per iscritto le condizioni essenziali prima di iniziare:</strong> cosa farai, l'orario, il luogo, la paga e il tipo di contratto (<link>Termini, sezione 8.1</link>)."
+/safety,safety.tip5,"<strong>Unpaid ""trial shifts"" doing real work are a red flag.</strong> Work should be paid.","<strong>I ""turni di prova"" non pagati in cui fai un lavoro vero sono un campanello d'allarme.</strong> Il lavoro va pagato."
+/safety,safety.tip6,<strong>Never share passwords or login codes.</strong> GigoMe never asks for your login code.,<strong>Non condividere mai password o codici di accesso.</strong> GigoMe non ti chiede mai il tuo codice di accesso.
+/safety,safety.tip7,"<strong>Keep your bank details to yourself until you have the written terms of a real job.</strong> An employer needs your bank account only to pay you, and never needs your card number or PIN.","<strong>Non dare i tuoi dati bancari finché non hai le condizioni scritte di un lavoro vero.</strong> A un datore di lavoro il tuo conto serve solo per pagarti, e il numero della tua carta o il PIN non gli servono mai."
+/safety,safety.tip8,"<strong>From outside the EU?</strong> Check how many hours your residence permit lets you work on an official source, such as the <link>Italian government's portal for migrants</link>, or ask your university's international office.","<strong>Vieni da un paese fuori dall'UE?</strong> Controlla su una fonte ufficiale quante ore ti permette di lavorare il tuo permesso di soggiorno, come il <link>portale del governo italiano per i migranti</link>, oppure chiedi all'ufficio internazionale della tua università."
+/safety,safety.wrongTitle,If something's wrong,Se qualcosa non va
+/safety,safety.wrong1,"On the job's page, press ""Report this job"" (you need to be logged in). A person at GigoMe reads every report.","Nella pagina dell'offerta, premi ""Segnala questa offerta"" (devi aver effettuato l'accesso). Una persona di GigoMe legge ogni segnalazione."
+/safety,safety.wrong2,Or write to {email}.,Oppure scrivi a {email}.
+/safety,safety.wrong3,"<strong>In an emergency, call 112.</strong> It's free.","<strong>In caso di emergenza, chiama il 112.</strong> È gratuito."
+/safety,safety.more,See also <link>How GigoMe works</link>.,Vedi anche <link>Come funziona GigoMe</link>.

@@ -1,28 +1,21 @@
 // When a job happens: the values allowed by jobs.schedule, their labels and
 // what each one means. Testers read "Weekday mornings" differently, so the
 // hours are defined here once and shown everywhere "When" appears (the /jobs
-// filters, job cards and pages, the job form). No imports: unit-tested in
-// tests/unit/schedules.test.mjs. A "flexible" job matches any "When" filter.
-export const SCHEDULES = [
-  ['weekday_mornings', 'Weekday mornings'],
-  ['weekday_afternoons', 'Weekday afternoons'],
-  ['weekday_evenings', 'Weekday evenings'],
-  ['weekends', 'Weekends'],
-  ['flexible', 'Flexible']
-];
-export const SCHEDULE_LABEL = Object.fromEntries(SCHEDULES);
+// filters, job cards and pages, the job form). The words are in the
+// translation files (schedule.* and scheduleHours.*); only i18n.js is
+// imported, so this stays unit-tested in tests/unit/schedules.test.mjs.
+// A "flexible" job matches any "When" filter.
+import { labelMap, labelPairs, t } from './i18n.js';
+
+const VALUES = ['weekday_mornings', 'weekday_afternoons', 'weekday_evenings', 'weekends', 'flexible'];
+export const SCHEDULES = labelPairs('schedule', VALUES);
+export const SCHEDULE_LABEL = labelMap('schedule', VALUES);
 
 // The definitions, one per value.
-export const SCHEDULE_HOURS = {
-  weekday_mornings: 'Mon to Fri, before 12:00',
-  weekday_afternoons: 'Mon to Fri, 12:00 to 18:00',
-  weekday_evenings: 'Mon to Fri, after 18:00',
-  weekends: 'Saturday and Sunday, any time',
-  flexible: 'Hours agreed with the employer'
-};
+export const SCHEDULE_HOURS = labelMap('scheduleHours', VALUES);
 
 // The same definitions in one short line, under "When" in the /jobs filters.
-export const SCHEDULE_HOURS_LINE = 'Mornings before 12 · Afternoons 12 to 18 · Evenings after 18';
+export const scheduleHoursLine = () => t('scheduleHours.line');
 
 // In the order of the list, so labels always read the same way.
 export const scheduleLabels = (job) => SCHEDULES.filter(([v]) => (job.schedule || []).includes(v)).map(([, l]) => l);

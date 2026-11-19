@@ -10,6 +10,7 @@ import { createCompany } from '../lib/employer.js';
 import { announceProfileChange } from '../lib/profile.js';
 import { acceptTerms } from '../lib/terms.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
+import { useT } from '../lib/useLang.js';
 
 // /employers/setup: a company account without a company creates it here.
 export default function EmployerSetup() {
@@ -17,6 +18,7 @@ export default function EmployerSetup() {
 }
 
 function Setup() {
+  const t = useT();
   const account = useCompanyAccount();
   // created: the saved company, to show the confirmation (CompanySubmitted).
   const [created, setCreated] = useState(null);
@@ -37,9 +39,9 @@ function Setup() {
 
   return (
     <div className="auth-card">
-      <h1>Tell us about your company</h1>
-      <p className="lead">We review every company before its jobs go live. This takes a minute.</p>
-      <CompanyForm defaultEmail={account.session.user.email} submitLabel="Save company" onSave={onSave} requireTerms />
+      <h1>{t('setup.title')}</h1>
+      <p className="lead">{t('setup.lead')}</p>
+      <CompanyForm defaultEmail={account.session.user.email} submitLabel={t('setup.save')} onSave={onSave} requireTerms />
     </div>
   );
 }

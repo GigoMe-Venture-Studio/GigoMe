@@ -6,8 +6,11 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { supabase } from './supabase.js';
 import { useSession } from './useSession.js';
 import { fetchProfile } from './auth.js';
+import { t } from './i18n.js';
 
-let state = { userId: null, canSave: false, ids: new Set(), loaded: false, error: '' };
+// error: true when the list couldn't be loaded (the message is read in the
+// current language by useSavedJobs()).
+let state = { userId: null, canSave: false, ids: new Set(), loaded: false, error: false };
 let loading = null;
 const listeners = new Set();
 const emit = () => listeners.forEach((l) => l());
@@ -22,7 +25,7 @@ const set = (patch) => {
 
 async function loadFor(userId) {
   if (state.userId === userId && (state.loaded || loading)) return loading;
-  set({ userId, canSave: false, ids: new Set(), loaded: false, error: '' });
+  set({ userId, canSave: false, ids: new Set(), loaded: false, error: false });
   if (!userId || !supabase) {
     set({ loaded: true });
     return null;
@@ -38,7 +41,7 @@ async function loadFor(userId) {
       if (error) throw error;
       if (state.userId === userId) set({ canSave: true, ids: new Set((data || []).map((r) => r.job_id)), loaded: true });
     } catch {
-      if (state.userId === userId) set({ loaded: true, error: "We couldn't load your saved jobs." });
+      if (state.userId === userId) set({ loaded: true, error: true });
     } finally {
       loading = null;
     }
@@ -60,7 +63,7 @@ export async function setSaved(jobId, save) {
   // Already saved (another tab): that's what was wanted.
   if (error && !(save && error.code === '23505')) {
     set({ ids: before });
-    return dailyLimitMessage(error) || (save ? "We couldn't save this job. Try again." : "We couldn't remove this job. Try again.");
+    return dailyLimitMessage(error) || (save ? t('save.saveError') : t('save.removeError'));
   }
   return null;
 }
@@ -79,7 +82,7 @@ export function useSavedJobs() {
     loggedOut: !loading && !userId,
     canSave: current && snap.canSave,
     loaded: current && snap.loaded,
-    error: current ? snap.error : '',
+    error: current && snap.error ? t('save.loadError') : '',
     isSaved: (id) => current && snap.ids.has(id),
     ids: current ? snap.ids : new Set()
   };

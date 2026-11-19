@@ -1,5 +1,6 @@
 // /admin: moderation. Every call here is checked again by the database
 // (is_admin() in the policies and functions), so a non-admin gets nothing.
+import { labelMap, t } from './i18n.js';
 import { supabase } from './supabase.js';
 
 const JOB_COLUMNS =
@@ -11,28 +12,26 @@ const JOB_COLUMNS =
 // What reviewers check, in the same words /how-it-works and /safety promise
 // students and employers (change them together). Display only for
 // companies; the job review's five boxes (company + job) must all be ticked
-// before Publish, as before.
-export const COMPANY_CHECKS = ['Login email, website and description match'];
-export const JOB_CHECKS = [
-  'Role clearly described',
-  'Pay and hours stated',
-  'Nothing asked of students up front (fees, deposits, documents)',
-  'Nothing discriminatory or unlawful'
-];
-export const REVIEW_CHECKLIST = ['Company: ' + COMPANY_CHECKS[0].charAt(0).toLowerCase() + COMPANY_CHECKS[0].slice(1), ...JOB_CHECKS];
-
-export const LOG_ACTION_LABEL = {
-  company_approved: 'Company approved',
-  company_rejected: 'Company rejected',
-  company_pending: 'Company set back to review',
-  job_published: 'Job published',
-  job_changes_requested: 'Changes requested',
-  job_rejected: 'Job rejected',
-  job_closed: 'Job unpublished',
-  job_draft: 'Job set to draft',
-  job_pending: 'Job set back to review',
-  report_resolved: 'Report resolved'
+// before Publish, as before. Functions, so they follow the language switch.
+export const companyChecks = () => [t('admin.check.company')];
+export const jobChecks = () => [t('admin.check.role'), t('admin.check.payHours'), t('admin.check.upFront'), t('admin.check.lawful')];
+export const reviewChecklist = () => {
+  const c = companyChecks()[0];
+  return [t('admin.check.companyItem', { check: c.charAt(0).toLowerCase() + c.slice(1) }), ...jobChecks()];
 };
+
+export const LOG_ACTION_LABEL = labelMap('admin.log', [
+  'company_approved',
+  'company_rejected',
+  'company_pending',
+  'job_published',
+  'job_changes_requested',
+  'job_rejected',
+  'job_closed',
+  'job_draft',
+  'job_pending',
+  'report_resolved'
+]);
 
 export async function checkIsAdmin() {
   const { data, error } = await supabase.rpc('is_admin');
@@ -95,12 +94,13 @@ export async function fetchLiveJobsMissingInfo() {
   return data || [];
 }
 
-// What the database still needs before it lets a job be published.
+// What the database still needs before it lets a job be published, in
+// words: "no area", "no schedule", "no structured pay".
 export function missingInfo(job) {
   const out = [];
-  if (!job.remote && job.area_id == null) out.push('area');
-  if (!job.schedule || !job.schedule.length) out.push('schedule');
-  if (!job.pay_unit) out.push('structured pay');
+  if (!job.remote && job.area_id == null) out.push(t('admin.missing.area'));
+  if (!job.schedule || !job.schedule.length) out.push(t('admin.missing.schedule'));
+  if (!job.pay_unit) out.push(t('admin.missing.pay'));
   return out;
 }
 
@@ -158,10 +158,7 @@ export async function fetchRecentFeedback() {
 // Students by how their account was verified and by university, and the
 // university names typed under "Other" with counts (admin_student_counts(),
 // admin_other_universities()). Admins only; the database refuses anyone else.
-export const VERIFICATION_LABELS = {
-  university_email: 'University email',
-  self_declared: 'Told us (any email)'
-};
+export const VERIFICATION_LABELS = labelMap('admin.verification', ['university_email', 'self_declared']);
 export async function fetchStudentBreakdown() {
   const [counts, others] = await Promise.all([
     supabase.rpc('admin_student_counts'),

@@ -8,6 +8,8 @@ import { CONTACT_EMAIL } from '../lib/contact.js';
 import { fetchAreas } from '../lib/areas.js';
 import { distanceLabel, inBounds, inLimits, mapParam, metresBetween, readMapParam } from '../lib/geo.js';
 import { useSavedJobs } from '../lib/saved.js';
+import { useT } from '../lib/useLang.js';
+import { labelMap } from '../lib/i18n.js';
 import { saveSearch, searchParamsText, searchSummary } from '../lib/student.js';
 import {
   CATEGORIES,
@@ -17,7 +19,7 @@ import {
   MAX_MIN_PAY,
   SCHEDULES,
   SCHEDULE_HOURS,
-  SCHEDULE_HOURS_LINE,
+  scheduleHoursLine,
   cleanKeyword,
   fetchHiddenByPay,
   fetchJobs,
@@ -48,14 +50,16 @@ function useMedia(query) {
 }
 
 export default function Jobs() {
+  const t = useT();
   return (
     <PageShell className="jobs-main">
-      {supabase ? <JobBoard /> : <ConfigError title="Jobs can't be shown right now" />}
+      {supabase ? <JobBoard /> : <ConfigError title={t('jobs.configError')} />}
     </PageShell>
   );
 }
 
 function JobBoard() {
+  const t = useT();
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const filters = readFilters(params);
@@ -226,24 +230,24 @@ function JobBoard() {
 
   return (
     <>
-      <h1 className="page-title">Jobs in Milan</h1>
-      <p className="muted jobs-lead">Part-time jobs and gigs for students, in English.</p>
+      <h1 className="page-title">{t('jobs.title')}</h1>
+      <p className="muted jobs-lead">{t('jobs.lead')}</p>
 
       <form
         className={'job-filters' + (filtersOpen ? ' is-open' : '')}
-        aria-label="Filter jobs"
+        aria-label={t('jobs.filtersLabel')}
         onSubmit={(e) => {
           e.preventDefault();
           setFilter('q', cleanKeyword(keyword));
         }}
       >
         <label className="field job-keyword">
-          Keyword
+          {t('jobs.keyword')}
           <input
             className="input"
             type="search"
             name="q"
-            placeholder="e.g. barista, tutor"
+            placeholder={t('jobs.keywordPlaceholder')}
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             enterKeyHint="search"
@@ -256,76 +260,76 @@ function JobBoard() {
           aria-controls="job-filters-more"
           onClick={() => setFiltersOpen((open) => !open)}
         >
-          Filters
+          {t('jobs.filters')}
           {folded > 0 && (
             <>
               <span className="filter-count" aria-hidden="true">{folded}</span>
-              <span className="sr-only">, {folded} active</span>
+              <span className="sr-only">{t('jobs.filtersActive', { count: folded })}</span>
             </>
           )}
         </button>
         <div className="job-filters-more" id="job-filters-more">
         <label className="field">
-          Area
+          {t('jobs.area')}
           <select className="select" name="area" value={filters.area} onChange={(e) => setFilter('area', e.target.value)}>
-            <option value="">All areas</option>
+            <option value="">{t('jobs.allAreas')}</option>
             {areas.map((a) => (
               <option key={a.id} value={String(a.id)}>{a.name}</option>
             ))}
             {filters.area && !areas.some((a) => String(a.id) === filters.area) && (
-              <option value={filters.area}>Chosen area</option>
+              <option value={filters.area}>{t('jobs.chosenArea')}</option>
             )}
           </select>
         </label>
         <label className="field">
-          Category
+          {t('jobs.category')}
           <select className="select" name="category" value={filters.category} onChange={(e) => setFilter('category', e.target.value)}>
-            <option value="">Any</option>
+            <option value="">{t('jobs.any')}</option>
             {CATEGORIES.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
         </label>
         <label className="field">
-          Type of job
+          {t('jobs.type')}
           <select className="select" name="type" value={filters.type} onChange={(e) => setFilter('type', e.target.value)}>
-            <option value="">Any type</option>
+            <option value="">{t('jobs.anyType')}</option>
             {JOB_TYPES.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
         </label>
         <label className="field">
-          Italian
+          {t('jobs.italian')}
           <select className="select" name="italian" value={filters.italian} onChange={(e) => setFilter('italian', e.target.value)}>
-            <option value="">Any level</option>
-            <option value="none">No Italian needed</option>
-            <option value="basic">Basic Italian at most</option>
+            <option value="">{t('jobs.anyLevel')}</option>
+            <option value="none">{t('italian.none')}</option>
+            <option value="basic">{t('jobs.basicAtMost')}</option>
           </select>
         </label>
         <label className="field">
-          Remote
+          {t('jobs.remote')}
           <select className="select" name="remote" value={filters.remote} onChange={(e) => setFilter('remote', e.target.value)}>
-            <option value="">Any</option>
-            <option value="yes">Remote</option>
-            <option value="no">On site</option>
+            <option value="">{t('jobs.any')}</option>
+            <option value="yes">{t('jobs.remoteYes')}</option>
+            <option value="no">{t('jobs.onSite')}</option>
           </select>
         </label>
         <label className="field">
-          Hours per week
+          {t('jobs.hours')}
           <select className="select" name="hours" value={filters.hours} onChange={(e) => setFilter('hours', e.target.value)}>
-            <option value="">Any hours</option>
+            <option value="">{t('jobs.anyHours')}</option>
             {MAX_HOURS_OPTIONS.map((h) => (
-              <option key={h} value={String(h)}>Up to {h} hours</option>
+              <option key={h} value={String(h)}>{t('jobs.upToHours', { hours: h })}</option>
             ))}
           </select>
         </label>
         <MinPay value={filters.minpay} onChange={(v) => setFilter('minpay', v)} />
         <fieldset className="chip-filter">
           <legend>
-            When <span className="chip-filter-note">flexible jobs always match</span>
+            {t('jobs.when')} <span className="chip-filter-note">{t('jobs.whenNote')}</span>
             <span className="chip-filter-sep" aria-hidden="true"> · </span>
-            <span className="chip-filter-hint" id="when-hint">{SCHEDULE_HOURS_LINE}</span>
+            <span className="chip-filter-hint" id="when-hint">{scheduleHoursLine()}</span>
           </legend>
           <div className="chips">
             {SCHEDULES.filter(([v]) => v !== 'flexible').map(([value, label]) => (
@@ -336,7 +340,7 @@ function JobBoard() {
           </div>
         </fieldset>
         <fieldset className="chip-filter">
-          <legend>Languages at work</legend>
+          <legend>{t('jobs.languages')}</legend>
           <div className="chips">
             {LANGUAGES.map(([value, label]) => (
               <button key={value} type="button" className="chip" aria-pressed={filters.lang.includes(value)} onClick={() => toggleIn('lang', value)}>
@@ -352,42 +356,42 @@ function JobBoard() {
         <span className="muted tnum" aria-live="polite">
           {status === 'ready'
             ? box
-              ? `${inArea.length} ${inArea.length === 1 ? 'job' : 'jobs'} in this map area` +
-                (elsewhere.length ? ` · ${elsewhere.length} remote or without a location` : '')
-              : `${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}`
-            : status === 'loading' ? 'Loading jobs…' : ''}
+              ? t('jobs.inArea', { count: inArea.length }) +
+                (elsewhere.length ? ' · ' + t('jobs.elsewhereCount', { count: elsewhere.length }) : '')
+              : t('jobs.count', { count: jobs.length })
+            : status === 'loading' ? t('jobs.loading') : ''}
         </span>
         {box && !desktop && (
-          <button type="button" className="btn-link" onClick={() => setBox(null)}>Show all jobs</button>
+          <button type="button" className="btn-link" onClick={() => setBox(null)}>{t('jobs.showAll')}</button>
         )}
         {filtered && (
-          <button type="button" className="btn-link tap-44" onClick={clearFilters}>Clear filters</button>
+          <button type="button" className="btn-link tap-44" onClick={clearFilters}>{t('jobs.clearFilters')}</button>
         )}
         <label className="sort-select">
-          <span className="muted sort-word">Sort</span>
+          <span className="muted sort-word">{t('jobs.sort')}</span>
           <select className="select" name="sort" value={filters.sort} onChange={(e) => setFilter('sort', e.target.value)}>
-            <option value="">Newest</option>
-            <option value="pay">Highest pay</option>
+            <option value="">{t('jobs.sortNewest')}</option>
+            <option value="pay">{t('jobs.sortPay')}</option>
           </select>
         </label>
-        <div className="view-toggle" role="group" aria-label="Show jobs as">
-          <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>List</button>
-          <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>Map</button>
+        <div className="view-toggle" role="group" aria-label={t('jobs.viewLabel')}>
+          <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>{t('jobs.list')}</button>
+          <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>{t('jobs.map')}</button>
         </div>
       </div>
 
       {filters.minpay && !filters.nohourly && hidden && hidden.total > 0 && (
         <p className="pay-note-hidden" role="status">
-          {hidden.total} {hidden.total === 1 ? 'job' : 'jobs'} hidden: {hiddenKinds(hidden)}.{' '}
+          {t('jobs.hidden', { count: hidden.total, kinds: hiddenKinds(hidden) })}{' '}
           <button type="button" className="btn-link" onClick={() => setFilter('nohourly', 'yes')}>
-            {hidden.total === 1 ? 'Show it' : 'Show them'}
+            {t('jobs.showHidden', { count: hidden.total })}
           </button>
         </p>
       )}
       {filters.minpay && filters.nohourly && (
         <p className="pay-note-hidden">
-          Also showing jobs paid per project or with pay not specified.{' '}
-          <button type="button" className="btn-link" onClick={() => setFilter('nohourly', '')}>Hide them</button>
+          {t('jobs.alsoShowing')}{' '}
+          <button type="button" className="btn-link" onClick={() => setFilter('nohourly', '')}>{t('jobs.hideThem')}</button>
         </p>
       )}
 
@@ -398,21 +402,21 @@ function JobBoard() {
           {loc !== 'on' ? (
             <button type="button" className="btn btn-secondary btn-sm" onClick={locate} disabled={loc === 'asking'}>
               <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /><circle cx="12" cy="12" r="7" /></svg>
-              {loc === 'asking' ? 'Finding you…' : 'Use my location'}
+              {loc === 'asking' ? t('jobs.findingYou') : t('jobs.useLocation')}
             </button>
           ) : (
             <>
               <label className="check locate-sort">
-                <input type="checkbox" checked={byDistance} onChange={(e) => setByDistance(e.target.checked)} /> Sort by distance
+                <input type="checkbox" checked={byDistance} onChange={(e) => setByDistance(e.target.checked)} /> {t('jobs.sortDistance')}
               </label>
-              <button type="button" className="btn-link" onClick={forgetLocation}>Stop using my location</button>
+              <button type="button" className="btn-link" onClick={forgetLocation}>{t('jobs.stopLocation')}</button>
             </>
           )}
-          <span className="locate-note muted">Stays on your device: never sent to GigoMe or saved.</span>
-          {loc === 'denied' && <span className="err locate-msg" role="alert">Location is turned off for this site in your browser. You can still move the map.</span>}
-          {loc === 'error' && <span className="err locate-msg" role="alert">We couldn't find your location. Try again, or move the map.</span>}
-          {loc === 'unavailable' && <span className="err locate-msg" role="alert">This browser can't share a location.</span>}
-          {outside && <span className="muted locate-msg">You seem to be outside Milan, so the map stays on Milan.</span>}
+          <span className="locate-note muted">{t('jobs.locationNote')}</span>
+          {loc === 'denied' && <span className="err locate-msg" role="alert">{t('jobs.locDenied')}</span>}
+          {loc === 'error' && <span className="err locate-msg" role="alert">{t('jobs.locError')}</span>}
+          {loc === 'unavailable' && <span className="err locate-msg" role="alert">{t('jobs.locUnavailable')}</span>}
+          {outside && <span className="muted locate-msg">{t('jobs.locOutside')}</span>}
         </div>
       )}
 
@@ -421,19 +425,16 @@ function JobBoard() {
 
       {status === 'error' && (
         <div className="empty-state" role="alert">
-          <p><strong>We couldn't load the jobs.</strong></p>
-          <p className="muted">Check your connection and try again.</p>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setRetry((n) => n + 1)}>Try again</button>
+          <p><strong>{t('jobs.loadError')}</strong></p>
+          <p className="muted">{t('jobs.checkConnection')}</p>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setRetry((n) => n + 1)}>{t('common.tryAgain')}</button>
         </div>
       )}
 
       {status === 'ready' && jobs.length === 0 && !filtered && (
         <div className="empty-state">
-          <p><strong>No jobs yet.</strong></p>
-          <p className="muted">
-            New jobs are added as employers join GigoMe, so check back soon. Know a business that's hiring? Tell us at{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-          </p>
+          <p><strong>{t('jobs.noneTitle')}</strong></p>
+          <p className="muted">{t('jobs.noneText', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}</p>
         </div>
       )}
 
@@ -441,8 +442,8 @@ function JobBoard() {
 
       {box && status === 'ready' && jobs.length > 0 && inArea.length === 0 && (
         <div className="empty-state">
-          <p><strong>No jobs in this part of the map.</strong></p>
-          <p className="muted">Zoom out or move the map{elsewhere.length ? ', or see the remote jobs below' : ''}.</p>
+          <p><strong>{t('jobs.noneInAreaTitle')}</strong></p>
+          <p className="muted">{elsewhere.length ? t('jobs.noneInAreaTextRemote') : t('jobs.noneInAreaText')}</p>
         </div>
       )}
 
@@ -456,8 +457,8 @@ function JobBoard() {
 
       {elsewhere.length > 0 && status !== 'error' && (
         <section className="jobs-elsewhere" aria-labelledby="elsewhere-title">
-          <h2 id="elsewhere-title" className="jobs-elsewhere-title">Remote / no location</h2>
-          <p className="muted jobs-elsewhere-note">Not on the map, so not limited to the map area.</p>
+          <h2 id="elsewhere-title" className="jobs-elsewhere-title">{t('jobs.elsewhereTitle')}</h2>
+          <p className="muted jobs-elsewhere-note">{t('jobs.elsewhereNote')}</p>
           <ul className="role-list job-list">
             {elsewhere.map((job) => (
               <JobCard key={job.id} job={job} />
@@ -468,23 +469,22 @@ function JobBoard() {
       </div>
       {view === 'map' && status !== 'error' && (
         <div className="jobs-map-col">
-          <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">Loading the map…</div>}>
+          <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">{t('map.loading')}</div>}>
             <JobsMap jobs={jobs} onOpenJob={(id) => navigate(`/jobs/${id}`)} view={startView} autoFit={!kept} onViewChange={onViewChange} you={inLimits(you || [0, 0]) ? you : null}>
               {desktop ? (
                 <label className="map-follow">
-                  <input type="checkbox" checked={follow} onChange={(e) => setFollow(e.target.checked)} /> Search as I move the map
+                  <input type="checkbox" checked={follow} onChange={(e) => setFollow(e.target.checked)} /> {t('map.followSearch')}
                 </label>
               ) : (
                 movedSinceSearch && (
-                  <button type="button" className="map-search-area" onClick={searchThisArea}>Search this area</button>
+                  <button type="button" className="map-search-area" onClick={searchThisArea}>{t('map.searchArea')}</button>
                 )
               )}
             </JobsMap>
           </Suspense>
           {status === 'ready' && jobs.length > 0 && jobs.some((j) => !isMappable(j)) && (
             <p className="jobs-map-aside muted">
-              {jobs.filter((j) => !isMappable(j)).length} of these jobs {jobs.filter((j) => !isMappable(j)).length === 1 ? 'is' : 'are'} remote or
-              without a place on the map; {jobs.filter((j) => !isMappable(j)).length === 1 ? 'it is' : 'they are'} in the list.
+              {t('jobs.mapAside', { count: jobs.filter((j) => !isMappable(j)).length })}
             </p>
           )}
         </div>
@@ -495,34 +495,32 @@ function JobBoard() {
 }
 
 // The filters other than the keyword, as named in the advice below.
-const FILTER_WORDS = {
-  area: 'area', category: 'category', type: 'type of job', italian: 'Italian', remote: 'remote',
-  hours: 'hours per week', when: 'days and times', lang: 'languages', minpay: 'minimum pay'
-};
-const orList = (words) => (words.length > 1 ? `${words.slice(0, -1).join(', ')} or ${words[words.length - 1]}` : words[0]);
+const FILTER_WORDS = labelMap('jobs.filterWord', FOLDED_FILTERS);
+const orList = (t, words) => (words.length > 1 ? t('jobs.orList', { first: words.slice(0, -1).join(', '), last: words[words.length - 1] }) : words[0]);
 
 // No job matches: advice for what is actually set (the keyword, other
 // filters, or both).
 function NoMatch({ filters, onClear }) {
+  const t = useT();
   const set = FOLDED_FILTERS.filter((name) => (Array.isArray(filters[name]) ? filters[name].length : filters[name])).map((name) => FILTER_WORDS[name]);
   const q = filters.q;
   let title, advice;
   if (q && !set.length) {
-    title = `No jobs match “${q}”.`;
-    advice = 'Check the spelling, or try a shorter or more general word, like “barista” or “tutor”.';
+    title = t('jobs.noMatchQ', { q });
+    advice = t('jobs.noMatchQAdvice');
   } else if (q) {
-    title = `No jobs match “${q}” with these filters.`;
-    advice = `Try another keyword, or remove a filter: ${orList(set)}.`;
+    title = t('jobs.noMatchQFilters', { q });
+    advice = t('jobs.noMatchQFiltersAdvice', { filters: orList(t, set) });
   } else {
-    title = 'No jobs match these filters.';
-    advice = set.length > 1 ? `Try removing one: ${orList(set)}.` : `Try removing the ${set[0]} filter.`;
+    title = t('jobs.noMatch');
+    advice = set.length > 1 ? t('jobs.removeOne', { filters: orList(t, set) }) : t('jobs.removeThe', { filter: set[0] });
   }
   return (
     <div className="empty-state">
       <p><strong>{title}</strong></p>
       <p className="muted">{advice}</p>
       <button type="button" className="btn btn-secondary btn-sm tap-44" onClick={onClear}>
-        {q && !set.length ? 'Clear the keyword' : 'Clear filters'}
+        {q && !set.length ? t('jobs.clearKeyword') : t('jobs.clearFilters')}
       </button>
     </div>
   );
@@ -531,13 +529,14 @@ function NoMatch({ filters, onClear }) {
 // "Save this search": students keep the current filters under a name, on
 // /saved. Only they can see it; nothing is emailed.
 function SaveSearch({ filters, areas }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [state, setState] = useState({ busy: false, error: '', done: false });
   if (state.done) {
     return (
       <p className="save-search-done" role="status">
-        Search saved. Find it on <Link to="/saved#saved-searches">Saved jobs</Link>.
+        {t('jobs.searchSaved', { link: (s) => <Link to="/saved#saved-searches">{s}</Link> })}
       </p>
     );
   }
@@ -545,7 +544,7 @@ function SaveSearch({ filters, areas }) {
     return (
       <p className="save-search-open">
         <button type="button" className="btn-link" onClick={() => { setName(searchSummary(filters, areas).slice(0, 60)); setOpen(true); }}>
-          Save this search
+          {t('jobs.saveSearch')}
         </button>
       </p>
     );
@@ -554,7 +553,7 @@ function SaveSearch({ filters, areas }) {
     <form className="save-search" onSubmit={async (e) => {
       e.preventDefault();
       if (!name.trim()) {
-        setState({ busy: false, error: 'Give the search a name.', done: false });
+        setState({ busy: false, error: t('jobs.searchNameRequired'), done: false });
         return;
       }
       setState({ busy: true, error: '', done: false });
@@ -566,14 +565,14 @@ function SaveSearch({ filters, areas }) {
       }
     }}>
       <label className="field save-search-name">
-        Name this search
+        {t('jobs.searchName')}
         <input className="input" name="search_name" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} />
       </label>
       <div className="save-search-buttons">
-        <button type="submit" className="btn btn-primary btn-sm" disabled={state.busy}>{state.busy ? 'Saving…' : 'Save'}</button>
-        <button type="button" className="btn btn-tertiary btn-sm" onClick={() => setOpen(false)}>Cancel</button>
+        <button type="submit" className="btn btn-primary btn-sm" disabled={state.busy}>{state.busy ? t('jobs.saving') : t('common.save')}</button>
+        <button type="button" className="btn btn-tertiary btn-sm" onClick={() => setOpen(false)}>{t('common.cancel')}</button>
       </div>
-      <p className="field-hint save-search-hint">Shown only to you, on Saved jobs, with how many jobs are new since you last opened it. No emails.</p>
+      <p className="field-hint save-search-hint">{t('jobs.searchHint')}</p>
       {state.error && <p className="err" role="alert">{state.error}</p>}
     </form>
   );
@@ -582,6 +581,7 @@ function SaveSearch({ filters, areas }) {
 // "Minimum pay": a slider in € an hour (by the hourly equivalent, which
 // hourly and monthly pay have). The list follows once the slider rests.
 function MinPay({ value, onChange }) {
+  const t = useT();
   const [v, setV] = useState(Number(value) || 0);
   useEffect(() => setV(Number(value) || 0), [value]);
   const timer = useRef(0);
@@ -594,11 +594,11 @@ function MinPay({ value, onChange }) {
   return (
     <label className="field min-pay">
       <span className="min-pay-label">
-        Minimum pay <output className="min-pay-value tnum" htmlFor="min-pay">{v > 0 ? `€${v}/h` : 'Any'}</output>
+        {t('jobs.minPay')} <output className="min-pay-value tnum" htmlFor="min-pay">{v > 0 ? t('pay.hour', { amount: v }) : t('jobs.any')}</output>
       </span>
       <input id="min-pay" className="min-pay-range" type="range" name="minpay" min={0} max={MAX_MIN_PAY} step={1} value={v}
-        onChange={(e) => move(Number(e.target.value))} aria-valuetext={v > 0 ? `${v} euros an hour or more` : 'Any pay'} />
-      <span className="field-hint min-pay-hint">Monthly pay counts by its hourly equivalent.</span>
+        onChange={(e) => move(Number(e.target.value))} aria-valuetext={v > 0 ? t('jobs.minPayValue', { amount: v }) : t('jobs.anyPay')} />
+      <span className="field-hint min-pay-hint">{t('jobs.minPayHint')}</span>
     </label>
   );
 }

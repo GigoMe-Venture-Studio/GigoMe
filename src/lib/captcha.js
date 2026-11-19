@@ -17,11 +17,11 @@ export function loadTurnstile() {
       const s = document.createElement('script');
       s.src = SCRIPT;
       s.async = true;
-      s.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error('Turnstile missing')));
+      s.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error('Turnstile missing'))); // i18n-ignore: internal error, never shown
       s.onerror = () => {
         loading = null;
         s.remove();
-        reject(new Error('Turnstile blocked'));
+        reject(new Error('Turnstile blocked')); // i18n-ignore: internal error, never shown
       };
       document.head.appendChild(s);
     });

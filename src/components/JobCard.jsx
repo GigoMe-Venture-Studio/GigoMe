@@ -15,6 +15,7 @@ import {
   postedLabel,
   scheduleItems
 } from '../lib/jobs.js';
+import { useT } from '../lib/useLang.js';
 
 // One job in a list (/jobs, "Newest jobs" on the home page, company pages,
 // saved jobs). The save button sits next to the link, not inside it.
@@ -24,6 +25,7 @@ import {
 // An example listing (made up for testers) has a small "Example" tag right
 // after the company, before the other tags.
 export default function JobCard({ job, distance = null, save = true }) {
+  const t = useT();
   const metro = metroLabel(job);
   const when = scheduleItems(job);
   const example = isExample(job);
@@ -35,7 +37,7 @@ export default function JobCard({ job, distance = null, save = true }) {
             <span className="role-title">{job.title}</span>
             {job.companies && <span className="role-co">{job.companies.name}</span>}
             {example && <ExampleTag />}
-            {isNew(job) && <span className="tag tag-new">New</span>}
+            {isNew(job) && <span className="tag tag-new">{t('jobCard.new')}</span>}
             <span className={'tag' + (job.italian_level === 'none' ? ' tag-italian-none' : '')}>
               {ITALIAN_LABEL[job.italian_level]}
             </span>

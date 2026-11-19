@@ -10,9 +10,12 @@
 // public/metro/milan-metro.geojson, built by scripts/build-metro-map.mjs.
 // Every map shows them, with a "Metro" button to hide them.
 import maplibregl from './maplibre.js';
+import { getLang, subscribeLang, t } from './i18n.js';
 
 export const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 export const METRO_URL = '/metro/milan-metro.geojson';
+// The credit's wording and licence stay as they are in every language
+// ("Metro" is also the Italian word).
 export const STATIONS_CREDIT =
   'Metro: <a href="https://dati.comune.milano.it/dataset/ds535_atm-fermate-linee-metropolitane" target="_blank" rel="noopener noreferrer">Comune di Milano</a>, ' +
   '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>';
@@ -28,8 +31,26 @@ const INK = '#1D1B2E';
 const METRO_LAYERS = ['metro-line-casing', 'metro-line', 'metro-station', 'metro-station-label'];
 const METRO_PREF = 'gigome.metro';
 
+// MapLibre's own texts (zoom buttons, "Use two fingers to move the map" ...)
+// in the site's language. In English MapLibre keeps its defaults.
+function mapLocale() {
+  if (getLang() === 'en') return undefined;
+  return {
+    'Map.Title': t('map.ml.title'),
+    'NavigationControl.ZoomIn': t('map.ml.zoomIn'),
+    'NavigationControl.ZoomOut': t('map.ml.zoomOut'),
+    'Popup.Close': t('map.ml.closePopup'),
+    'AttributionControl.ToggleAttribution': t('map.ml.toggleAttribution'),
+    'AttributionControl.MapFeedback': t('map.ml.mapFeedback'),
+    'CooperativeGesturesHandler.WindowsHelpText': t('map.ml.windowsHelp'),
+    'CooperativeGesturesHandler.MacHelpText': t('map.ml.macHelp'),
+    'CooperativeGesturesHandler.MobileHelpText': t('map.ml.mobileHelp')
+  };
+}
+
 export function createMap(container, options = {}) {
   const { metro = true, ...rest } = options;
+  const locale = mapLocale();
   const map = new maplibregl.Map({
     container,
     style: STYLE_URL,
@@ -44,6 +65,7 @@ export function createMap(container, options = {}) {
     attributionControl: { compact: false, customAttribution: STATIONS_CREDIT },
     dragRotate: false,
     pitchWithRotate: false,
+    ...(locale ? { locale } : {}),
     ...rest
   });
   map.touchZoomRotate.disableRotation();
@@ -124,6 +146,7 @@ function addMetro(map, shown) {
     layout: {
       visibility,
       'text-field': ['get', 'name'],
+      // i18n-ignore: a font name (next line)
       'text-font': ['Noto Sans Regular'],
       'text-size': 12,
       'text-anchor': 'top',
@@ -154,8 +177,12 @@ class MetroToggle {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'metro-toggle-btn';
-    b.textContent = 'Metro';
-    b.title = 'Show or hide the metro lines';
+    const label = () => {
+      b.textContent = t('map.metro');
+      b.title = t('map.metroTitle');
+    };
+    label();
+    this._unsubscribe = subscribeLang(label);
     b.setAttribute('aria-pressed', String(this._shown));
     b.addEventListener('click', () => {
       this._shown = !this._shown;
@@ -171,6 +198,7 @@ class MetroToggle {
     return this._box;
   }
   onRemove() {
+    if (this._unsubscribe) this._unsubscribe();
     this._box.remove();
     this._map = null;
   }

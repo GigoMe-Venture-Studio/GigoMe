@@ -2,6 +2,8 @@ import { Component } from 'react';
 import { useLocation } from 'react-router';
 import { useOpenFeedback } from './Feedback.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import { t } from '../lib/i18n.js';
+import { useT } from '../lib/useLang.js';
 
 // Catches an error while a page renders and shows a friendly page instead of
 // a blank screen. Two of them: one around the pages (inside the header,
@@ -57,13 +59,12 @@ export function AppErrorBoundary({ children }) {
     <Boundary
       fallback={
         <main className="wrap page-main error-page">
-          <h1 className="page-title">Something went wrong</h1>
+          <h1 className="page-title">{t('error.title')}</h1>
           <p className="error-page-text">
-            GigoMe hit an error and couldn't show this page. Reloading usually fixes it. If it keeps happening, write to{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            {t('error.appText', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
           </p>
           <p className="error-page-actions">
-            <a className="btn btn-primary" href="/">Go to the home page</a>
+            <a className="btn btn-primary" href="/">{t('notFound.home')}</a>
           </p>
         </main>
       }
@@ -74,22 +75,20 @@ export function AppErrorBoundary({ children }) {
 }
 
 function PageError() {
+  const t = useT();
   const openFeedback = useOpenFeedback();
   return (
     <main className="wrap page-main error-page">
-      <h1 className="page-title">Something went wrong</h1>
+      <h1 className="page-title">{t('error.title')}</h1>
       <p className="error-page-text">
-        This page hit an error and couldn't be shown. Reloading usually fixes it, for example after we've put out a
-        new version of the site.
+        {t('error.pageText')}
       </p>
       <p className="error-page-actions">
-        <button type="button" className="btn btn-primary" onClick={() => window.location.reload()}>Reload the page</button>
-        <a className="btn btn-secondary" href="/">Go to the home page</a>
+        <button type="button" className="btn btn-primary" onClick={() => window.location.reload()}>{t('error.reload')}</button>
+        <a className="btn btn-secondary" href="/">{t('notFound.home')}</a>
       </p>
       <p className="error-page-text">
-        If it keeps happening,{' '}
-        <button type="button" className="btn-link" onClick={openFeedback}>tell us what you were doing</button>{' '}
-        so we can fix it.
+        {t('error.tellUs', { link: (s) => <button type="button" className="btn-link" onClick={openFeedback}>{s}</button> })}
       </p>
     </main>
   );

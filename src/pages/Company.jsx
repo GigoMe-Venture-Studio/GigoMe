@@ -11,6 +11,7 @@ import { shortText, usePageMeta } from '../lib/seo.js';
 import { useSession } from '../lib/useSession.js';
 import { useSavedJobs } from '../lib/saved.js';
 import { isFollowing, setFollowing } from '../lib/student.js';
+import { useT } from '../lib/useLang.js';
 
 // The map is only downloaded when this company has jobs to put on it.
 const JobsMap = lazy(() => import('../components/JobsMap.jsx'));
@@ -19,14 +20,16 @@ const isMappable = (j) => !j.remote && j.latitude != null && j.longitude != null
 // /companies/:id: an approved company's public page. Name, description,
 // website and its open jobs. Never the contact email.
 export default function Company() {
+  const t = useT();
   return (
     <PageShell className="jobs-main">
-      {supabase ? <CompanyPage /> : <ConfigError title="This page can't be shown right now" />}
+      {supabase ? <CompanyPage /> : <ConfigError title={t('company.configError')} />}
     </PageShell>
   );
 }
 
 function CompanyPage() {
+  const t = useT();
   const { id } = useParams();
   const navigate = useNavigate();
   const [state, setState] = useState({ status: 'loading', company: null, jobs: [] });
@@ -50,23 +53,23 @@ function CompanyPage() {
   usePageMeta(
     state.status === 'ready'
       ? {
-          title: `${state.company.name}: jobs in Milan`,
-          description: shortText(`${state.company.name} on GigoMe: open jobs in Milan for students who work in English. ${state.company.description || ''}`),
+          title: t('company.metaTitle', { name: state.company.name }),
+          description: shortText(t('company.metaDescription', { name: state.company.name, description: state.company.description || '' })),
           index: !state.company.is_example
         }
       : state.status === 'missing'
-        ? { title: "This company isn't on GigoMe", index: false }
+        ? { title: t('company.missingTitle'), index: false }
         : null
   );
 
-  if (state.status === 'loading') return <p className="muted">Loading…</p>;
-  if (state.status === 'error') return <p className="err" role="alert">We couldn't load this company. Check your connection and reload the page.</p>;
+  if (state.status === 'loading') return <p className="muted">{t('common.loading')}</p>;
+  if (state.status === 'error') return <p className="err" role="alert">{t('company.loadError')}</p>;
   if (state.status === 'missing') {
     return (
       <div className="empty-state page-empty">
-        <h1 className="page-title">This company isn't on GigoMe</h1>
-        <p className="muted">It may not be approved yet, or the link is wrong.</p>
-        <Link className="btn btn-primary" to="/jobs">See all jobs</Link>
+        <h1 className="page-title">{t('company.missingTitle')}</h1>
+        <p className="muted">{t('company.missingText')}</p>
+        <Link className="btn btn-primary" to="/jobs">{t('jobPage.seeAll')}</Link>
       </div>
     );
   }
@@ -80,7 +83,7 @@ function CompanyPage() {
       </div>
       {company.is_example && (
         <p className="company-example muted">
-          <ExampleTag company /> This company isn't real. It's here so you can try GigoMe during our test.
+          <ExampleTag company /> {t('company.exampleNote')}
         </p>
       )}
       {company.description && <JobText text={company.description} className="company-about" />}
@@ -90,10 +93,10 @@ function CompanyPage() {
         </p>
       )}
       <h2 className="section-title company-jobs-title">
-        {jobs.length ? `Open jobs (${jobs.length})` : 'Open jobs'}
+        {jobs.length ? t('company.openJobsCount', { count: jobs.length }) : t('company.openJobs')}
       </h2>
       {jobs.length === 0 ? (
-        <p className="muted">No open jobs right now.</p>
+        <p className="muted">{t('company.noJobs')}</p>
       ) : (
         <div className={'jobs-results' + (jobs.some(isMappable) ? ' company-with-map' : '')}>
           <ul className="role-list job-list">
@@ -101,8 +104,8 @@ function CompanyPage() {
           </ul>
           {jobs.some(isMappable) && (
             <div className="company-map">
-              <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">Loading the map…</div>}>
-                <JobsMap jobs={jobs} onOpenJob={(jobId) => navigate(`/jobs/${jobId}`)} label={`Map of ${company.name}'s jobs`} />
+              <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">{t('map.loading')}</div>}>
+                <JobsMap jobs={jobs} onOpenJob={(jobId) => navigate(`/jobs/${jobId}`)} label={t('company.mapLabel', { name: company.name })} />
               </Suspense>
             </div>
           )}
@@ -115,6 +118,7 @@ function CompanyPage() {
 // "Follow": students see this company's new jobs on /saved. In the app only;
 // the company sees how many students follow it, never who.
 function FollowButton({ company }) {
+  const t = useT();
   const { session, loading } = useSession();
   const { canSave, loaded } = useSavedJobs(); // students only
   const [state, setState] = useState({ status: 'loading', following: false, error: '' });
@@ -133,7 +137,7 @@ function FollowButton({ company }) {
   if (!session) {
     return (
       <Link className="btn btn-secondary btn-sm follow-btn" to={'/login?next=' + encodeURIComponent(`/companies/${company.id}`)}>
-        Log in to follow
+        {t('company.loginToFollow')}
       </Link>
     );
   }
@@ -145,16 +149,16 @@ function FollowButton({ company }) {
       await setFollowing(company.id, next);
     } catch (e) {
       setState({ status: 'ready', following: !next,
-        error: e && e.limit ? e.message : next ? "We couldn't follow this company. Try again." : "We couldn't unfollow. Try again." });
+        error: e && e.limit ? e.message : next ? t('company.followError') : t('company.unfollowError') });
     }
   }
   return (
     <div className="follow">
       <button type="button" className={'btn btn-sm follow-btn ' + (state.following ? 'btn-primary' : 'btn-secondary')}
         aria-pressed={state.following} onClick={toggle}>
-        {state.following ? 'Following' : 'Follow'}
+        {state.following ? t('company.following') : t('company.follow')}
       </button>
-      <p className="follow-note muted">{state.following ? 'Its new jobs show on Saved jobs.' : 'See its new jobs on Saved jobs. No emails.'}</p>
+      <p className="follow-note muted">{state.following ? t('company.followingNote') : t('company.followNote')}</p>
       {state.error && <p className="err" role="alert">{state.error}</p>}
     </div>
   );

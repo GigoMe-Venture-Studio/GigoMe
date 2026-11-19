@@ -2,15 +2,13 @@
 // reports (job_reports, admin-only RLS).
 import { dailyLimitMessage } from './limits.js';
 import { supabase } from './supabase.js';
+import { labelMap, labelPairs, t } from './i18n.js';
 
-export const REPORT_REASONS = [
-  ['scam', 'Scam, or payment demanded from students'],
-  ['illegal', 'Illegal or unsafe'],
-  ['misleading', 'Misleading pay or hours'],
-  ['discriminatory', 'Discriminatory'],
-  ['other', 'Something else']
-];
-export const REPORT_REASON_LABEL = Object.fromEntries(REPORT_REASONS);
+// Values allowed by job_reports.reason; labels: report.reason.* in the
+// translation files.
+const REASON_VALUES = ['scam', 'illegal', 'misleading', 'discriminatory', 'other'];
+export const REPORT_REASONS = labelPairs('report.reason', REASON_VALUES);
+export const REPORT_REASON_LABEL = labelMap('report.reason', REASON_VALUES);
 export const REPORT_DETAILS_MAX = 2000;
 
 // Returns null when sent, or an error message.
@@ -20,7 +18,7 @@ export async function reportJob(jobId, reason, details) {
     .insert({ job_id: jobId, reason, details: String(details || '').trim() || null });
   if (!error) return null;
   // One open report per user per job (unique index).
-  if (error.code === '23505') return "You've already reported this job. We're looking into it.";
+  if (error.code === '23505') return t('report.already');
   if (dailyLimitMessage(error)) return dailyLimitMessage(error);
-  return "We couldn't send your report. Check your connection and try again.";
+  return t('report.sendError');
 }

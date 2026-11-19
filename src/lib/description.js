@@ -10,12 +10,18 @@
 //   other lines              -> paragraphs; a blank line starts a new one,
 //                               single line breaks are kept inside it
 
-// The structure the job form suggests (JobEditor.jsx).
+// The structure the job form suggests (JobEditor.jsx), in English and in
+// Italian (the form shows them in the site's language: description.heading*
+// in the translation files). Descriptions are written by employers in either
+// language, so both are recognised as headings whatever the site's language.
+// i18n-ignore: user-content parsing (the English headings employers write)
 export const DESCRIPTION_HEADINGS = ["What you'll do", "Who we're looking for", 'Practical details'];
+// i18n-ignore: user-content parsing (the Italian headings employers write)
+export const DESCRIPTION_HEADINGS_IT = ['Cosa farai', 'Chi cerchiamo', 'Dettagli pratici'];
 
 const BULLET = /^\s*(?:[-*•–]|\d{1,2}[.)])\s+(.+)$/;
 const NUMBERED = /^\s*\d{1,2}[.)]\s+/;
-const KNOWN = new Set(DESCRIPTION_HEADINGS.map((h) => h.toLowerCase()));
+const KNOWN = new Set([...DESCRIPTION_HEADINGS, ...DESCRIPTION_HEADINGS_IT].map((h) => h.toLowerCase()));
 
 function headingText(line) {
   const t = line.trim();

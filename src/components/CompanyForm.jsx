@@ -6,6 +6,7 @@ import { normalizeUrl } from '../lib/employer.js';
 import { websiteText } from '../lib/jobs.js';
 import { TERMS_REQUIRED } from '../lib/terms.js';
 import TermsCheckbox from './TermsCheckbox.jsx';
+import { useT } from '../lib/useLang.js';
 
 const DESCRIPTION_MAX = 1000;
 
@@ -17,7 +18,8 @@ const DESCRIPTION_MAX = 1000;
 // requireTerms (setup only): "I'm 18 or older and I accept the Terms" must be
 // ticked. The database records when, on the company (on creation only); the
 // setup page also records the version on the account (acceptTerms()).
-export default function CompanyForm({ initial, defaultEmail = '', submitLabel, busyLabel = 'Saving…', onSave, onCancel, identityLocked = false, requireTerms = false }) {
+export default function CompanyForm({ initial, defaultEmail = '', submitLabel, busyLabel, onSave, onCancel, identityLocked = false, requireTerms = false }) {
+  const t = useT();
   const [values, setValues] = useState({
     name: (initial && initial.name) || '',
     website: (initial && initial.website) || '',
@@ -39,14 +41,14 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
     const email = normalizeEmail(values.contactEmail);
     const found = {};
     if (!identityLocked) {
-      if (!name) found.name = 'Add your company name.';
-      else if (name.length > 120) found.name = 'Keep the name under 120 characters.';
-      if (website === null || website.length > 300) found.website = 'Enter a web address like www.yourcompany.it, or leave it empty.';
+      if (!name) found.name = t('companyForm.nameMissing');
+      else if (name.length > 120) found.name = t('companyForm.nameTooLong');
+      if (website === null || website.length > 300) found.website = t('companyForm.websiteInvalid');
     }
-    if (description.length > DESCRIPTION_MAX) found.description = `Keep it under ${DESCRIPTION_MAX} characters.`;
+    if (description.length > DESCRIPTION_MAX) found.description = t('companyForm.descriptionTooLong', { max: DESCRIPTION_MAX });
     if (requireTerms && !termsAccepted) found.terms = TERMS_REQUIRED;
-    if (!email) found.contactEmail = 'Add an email address we can reach you at.';
-    else if (!isPlainEmail(email) || email.length > 254) found.contactEmail = "That email address doesn't look right.";
+    if (!email) found.contactEmail = t('companyForm.emailMissing');
+    else if (!isPlainEmail(email) || email.length > 254) found.contactEmail = t('companyForm.emailInvalid');
     setErrors(found);
     if (Object.keys(found).length) return;
     setBusy(true);
@@ -57,7 +59,7 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
       if (requireTerms) fields.terms_accepted_at = new Date().toISOString();
       await onSave(fields);
     } catch {
-      setSaveError("We couldn't save your company. Check your connection and try again.");
+      setSaveError(t('companyForm.saveError'));
       setBusy(false);
     }
   }
@@ -67,49 +69,49 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
       {identityLocked ? (
         <div className="locked-fields">
           <dl className="dash-facts">
-            <div><dt>Company name</dt><dd>{initial.name}</dd></div>
-            <div><dt>Website</dt><dd>{websiteText(initial.website) || <span className="muted">Not added</span>}</dd></div>
+            <div><dt>{t('companyForm.nameLabel')}</dt><dd>{initial.name}</dd></div>
+            <div><dt>{t('companyForm.websiteLabel')}</dt><dd>{websiteText(initial.website) || <span className="muted">{t('companyForm.notAdded')}</span>}</dd></div>
           </dl>
-          <p className="field-hint">To change these, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+          <p className="field-hint">{t('companyForm.changeThese', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}</p>
         </div>
       ) : (
         <>
           <label className="field">
-            Company name
+            {t('companyForm.nameLabel')}
             <input className="input" type="text" name="company_name" autoComplete="organization" maxLength={120}
               value={values.name} onChange={set('name')} aria-invalid={Boolean(errors.name)} required />
             {errors.name && <span className="err">{errors.name}</span>}
           </label>
           <label className="field">
-            <span>Website <span className="field-optional">(optional)</span></span>
-            <input className="input" type="text" name="website" inputMode="url" autoComplete="url" autoCapitalize="none"
-              spellCheck="false" placeholder="www.yourcompany.it" maxLength={300}
+            <span>{t('companyForm.websiteLabel')} <span className="field-optional">{t('companyForm.optional')}</span></span>
+            <input className="input" type="text" name="website" inputMode="url" autoComplete="url" autoCapitalize="none" /* i18n-ignore: attribute values, not text */
+              spellCheck="false" placeholder={t('companyForm.websitePlaceholder')} maxLength={300}
               value={values.website} onChange={set('website')} aria-invalid={Boolean(errors.website)} />
             {errors.website && <span className="err">{errors.website}</span>}
           </label>
         </>
       )}
       <label className="field">
-        <span>Short description <span className="field-optional">(optional)</span></span>
+        <span>{t('companyForm.descriptionLabel')} <span className="field-optional">{t('companyForm.optional')}</span></span>
         <textarea className="input textarea" name="company_description" rows={4} maxLength={DESCRIPTION_MAX}
-          placeholder="What you do, in a sentence or two. Students see this on your jobs."
+          placeholder={t('companyForm.descriptionPlaceholder')}
           value={values.description} onChange={set('description')} aria-invalid={Boolean(errors.description)} />
         {errors.description && <span className="err">{errors.description}</span>}
       </label>
       <label className="field">
-        Contact email
-        <input className="input" type="email" name="contact_email" inputMode="email" autoComplete="email" autoCapitalize="none"
+        {t('companyForm.contactEmailLabel')}
+        <input className="input" type="email" name="contact_email" inputMode="email" autoComplete="email" autoCapitalize="none" /* i18n-ignore: attribute values, not text */
           spellCheck="false" maxLength={254}
           value={values.contactEmail} onChange={set('contactEmail')} aria-invalid={Boolean(errors.contactEmail)}
           aria-describedby="contact-email-hint" required />
-        <span className="field-hint" id="contact-email-hint">Only the GigoMe team sees this. Students apply the way you set on each job.</span>
+        <span className="field-hint" id="contact-email-hint">{t('companyForm.contactEmailHint')}</span>
         {errors.contactEmail && <span className="err">{errors.contactEmail}</span>}
       </label>
       {requireTerms && <TermsCheckbox checked={termsAccepted} onChange={setTermsAccepted} error={errors.terms} />}
       {saveError && <p className="err" role="alert">{saveError}</p>}
       <div className="form-buttons">
-        <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? busyLabel : submitLabel}</button>
-        {onCancel && <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={busy}>Cancel</button>}
+        <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? busyLabel || t('companyForm.saving') : submitLabel}</button>
+        {onCancel && <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={busy}>{t('common.cancel')}</button>}
       </div>
     </form>
   );

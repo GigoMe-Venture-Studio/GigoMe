@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { setSaved, useSavedJobs } from '../lib/saved.js';
+import { useT } from '../lib/useLang.js';
 
 const BOOKMARK = (
   <svg className="icon save-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -15,6 +16,7 @@ const BOOKMARK = (
 // invisible, until the login state is known, so the title row doesn't change
 // height when it appears.
 export default function SaveButton({ jobId, title, labelled = false, className = '' }) {
+  const t = useT();
   const saved = useSavedJobs();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -24,11 +26,11 @@ export default function SaveButton({ jobId, title, labelled = false, className =
         <Link
           className={'save-btn' + (labelled ? ' save-labelled' : '')}
           to={'/login?next=' + encodeURIComponent('/jobs/' + jobId)}
-          aria-label={`Log in to save ${title}`}
-          title="Log in to save this job"
+          aria-label={t('save.loginAria', { title })}
+          title={t('save.loginTitle')}
         >
           {BOOKMARK}
-          {labelled && <span>Save</span>}
+          {labelled && <span>{t('save.save')}</span>}
         </Link>
       </span>
     );
@@ -36,7 +38,7 @@ export default function SaveButton({ jobId, title, labelled = false, className =
   if (labelled && !saved.loaded) {
     return (
       <span className={'save-wrap save-slot ' + className} aria-hidden="true">
-        <span className="save-btn save-labelled">{BOOKMARK}<span>Save</span></span>
+        <span className="save-btn save-labelled">{BOOKMARK}<span>{t('save.save')}</span></span>
       </span>
     );
   }
@@ -58,13 +60,13 @@ export default function SaveButton({ jobId, title, labelled = false, className =
         type="button"
         className={'save-btn' + (on ? ' is-saved' : '') + (labelled ? ' save-labelled' : '')}
         aria-pressed={on}
-        aria-label={labelled ? undefined : on ? `Remove ${title} from saved jobs` : `Save ${title}`}
-        title={on ? 'Saved: press to remove' : 'Save this job'}
+        aria-label={labelled ? undefined : on ? t('save.removeAria', { title }) : t('save.saveAria', { title })}
+        title={on ? t('save.savedTitle') : t('save.saveTitle')}
         onClick={onClick}
         disabled={busy}
       >
         {BOOKMARK}
-        {labelled && <span>{on ? 'Saved' : 'Save'}</span>}
+        {labelled && <span>{on ? t('save.saved') : t('save.save')}</span>}
       </button>
       {error && <span className="err save-err" role="alert">{error}</span>}
     </span>

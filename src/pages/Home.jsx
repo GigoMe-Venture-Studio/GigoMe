@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { cleanKeyword, fetchJobs, fetchMapJobs, filtersToParams } from '../lib/jobs.js';
 import { fetchAreas } from '../lib/areas.js';
+import { useT } from '../lib/useLang.js';
 
 // The map code (MapLibre) is only downloaded once the map is about to scroll
 // into view: see HomeMap.
@@ -15,18 +16,20 @@ export default function Home() {
   // The map waits until the newest jobs are on the page: before that it would
   // sit right under the hero, near enough to start loading on its own.
   const [newestShown, setNewestShown] = useState(false);
+  const t = useT();
+  const email = <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>;
   return (
     <main>
       <DeletedNotice />
       <section className="wrap hero" aria-labelledby="home-title">
-        <h1 id="home-title">Part-time jobs and gigs in Milan, in English.</h1>
-        <p className="hero-lead">For international students who don't speak fluent Italian. Free for students, always.</p>
+        <h1 id="home-title">{t('home.title')}</h1>
+        <p className="hero-lead">{t('home.lead')}</p>
         <HeroSearch />
       </section>
 
       <section className="wrap home-newest" aria-labelledby="newest-title">
         <div className="newest-head">
-          <h2 className="section-title" id="newest-title">Newest jobs</h2>
+          <h2 className="section-title" id="newest-title">{t('home.newestTitle')}</h2>
         </div>
         <NewestJobs onShown={setNewestShown} />
       </section>
@@ -34,25 +37,21 @@ export default function Home() {
       {newestShown && <HomeMap />}
 
       <section className="wrap how" aria-labelledby="how-title">
-        <h2 className="section-title how-head" id="how-title">How it works</h2>
+        <h2 className="section-title how-head" id="how-title">{t('home.howTitle')}</h2>
         <div>
-          <h3>For students</h3>
+          <h3>{t('home.forStudents')}</h3>
           <ol>
-            <li><Link to="/jobs">Browse jobs</Link>: part-time jobs and gigs you can do in English.</li>
-            <li>Log in with any email: a university email verifies that you're a student. We send you a 6-digit code, no password needed.</li>
-            <li>Apply directly with the employer, on their website or by email.</li>
+            <li>{t('home.step1', { link: (s) => <Link to="/jobs">{s}</Link> })}</li>
+            <li>{t('home.step2')}</li>
+            <li>{t('home.step3')}</li>
           </ol>
         </div>
         <div>
-          <h3>For employers</h3>
-          <p>
-            Want to list a job? It's free: <Link to="/employers">see how it works for employers</Link>.
-          </p>
-          <p className="how-questions">
-            Questions? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-          </p>
+          <h3>{t('home.forEmployers')}</h3>
+          <p>{t('home.employers', { link: (s) => <Link to="/employers">{s}</Link> })}</p>
+          <p className="how-questions">{t('home.questions', { email })}</p>
           <p className="how-more">
-            <Link to="/how-it-works">More about how GigoMe works</Link> · <Link to="/safety">Staying safe</Link>
+            <Link to="/how-it-works">{t('home.moreHow')}</Link> · <Link to="/safety">{t('home.safety')}</Link>
           </p>
         </div>
       </section>
@@ -67,6 +66,7 @@ function DeletedNotice() {
   const location = useLocation();
   const navigate = useNavigate();
   const [show] = useState(() => Boolean(location.state && location.state.accountDeleted));
+  const t = useT();
 
   useEffect(() => {
     if (location.state && location.state.accountDeleted) navigate('/', { replace: true, state: null });
@@ -75,7 +75,7 @@ function DeletedNotice() {
   if (!show) return null;
   return (
     <div className="wrap">
-      <p className="home-notice" role="status">Your account has been deleted.</p>
+      <p className="home-notice" role="status">{t('home.deleted')}</p>
     </div>
   );
 }
@@ -87,6 +87,7 @@ function HeroSearch() {
   const [noItalian, setNoItalian] = useState(true);
   const [area, setArea] = useState('');
   const [areas, setAreas] = useState([]);
+  const t = useT();
   useEffect(() => {
     fetchAreas().then(setAreas).catch(() => setAreas([]));
   }, []);
@@ -101,21 +102,21 @@ function HeroSearch() {
 
   return (
     <form className="hero-search" role="search" onSubmit={onSubmit}>
-      <label className="sr-only" htmlFor="home-q">Role or keyword</label>
+      <label className="sr-only" htmlFor="home-q">{t('home.keywordLabel')}</label>
       <input
         className="input q"
         id="home-q"
         type="search"
-        placeholder="Role or keyword, e.g. tutor"
+        placeholder={t('home.keywordPlaceholder')}
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
         enterKeyHint="search"
       />
       {areas.length > 0 && (
         <>
-          <label className="sr-only" htmlFor="home-area">Area</label>
+          <label className="sr-only" htmlFor="home-area">{t('home.areaLabel')}</label>
           <select className="select area" id="home-area" value={area} onChange={(e) => setArea(e.target.value)}>
-            <option value="">All areas</option>
+            <option value="">{t('home.allAreas')}</option>
             {areas.map((a) => (
               <option key={a.id} value={String(a.id)}>{a.name}</option>
             ))}
@@ -123,9 +124,9 @@ function HeroSearch() {
         </>
       )}
       <label className="check">
-        <input type="checkbox" checked={noItalian} onChange={(e) => setNoItalian(e.target.checked)} /> No Italian needed
+        <input type="checkbox" checked={noItalian} onChange={(e) => setNoItalian(e.target.checked)} /> {t('italian.none')}
       </label>
-      <button type="submit" className="btn btn-primary btn-lg">Search jobs</button>
+      <button type="submit" className="btn btn-primary btn-lg">{t('home.search')}</button>
     </form>
   );
 }
@@ -135,6 +136,7 @@ function HeroSearch() {
 function NewestJobs({ onShown }) {
   const [state, setState] = useState({ status: supabase ? 'loading' : 'unavailable', jobs: [] });
   const shown = state.status === 'ready' && state.jobs.length > 0;
+  const t = useT();
   useEffect(() => {
     if (shown) onShown(true);
   }, [shown, onShown]);
@@ -151,22 +153,21 @@ function NewestJobs({ onShown }) {
   }, []);
 
   const { status, jobs } = state;
-  if (status === 'loading') return <p className="muted home-jobs-note">Loading jobs…</p>;
+  if (status === 'loading') return <p className="muted home-jobs-note">{t('home.loadingJobs')}</p>;
   if (status === 'unavailable' || status === 'error') {
     return (
       <div className="empty-state">
-        <p><strong>Jobs can't be shown right now.</strong></p>
-        <p className="muted">Please try again in a moment, or <Link to="/jobs">open the job list</Link>.</p>
+        <p><strong>{t('home.loadErrorTitle')}</strong></p>
+        <p className="muted">{t('home.loadErrorText', { link: (s) => <Link to="/jobs">{s}</Link> })}</p>
       </div>
     );
   }
   if (!jobs.length) {
     return (
       <div className="empty-state">
-        <p><strong>No jobs yet.</strong></p>
+        <p><strong>{t('home.emptyTitle')}</strong></p>
         <p className="muted">
-          New jobs are added as employers join GigoMe, so check back soon. Know a business that's hiring? Tell us at{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+          {t('home.emptyText', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
         </p>
       </div>
     );
@@ -182,7 +183,7 @@ function NewestJobs({ onShown }) {
           <JobCard key={job.id} job={job} save={false} />
         ))}
       </ul>
-      <Link className="see-all" to="/jobs">See all jobs</Link>
+      <Link className="see-all" to="/jobs">{t('home.seeAll')}</Link>
     </>
   );
 }
@@ -204,6 +205,7 @@ function HomeMap() {
   const [near, setNear] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [state, setState] = useState({ status: 'waiting', jobs: [] });
+  const t = useT();
 
   // Until the visitor scrolls, the map loads only if it is already on the
   // screen (a tall desktop screen); after any scroll, from 300px away, like
@@ -243,23 +245,25 @@ function HomeMap() {
   let body;
   const failed = (
     <p className="home-map-note" role="alert">
-      The map can't be shown right now. <Link to="/jobs">See all jobs in the list</Link>.
+      {t('home.mapFailed', { link: (s) => <Link to="/jobs">{s}</Link> })}
     </p>
   );
   if (status === 'error') {
     body = failed;
   } else if (status === 'ready' && !jobs.length) {
-    body = <p className="home-map-note">No current job has an exact address to pin. <Link to="/jobs">See all jobs</Link>.</p>;
+    body = (
+      <p className="home-map-note">{t('home.mapNone', { link: (s) => <Link to="/jobs">{s}</Link> })}</p>
+    );
   } else if (status === 'ready') {
     body = (
       <SectionErrorBoundary fallback={failed}>
-        <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">Loading the map…</div>}>
+        <Suspense fallback={<div className="jobs-map jobs-map-loading" role="status">{t('home.mapLoading')}</div>}>
           <JobsMap
             jobs={jobs}
             cooperative
             fitPadding={HOME_MAP_PADDING}
-            label="Map of current jobs"
-            errorNote="The map can't be shown right now. Every job is in the job list."
+            label={t('home.mapTitle')}
+            errorNote={t('home.mapErrorNote')}
             onOpenJob={(id) => navigate(`/jobs/${id}`)}
           />
         </Suspense>
@@ -271,9 +275,9 @@ function HomeMap() {
 
   return (
     <section className="wrap home-map" aria-labelledby="map-title">
-      <h2 className="section-title" id="map-title">Map of current jobs</h2>
+      <h2 className="section-title" id="map-title">{t('home.mapTitle')}</h2>
       <p className="muted home-map-lead">
-        Jobs with an exact address. Jobs that show only their area, and remote jobs, are in the <Link to="/jobs">job list</Link>.
+        {t('home.mapLead', { link: (s) => <Link to="/jobs">{s}</Link> })}
       </p>
       <div ref={spot} className="home-map-box">{body}</div>
     </section>

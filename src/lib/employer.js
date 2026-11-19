@@ -1,6 +1,7 @@
 // The employer side: a company account's company and jobs.
 import { supabase } from './supabase.js';
 import { CONTACT_EMAIL } from './contact.js';
+import { t } from './i18n.js';
 
 // contact_email isn't readable directly: get_company_contact_email() returns it
 // to the owner (and admins).
@@ -10,27 +11,34 @@ const JOB_COLUMNS =
   'status, created_at, review_note, reviewed_at, area_id, latitude, longitude, show_exact_location, category, schedule, languages, ' +
   'pay_unit, pay_min, pay_max, pay_hourly';
 
-export const COMPANY_STATUS = {
-  pending: {
-    label: 'In review',
-    text: "We'll review your company, usually within 2 working days. Meanwhile you can prepare jobs as drafts."
-  },
-  approved: { label: 'Approved', text: 'You can submit jobs. Each job is reviewed before students see it.' },
-  rejected: {
-    label: 'Not approved',
-    text: `We couldn't approve your company. If you think this is a mistake, write to ${CONTACT_EMAIL}.`
+// { [status]: { label, text } }, read in the current language each time
+// (COMPANY_STATUS[status].label, JOB_STATUS[status].text).
+function statusTable(prefix, values) {
+  const table = {};
+  for (const v of values) {
+    table[v] = {
+      get label() {
+        return t(`${prefix}.${v}.label`);
+      },
+      get text() {
+        return t(`${prefix}.${v}.text`, { email: CONTACT_EMAIL });
+      }
+    };
   }
-};
+  return table;
+}
 
-export const JOB_STATUS = {
-  draft: { label: 'Draft', text: 'Only you can see it. Submit it for review when it is ready.' },
-  pending: { label: 'In review', text: "We're checking it, usually within 2 working days." },
-  published: { label: 'Live', text: 'Students can see it and apply.' },
-  expired: { label: 'Expired', text: 'Its end date has passed, so students no longer see it.' },
-  changes_requested: { label: 'Changes requested', text: 'Edit it as the reviewer asked, then submit it again.' },
-  rejected: { label: 'Rejected', text: "It can't be published or resubmitted." },
-  closed: { label: 'Closed', text: 'Students no longer see it.' }
-};
+export const COMPANY_STATUS = statusTable('employer.companyStatus', ['pending', 'approved', 'rejected']);
+
+export const JOB_STATUS = statusTable('employer.jobStatus', [
+  'draft',
+  'pending',
+  'published',
+  'expired',
+  'changes_requested',
+  'rejected',
+  'closed'
+]);
 
 // 'expired' for a published job past its end date, otherwise the status.
 export function shownStatus(job) {
@@ -164,9 +172,9 @@ export function expiresInLabel(iso, now = Date.now()) {
   const ms = new Date(iso).getTime() - now;
   if (!(ms > 0)) return null;
   const days = Math.floor(ms / 86400000);
-  if (days === 0) return 'Expires today';
-  if (days === 1) return 'Expires tomorrow';
-  return `Expires in ${days} days`;
+  if (days === 0) return t('employer.expiresToday');
+  if (days === 1) return t('employer.expiresTomorrow');
+  return t('employer.expiresIn', { count: days });
 }
 
 // How many students follow the caller's company: a number, never who.

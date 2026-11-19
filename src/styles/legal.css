@@ -34,3 +34,10 @@
 .legal-toc li { margin-top: var(--s1); }
 .legal-toc li.sub { padding-left: var(--s4); }
 .legal-toc a { display: inline-block; padding: var(--s1) 0; }
+
+/* Italian: the courtesy-translation line above the text (LegalPage.jsx). */
+.legal-courtesy {
+  max-width: 72ch; margin-bottom: var(--s4); padding: var(--s3) var(--s4);
+  border-left: 3px solid var(--accent); background: var(--paper); border-radius: var(--r-sm);
+  font-size: 15px; font-weight: 500;
+}

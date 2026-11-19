@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { announceProfileChange } from '../lib/profile.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
+import { useT } from '../lib/useLang.js';
 import { JOB_TYPE_LABEL, dateLabel, websiteHref, websiteText } from '../lib/jobs.js';
 import {
   COMPANY_STATUS,
@@ -59,6 +60,7 @@ function StatusTag({ status, table }) {
 }
 
 function CompanySection({ company, onSaved }) {
+  const t = useT();
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
   const site = websiteHref(company.website);
@@ -76,31 +78,31 @@ function CompanySection({ company, onSaved }) {
   return (
     <section className="dash-card" aria-labelledby="company-title">
       <div className="dash-card-head">
-        <h2 id="company-title">Your company</h2>
+        <h2 id="company-title">{t('dashboard.yourCompany')}</h2>
         <StatusTag status={company.status} table={COMPANY_STATUS} />
       </div>
       <p className="dash-status-text">{COMPANY_STATUS[company.status].text}</p>
       {editing ? (
-        <CompanyForm initial={company} identityLocked={locked} submitLabel="Save changes" onSave={onSave} onCancel={() => setEditing(false)} />
+        <CompanyForm initial={company} identityLocked={locked} submitLabel={t('dashboard.saveChanges')} onSave={onSave} onCancel={() => setEditing(false)} />
       ) : (
         <>
           <dl className="dash-facts">
-            <div><dt>Name</dt><dd>{company.name}</dd></div>
-            <div><dt>Website</dt><dd>{site ? <a href={site} target="_blank" rel="noopener noreferrer">{websiteText(company.website)}</a> : <span className="muted">Not added</span>}</dd></div>
+            <div><dt>{t('dashboard.name')}</dt><dd>{company.name}</dd></div>
+            <div><dt>{t('dashboard.website')}</dt><dd>{site ? <a href={site} target="_blank" rel="noopener noreferrer">{websiteText(company.website)}</a> : <span className="muted">{t('dashboard.websiteNone')}</span>}</dd></div>
           </dl>
           {locked && (
             <p className="field-hint locked-hint">
-              To change these, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              {t('dashboard.changeThese', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
             </p>
           )}
           <dl className="dash-facts">
-            <div><dt>Description</dt><dd>{company.description || <span className="muted">Not added</span>}</dd></div>
-            <div><dt>Contact email</dt><dd className="auth-email">{company.contact_email}</dd></div>
+            <div><dt>{t('dashboard.description')}</dt><dd>{company.description || <span className="muted">{t('dashboard.descriptionNone')}</span>}</dd></div>
+            <div><dt>{t('dashboard.contactEmail')}</dt><dd className="auth-email">{company.contact_email}</dd></div>
             {company.status === 'approved' && <Followers />}
           </dl>
-          {saved && <p className="dash-saved" role="status">Your company details are saved.</p>}
+          {saved && <p className="dash-saved" role="status">{t('dashboard.saved')}</p>}
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setSaved(false); setEditing(true); }}>
-            {locked ? 'Edit description and contact email' : 'Edit company details'}
+            {locked ? t('dashboard.editLocked') : t('dashboard.editCompany')}
           </button>
         </>
       )}
@@ -109,6 +111,7 @@ function CompanySection({ company, onSaved }) {
 }
 
 function JobsSection({ company }) {
+  const t = useT();
   const [state, setState] = useState({ status: 'loading', jobs: [], clicks: {} });
   const [version, setVersion] = useState(0);
   const [actionError, setActionError] = useState('');
@@ -130,49 +133,49 @@ function JobsSection({ company }) {
     if (kind === 'extend') {
       try {
         const until = await extendJob(job.id);
-        setActionDone(`"${job.title}" is now shown until ${dateLabel(String(until).slice(0, 10))}.`);
+        setActionDone(t('dashboard.extended', { title: job.title, date: dateLabel(String(until).slice(0, 10)) }));
         setVersion((n) => n + 1);
       } catch (e) {
         // The database's own reason when it refuses (e.g. expired too long ago).
-        setActionError(e && e.code === '42501' && e.message ? e.message : "We couldn't extend the job. Try again.");
+        setActionError(e && e.code === '42501' && e.message ? e.message : t('dashboard.extendError'));
       }
       return;
     }
     const question =
       kind === 'close'
-        ? `Close "${job.title}"? Students will no longer see it. You can edit it and submit it again later.`
-        : `Delete the draft "${job.title}"? This can't be undone.`;
+        ? t('dashboard.confirmClose', { title: job.title })
+        : t('dashboard.confirmDelete', { title: job.title });
     if (!window.confirm(question)) return;
     try {
       if (kind === 'close') await setJobStatus(job.id, 'closed');
       else await deleteDraft(job.id);
       setVersion((n) => n + 1);
     } catch {
-      setActionError(kind === 'close' ? "We couldn't close the job. Try again." : "We couldn't delete the draft. Try again.");
+      setActionError(kind === 'close' ? t('dashboard.closeError') : t('dashboard.deleteError'));
     }
   }
 
   return (
     <section className="dash-card" aria-labelledby="jobs-title">
       <div className="dash-card-head">
-        <h2 id="jobs-title">Your jobs</h2>
-        <Link className="btn btn-primary btn-sm" to="/dashboard/jobs/new">New job</Link>
+        <h2 id="jobs-title">{t('dashboard.yourJobs')}</h2>
+        <Link className="btn btn-primary btn-sm" to="/dashboard/jobs/new">{t('dashboard.newJob')}</Link>
       </div>
       {company.status !== 'approved' && (
         <p className="dash-status-text">
           {company.status === 'pending'
-            ? 'You can prepare drafts now and submit them once your company is approved.'
-            : 'Jobs can only be submitted by approved companies.'}
+            ? t('dashboard.pendingNote')
+            : t('dashboard.notApprovedNote')}
         </p>
       )}
       {actionError && <p className="err" role="alert">{actionError}</p>}
       <p className="dash-action-done" role="status">{actionDone}</p>
-      {state.status === 'loading' && <p className="muted">Loading your jobs…</p>}
+      {state.status === 'loading' && <p className="muted">{t('dashboard.loadingJobs')}</p>}
       {state.status === 'error' && (
-        <p className="err" role="alert">We couldn't load your jobs. Check your connection and reload the page.</p>
+        <p className="err" role="alert">{t('dashboard.loadError')}</p>
       )}
       {state.status === 'ready' && state.jobs.length === 0 && (
-        <p className="muted dash-empty">No jobs yet. Press "New job" to write your first one.</p>
+        <p className="muted dash-empty">{t('dashboard.empty')}</p>
       )}
       {state.status === 'ready' && state.jobs.length > 0 && (
         <ul className="dash-jobs">
@@ -186,6 +189,7 @@ function JobsSection({ company }) {
 }
 
 function JobRow({ job, clicks, onAct }) {
+  const t = useT();
   const status = shownStatus(job);
   const live = status === 'published';
   const expiresIn = live ? expiresInLabel(job.expires_at) : null;
@@ -199,54 +203,53 @@ function JobRow({ job, clicks, onAct }) {
       <div className="dash-job-main">
         <p className="dash-job-title">{job.title}</p>
         <p className="dash-job-meta">
-          {JOB_TYPE_LABEL[job.job_type] || 'Choose a type'} · {job.hours_per_week} h/week
-          {(live || status === 'expired') && <> · until {dateLabel(String(job.expires_at).slice(0, 10))}</>}
+          {JOB_TYPE_LABEL[job.job_type] || t('dashboard.chooseType')} · {t('job.hoursPerWeek', { hours: job.hours_per_week })}
+          {(live || status === 'expired') && <> · {t('dashboard.until', { date: dateLabel(String(job.expires_at).slice(0, 10)) })}</>}
         </p>
         <p className="dash-job-status">
           <StatusTag status={status} table={JOB_STATUS} /> <span className="muted">{JOB_STATUS[status].text}</span>
         </p>
         {expiresIn && <p className={'dash-expiry' + (soon ? ' dash-expiry-soon' : '')}>{expiresIn}</p>}
         {status === 'expired' && extendable && (
-          <p className="dash-expiry dash-expiry-soon">You can still extend it until {lastExtendDay}, without a new review.</p>
+          <p className="dash-expiry dash-expiry-soon">{t('dashboard.canStillExtend', { date: lastExtendDay })}</p>
         )}
         {status === 'expired' && !extendable && (
           <p className="dash-expiry dash-expiry-old">
-            It expired more than {EXTEND_GRACE_DAYS} days ago, so it can't be extended any more. To show it again, edit it
-            (choose a new "Show until" date) and submit it for review.
+            {t('dashboard.expiredLongAgo', { days: EXTEND_GRACE_DAYS })}
           </p>
         )}
         {live && clicks !== null && (
           <p className="dash-clicks">
-            <strong className="tnum">{clicks}</strong> {clicks === 1 ? 'apply click' : 'apply clicks'}
+            <strong className="tnum">{clicks}</strong> {t('dashboard.applyClicks', { count: clicks })}
           </p>
         )}
         {['changes_requested', 'rejected', 'closed'].includes(status) && job.review_note && (
           <div className="review-note">
-            <p className="review-note-label">Note from the reviewer</p>
+            <p className="review-note-label">{t('dashboard.reviewNote')}</p>
             <p className="job-text">{job.review_note}</p>
           </div>
         )}
       </div>
       <div className="dash-job-actions">
         {status !== 'rejected' && (
-          <Link className="btn btn-secondary btn-sm" to={`/dashboard/jobs/${job.id}/edit`} aria-label={`Edit ${job.title}`}>
-            Edit
+          <Link className="btn btn-secondary btn-sm" to={`/dashboard/jobs/${job.id}/edit`} aria-label={t('dashboard.editAria', { title: job.title })}>
+            {t('dashboard.edit')}
           </Link>
         )}
         {extendable && (
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => onAct(job, 'extend')}
-            aria-label={`Extend ${job.title} by 60 days`} title="Shown until 60 days from today, no new review">
-            Extend by 60 days
+            aria-label={t('dashboard.extendAria', { title: job.title })} title={t('dashboard.extendTitle')}>
+            {t('dashboard.extend')}
           </button>
         )}
         {['pending', 'published', 'changes_requested', 'expired'].includes(status) && (
-          <button type="button" className="btn btn-tertiary btn-sm" onClick={() => onAct(job, 'close')} aria-label={`Close ${job.title}`}>
-            Close
+          <button type="button" className="btn btn-tertiary btn-sm" onClick={() => onAct(job, 'close')} aria-label={t('dashboard.closeAria', { title: job.title })}>
+            {t('dashboard.close')}
           </button>
         )}
         {status === 'draft' && (
-          <button type="button" className="btn btn-tertiary btn-sm" onClick={() => onAct(job, 'delete')} aria-label={`Delete ${job.title}`}>
-            Delete
+          <button type="button" className="btn btn-tertiary btn-sm" onClick={() => onAct(job, 'delete')} aria-label={t('dashboard.deleteAria', { title: job.title })}>
+            {t('dashboard.delete')}
           </button>
         )}
       </div>
@@ -257,6 +260,7 @@ function JobRow({ job, clicks, onAct }) {
 // How many students follow the company: a number only. GigoMe never shows
 // companies who follows them.
 function Followers() {
+  const t = useT();
   const [count, setCount] = useState(null);
   useEffect(() => {
     let active = true;
@@ -267,10 +271,10 @@ function Followers() {
   }, []);
   return (
     <div>
-      <dt>Followers</dt>
+      <dt>{t('dashboard.followers')}</dt>
       <dd className="tnum">
-        {count === null ? '…' : count < 0 ? <span className="muted">Couldn't load</span> : `${count} ${count === 1 ? 'student follows' : 'students follow'} your company`}
-        <span className="field-hint dash-followers-hint">Students see your new jobs on their Saved jobs page. You see how many, never who.</span>
+        {count === null ? '…' : count < 0 ? <span className="muted">{t('dashboard.followersError')}</span> : t('dashboard.followersCount', { count })}
+        <span className="field-hint dash-followers-hint">{t('dashboard.followersHint')}</span>
       </dd>
     </div>
   );

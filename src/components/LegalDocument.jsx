@@ -1,5 +1,7 @@
 import { Fragment, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
+import { t } from '../lib/i18n.js';
+import { useT } from '../lib/useLang.js';
 
 // A legal text on /privacy or /terms, from src/legal/*.json (made from the
 // supplied page by scripts/legal-to-json.mjs). The JSON holds the exact
@@ -16,7 +18,7 @@ function render(node, key) {
   if (tag === 'table') {
     // Wide tables scroll sideways inside their box on phones, not the page.
     return (
-      <div className="legal-table" key={key} role="region" aria-label="Table" tabIndex={0}>
+      <div className="legal-table" key={key} role="region" aria-label={t('legal.table')} tabIndex={0}>
         <table>{children}</table>
       </div>
     );
@@ -37,10 +39,11 @@ function render(node, key) {
 }
 
 function Contents({ toc }) {
+  const t = useT();
   if (!toc.length) return null;
   return (
     <details className="legal-toc">
-      <summary>On this page</summary>
+      <summary>{t('legal.onThisPage')}</summary>
       <ol>
         {toc.map((t) => (
           <li key={t.href} className={t.sub ? 'sub' : undefined}>
@@ -60,7 +63,7 @@ export default function LegalDocument({ doc }) {
     if (!hash) return;
     const el = document.getElementById(decodeURIComponent(hash.slice(1)));
     if (el) el.scrollIntoView();
-  }, [hash]);
+  }, [hash, doc]);
 
   // The contents list goes after the title and the version paragraph.
   const firstP = doc.body.findIndex((n) => Array.isArray(n) && n[0] === 'p');

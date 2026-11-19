@@ -9,6 +9,8 @@ import { saveProfile } from '../lib/auth.js';
 import { announceProfileChange, checkProfile } from '../lib/profile.js';
 import { deleteMyAccount, endDeletedSession, fetchAccount } from '../lib/account.js';
 import { collectMyData, downloadJson } from '../lib/myData.js';
+import { CONTACT_EMAIL } from '../lib/contact.js';
+import { useT } from '../lib/useLang.js';
 
 export default function Account() {
   return <PageShell>{supabase ? <AccountGate /> : <ConfigError />}</PageShell>;
@@ -17,15 +19,17 @@ export default function Account() {
 function AccountGate() {
   const { session, loading } = useSession();
   const [leaving, setLeaving] = useState(false);
-  if (loading) return <p className="auth-card muted">Loading…</p>;
+  const t = useT();
+  if (loading) return <p className="auth-card muted">{t('common.loading')}</p>;
   // While the account is being deleted the session ends; don't bounce to /login.
   if (!session && !leaving) return <Navigate to={'/login?next=' + encodeURIComponent('/account')} replace />;
-  if (!session) return <p className="auth-card muted">Deleting your account…</p>;
+  if (!session) return <p className="auth-card muted">{t('account.deleting')}</p>;
   return <AccountPage user={session.user} onLeaving={() => setLeaving(true)} />;
 }
 
 function AccountPage({ user, onLeaving }) {
   const [state, setState] = useState({ status: 'loading', account: null });
+  const t = useT();
 
   useEffect(() => {
     let active = true;
@@ -37,9 +41,9 @@ function AccountPage({ user, onLeaving }) {
     };
   }, [user.id]);
 
-  if (state.status === 'loading') return <p className="auth-card muted">Loading…</p>;
+  if (state.status === 'loading') return <p className="auth-card muted">{t('common.loading')}</p>;
   if (state.status === 'error') {
-    return <p className="auth-card err" role="alert">We couldn't load your account. Check your connection and reload the page.</p>;
+    return <p className="auth-card err" role="alert">{t('account.loadError')}</p>;
   }
 
   const account = state.account || {};
@@ -49,29 +53,29 @@ function AccountPage({ user, onLeaving }) {
 
   return (
     <div className="auth-card account">
-      <h1>Your account</h1>
+      <h1>{t('account.title')}</h1>
       <dl className="account-facts">
         <div>
-          <dt>Email</dt>
+          <dt>{t('account.email')}</dt>
           <dd className="auth-email">{user.email}</dd>
         </div>
         <div>
-          <dt>University</dt>
-          <dd>{university || (isCompany ? 'None (company account)' : 'None')}</dd>
+          <dt>{t('account.university')}</dt>
+          <dd>{university || (isCompany ? t('account.noneCompany') : t('account.none'))}</dd>
         </div>
         {!isCompany && (
           <div>
-            <dt>Student status</dt>
+            <dt>{t('account.studentStatus')}</dt>
             <dd className="account-verification">
-              {verified ? 'Verified by your university email' : 'Not verified: you told us when you signed up'}
+              {verified ? t('account.verified') : t('account.notVerified')}
             </dd>
           </div>
         )}
       </dl>
       <p className="auth-small">
         {isCompany || verified
-          ? "Your email and university come from the address you log in with and can't be changed here."
-          : "Your email and university can't be changed here. If your university is wrong, write to hello@gigome.org."}
+          ? t('account.fixedNote')
+          : t('account.fixedNoteDeclared', { email: CONTACT_EMAIL })}
       </p>
 
       <ProfileForm userId={user.id} account={account} student={!isCompany} />
@@ -91,6 +95,7 @@ function ProfileForm({ userId, account, student }) {
   });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState({ kind: 'idle', message: '' });
+  const t = useT();
 
   function onChange(key, value) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -107,21 +112,21 @@ function ProfileForm({ userId, account, student }) {
       await saveProfile(userId, fields);
       setValues((v) => ({ ...v, fullName: fields.full_name }));
       announceProfileChange();
-      setStatus({ kind: 'saved', message: 'Your changes are saved.' });
+      setStatus({ kind: 'saved', message: 'account.saved' });
     } catch {
-      setStatus({ kind: 'error', message: "We couldn't save your changes. Check your connection and try again." });
+      setStatus({ kind: 'error', message: 'account.saveError' });
     }
   }
 
   return (
     <section className="account-section" aria-labelledby="profile-title">
-      <h2 id="profile-title">Your details</h2>
+      <h2 id="profile-title">{t('account.detailsTitle')}</h2>
       <form className="auth-form" onSubmit={onSubmit} noValidate>
         <ProfileFields values={values} onChange={onChange} errors={errors} student={student} />
-        {status.kind === 'error' && <p className="err" role="alert">{status.message}</p>}
-        <p className="account-saved" role="status">{status.kind === 'saved' ? status.message : ''}</p>
+        {status.kind === 'error' && <p className="err" role="alert">{t(status.message)}</p>}
+        <p className="account-saved" role="status">{status.kind === 'saved' ? t(status.message) : ''}</p>
         <button type="submit" className="btn btn-primary" disabled={status.kind === 'busy'}>
-          {status.kind === 'busy' ? 'Saving…' : 'Save changes'}
+          {status.kind === 'busy' ? t('account.saving') : t('account.saveChanges')}
         </button>
       </form>
     </section>
@@ -136,34 +141,36 @@ const CONFIRM_WORD = 'DELETE';
 // rows. Nothing is stored or sent anywhere.
 function DownloadData({ user, isCompany }) {
   const [state, setState] = useState({ busy: false, message: '', error: false });
+  const t = useT();
   async function onDownload() {
     setState({ busy: true, message: '', error: false });
     try {
       const data = await collectMyData(user);
       downloadJson(data, `gigome-my-data-${new Date().toISOString().slice(0, 10)}.json`);
-      setState({ busy: false, message: 'Your file has been downloaded.', error: false });
+      setState({ busy: false, message: 'account.downloaded', error: false });
     } catch {
-      setState({ busy: false, message: "We couldn't put your data together. Check your connection and try again.", error: true });
+      setState({ busy: false, message: 'account.dataError', error: true });
     }
   }
   return (
     <section className="account-section account-data" aria-labelledby="account-data-title">
-      <h2 id="account-data-title">Your data</h2>
+      <h2 id="account-data-title">{t('account.dataTitle')}</h2>
       <p className="account-data-text">
         {isCompany
-          ? 'Download a file (JSON) with everything GigoMe holds about your account: your email and profile, your company, its jobs with how to apply and their apply clicks, and any feedback and reports you sent.'
-          : 'Download a file (JSON) with everything GigoMe holds about you: your email and profile, saved jobs, saved searches, companies you follow, the jobs you opened with "Apply", and any feedback and reports you sent.'}
+          ? t('account.dataTextCompany')
+          : t('account.dataTextStudent')}
       </p>
       <button type="button" className="btn btn-secondary account-data-btn" onClick={onDownload} disabled={state.busy}>
-        {state.busy ? 'Preparing…' : 'Download my data'}
+        {state.busy ? t('account.preparing') : t('account.download')}
       </button>
-      <p className={state.error ? 'err' : 'account-saved'} role={state.error ? 'alert' : 'status'}>{state.message}</p>
+      <p className={state.error ? 'err' : 'account-saved'} role={state.error ? 'alert' : 'status'}>{state.message && t(state.message)}</p>
     </section>
   );
 }
 
 function DeleteAccount({ isCompany, onLeaving }) {
   const navigate = useNavigate();
+  const t = useT();
   const [step, setStep] = useState('ask');
   const [kept, setKept] = useState(false);
   const [typed, setTyped] = useState('');
@@ -197,16 +204,13 @@ function DeleteAccount({ isCompany, onLeaving }) {
   if (step === 'ask') {
     return (
       <section className="account-section account-danger" aria-labelledby="delete-title">
-        <h2 id="delete-title">Delete my account</h2>
-        <p className="account-danger-text">
-          Before you go, remember that new opportunities are added regularly. Still want to leave? You can delete your
-          account below.
-        </p>
-        {kept && <p className="account-kept" role="status">Good, your account stays as it is.</p>}
+        <h2 id="delete-title">{t('account.deleteTitle')}</h2>
+        <p className="account-danger-text">{t('account.deleteReminder')}</p>
+        {kept && <p className="account-kept" role="status">{t('account.kept')}</p>}
         <div className="account-choice">
-          <button type="button" className="btn btn-secondary" onClick={keep}>Keep my account</button>
+          <button type="button" className="btn btn-secondary" onClick={keep}>{t('account.keep')}</button>
           <button type="button" className="btn btn-secondary" onClick={() => { setKept(false); setStep('confirm'); }}>
-            Delete my account
+            {t('account.delete')}
           </button>
         </div>
       </section>
@@ -215,21 +219,18 @@ function DeleteAccount({ isCompany, onLeaving }) {
 
   return (
     <section className="account-section account-danger" aria-labelledby="delete-title">
-      <h2 id="delete-title">Delete my account</h2>
+      <h2 id="delete-title">{t('account.deleteTitle')}</h2>
       <div className="account-danger-text">
         <p>
-          This deletes your account, your profile and any feedback you sent.{' '}
-          {isCompany ? 'Your company, its jobs and how to apply for them are deleted too. ' : ''}
-          <strong>It can't be undone.</strong>
+          {t('account.deleteBody')}{' '}
+          {isCompany ? t('account.deleteBodyCompany') + ' ' : ''}
+          <strong>{t('account.deleteUndone')}</strong>
         </p>
-        <p className="muted">
-          GigoMe counts apply clicks on each job (how often students pressed "Apply"). Yours stay in those counts, but
-          are no longer linked to you.
-        </p>
+        <p className="muted">{t('account.deleteClicks')}</p>
       </div>
       <form className="auth-form" onSubmit={onSubmit} noValidate>
         <label className="field">
-          Type {CONFIRM_WORD} to confirm
+          {t('account.typeToConfirm', { word: CONFIRM_WORD })}
           <input
             className="input"
             type="text"
@@ -244,9 +245,9 @@ function DeleteAccount({ isCompany, onLeaving }) {
         </label>
         {error && <p className="err" role="alert">{error}</p>}
         <div className="account-choice">
-          <button type="button" className="btn btn-secondary" onClick={keep} disabled={busy}>Keep my account</button>
+          <button type="button" className="btn btn-secondary" onClick={keep} disabled={busy}>{t('account.keep')}</button>
           <button type="submit" className="btn btn-secondary account-delete-btn" disabled={!confirmed || busy}>
-            {busy ? 'Deleting…' : 'Delete my account'}
+            {busy ? t('account.deletingBtn') : t('account.delete')}
           </button>
         </div>
       </form>

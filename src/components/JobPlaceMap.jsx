@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createMap, maplibregl } from '../lib/map.js';
+import { useT } from '../lib/useLang.js';
 
 // The small map on a job page. Loaded with React.lazy, and only once it is
 // about to scroll into view. An exact location gets a pin and, within about
@@ -20,6 +21,7 @@ function circle([lng, lat], metres, steps = 64) {
 }
 
 export default function JobPlaceMap({ point, exact, station, title }) {
+  const t = useT();
   const box = useRef(null);
   const [state, setState] = useState('loading');
 
@@ -40,7 +42,7 @@ export default function JobPlaceMap({ point, exact, station, title }) {
         const pin = document.createElement('div');
         pin.className = 'job-marker';
         pin.setAttribute('role', 'img');
-        pin.setAttribute('aria-label', `Where "${title}" is`);
+        pin.setAttribute('aria-label', t('map.pinLabel', { title }));
         const dot = document.createElement('span');
         dot.className = 'job-marker-dot';
         pin.append(dot);
@@ -69,9 +71,9 @@ export default function JobPlaceMap({ point, exact, station, title }) {
 
   return (
     <div className="job-map-wrap">
-      <div ref={box} className="job-map" role="region" aria-label={exact ? 'Map: where the job is' : 'Map: the area of the job'}
+      <div ref={box} className="job-map" role="region" aria-label={exact ? t('map.jobRegion') : t('map.areaRegion')}
         data-state={state} data-exact={String(exact)} />
-      {state === 'error' && <p className="jobs-map-note" role="alert">The map can't be shown right now.</p>}
+      {state === 'error' && <p className="jobs-map-note" role="alert">{t('map.cantShow')}</p>}
     </div>
   );
 }

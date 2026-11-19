@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { t } from './i18n.js';
 
 // The logged-in user's profile with their university's name (for /account).
 export async function fetchAccount(userId) {
@@ -15,7 +16,7 @@ export async function fetchAccount(userId) {
 // logged-in user. Returns an error message, or null when it's done.
 export async function deleteMyAccount() {
   const { error } = await supabase.rpc('delete_my_account');
-  return error ? "We couldn't delete your account. Check your connection and try again." : null;
+  return error ? t('account.deleteError') : null;
 }
 
 // After deleting: clear the session on this device. The server may refuse the

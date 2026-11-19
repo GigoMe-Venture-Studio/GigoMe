@@ -8,34 +8,29 @@ import { safeNext } from '../lib/auth.js';
 import LogOutButton from '../components/LogOutButton.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
+import { useT } from '../lib/useLang.js';
 
 // /employers: what GigoMe is for companies, and the employer login.
 export default function Employers() {
+  const t = useT();
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
   return (
     <PageShell className="employers-main">
       <div className="employers">
         <section className="employers-intro" aria-labelledby="employers-title">
-          <h1 id="employers-title">Hire students in Milan who work in English</h1>
-          <p className="lead">
-            GigoMe is a job board for international students in Milan: paid part-time jobs and gigs they can do in
-            English. We don't list internships or unpaid roles.
-          </p>
-          <h2>Free to list jobs</h2>
-          <p>Listing jobs on GigoMe is free. Students apply directly with you, on your website or by email.</p>
-          <h2>How review works</h2>
+          <h1 id="employers-title">{t('employers.title')}</h1>
+          <p className="lead">{t('employers.lead')}</p>
+          <h2>{t('employers.freeTitle')}</h2>
+          <p>{t('employers.freeText')}</p>
+          <h2>{t('employers.reviewTitle')}</h2>
           <ol className="employers-steps">
-            <li>Log in with your work email and tell us about your company. We review it, usually within 2 working days.</li>
-            <li>Write your jobs. You can prepare drafts while we review your company.</li>
-            <li>
-              Submit each job for review. A person reviews every job before it goes live: we check that the role is
-              clearly described, pay and hours are stated, nothing is asked of students up front, and nothing in it looks
-              discriminatory or unlawful.
-            </li>
+            <li>{t('employers.step1')}</li>
+            <li>{t('employers.step2')}</li>
+            <li>{t('employers.step3')}</li>
           </ol>
           <p className="muted">
-            Questions? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            {t('employers.questions', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
           </p>
         </section>
         <div className="employers-login">
@@ -58,15 +53,17 @@ function EmployerLogin({ next }) {
 }
 
 function AlreadyIn({ account, email, next }) {
-  if (account.status === 'loading') return <p className="auth-card muted">Loading…</p>;
+  const t = useT();
+  if (account.status === 'loading') return <p className="auth-card muted">{t('common.loading')}</p>;
   if (account.status === 'student') {
     return (
       <div className="auth-card">
-        <h2 className="employers-login-title">You're logged in as a student</h2>
+        <h2 className="employers-login-title">{t('employers.studentTitle')}</h2>
         <p className="lead">
-          <strong className="auth-email">{email}</strong> is a student account. Each email has one role on GigoMe, so to
-          list jobs, log out and log in here with a different email, like your work email. Looking for work?{' '}
-          <Link to="/jobs">Browse jobs</Link>.
+          {t('employers.studentText', {
+            email: <strong className="auth-email">{email}</strong>,
+            link: (words) => <Link to="/jobs">{words}</Link>
+          })}
         </p>
         <LogOutArea />
       </div>
@@ -75,13 +72,13 @@ function AlreadyIn({ account, email, next }) {
   const to = account.status === 'noCompany' ? '/employers/setup' : next || '/dashboard';
   return (
     <div className="auth-card">
-      <h2 className="employers-login-title">You're logged in</h2>
+      <h2 className="employers-login-title">{t('employers.loggedInTitle')}</h2>
       <p className="lead">
-        Logged in as <strong className="auth-email">{email}</strong>.
+        {t('employers.loggedInAs', { email: <strong className="auth-email">{email}</strong> })}
       </p>
       <div className="auth-buttons">
         <Link className="btn btn-primary" to={to}>
-          {account.status === 'noCompany' ? 'Set up your company' : 'Go to your dashboard'}
+          {account.status === 'noCompany' ? t('employers.setUpCompany') : t('employers.goToDashboard')}
         </Link>
       </div>
     </div>

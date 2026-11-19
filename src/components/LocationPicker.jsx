@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { createMap, maplibregl } from '../lib/map.js';
+import { useT } from '../lib/useLang.js';
 
 // The small map on the job form: tap the map to place the pin, drag it to
 // adjust. Loaded with React.lazy. value is { lat, lon } or null; centre is
 // [lng, lat] of the chosen area (or Milan).
 export default function LocationPicker({ value, centre, onChange }) {
+  const t = useT();
   const box = useRef(null);
   const map = useRef(null);
   const marker = useRef(null);
@@ -65,9 +67,9 @@ export default function LocationPicker({ value, centre, onChange }) {
 
   return (
     <div className="picker-wrap">
-      <div ref={box} className="picker-map" role="application" aria-label="Map: tap to place the pin, drag it to adjust"
+      <div ref={box} className="picker-map" role="application" aria-label={t('picker.mapLabel')}
         data-state={state} data-pin={value ? `${value.lat},${value.lon}` : ''} />
-      {state === 'error' && <p className="err">The map can't be shown right now. You can still save the job with its area.</p>}
+      {state === 'error' && <p className="err">{t('picker.error')}</p>}
     </div>
   );
 }

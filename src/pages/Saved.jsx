@@ -5,6 +5,7 @@ import ConfigError from '../components/ConfigError.jsx';
 import JobCard from '../components/JobCard.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
+import { useT } from '../lib/useLang.js';
 import ExampleTag from '../components/ExampleTag.jsx';
 import { fetchJobs, isExample, realFirst } from '../lib/jobs.js';
 import { fetchAreas } from '../lib/areas.js';
@@ -31,6 +32,7 @@ export default function Saved() {
 }
 
 function SavedPage() {
+  const t = useT();
   const { session, loading } = useSession();
   const saved = useSavedJobs();
   const [state, setState] = useState({ status: 'loading', rows: [], jobs: [] });
@@ -53,13 +55,13 @@ function SavedPage() {
     };
   }, [saved.canSave]);
 
-  if (loading || (session && !saved.loaded)) return <p className="muted">Loading…</p>;
+  if (loading || (session && !saved.loaded)) return <p className="muted">{t('common.loading')}</p>;
   if (!session) return <Navigate to={'/login?next=' + encodeURIComponent('/saved')} replace />;
   if (!saved.canSave) {
     return (
       <div className="empty-state page-empty">
-        <h1 className="page-title">Saved jobs</h1>
-        <p className="muted">Saving jobs is for student accounts.</p>
+        <h1 className="page-title">{t('header.savedJobs')}</h1>
+        <p className="muted">{t('saved.studentsOnly')}</p>
       </div>
     );
   }
@@ -73,15 +75,15 @@ function SavedPage() {
 
   return (
     <>
-      <h1 className="page-title">Saved jobs</h1>
-      <p className="muted jobs-lead">Only you can see this page. Nothing here is emailed.</p>
-      {state.status === 'loading' && <p className="muted saved-loading">Loading your saved jobs…</p>}
-      {state.status === 'error' && <p className="err" role="alert">We couldn't load your saved jobs. Check your connection and reload the page.</p>}
+      <h1 className="page-title">{t('header.savedJobs')}</h1>
+      <p className="muted jobs-lead">{t('saved.lead')}</p>
+      {state.status === 'loading' && <p className="muted saved-loading">{t('saved.loading')}</p>}
+      {state.status === 'error' && <p className="err" role="alert">{t('saved.error')}</p>}
       {state.status === 'ready' && rows.length === 0 && (
         <div className="empty-state">
-          <p><strong>No saved jobs yet.</strong></p>
-          <p className="muted">Press the bookmark on a job to keep it here.</p>
-          <Link className="btn btn-secondary btn-sm" to="/jobs">Browse jobs</Link>
+          <p><strong>{t('saved.empty')}</strong></p>
+          <p className="muted">{t('saved.emptyHint')}</p>
+          <Link className="btn btn-secondary btn-sm" to="/jobs">{t('saved.browse')}</Link>
         </div>
       )}
       {live.length > 0 && (
@@ -91,7 +93,7 @@ function SavedPage() {
       )}
       {gone.length > 0 && (
         <section className="saved-gone" aria-labelledby="gone-title">
-          <h2 className="section-title" id="gone-title">No longer available</h2>
+          <h2 className="section-title" id="gone-title">{t('saved.gone')}</h2>
           <ul className="saved-gone-list">
             {gone.map((r) => <GoneRow key={r.job_id} row={r} />)}
           </ul>
@@ -105,17 +107,18 @@ function SavedPage() {
 }
 
 function GoneRow({ row }) {
+  const t = useT();
   const [error, setError] = useState('');
   return (
     <li className="saved-gone-row">
       <div>
         <p className="role-title">{row.title}</p>
-        <p className="role-co">{row.company_name}{isExample(row) && <> <ExampleTag /></>} · <span className="muted">No longer available</span></p>
+        <p className="role-co">{row.company_name}{isExample(row) && <> <ExampleTag /></>} · <span className="muted">{t('saved.gone')}</span></p>
         {error && <p className="err" role="alert">{error}</p>}
       </div>
       <button type="button" className="btn btn-tertiary btn-sm" onClick={async () => setError((await setSaved(row.job_id, false)) || '')}
-        aria-label={`Remove ${row.title} from saved jobs`}>
-        Remove
+        aria-label={t('saved.removeLabel', { title: row.title })}>
+        {t('saved.remove')}
       </button>
     </li>
   );
@@ -139,6 +142,7 @@ function useLoad(load) {
 }
 
 function SavedSearches() {
+  const t = useT();
   const [areas, setAreas] = useState([]);
   useEffect(() => {
     fetchAreas().then(setAreas).catch(() => setAreas([]));
@@ -147,11 +151,11 @@ function SavedSearches() {
   const [error, setError] = useState('');
   return (
     <section className="saved-section" id="saved-searches" aria-labelledby="searches-title">
-      <h2 className="section-title" id="searches-title">Saved searches</h2>
-      {state.status === 'loading' && <p className="muted">Loading…</p>}
-      {state.status === 'error' && <p className="err" role="alert">We couldn't load your saved searches.</p>}
+      <h2 className="section-title" id="searches-title">{t('saved.searches.title')}</h2>
+      {state.status === 'loading' && <p className="muted">{t('common.loading')}</p>}
+      {state.status === 'error' && <p className="err" role="alert">{t('saved.searches.error')}</p>}
       {state.status === 'ready' && state.data.length === 0 && (
-        <p className="muted">None yet. On <Link to="/jobs">Jobs</Link>, choose some filters and press "Save this search".</p>
+        <p className="muted">{t('saved.searches.none', { link: (s) => <Link to="/jobs">{s}</Link> })}</p>
       )}
       {error && <p className="err" role="alert">{error}</p>}
       {state.status === 'ready' && state.data.length > 0 && (
@@ -163,23 +167,23 @@ function SavedSearches() {
                 <p className="muted saved-row-meta">{searchSummary(s.filters, areas)}</p>
                 <p className="saved-row-new">
                   {s.newCount == null
-                    ? <span className="muted">Couldn't count new jobs</span>
+                    ? <span className="muted">{t('saved.searches.countFailed')}</span>
                     : s.newCount > 0
-                      ? <span className="tag tag-new">{s.newCount} new since your last visit</span>
-                      : <span className="muted">Nothing new since your last visit</span>}
+                      ? <span className="tag tag-new">{t('saved.searches.new', { count: s.newCount })}</span>
+                      : <span className="muted">{t('saved.searches.nothingNew')}</span>}
                 </p>
               </div>
-              <button type="button" className="btn btn-tertiary btn-sm" aria-label={`Delete the saved search ${s.name}`}
+              <button type="button" className="btn btn-tertiary btn-sm" aria-label={t('saved.searches.deleteLabel', { name: s.name })}
                 onClick={async () => {
                   setError('');
                   try {
                     await deleteSearch(s.id);
                     reload();
                   } catch {
-                    setError("We couldn't delete that search. Try again.");
+                    setError(t('saved.searches.deleteFailed'));
                   }
                 }}>
-                Delete
+                {t('saved.searches.delete')}
               </button>
             </li>
           ))}
@@ -190,6 +194,7 @@ function SavedSearches() {
 }
 
 function Following() {
+  const t = useT();
   const [state, reload] = useLoad(async () => {
     const follows = await fetchFollows();
     const visible = follows.filter((f) => f.companies);
@@ -199,22 +204,22 @@ function Following() {
   const [error, setError] = useState('');
   return (
     <section className="saved-section" id="following" aria-labelledby="following-title">
-      <h2 className="section-title" id="following-title">New from companies you follow</h2>
-      {state.status === 'loading' && <p className="muted">Loading…</p>}
-      {state.status === 'error' && <p className="err" role="alert">We couldn't load the companies you follow.</p>}
+      <h2 className="section-title" id="following-title">{t('saved.following.title')}</h2>
+      {state.status === 'loading' && <p className="muted">{t('common.loading')}</p>}
+      {state.status === 'error' && <p className="err" role="alert">{t('saved.following.error')}</p>}
       {state.status === 'ready' && state.data.follows.length === 0 && (
-        <p className="muted">You don't follow any companies yet. Press "Follow" on a company's page.</p>
+        <p className="muted">{t('saved.following.none')}</p>
       )}
       {state.status === 'ready' && state.data.follows.length > 0 && (
         <>
           {state.data.jobs.length === 0 ? (
-            <p className="muted">No new jobs from them in the last {NEW_FROM_FOLLOWED_DAYS} days.</p>
+            <p className="muted">{t('saved.following.noNew', { days: NEW_FROM_FOLLOWED_DAYS })}</p>
           ) : (
             <ul className="role-list job-list">
               {state.data.jobs.map((job) => <JobCard key={job.id} job={job} />)}
             </ul>
           )}
-          <h3 className="saved-subtitle">Companies you follow</h3>
+          <h3 className="saved-subtitle">{t('saved.following.companies')}</h3>
           {error && <p className="err" role="alert">{error}</p>}
           <ul className="saved-rows">
             {state.data.follows.map((f) => (
@@ -223,17 +228,17 @@ function Following() {
                   <Link className="saved-row-title" to={`/companies/${f.company_id}`}>{f.companies.name}</Link>
                   {f.companies.is_example && <> <ExampleTag company /></>}
                 </div>
-                <button type="button" className="btn btn-tertiary btn-sm" aria-label={`Unfollow ${f.companies.name}`}
+                <button type="button" className="btn btn-tertiary btn-sm" aria-label={t('saved.following.unfollowLabel', { name: f.companies.name })}
                   onClick={async () => {
                     setError('');
                     try {
                       await setFollowing(f.company_id, false);
                       reload();
                     } catch {
-                      setError("We couldn't unfollow. Try again.");
+                      setError(t('saved.following.unfollowFailed'));
                     }
                   }}>
-                  Unfollow
+                  {t('saved.following.unfollow')}
                 </button>
               </li>
             ))}
@@ -245,14 +250,15 @@ function Following() {
 }
 
 function Opened() {
+  const t = useT();
   const [state] = useLoad(fetchOpenedJobs);
   return (
     <section className="saved-section" id="opened" aria-labelledby="opened-title">
-      <h2 className="section-title" id="opened-title">Jobs you opened</h2>
-      <p className="muted saved-section-note">Jobs where you pressed "Apply". GigoMe only sees that you opened the application, not what happened next.</p>
-      {state.status === 'loading' && <p className="muted">Loading…</p>}
-      {state.status === 'error' && <p className="err" role="alert">We couldn't load this list.</p>}
-      {state.status === 'ready' && state.data.length === 0 && <p className="muted">None yet.</p>}
+      <h2 className="section-title" id="opened-title">{t('saved.opened.title')}</h2>
+      <p className="muted saved-section-note">{t('saved.opened.note')}</p>
+      {state.status === 'loading' && <p className="muted">{t('common.loading')}</p>}
+      {state.status === 'error' && <p className="err" role="alert">{t('saved.opened.error')}</p>}
+      {state.status === 'ready' && state.data.length === 0 && <p className="muted">{t('saved.opened.none')}</p>}
       {state.status === 'ready' && state.data.length > 0 && (
         <ul className="saved-rows">
           {state.data.map((r) => (
@@ -264,7 +270,7 @@ function Opened() {
                   <span className="saved-row-title">{r.title}</span>
                 )}
                 <p className="muted saved-row-meta">
-                  {r.company_name}{r.live ? '' : ' · No longer available'}
+                  {r.company_name}{r.live ? '' : ` · ${t('saved.gone')}`}
                 </p>
                 <p className="saved-row-meta">{openedLabel(r.last_opened_at)}</p>
               </div>

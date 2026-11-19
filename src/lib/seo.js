@@ -6,28 +6,35 @@
 // "noindex" (and robots.txt asks crawlers to skip them).
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { t } from './i18n.js';
+import { useLang } from './useLang.js';
 
 export const SITE = 'https://gigome.org';
-const DEFAULT_DESCRIPTION =
-  'Part-time jobs and gigs in Milan, in English. A free, student-run job board for international students.';
+const defaultDescription = () => t('seo.description');
 
-// [path, title, description, indexable]
+// [path, key, indexable]: the title is seo.<key>.title, the description
+// seo.<key>.description (or the site's default description), in the
+// language the site is shown in.
 const PAGES = [
-  ['/', 'GigoMe: part-time jobs and gigs in Milan, in English', DEFAULT_DESCRIPTION, true],
-  ['/jobs', 'Jobs in Milan in English', 'Part-time jobs and gigs in Milan you can do in English. Filter by area, schedule, pay and how much Italian is needed.', true],
-  ['/employers', 'Hire international students in Milan', 'Post paid part-time jobs and gigs for international students in Milan who work in English. Free, reviewed by the GigoMe team.', true],
-  ['/privacy', 'Privacy Notice', 'How GigoMe handles personal data: who is responsible, what is collected and why, who can see it, how long it is kept, and your rights.', true],
-  ['/how-it-works', 'How GigoMe works', 'How GigoMe works for students and employers: finding jobs, applying directly with employers, company and job review, and what GigoMe sees.', true],
-  ['/safety', 'Staying safe', 'What GigoMe checks and what it can\'t, tips for meeting an employer, and what to do if something is wrong.', true],
-  ['/terms', 'Terms and Conditions', 'The terms for using GigoMe, for students and for employers and other advertisers.', true],
-  ['/login', 'Log in', 'Log in or sign up to GigoMe as a student, with any email.', false],
-  ['/welcome', 'Welcome', DEFAULT_DESCRIPTION, false],
-  ['/account', 'Your account', DEFAULT_DESCRIPTION, false],
-  ['/saved', 'Saved jobs', DEFAULT_DESCRIPTION, false],
-  ['/employers/setup', 'Set up your company', DEFAULT_DESCRIPTION, false],
-  ['/dashboard', 'Dashboard', DEFAULT_DESCRIPTION, false],
-  ['/admin', 'Moderation', DEFAULT_DESCRIPTION, false]
+  ['/', 'home', true],
+  ['/jobs', 'jobs', true],
+  ['/employers', 'employers', true],
+  ['/privacy', 'privacy', true],
+  ['/how-it-works', 'howItWorks', true],
+  ['/safety', 'safety', true],
+  ['/terms', 'terms', true],
+  ['/login', 'login', false],
+  ['/welcome', 'welcome', false],
+  ['/account', 'account', false],
+  ['/saved', 'saved', false],
+  ['/employers/setup', 'setup', false],
+  ['/dashboard', 'dashboard', false],
+  ['/admin', 'admin', false]
 ];
+const pageDescription = (key) => {
+  const d = t(`seo.${key}.description`);
+  return d === `seo.${key}.description` ? defaultDescription() : d;
+};
 
 function setMeta(selector, attr, name, content) {
   let el = document.head.querySelector(selector);
@@ -47,20 +54,21 @@ function setMeta(selector, attr, name, content) {
 // link, and "noindex" for pages search engines should leave out.
 export function applyMeta({ title, description, path, index = true }) {
   document.title = !title ? 'GigoMe' : title.startsWith('GigoMe') ? title : `${title} | GigoMe`;
-  setMeta('meta[name="description"]', 'name', 'description', description || DEFAULT_DESCRIPTION);
+  setMeta('meta[name="description"]', 'name', 'description', description || defaultDescription());
   setMeta('link[rel="canonical"]', 'rel', 'canonical', index && path ? SITE + path : null);
   setMeta('meta[name="robots"]', 'name', 'robots', index ? null : 'noindex');
 }
 
 export function RouteMeta() {
   const { pathname } = useLocation();
+  const lang = useLang();
   useEffect(() => {
     const page = PAGES.find(([p]) => p === pathname);
-    if (page) applyMeta({ title: page[1], description: page[2], path: page[0], index: page[3] });
-    else if (/^\/dashboard\//.test(pathname)) applyMeta({ title: 'Your job', index: false });
+    if (page) applyMeta({ title: t(`seo.${page[1]}.title`), description: pageDescription(page[1]), path: page[0], index: page[2] });
+    else if (/^\/dashboard\//.test(pathname)) applyMeta({ title: t('seo.yourJob.title'), index: false });
     else if (/^\/(jobs|companies)\/[^/]+$/.test(pathname)) applyMeta({ title: '', path: pathname });
-    else applyMeta({ title: 'Page not found', index: false });
-  }, [pathname]);
+    else applyMeta({ title: t('seo.notFound.title'), index: false });
+  }, [pathname, lang]);
   return null;
 }
 
@@ -71,9 +79,11 @@ export function usePageMeta(meta) {
   const title = meta && meta.title;
   const description = meta && meta.description;
   const index = !meta || meta.index !== false;
+  // Again after a language change (RouteMeta has just set the page's default).
+  const lang = useLang();
   useEffect(() => {
     if (title != null) applyMeta({ title, description, path: pathname, index });
-  }, [title, description, index, pathname]);
+  }, [title, description, index, pathname, lang]);
 }
 
 // One plain-text line from free text, for a meta description.

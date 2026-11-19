@@ -16,15 +16,17 @@ const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 let client = null;
 let configError = null;
 
+// configError is a technical line for the team (shown under "For the GigoMe
+// team:"), in English in both languages.
 if (!url || !publishableKey) {
-  configError =
+  configError = // i18n-ignore: for the team
     'Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. Copy .env.example to .env.local for ' +
-    'local work, and set both as build variables in Cloudflare.';
+    'local work, and set both as build variables in Cloudflare.'; // i18n-ignore: for the team
 } else {
   try {
     client = createClient(url, publishableKey);
   } catch (error) {
-    configError = 'Could not start Supabase: ' + error.message;
+    configError = 'Could not start Supabase: ' + error.message; // i18n-ignore: for the team
   }
 }
 
