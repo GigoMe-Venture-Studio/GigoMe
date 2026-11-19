@@ -28,13 +28,13 @@ nothing to restore from.
 | Reports and feedback | Open scam reports and every feedback message: gone, including evidence about bad employers |
 | Moderation log | Who approved or rejected what, and why: gone |
 | Admins | Nobody can open `/admin` until someone adds the admins again in the dashboard |
-| Universities added in the dashboard | Only Bocconi comes back (it's in a migration). Any other university and its email domains must be typed in again |
+| Universities added in the dashboard | The universities in the migrations come back (SUPABASE.md, "Universities"). Any other university, or domain, added in the dashboard must be typed in again |
 | Terms acceptances, retention settings | Gone |
 
 ### What survives anyway
 
 - **The structure:** every table, rule, function and check is in `supabase/migrations/`, and is applied again to a new project.
-- **Fixed data that's in migrations:** the areas of Milan, Bocconi, the metro stations.
+- **Fixed data that's in migrations:** the areas of Milan, the universities (SUPABASE.md, "Universities"), the metro stations.
 - **The website:** it is built from GitHub by Cloudflare.
 - **Not in any database backup either:** the Supabase project's settings (Site URL, email templates, Brevo SMTP, rate limits, the Turnstile secret). If the whole project is lost, they must be set again by hand. Keep them written down in Bitwarden (`HANDOVER.md` sections 1, 6 and 7).
 

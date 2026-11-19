@@ -18,7 +18,7 @@ async function rows(label, request) {
 export async function collectMyData(user) {
   const profile = await rows('profile', supabase
     .from('profiles')
-    .select('account_type, full_name, degree_level, graduation_year, created_at, terms_version, terms_accepted_at, universities(name)')
+    .select('account_type, full_name, degree_level, graduation_year, created_at, terms_version, terms_accepted_at, student_verification, other_university, student_declared_at, universities(name)')
     .eq('id', user.id)
     .maybeSingle());
   const data = {
@@ -37,6 +37,9 @@ export async function collectMyData(user) {
       degree_level: profile.degree_level,
       graduation_year: profile.graduation_year,
       university: profile.universities ? profile.universities.name : null,
+      university_you_typed: profile.other_university || null,
+      student_verification: profile.student_verification || null,
+      student_answers_given_at: profile.student_declared_at || null,
       created_at: profile.created_at,
       terms_accepted: profile.terms_accepted_at ? { version: profile.terms_version, at: profile.terms_accepted_at } : null
     },

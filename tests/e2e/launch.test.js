@@ -203,6 +203,13 @@ async function downloadJson(p, click) {
     const stats = await p.$$eval('.admin-stats-list > div', (d) => d.map((x) => x.innerText.replace(/\n+/g, ': ')));
     ok(stats.join(' | ') === 'Students registered: 41 | Companies approved: 7 | Companies with a live job: 5 | Live jobs: 12 | Apply clicks this week: 33 | Students who clicked this week: 19', 'the six numbers: ' + stats.join(' | '));
     ok(log.rpcs.some(([n]) => n === 'admin_stats'), 'read through admin_stats()');
+    // Students by verification method and university, and the "Other" names with counts.
+    await p.waitForSelector('.admin-students .admin-table');
+    const rows = await p.$$eval('.admin-students .admin-table tr', (trs) => trs.map((tr) => [...tr.children].map((c) => c.innerText.trim()).join(' / ')));
+    ok(rows.join(' | ') === 'University / University email / Told us (any email) / Total | Bocconi University / 20 / 0 / 20 | Politecnico di Milano / 12 / 3 / 15 | Other / 0 / 4 / 4 | Not answered yet / 0 / 2 / 2 | All students / 32 / 9 / 41',
+       'students by university and how they signed up, listed universities first, then Other and not answered: ' + rows.join(' | '));
+    const others = await p.$$eval('.admin-others li', (li) => li.map((x) => x.innerText.replace(/\s+/g, ' ').trim()));
+    ok(others.join(', ') === 'Accademia di Brera 3, NABA 1' && log.rpcs.some(([n]) => n === 'admin_student_counts') && log.rpcs.some(([n]) => n === 'admin_other_universities'), '"Other" universities with counts: ' + others.join(', '));
     await ctx.close(); }
   { const ctx = await b.newContext(devices['iPhone 13']); await amock(ctx, { admin: true }); const p = await ctx.newPage();
     await p.goto(E + '/login'); await login(p); await p.goto(E + '/admin'); await p.waitForSelector('.admin-stats-list');

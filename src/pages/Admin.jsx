@@ -12,6 +12,7 @@ import { REPORT_REASON_LABEL } from '../lib/reports.js';
 import {
   FEEDBACK_SHOWN,
   LOG_ACTION_LABEL,
+  VERIFICATION_LABELS,
   COMPANY_CHECKS,
   REVIEW_CHECKLIST,
   checkIsAdmin,
@@ -21,6 +22,7 @@ import {
   fetchRecentDecisions,
   fetchRecentFeedback,
   fetchLiveJobsMissingInfo,
+  fetchStudentBreakdown,
   missingInfo,
   resolveReport,
   reviewJob,
@@ -138,6 +140,8 @@ function AdminPage() {
         )}
       </section>
 
+      <AdminStudents />
+
       <section className="admin-section" id="admin-feedback" aria-labelledby="feedback-title">
         <h2 id="feedback-title">Feedback</h2>
         {data.feedback === null ? (
@@ -218,6 +222,89 @@ function AdminStats() {
         </dl>
       )}
       <p className="field-hint">Live jobs: published, not expired, approved company. Weeks start on Monday (UTC).</p>
+    </section>
+  );
+}
+
+// Students by how they signed up (a listed university's email, or any email
+// and "Which university?" on /welcome) and by university, and the names typed
+// under "Other", so their student domains can be looked up and added (SUPABASE.md,
+// "Universities"). Loaded on its own: if it fails, the queue still works.
+function AdminStudents() {
+  const [data, setData] = useState(undefined);
+  useEffect(() => {
+    let active = true;
+    fetchStudentBreakdown().then((d) => active && setData(d)).catch(() => active && setData(null));
+    return () => {
+      active = false;
+    };
+  }, []);
+  return (
+    <section className="admin-section admin-students" id="admin-students" aria-labelledby="students-title">
+      <h2 id="students-title">Students</h2>
+      {data === undefined ? (
+        <p className="muted">Loading…</p>
+      ) : data === null ? (
+        <p className="err" role="alert">We couldn't load the students' numbers. Reload the page.</p>
+      ) : data.rows.length === 0 ? (
+        <p className="muted">No students yet.</p>
+      ) : (
+        <>
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <caption className="sr-only">Students by university and how they signed up</caption>
+              <thead>
+                <tr>
+                  <th scope="col">University</th>
+                  <th scope="col">{VERIFICATION_LABELS.university_email}</th>
+                  <th scope="col">{VERIFICATION_LABELS.self_declared}</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.rows.map((r) => (
+                  <tr key={r.university || ''}>
+                    <th scope="row">{r.university === null ? 'Not answered yet' : r.university}</th>
+                    <td className="tnum">{r.university_email}</td>
+                    <td className="tnum">{r.self_declared}</td>
+                    <td className="tnum">{r.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">All students</th>
+                  <td className="tnum">{data.totals.university_email}</td>
+                  <td className="tnum">{data.totals.self_declared}</td>
+                  <td className="tnum">{data.totals.total}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <p className="field-hint">
+            University email: verified by an email of a listed university. Told us: signed up with another email and chose
+            their university on /welcome, unchecked. Not answered yet: signed up, hasn't answered.
+          </p>
+          <h3 className="admin-subtitle">"Other" universities</h3>
+          {data.others.length === 0 ? (
+            <p className="muted">None yet.</p>
+          ) : (
+            <>
+              <ul className="admin-others">
+                {data.others.map((o) => (
+                  <li key={o.name}>
+                    <span className="admin-other-name">{o.name}</span> <span className="muted tnum">{o.students}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="field-hint">
+                As typed (capitals and spaces ignored when counting). To add one, find its student email domain on the
+                university's own site and add it in the Table Editor (SUPABASE.md, "Universities").
+              </p>
+            </>
+          )}
+        </>
+      )}
     </section>
   );
 }

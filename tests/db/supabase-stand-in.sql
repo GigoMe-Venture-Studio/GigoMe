@@ -20,8 +20,10 @@ create table if not exists auth.users (
   is_sso_user boolean not null default false,
   is_anonymous boolean not null default false,
   created_at timestamptz default now(),
-  last_sign_in_at timestamptz
+  last_sign_in_at timestamptz,
+  raw_user_meta_data jsonb
 );
+alter table auth.users add column if not exists raw_user_meta_data jsonb;
 -- Same definitions Supabase uses
 create or replace function auth.uid() returns uuid language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claim.sub', true), ''),

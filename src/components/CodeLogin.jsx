@@ -9,6 +9,7 @@ import {
   fetchProfile,
   fetchUniversities,
   looksLikeEmail,
+  needsStudentAnswers,
   normalizeEmail,
   sendCode,
   universityFor,
@@ -24,12 +25,17 @@ import Turnstile from './Turnstile.jsx';
 // (companies). Same steps for both; what differs is which emails are
 // accepted, the wording, and where people go afterwards.
 //
-//   audience 'student': only emails of a listed university get a code; after
-//     login, /welcome when the profile has no name yet or the current Terms
-//     aren't accepted, otherwise `next`.
+//   audience 'student': any email gets a code, sent with signup_as 'student'
+//     (sendCode): the database makes a new account a student, verified when
+//     the domain is a listed university's. After login, /welcome when the
+//     profile has no name yet, the current Terms aren't accepted or a
+//     self-declared student hasn't said which university; otherwise `next`.
+//     An email that already has a company account stays one (one email, one
+//     role): LoggedIn says so and points to the employer login.
 //   audience 'employer': any email except a listed university's (those are
 //     sent to the student login); after login, /employers/setup when the
-//     company account has no company yet, otherwise `next` or /dashboard.
+//     company account has no company yet, otherwise `next` or /dashboard. A
+//     student account is told so by the page's loggedIn (Employers.jsx).
 
 // Remembers the email a code was sent to, so a student who switches to their
 // mail app and back (and whose browser reloads the tab) lands on the code step.
@@ -65,13 +71,13 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   const [busy, setBusy] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [error, setError] = useState('');
-  const [notListed, setNotListed] = useState(false);
   const [isStudentEmail, setIsStudentEmail] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [info, setInfo] = useState('');
-  // Students: the universities whose emails can log in, read by the check on
-  // "Send me a code" and listed when an address is refused.
+  // Students: the universities whose emails verify a student, read when
+  // "Which emails verify you as a student?" is opened. Never on page load.
   const [universities, setUniversities] = useState([]);
+  const [uniListState, setUniListState] = useState('idle'); // idle | loading | ready | error
   // Turnstile (when VITE_TURNSTILE_SITE_KEY is set): every call to Supabase
   // Auth sends the current token, then the widget fetches a new one.
   const [captchaToken, setCaptchaToken] = useState('');
@@ -90,41 +96,50 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
 
   if (loading) return <p className="auth-card muted">Loading…</p>;
   if (finishing) return <p className="auth-card muted" role="status">Logging you in…</p>;
-  if (session) return loggedIn ? loggedIn(session) : <LoggedIn email={session.user.email} next={next} />;
+  if (session) return loggedIn ? loggedIn(session) : <LoggedIn userId={session.user.id} email={session.user.email} next={next} />;
+
+  // "Which emails verify you as a student?": the list, read once when first opened.
+  async function onUniListToggle(e) {
+    if (!e.currentTarget.open || uniListState === 'ready' || uniListState === 'loading') return;
+    setUniListState('loading');
+    try {
+      setUniversities(await fetchUniversities());
+      setUniListState('ready');
+    } catch {
+      setUniListState('error');
+    }
+  }
 
   async function onSubmitEmail(e) {
     e.preventDefault();
     setError('');
     setInfo('');
-    setNotListed(false);
     setIsStudentEmail(false);
     setEmailInvalid(false);
     const value = normalizeEmail(email);
     if (!looksLikeEmail(value)) {
-      setError(employer ? 'Enter your full email address, like name@company.it.' : 'Enter your full university email address, like name@university.it.');
+      setError(employer ? 'Enter your full email address, like name@company.it.' : 'Enter your full email address, like name@university.it.');
       setEmailInvalid(true);
       return;
     }
     setBusy(true);
     try {
-      let university;
-      try {
-        const list = await fetchUniversities();
-        if (!employer) setUniversities(list);
-        university = universityFor(value, list);
-      } catch {
-        setError("We couldn't check your email right now. Check your connection and try again.");
-        return;
+      // Employers: a listed university's email is a student's (the database
+      // would make it a student account), so send them to the student login.
+      if (employer) {
+        let university;
+        try {
+          university = universityFor(value, await fetchUniversities());
+        } catch {
+          setError("We couldn't check your email right now. Check your connection and try again.");
+          return;
+        }
+        if (university) {
+          setIsStudentEmail(true);
+          return;
+        }
       }
-      if (!employer && !university) {
-        setNotListed(true);
-        return;
-      }
-      if (employer && university) {
-        setIsStudentEmail(true);
-        return;
-      }
-      const sendError = await sendCode(value, captchaToken);
+      const sendError = await sendCode(value, captchaToken, { asStudent: !employer });
       newCaptcha();
       if (sendError) {
         setError(sendError);
@@ -166,14 +181,22 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     } catch {
       /* the welcome page loads the profile again and shows any error */
     }
-    navigate(await destination(audience, profile, result.user.id, next), { replace: true });
+    const to = await destination(audience, profile, result.user.id, next);
+    if (!to) {
+      // The other role's account (one email, one role): the logged-in view
+      // (LoggedIn, or the employer page's loggedIn) says so.
+      setFinishing(false);
+      setBusy(false);
+      return;
+    }
+    navigate(to, { replace: true });
   }
 
   async function onResend() {
     setError('');
     setInfo('');
     setBusy(true);
-    const sendError = await sendCode(email, captchaToken);
+    const sendError = await sendCode(email, captchaToken, { asStudent: !employer });
     newCaptcha();
     setBusy(false);
     if (sendError) {
@@ -218,11 +241,12 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     <div className="auth-card">
       <h1>{employer ? 'Employer login' : 'Log in or sign up'}</h1>
       <p className="lead">
-        {employer ? 'Use your work email.' : 'Use your university email.'} We'll send you a{' '}
-        <span className="nowrap">{CODE_LENGTH}-digit</span> code, no password needed.
+        {employer ? 'Use your work email.' : 'Use any email. A university email verifies that you\'re a student.'} We'll
+        send you a <span className="nowrap">{CODE_LENGTH}-digit</span> code, no password needed.
       </p>
-      {/* The universities are named only when an address is refused (below),
-          and this line is always on the student login (CLAUDE.md). */}
+      {/* This line is always on the student login, above the only place a
+          university is named: "Which emails verify you as a student?"
+          (folded, CLAUDE.md). */}
       {/* Which login is which: the other one, in one line. */}
       <p className="auth-small login-switch">
         {employer ? (
@@ -236,9 +260,33 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
           GigoMe is an independent student project, not affiliated with or endorsed by any university.
         </p>
       )}
+      {!employer && (
+        <details className="uni-details" onToggle={onUniListToggle}>
+          <summary className="tap-44">Which emails verify you as a student?</summary>
+          <div className="uni-details-body">
+            {uniListState === 'ready' && universities.length > 0 && (
+              <>
+                <p>A student email from one of these universities verifies that you're a student:</p>
+                <UniversityList universities={universities} />
+              </>
+            )}
+            {uniListState === 'loading' && <p className="muted" role="status">Loading…</p>}
+            {uniListState === 'error' && (
+              <p role="alert">We couldn't load the list right now. Check your connection, then close this and open it again.</p>
+            )}
+            <p>
+              Any other email works too: after logging in, you tell us that you're a student and at which university.
+            </p>
+            <p>
+              Is your university missing?{' '}
+              <a href={mailtoHref(CONTACT_EMAIL, 'Add my university to GigoMe')}>Email {CONTACT_EMAIL}</a>
+            </p>
+          </div>
+        </details>
+      )}
       <form className="auth-form" onSubmit={onSubmitEmail} noValidate>
         <label className="field">
-          {employer ? 'Work email' : 'University email'}
+          {employer ? 'Work email' : 'Email'}
           <input
             className="input"
             type="email"
@@ -251,11 +299,10 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setNotListed(false);
               setIsStudentEmail(false);
               setEmailInvalid(false);
             }}
-            aria-invalid={emailInvalid || notListed || isStudentEmail}
+            aria-invalid={emailInvalid || isStudentEmail}
             aria-describedby="login-privacy"
             /* Not on /employers: the form is under the pitch there, and focusing
                it would scroll the pitch out of sight on phones. */
@@ -266,35 +313,10 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         <p className="auth-small" id="login-privacy">
           {employer
             ? 'We use your email to log you in and, if needed, to contact you about your company.'
-            : "We use your email to log you in and to check it's from a university on GigoMe."}{' '}
+            : 'We use your email to log you in and to check whether it\'s a university email on our list.'}{' '}
           See our <Link to="/privacy">Privacy Notice</Link>.
         </p>
         {error && <p className="err" role="alert">{error}</p>}
-        {notListed && (
-          <div className="note auth-notice" role="alert">
-            {universities.length > 0 ? (
-              <>
-                <p>Use your university email. GigoMe is open to students of:</p>
-                <ul className="uni-list">
-                  {universities.map((u) => (
-                    <li key={u.id}>
-                      {u.name} <span className="uni-domains">({u.domains.map((d) => '@' + d).join(' or ')})</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <p>Use your university email.</p>
-            )}
-            <p>
-              Is your university missing?{' '}
-              <a href={mailtoHref(CONTACT_EMAIL, 'Add my university to GigoMe')}>Email {CONTACT_EMAIL}</a>
-            </p>
-            <p>
-              Are you an employer? <Link to="/employers">Log in on the employers page</Link>.
-            </p>
-          </div>
-        )}
         {isStudentEmail && (
           <div className="note auth-notice" role="alert">
             <p>
@@ -408,8 +430,41 @@ function CodeStep({ email, sentAt, code, setCode, busy, error, info, onVerify, o
   );
 }
 
-export function LoggedIn({ email, next }) {
+// The student login when already logged in. An email with a company account
+// stays one (one email, one role): say so and point to the employer login.
+export function LoggedIn({ userId, email, next }) {
   const [error, setError] = useState('');
+  const [type, setType] = useState('');
+  useEffect(() => {
+    let active = true;
+    fetchProfile(userId)
+      .then((p) => active && setType((p && p.account_type) || 'student'))
+      .catch(() => active && setType('student'));
+    return () => {
+      active = false;
+    };
+  }, [userId]);
+  if (!type) return <p className="auth-card muted">Loading…</p>;
+  if (type === 'company') {
+    return (
+      <div className="auth-card wrong-role">
+        <h1>This email has an employer account</h1>
+        <p className="lead">
+          <strong className="auth-email">{email}</strong> is registered as an employer. Each email has one role on GigoMe,
+          so it can't also be a student account.
+        </p>
+        <p>
+          To hire, use the <Link to="/employers">employer login</Link>. To look for work, log out and sign up here with a
+          different email, like your university email.
+        </p>
+        <div className="auth-buttons">
+          <Link className="btn btn-primary" to="/employers">Go to the employer login</Link>
+          <LogOutButton className="btn btn-secondary" onError={setError} />
+        </div>
+        {error && <p className="err" role="alert">{error}</p>}
+      </div>
+    );
+  }
   return (
     <div className="auth-card">
       <h1>You're logged in</h1>
@@ -426,12 +481,16 @@ export function LoggedIn({ email, next }) {
 }
 
 // Where to go after the code is accepted.
+// null: the account has the other role (one email, one role); stay and say so.
 async function destination(audience, profile, userId, next) {
   if (audience !== 'employer') {
-    return profile && profile.full_name && hasAcceptedTerms(profile) ? next || '/' : '/welcome' + (next ? '?next=' + encodeURIComponent(next) : '');
+    if (profile && profile.account_type === 'company') return null;
+    return profile && profile.full_name && hasAcceptedTerms(profile) && !needsStudentAnswers(profile)
+      ? next || '/'
+      : '/welcome' + (next ? '?next=' + encodeURIComponent(next) : '');
   }
-  // A student account (its email domain became a university's) has no dashboard.
-  if (profile && profile.account_type !== 'company') return '/';
+  // A student account has no dashboard: the employer page's loggedIn says so.
+  if (profile && profile.account_type !== 'company') return null;
   try {
     const company = await fetchMyCompany(userId, { withEmail: false });
     if (!company) return '/employers/setup';
@@ -439,4 +498,18 @@ async function destination(audience, profile, userId, next) {
     /* the dashboard loads the company again and shows any error */
   }
   return next || '/dashboard';
+}
+
+// The universities whose student emails verify a student, each with its
+// domains: "Bocconi University (@studbocconi.it)".
+function UniversityList({ universities }) {
+  return (
+    <ul className="uni-list">
+      {universities.map((u) => (
+        <li key={u.id}>
+          {u.name} <span className="uni-domains">({u.domains.map((d) => '@' + d).join(' or ')})</span>
+        </li>
+      ))}
+    </ul>
+  );
 }

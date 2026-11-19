@@ -4,7 +4,7 @@ import { supabase } from './supabase.js';
 export async function fetchAccount(userId) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('full_name, degree_level, graduation_year, account_type, universities(name)')
+    .select('full_name, degree_level, graduation_year, account_type, student_verification, other_university, universities(name)')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw error;

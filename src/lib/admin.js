@@ -155,6 +155,41 @@ export async function fetchRecentFeedback() {
   return data || [];
 }
 
+// Students by how their account was verified and by university, and the
+// university names typed under "Other" with counts (admin_student_counts(),
+// admin_other_universities()). Admins only; the database refuses anyone else.
+export const VERIFICATION_LABELS = {
+  university_email: 'University email',
+  self_declared: 'Told us (any email)'
+};
+export async function fetchStudentBreakdown() {
+  const [counts, others] = await Promise.all([
+    supabase.rpc('admin_student_counts'),
+    supabase.rpc('admin_other_universities')
+  ]);
+  if (counts.error) throw counts.error;
+  if (others.error) throw others.error;
+  // One row per university: { university, university_email, self_declared, total }.
+  const byUni = new Map();
+  for (const r of counts.data || []) {
+    const key = r.university || '';
+    const row = byUni.get(key) || { university: r.university, university_email: 0, self_declared: 0, total: 0 };
+    row[r.verification] = (row[r.verification] || 0) + Number(r.students);
+    row.total += Number(r.students);
+    byUni.set(key, row);
+  }
+  const rows = [...byUni.values()].sort((a, b) => {
+    const rank = (u) => (u === null ? 2 : u === 'Other' ? 1 : 0); // listed universities, Other, not answered
+    return rank(a.university) - rank(b.university) || b.total - a.total || String(a.university).localeCompare(String(b.university));
+  });
+  const totals = rows.reduce((t, r) => ({
+    university_email: t.university_email + r.university_email,
+    self_declared: t.self_declared + r.self_declared,
+    total: t.total + r.total
+  }), { university_email: 0, self_declared: 0, total: 0 });
+  return { rows, totals, others: (others.data || []).map((o) => ({ name: o.name, students: Number(o.students) })) };
+}
+
 // The numbers at the top of /admin (admin_stats(), the same definitions as
 // supabase/queries/kpis.sql). Admins only; the database refuses anyone else.
 export async function fetchStats() {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router';
 import { useSession } from '../lib/useSession.js';
-import { fetchProfile } from '../lib/auth.js';
+import { fetchProfile, needsStudentAnswers } from '../lib/auth.js';
 import { acceptedInThisTab, hasAcceptedTerms } from '../lib/terms.js';
 
 // Pages a logged-in account can open before accepting the current Terms:
@@ -11,9 +11,11 @@ import { acceptedInThisTab, hasAcceptedTerms } from '../lib/terms.js';
 const OPEN = ['/welcome', '/login', '/employers', '/employers/setup', '/privacy', '/terms', '/account'];
 
 // Every logged-in account must have accepted the current Terms
-// (TERMS_VERSION). One that hasn't (new accounts, accounts from before the
-// Terms were asked for, and everyone once the version changes) is sent to
-// /welcome once, then back to the page it asked for. The profile is checked
+// (TERMS_VERSION), and a student who signed up with a non-university email
+// must have said which university (needsStudentAnswers). One that hasn't
+// (new accounts, accounts from before the Terms were asked for, and everyone
+// once the version changes) is sent to /welcome once, then back to the page
+// it asked for. The profile is checked
 // once per login and again when /welcome announces a change; while it loads,
 // or if it can't be loaded, the page is shown as usual.
 export default function TermsGate({ children }) {
@@ -33,7 +35,7 @@ export default function TermsGate({ children }) {
     if (!userId) return undefined;
     let active = true;
     fetchProfile(userId)
-      .then((p) => active && setState({ userId, accepted: !p || hasAcceptedTerms(p) }))
+      .then((p) => active && setState({ userId, accepted: !p || (hasAcceptedTerms(p) && !needsStudentAnswers(p)) }))
       .catch(() => active && setState({ userId, accepted: true }));
     return () => {
       active = false;

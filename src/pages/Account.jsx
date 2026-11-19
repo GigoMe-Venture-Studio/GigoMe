@@ -44,7 +44,8 @@ function AccountPage({ user, onLeaving }) {
 
   const account = state.account || {};
   const isCompany = account.account_type === 'company';
-  const university = account.universities ? account.universities.name : null;
+  const university = account.universities ? account.universities.name : account.other_university || null;
+  const verified = account.student_verification === 'university_email';
 
   return (
     <div className="auth-card account">
@@ -58,8 +59,20 @@ function AccountPage({ user, onLeaving }) {
           <dt>University</dt>
           <dd>{university || (isCompany ? 'None (company account)' : 'None')}</dd>
         </div>
+        {!isCompany && (
+          <div>
+            <dt>Student status</dt>
+            <dd className="account-verification">
+              {verified ? 'Verified by your university email' : 'Not verified: you told us when you signed up'}
+            </dd>
+          </div>
+        )}
       </dl>
-      <p className="auth-small">Your email and university come from the address you log in with and can't be changed here.</p>
+      <p className="auth-small">
+        {isCompany || verified
+          ? "Your email and university come from the address you log in with and can't be changed here."
+          : "Your email and university can't be changed here. If your university is wrong, write to hello@gigome.org."}
+      </p>
 
       <ProfileForm userId={user.id} account={account} student={!isCompany} />
 

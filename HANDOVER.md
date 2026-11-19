@@ -46,7 +46,8 @@ skip any because "it worked in testing".
       DMARC) verified in Brevo.
 - [ ] Domain auto-renew on, renewal date filled in (section 10).
 - [ ] `hello@gigome.org` is read by someone, at least weekly.
-- [ ] `universities` holds the right domains (Bocconi's student domain(s)).
+- [ ] `universities` holds only student domains, no staff domains (the list is in
+      SUPABASE.md, "Universities"; `security_check.sql` checks it).
 
 **Data**
 - [ ] Test users, companies and jobs made while building are deleted from
@@ -226,6 +227,15 @@ the `moderation_log` table).
   map, "When" or "Minimum pay" searches. Ask the employer to edit the job
   (it goes back to review). Pending jobs missing any of them are flagged and
   can't be published.
+- **Students:** how many signed up with a university email on the list
+  (verified) and how many with another email and told us their university
+  (not checked), per university. Under it, the names typed under "Other",
+  most common first: once a month, look up the student email domain of the
+  top ones on the university's own site and add it (SUPABASE.md,
+  "Universities"); those students then become verified automatically when
+  their email has that domain. Self-declared students can do everything
+  verified ones can: if a "student" account behaves like a spammer or an
+  employer, treat it like any other report.
 - **Open reports:** read the report and the job.
   - **Scam, or payment demanded from students** (registration fee, deposit,
     training paid by the student, documents up front): press **Reject the

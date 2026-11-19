@@ -15,8 +15,9 @@ export default function EmployerGate({ account, here, allowNoCompany = false }) 
       <div className="auth-card">
         <h1>This page is for employers</h1>
         <p className="lead">
-          You're logged in with a student account. To list jobs for a company, log out and log in on the{' '}
-          <Link to="/employers">employers page</Link> with your work email. Questions? Write to{' '}
+          You're logged in with a student account, and each email has one role on GigoMe. To list jobs for a company,
+          log out and log in on the <Link to="/employers">employers page</Link> with a different email, like your work
+          email. Questions? Write to{' '}
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
       </div>

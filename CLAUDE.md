@@ -22,11 +22,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   redirects to `/`: there is no About page, and no team names, biographies or
   anything suggesting a university's endorsement or affiliation anywhere
   (the legal texts on `/privacy` and `/terms` name the operator, as the law
-  requires). The one place a university is named is the student login's list
-  of who can log in, shown only when an address is refused, under the line
-  "GigoMe is an independent student project, not affiliated with or endorsed
-  by any university." (always on the student login; it never names a
-  university). `ScrollToTop` (in `App.jsx`) starts each new path at the
+  requires). Universities are named in two places only: on the student
+  login, under the line "GigoMe is an independent student project, not
+  affiliated with or endorsed by any university." (always there; it never
+  names a university), in "Which emails verify you as a student?" (a native
+  `<details>` right under that line, which reads `universities` only when
+  first opened); and in /welcome's "Which university?" dropdown for
+  self-declared students. Both come from the `universities` table only:
+  never write a university's name or domain into a page. `ScrollToTop` (in `App.jsx`) starts each new path at the
   top, except on query-only changes; Back/Forward return to where that
   page was left (kept in memory per history entry, restored once the page,
   e.g. a job list still loading, is tall enough). Don't
@@ -242,9 +245,13 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/styles/auth.css`) and reuse the tokens and classes in `site.css`.
   Check new class names don't clash with existing ones (`grep src/styles/`).
 - The 6-digit code login lives in `src/components/CodeLogin.jsx`, used by
-  `/login` (`audience="student"`: university emails only) and `/employers`
-  (`audience="employer"`: any email except a listed university's, which are
-  sent to `/login`). Change the flow there, once. Under its heading, a line
+  `/login` (`audience="student"`: any email, sent with `signup_as:
+  'student'`) and `/employers` (`audience="employer"`: any email except a
+  listed university's, which are sent to `/login`). Change the flow there,
+  once. One email, one role: after the code, an account of the other role
+  isn't moved on but told so, with the right login ("This email has an
+  employer account" on /login, "You're logged in as a student" on
+  /employers). Under its heading, a line
   to the other login: "Hiring? Use the employer login" (students) and
   "Looking for work? Student login" (employers). The code step says "Can't
   find it? Check your Junk or Spam folder and mark it as 'Not junk', so the
@@ -262,14 +269,27 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   lives only in the Supabase dashboard.
 - Student login: `src/pages/Login.jsx` (email, then 6-digit code),
   `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
-  profile has no name yet, and the Terms box until the current version is
-  accepted), logic in `src/lib/auth.js`, session in
-  `src/lib/useSession.js`. Only emails whose domain is in `universities` get
-  a code. Under the email field: what the email is used for and a link to
-  the Privacy Notice (people don't "agree" to a privacy notice: never write
-  that). When an address is refused, the student login reads `universities`
-  (readable logged out) and lists each university with its domains and "Is
-  your university missing? Email hello@gigome.org" (a mailto link). `/welcome` and `/account` share the profile fields and their rules
+  profile has no name yet, the Terms box until the current version is
+  accepted, and for self-declared students the two questions below), logic
+  in `src/lib/auth.js`, session in `src/lib/useSession.js`. Any email gets
+  a code ("Use any email. A university email verifies that you're a
+  student."): `sendCode()` adds `signup_as: 'student'` to a new user's
+  metadata and the database decides the rest (Schema rules). Nothing is
+  checked or refused in the browser. Under the email field: what the email
+  is used for and a link to the Privacy Notice (people don't "agree" to a
+  privacy notice: never write that). "Which emails verify you as a
+  student?" reads `universities` when opened (readable logged out, never on
+  page load) and lists each university with its domains, that any other
+  email works too, and "Is your university missing? Email
+  hello@gigome.org" (a mailto link). A self-declared student who hasn't
+  answered (`needsStudentAnswers()`) gets on /welcome, once: "Are you
+  currently a university student?" Yes / No (No: no student account, the
+  account the code created is deleted with `delete_my_account()`, and the
+  page says GigoMe is for students, jobs can be browsed without an account,
+  and links /employers) and "Which university?" (the table's universities
+  plus "Other" with a name; `declareStudent()` = `declare_student`).
+  University emails skip both. TermsGate also sends a self-declared student
+  who hasn't answered to /welcome. `/welcome` and `/account` share the profile fields and their rules
   (`src/components/ProfileFields.jsx`, `checkProfile()` in
   `src/lib/profile.js`); after saving they call `announceProfileChange()` so
   the header shows the new name.
@@ -304,7 +324,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   mocks accept the current version by default (`termsVersion` option).
 - Account: `src/pages/Account.jsx` (`/account`, reached from the name in the
   header and the phone menu; logged out goes to `/login?next=/account`).
-  Email and university are read-only. "Delete my account" first shows a
+  Email and university are read-only; students also see "Student status"
+  ("Verified by your university email" or "Not verified: you told us when
+  you signed up"). "Delete my account" first shows a
   reminder with "Keep my account" and "Delete my account" side by side, then
   needs DELETE typed,
   calls `delete_my_account()` (`src/lib/account.js`), goes to `/` with "Your
@@ -344,7 +366,11 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   styles in `admin.css`). Only admins (`is_admin()`); everyone else, logged
   out included, gets the 404 page, and the database refuses them anyway.
   At the top, the numbers from `admin_stats()` (same definitions as
-  `supabase/queries/kpis.sql`).
+  `supabase/queries/kpis.sql`). "Students": a table by university and
+  verification method (`admin_student_counts()`; "Not answered yet" for
+  self-declared students who haven't answered) and the names typed under
+  "Other" with counts (`admin_other_universities()`), to look up and add
+  their student domains.
   Pending companies (approve/reject, with contact and login email from
   `admin_company_contact`), pending jobs (publish/request changes/reject, a
   note required for the last two, Publish only once the five-item review
@@ -529,17 +555,34 @@ Security rules for every migration (non-negotiable)
   `authenticated`, so only use them in policies that are `to authenticated`.
 
 Schema rules
-- `profiles` rows are created by the `on_auth_user_created` trigger. A user is
-  a `student` (with `university_id`) when the lowercased part of their email
-  after the @ exactly matches one of `universities.email_domains`; everyone
-  else is a `company`. Users can edit only `full_name`, `degree_level` and
-  `graduation_year`; nobody can change `account_type` or `university_id` from
-  the client. `terms_version` / `terms_accepted_at` (both or neither) are
+- `profiles` rows are created by the `on_auth_user_created` trigger
+  (`handle_new_user`). A user is a `student` with `student_verification`
+  `university_email` (and `university_id`) when the lowercased part of their
+  email after the @ exactly matches one of `universities.email_domains`,
+  whatever the metadata says; a `student` with `self_declared` when the new
+  user's metadata has `signup_as` = `student` (the student login); everyone
+  else is a `company`. The role is set once, when the account is created
+  (one email, one role); `student_verification` is set only by the
+  database. Self-declared students answer once with `declare_student(
+  university_id, other_university)` (own row, only while
+  `student_declared_at` is empty; one of the two; "Other" names 2 to 200
+  characters, spaces tidied, no control characters). Both kinds of students
+  have exactly the same permissions: rules check `account_type` only.
+  Users can edit only `full_name`, `degree_level` and `graduation_year`;
+  nobody can change `account_type`, `student_verification`,
+  `university_id`, `other_university` or `student_declared_at` from the
+  client. Changing `account_type` by hand in the Table Editor keeps them
+  consistent (trigger `profiles_account_type_changed`). `terms_version` / `terms_accepted_at` (both or neither) are
   written only by `accept_terms(version)` (a version number like `2.0`, the
   database's `now()`, the caller's own row).
+- `universities.email_domains` hold only the domains students get, never a
+  university's staff domain (`polimi.it`, `unimi.it`): that's the student
+  check. The list and its sources are in SUPABASE.md, "Universities"; the
+  security check refuses the staff domains, look-alikes and sub-domains.
 - When a university is added or its `email_domains` change, the
   `on_university_domains_changed` trigger upgrades matching `company` accounts
-  to `student` (with `university_id`), except accounts that own a company.
+  to `student` (with `university_id`), except accounts that own a company,
+  and matching self-declared students to `university_email`.
   Nothing ever downgrades an account automatically.
 - `universities` is read-only for `anon` and `authenticated` (no write grants,
   no write policies). It is changed only in the dashboard.
@@ -691,7 +734,7 @@ Schema rules
   days ago (`EXTEND_GRACE_DAYS` / `canExtend()` in `src/lib/employer.js` match
   it); older expired jobs are refused and must be edited and resubmitted.
 - `my_feedback()` / `my_reports()`: the caller's own rows only (reports
-  without the resolution note or resolver). `admin_stats()`: admins only.
+  without the resolution note or resolver). `admin_stats()`, `admin_student_counts()`, `admin_other_universities()`: admins only.
 - Retention: `retention_settings` (one row, no grants) and `run_retention()`
   (no grants), run daily at 03:37 UTC by pg_cron job `gigome-retention`.
   On (Privacy Notice section 9, owner's go-ahead in November 2026; each a

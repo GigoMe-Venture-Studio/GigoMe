@@ -34,15 +34,17 @@ export default function HowItWorks() {
               them.
             </p>
           </Faq>
-          <Faq id="university-email" question="Why do I need a university email?">
+          <Faq id="university-email" question="Do I need a university email?">
             <p>
-              GigoMe is for university students, so student accounts are open to email addresses of the universities on
-              our list. When you log in, we send a 6-digit code to that address; there's no password.
+              No, any email works. GigoMe is for university students, and a student email from a university on our list
+              verifies that you're a student. To see the list, open "Which emails verify you as a student?" on the{' '}
+              <Link to="/login">student login</Link>. With any other email, you tell us after logging in that you're a
+              university student and which university; we don't check that answer.
             </p>
             <p>
-              The code only shows that you can read that inbox. It doesn't check that you're enrolled or that you're
-              allowed to work in Italy. Is your university missing? Write to{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              When you log in, we send a 6-digit code to your email; there's no password. The code only shows that you can
+              read that inbox. It doesn't check that you're enrolled or that you're allowed to work in Italy. Is your
+              university missing from the list? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
             </p>
           </Faq>
           <Faq id="apply" question='What happens when I press "Apply"?'>
@@ -59,7 +61,8 @@ export default function HowItWorks() {
           </Faq>
           <Faq id="what-gigome-sees" question="What does GigoMe see, and what doesn't it?">
             <p>
-              GigoMe sees your email, university, name, degree and graduation year; the jobs you save, your saved
+              GigoMe sees your email, your university (from your university email, or as you told us), name, degree and
+              graduation year; the jobs you save, your saved
               searches and the companies you follow; which jobs you pressed Apply on; and any reports or feedback you
               send. It also keeps the technical records needed to run the site. The{' '}
               <Link to="/privacy">Privacy Notice</Link> has the full list.
@@ -89,7 +92,8 @@ export default function HowItWorks() {
           <Faq id="employer-signup" question="How do I sign up?">
             <p>
               Go to <Link to="/employers">For employers</Link> and log in with your work email. We send you a 6-digit
-              code; there's no password. University email addresses are for student accounts.
+              code; there's no password. University email addresses are for student accounts, and each email has one
+              role: an email that already has a student account can't also be an employer account.
             </p>
             <p>
               Then tell us about your company: its name, website and a short description, and a contact email that only

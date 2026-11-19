@@ -19,7 +19,7 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
   const b = await chromium.launch();
 
   // ---- logged out: For employers in header and footer
-  { const ctx = await b.newContext(desk); await mock(ctx); const p = await ctx.newPage();
+  { const ctx = await b.newContext(desk); const log = await mock(ctx); const p = await ctx.newPage();
     await p.goto(E + '/'); await p.waitForTimeout(400);
     ok(await p.locator('.main-nav a:has-text("For employers")').getAttribute('href') === '/employers', 'header: For employers when logged out');
     ok(await p.locator('.site-footer a:has-text("For employers")').count() === 1, 'footer: For employers when logged out');
@@ -37,10 +37,14 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
     const note = await txt(p, '.employers-login');
     ok(/university email/.test(note) && await p.locator('.employers-login .auth-notice a[href="/login"]').count() === 1, 'student email: pointed to the student login');
     ok(await p.locator('input[name=code]').count() === 0, 'student email: no code step');
-    // /login with a company email points to /employers
-    await p.goto(E + '/login'); await p.waitForTimeout(300);
+    // any other email gets a code on /employers, without the student sign-up mark
     await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
-    ok(await p.locator('main .auth-notice a[href="/employers"]').count() === 1, '/login with a non-university email links to /employers');
+    ok(log.otp.length === 1 && log.otp[0].email === 'owner@cafe.it' && !(log.otp[0].data && log.otp[0].data.signup_as) && await p.locator('input[name=code]').count() === 1, 'employer login: code sent without signup_as (the database makes it a company account)');
+    // /login takes any email (one email, one role is decided by the database) and links to /employers in its "Hiring?" line
+    await p.goto(E + '/login'); await p.waitForTimeout(300);
+    ok(await p.locator('main .login-switch a[href="/employers"]').count() === 1, '/login: "Hiring? Use the employer login" links to /employers');
+    await p.fill('input[name=email]', 'owner2@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    ok(log.otp.length === 2 && log.otp[1].data && log.otp[1].data.signup_as === 'student' && await p.locator('main .auth-notice').count() === 0, '/login: any email gets a code, marked as a student sign-up');
     await p.goto(E + '/dashboard'); await p.waitForTimeout(400);
     ok(path(p) === '/employers' && new URL(p.url()).searchParams.get('next') === '/dashboard', 'logged out /dashboard goes to /employers?next=/dashboard');
     await ctx.close(); }

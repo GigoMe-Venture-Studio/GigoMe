@@ -124,7 +124,7 @@ async function mock(ctx, opts = {}) {
   // Logged out -> log in -> back on the same job -> reveal (counts once)
   { const { ctx, p, log } = await mk({ fullName: null });
     await p.goto(ENV + '/jobs/' + ID(1)); await p.waitForTimeout(500);
-    ok((await txt(p, '.apply')).includes('Log in with your university email to see how to apply') && log.rpc.length === 0, 'logged out: log-in prompt, nothing revealed');
+    ok((await txt(p, '.apply')).includes('Log in as a student to see how to apply') && log.rpc.length === 0, 'logged out: log-in prompt, nothing revealed');
     await p.click('.apply >> text=Log in to see how to apply'); await p.waitForTimeout(400);
     ok(new URL(p.url()).pathname === '/login' && new URL(p.url()).searchParams.get('next') === '/jobs/' + ID(1), 'goes to /login?next=/jobs/<id>');
     await login(p);

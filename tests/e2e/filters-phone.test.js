@@ -87,7 +87,7 @@ const shownSelects = (p) => p.$$eval('.job-filters select', (els) => els.filter(
     ok(!(await p.innerText('#admin-feedback')).match(/@|Ana Rossi|Marco/), 'no sender shown');
     ok(await p.locator('.admin-summary a[href="#admin-feedback"]').count() === 1, 'summary links to the feedback');
     const order = await p.$$eval('.admin-section h2', (els) => els.map((e) => e.textContent));
-    ok(order.join('|') === 'Companies waiting for review|Jobs waiting for review|Open reports|Live jobs missing an area, a schedule or structured pay|Feedback|Recent decisions', 'section order: ' + order.join('|'));
+    ok(order.join('|') === 'Companies waiting for review|Jobs waiting for review|Open reports|Live jobs missing an area, a schedule or structured pay|Students|Feedback|Recent decisions', 'section order: ' + order.join('|'));
     await p.locator('#admin-feedback').screenshot({ path: OUT + '/admin-feedback.png' });
     await ctx.close(); }
   { const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } }); await amock(ctx, { admin: true, feedbackReadFail: true }); const p = await ctx.newPage();

@@ -159,7 +159,7 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
         <p className="muted apply-loading">Loading…</p>
         <div className="apply-sizer" aria-hidden="true">
           <span className="btn btn-primary">Log in to see how to apply</span>
-          <p className="apply-note">Log in with your university email to see how to apply.</p>
+          <p className="apply-note">Log in as a student to see how to apply.</p>
         </div>
       </>
     );
@@ -171,7 +171,7 @@ function HowToApply({ jobId, jobTitle, demoJob = null }) {
         <Link className="btn btn-primary" to={`/login?next=${encodeURIComponent('/jobs/' + jobId)}`}>
           Log in to see how to apply
         </Link>
-        <p className="apply-note">Log in with your university email to see how to apply.</p>
+        <p className="apply-note">Log in as a student to see how to apply.</p>
       </>
     );
   }

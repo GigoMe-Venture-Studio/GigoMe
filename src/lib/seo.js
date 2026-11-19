@@ -20,7 +20,7 @@ const PAGES = [
   ['/how-it-works', 'How GigoMe works', 'How GigoMe works for students and employers: finding jobs, applying directly with employers, company and job review, and what GigoMe sees.', true],
   ['/safety', 'Staying safe', 'What GigoMe checks and what it can\'t, tips for meeting an employer, and what to do if something is wrong.', true],
   ['/terms', 'Terms and Conditions', 'The terms for using GigoMe, for students and for employers and other advertisers.', true],
-  ['/login', 'Log in', 'Log in to GigoMe with your university email.', false],
+  ['/login', 'Log in', 'Log in or sign up to GigoMe as a student, with any email.', false],
   ['/welcome', 'Welcome', DEFAULT_DESCRIPTION, false],
   ['/account', 'Your account', DEFAULT_DESCRIPTION, false],
   ['/saved', 'Saved jobs', DEFAULT_DESCRIPTION, false],
