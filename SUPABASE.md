@@ -426,12 +426,18 @@ Notice's limit, so a nightly run is never late. Set by the migrations
 (`20261111120000_data_protection.sql`, then
 `20261111200000_keep_reports.sql`), so the values are in git:
 
-- `incomplete_signups_days` = **29**: accounts that never finished signing
-  up are deleted, like "Delete my account". "Never finished" means: never
-  accepted the Terms, no name, no company, not an admin, and no login for
-  29 days (counted from the last login, or from sign-up if they never
-  logged in). Accounts from before the Terms were asked for that have a
-  name or a company are complete and stay.
+- `incomplete_signups_days` = **29**: **unfinished sign-ups** are deleted,
+  like "Delete my account". Unfinished means the account never completed
+  /welcome: no Terms accepted and no name, or a self-declared student who
+  never answered "Which university?" (even with a name and the Terms); no
+  company, not an admin, and no login for 29 days (counted from the last
+  login, or from sign-up if they never logged in). Accounts from before
+  the Terms were asked for that have a name or a company are finished and
+  stay. **Based on activity, never on verification:** a self-declared
+  student who completed /welcome is kept exactly like one verified by a
+  university email, however long since their last login; only the
+  inactive-accounts rule below (24 months, by hand) applies to them, as to
+  everyone. `security_check.sql` checks both.
 - `ended_job_details_days` = **89**: listings closed, rejected or expired
   89 days ago lose what isn't needed any more: how to apply
   (`job_contacts`), students' saves, the description, the pay note, the
@@ -452,7 +458,7 @@ Notice's limit, so a nightly run is never late. Set by the migrations
 - `ended_jobs_days` (at least 30): deletes ended jobs outright (their
   reports stay, with the job title and company name).
 - `feedback_days` (at least 30): feedback older than this.
-- `inactive_accounts_days` (at least 180): accounts not logged in for this
+- `inactive_accounts_days` (at least 180): **inactive accounts**, not logged in for this
   long, deleted without warning (company accounts with their company and
   jobs). The Privacy Notice's 24 months with a warning is done by hand
   instead: see `HANDOVER.md`, "Data retention: who does what".

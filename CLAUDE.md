@@ -739,8 +739,13 @@ Schema rules
   (no grants), run daily at 03:37 UTC by pg_cron job `gigome-retention`.
   On (Privacy Notice section 9, owner's go-ahead in November 2026; each a
   day under the Notice's limit, set in migrations so the values are in
-  git): incomplete sign-ups deleted after 29 days without a login (no
-  Terms, no name, no company, not an admin); listings closed, rejected or
+  git): unfinished sign-ups deleted after 29 days without a login
+  (never completed /welcome: no Terms and no name, or a self-declared
+  student who never answered "Which university?"; no company, not an
+  admin). Retention is based on activity, never on verification: a
+  self-declared student who completed /welcome is kept exactly like a
+  verified one (checked in the security check). Docs say "unfinished
+  sign-ups" and "inactive accounts", never "unverified"; listings closed, rejected or
   expired 89 days ago lose contact, saves, description, pay note, free-text
   location and pin, unless reported (`jobs.ended_at`: trigger
   `job_ended_at`, no grants); apply clicks lose `user_id` and keep only the
@@ -749,7 +754,7 @@ Schema rules
   accounts) stay empty. Never set or shorten a period without the owner's
   go-ahead; change one in a new migration. Never touch Supabase's `auth`
   tables other than `auth.users` from it (`auth.audit_log_entries`: the
-  dashboard setting, by hand). The rest (24-month inactivity, security logs,
+  dashboard setting, by hand). The rest (inactive accounts after 24 months, security logs,
   email) is done by hand by Emil: `HANDOVER.md` section 7d.
 
 Security check

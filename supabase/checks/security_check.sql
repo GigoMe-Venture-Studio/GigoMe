@@ -94,6 +94,8 @@ declare
   v_dp_click    bigint;
   v_su          uuid[] := array[gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid(),
                                 gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid()];
+  -- retention and the verification method (20261119130000)
+  v_sr          uuid[] := array[gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid()];
   v_rt_closed   uuid;
   v_rt_expired  uuid;
   v_rt_reported uuid;
@@ -3618,6 +3620,20 @@ begin
     insert into public.companies (owner_id, name) values (v_su[6], 'Check Co (signed up 40 days ago)');
     insert into public.admins (user_id) values (v_su[7]);
 
+    -- Retention is based on activity, never on verification: 1 a self-declared
+    -- student who completed /welcome and 2 a university-email student who did,
+    -- both without a login for 400 days; 3 a self-declared student with a name
+    -- and the Terms who never answered "Which university?"; 4 a self-declared
+    -- sign-up that stopped right after the code. 3 and 4: no login for 40 days.
+    insert into auth.users (id, email, created_at, last_sign_in_at, raw_user_meta_data) values
+      (v_sr[1], 'sr.done@check-signup.example',   now() - interval '420 days', now() - interval '400 days', '{"signup_as":"student"}'),
+      (v_sr[2], 'sr.verified@studbocconi.it',     now() - interval '420 days', now() - interval '400 days', '{"signup_as":"student"}'),
+      (v_sr[3], 'sr.noanswer@check-signup.example', now() - interval '45 days', now() - interval '40 days', '{"signup_as":"student"}'),
+      (v_sr[4], 'sr.stopped@check-signup.example',  now() - interval '45 days', now() - interval '40 days', '{"signup_as":"student"}');
+    update public.profiles set full_name = 'Check Done', terms_version = '2.0', terms_accepted_at = now() - interval '420 days'
+      where id in (v_sr[1], v_sr[2], v_sr[3]);
+    update public.profiles set other_university = 'Check Academy', student_declared_at = now() - interval '420 days' where id = v_sr[1];
+
     -- Listings: closed 100 days ago, expired 100 days ago, closed 100 days
     -- ago but reported, closed 10 days ago. Each with a contact; the first
     -- two saved, the first with an apply click and an exact pin.
@@ -3672,7 +3688,20 @@ begin
     select (select count(*) from auth.users where id in (v_su[1], v_su[2])) || ' users, '
            || (select count(*) from public.profiles where id in (v_su[1], v_su[2])) || ' profiles left'
       into v_text;
-    results := pg_temp.res(results, 'Retention: sign-ups never finished (no Terms, no name, no company), with no login for 29 days, are deleted',
+    results := pg_temp.res(results, 'Retention: unfinished sign-ups (no Terms, no name, no company), with no login for 29 days, are deleted',
+                           '0 users, 0 profiles left', v_text, v_text = '0 users, 0 profiles left');
+
+    select string_agg(p.student_verification || ' ' || case when p.id = v_sr[1] then 'self-declared, finished' else 'verified, finished' end, ', ' order by p.student_verification)
+           || ' | ' || (select count(*) from auth.users where id in (v_sr[1], v_sr[2])) || ' of 2 logins kept'
+      into v_text from public.profiles p where p.id in (v_sr[1], v_sr[2]) and p.account_type = 'student';
+    results := pg_temp.res(results, 'Retention: a self-declared student who completed /welcome is never deleted by the nightly job, exactly like a verified one (400 days without a login)',
+                           'self_declared self-declared, finished, university_email verified, finished | 2 of 2 logins kept', coalesce(v_text, 'deleted'),
+                           v_text = 'self_declared self-declared, finished, university_email verified, finished | 2 of 2 logins kept');
+
+    select (select count(*) from auth.users where id in (v_sr[3], v_sr[4])) || ' users, '
+           || (select count(*) from public.profiles where id in (v_sr[3], v_sr[4])) || ' profiles left'
+      into v_text;
+    results := pg_temp.res(results, 'Retention: unfinished sign-ups are deleted after 29 days whether verified or not (self-declared who never answered "Which university?", even with a name and the Terms)',
                            '0 users, 0 profiles left', v_text, v_text = '0 users, 0 profiles left');
 
     select count(*) || ' of 6 kept' into v_text from auth.users where id = any (v_su[3:8]);
