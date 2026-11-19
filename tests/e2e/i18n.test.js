@@ -149,18 +149,23 @@ const PUBLIC = ['/', '/jobs', `/jobs/${ID(1)}`, `/jobs/${ID(2)}`, `/companies/${
     ok(await p.evaluate(() => document.documentElement.lang) === 'it', 'storage blocked: switching still works');
     await ctx.close(); }
 
-  // ---- phones: in the header at 320px and in the menu
-  for (const [w, dev] of PHONES) {
+  // ---- phones: under 440px the switch is only in the menu (the header keeps
+  // the wordmark, "Student login" and Menu); from 440px in the header too
+  for (const [w, dev] of [...PHONES, ['440', { viewport: { width: 440, height: 800 }, isMobile: true, hasTouch: true }]]) {
     const ctx = await b.newContext(dev); await mock(ctx); const p = await ctx.newPage();
     await p.goto(E + '/'); await p.waitForTimeout(500);
     const sw = p.locator('.site-header .header-actions .lang-switch');
-    ok(await sw.isVisible(), `${w}px: the switch is in the header`);
-    const box = await sw.boundingBox();
-    ok(box && box.x >= 0 && box.x + box.width <= Number(w), `${w}px: the switch fits on the screen`);
+    const wide = Number(w) >= 440;
+    ok(await sw.isVisible() === wide, `${w}px: the switch is ${wide ? '' : 'not '}in the header`);
+    if (wide) {
+      const box = await sw.boundingBox();
+      ok(box && box.x >= 0 && box.x + box.width <= Number(w), `${w}px: the switch fits on the screen`);
+    }
+    if (Number(w) >= 360) ok(await p.locator('.site-logo img').evaluate((img) => img.currentSrc.includes('header-wordmark')), `${w}px: the GigoMe wordmark`);
     const menu = await p.locator('#menu-btn').boundingBox();
-    ok(menu && menu.x + menu.width <= Number(w), `${w}px: Menu still fits next to it`);
+    ok(menu && menu.x + menu.width <= Number(w), `${w}px: Menu fits`);
     await p.click('#menu-btn'); await p.waitForTimeout(200);
-    ok(await p.locator('#menu-panel .lang-switch').isVisible(), `${w}px: the switch is in the menu too`);
+    ok(await p.locator('#menu-panel .lang-switch').isVisible(), `${w}px: the switch is in the menu`);
     await p.locator('#menu-panel .lang-switch button', { hasText: 'IT' }).click(); await p.waitForTimeout(400);
     ok(await p.evaluate(() => document.documentElement.lang) === 'it', `${w}px: switching from the menu`);
     ok((await p.locator('#menu-btn').innerText()) === it['common.close'] || (await p.locator('#menu-btn').innerText()) === it['header.menu'], `${w}px: the menu button is in Italian`);

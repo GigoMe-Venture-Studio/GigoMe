@@ -263,7 +263,7 @@
     null,
     "Questo registro è accessibile solo agli amministratori autorizzati di GigoMe, non agli inserzionisti."
    ],
-   " Ti invitiamo a leggere l'Informativa sulla privacy, fornita separatamente."
+   " Si invita l'Utente a leggere l'Informativa sulla privacy, fornita separatamente."
   ],
   [
    "p",
@@ -305,19 +305,19 @@
     null,
     "Gestore"
    ],
-   ", ",
+   " o ",
    [
     "strong",
     null,
     "GigoMe"
    ],
-   ", ",
+   ", indicato anche con i pronomi ",
    [
     "strong",
     null,
     "noi"
    ],
-   ", ",
+   " e ",
    [
     "strong",
     null,
@@ -558,7 +558,7 @@
   [
    "p",
    null,
-   "7.5. Gli Studenti dovrebbero verificare l'identità del destinatario e valutare con attenzione i link esterni, i documenti richiesti, le condizioni di lavoro e la legittimità dell'opportunità. Non inviare mai denaro per ottenere un lavoro e non condividere mai password o codici di autenticazione."
+   "7.5. Gli Studenti dovrebbero verificare l'identità del destinatario e valutare con attenzione i link esterni, i documenti richiesti, le condizioni di lavoro e la legittimità dell'opportunità. Non devono mai inviare denaro per ottenere un lavoro né condividere password o codici di autenticazione."
   ],
   [
    "h3",

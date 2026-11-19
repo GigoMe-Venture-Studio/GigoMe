@@ -391,7 +391,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   into `job_reports`.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
-  `header-mark.webp` under 440px, so the "EN | IT" switch fits; alt "GigoMe", links to `/`), Jobs
+  `header-mark.webp` under 360px; alt "GigoMe", links to `/`), the "EN | IT"
+  switch (from 440px; under 440px only in the Menu panel), Jobs
   (`/jobs`), then: logged out, "For employers" and "Student login" (the
   button opens `/login`, the student login only); a
   student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
@@ -521,8 +522,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   read the current language. In Italian, "il 1 / il 8 / al 11 <month>"
   become "il 1º / l'8 / all'11" by themselves.
 - English is the default and the source; Italian is downloaded only when
-  chosen. The "EN | IT" switch (`LangSwitch.jsx`) is in the header at every
-  width and in the phone menu; the choice is kept in localStorage
+  chosen. The "EN | IT" switch (`LangSwitch.jsx`) is in the header from
+  440px and in the phone menu (the only place under 440px, where the
+  wordmark, "Student login" and Menu leave no room); the choice is kept in localStorage
   (`gigome-lang`, try/catch) and `<html lang>` follows it. Nothing reads the
   browser's language. Prices and dates follow it ("€9,50/h", "3 giorni
   fa").
@@ -532,7 +534,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `areas.js`), the database's own messages other than the daily limits
   (`limits.js` gives their Italian). Italian wording rules and the product
   terms ("Candidati", "Salva", "Esempio", "Segnala questa offerta",
-  "offerta"/"annuncio", "tu" everywhere): `docs/i18n/README.md`.
+  "offerta"/"annuncio", "tu" everywhere except the legal translations,
+  which are formal and impersonal: "l'Utente", "il Gestore"):
+  `docs/i18n/README.md`.
 - `/privacy` and `/terms` in Italian show `src/legal/*.it.json`, courtesy
   translations with exactly the English JSON's structure, ids and links
   (`tests/unit/legal-it.test.mjs`), under "Traduzione di cortesia. In caso di

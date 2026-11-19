@@ -40,7 +40,10 @@ what you review is what the site shows.
 
 ## Choices already made (change them in one place if you disagree)
 
-"tu" everywhere, employers included; "Candidati" (Apply), "Salva" /
+"tu" everywhere on the site, employers included (the translator may
+change the employer pages); the legal translations instead use the formal,
+impersonal style of Italian legal documents ("l'Utente", "il Gestore",
+third person). "Candidati" (Apply), "Salva" /
 "Salvata" (Save), "Esempio" (Example), "Segnala questa offerta" (Report
 this job), "offerta" for a job and "annuncio" for a listing. The full list
 is in the pull request that added the translation.

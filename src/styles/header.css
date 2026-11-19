@@ -48,3 +48,8 @@
   .lang-switch button { min-width: 28px; }
   .header-actions .header-lang { margin-right: 0; }
 }
+/* Under 440px the header keeps the wordmark, "Student login" and Menu: the
+   switch is only in the Menu panel there. */
+@media (max-width: 439px) {
+  .header-actions .header-lang { display: none; }
+}

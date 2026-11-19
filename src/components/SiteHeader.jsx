@@ -13,7 +13,8 @@ import { useT } from '../lib/useLang.js';
 //   student: "Saved jobs", their name (a link to /account) and "Log out";
 //   company account: "Dashboard", the company name (a link to /account) and
 //   "Log out".
-// "EN | IT" (LangSwitch) sits before the buttons, and in the Menu panel too.
+// "EN | IT" (LangSwitch) sits before the buttons from 440px, and in the
+// Menu panel (the only place under 440px, where the header has no room).
 // Under 768px the links move into a Menu panel (site.css).
 export default function SiteHeader() {
   const t = useT();
@@ -83,7 +84,7 @@ export default function SiteHeader() {
       <div className="wrap">
         <Link className="site-logo" to="/">
           <picture>
-            <source media="(max-width: 439px)" srcSet="/brand/header-mark.webp" width="35" height="30" />
+            <source media="(max-width: 359px)" srcSet="/brand/header-mark.webp" width="35" height="30" />
             <img src="/brand/header-wordmark.webp" alt="GigoMe" width="132" height="30" />
           </picture>
         </Link>

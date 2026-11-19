@@ -257,7 +257,7 @@ Job lists and job pages (labels),area.elsewhere,Elsewhere in Milan,Altrove a Mil
 /jobs/<id> (job page),jobPage.start,Start,Inizio
 /jobs/<id> (job page),jobPage.flexible,Flexible,Flessibile
 /jobs/<id> (job page),jobPage.howToApply,How to apply,Come candidarsi
-/jobs/<id> (job page),jobPage.loginToApply,Log in to see how to apply,Accedi per vedere come candidarti
+/jobs/<id> (job page),jobPage.loginToApply,Log in to see how to apply,Accedi per candidarti
 /jobs/<id> (job page),jobPage.loginNote,Log in as a student to see how to apply.,Accedi con un account studente per vedere come candidarti.
 /jobs/<id> (job page),jobPage.companyAccount,Only students can apply for jobs on GigoMe. You're logged in with a company account.,Su GigoMe solo gli studenti possono candidarsi alle offerte. Hai effettuato l'accesso con un account aziendale.
 /jobs/<id> (job page),jobPage.apply,Apply,Candidati
