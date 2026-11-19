@@ -87,7 +87,7 @@ async function mockSupabase(ctx, opts = {}) {
     await ctx.close(); }
   { const { ctx, p } = await newPage();
     await p.goto(ENV + '/'); await p.waitForTimeout(400); await p.click('#menu-btn');
-    ok((await p.$$eval('#menu-panel a, #menu-panel button', els => els.map(e => e.textContent.trim()).join(', '))) === 'Jobs, For employers', 'phone menu when logged out: Jobs, For employers');
+    ok((await p.$$eval('#menu-panel a, #menu-panel button:not(.lang-switch button)', els => els.map(e => e.textContent.trim()).join(', '))) === 'Jobs, For employers', 'phone menu when logged out: Jobs, For employers');
     await p.click('#menu-btn'); await p.click('.site-header >> text=Student login'); await p.waitForTimeout(400);
     ok(new URL(p.url()).pathname === '/login', 'phone: Student login button opens /login');
     await ctx.close(); }

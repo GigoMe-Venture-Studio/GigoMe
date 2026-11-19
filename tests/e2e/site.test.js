@@ -132,7 +132,8 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     await ctx.close(); }
   { const { ctx, p } = await mk();
     await p.goto(ENV + '/terms'); await p.waitForTimeout(400); await p.click('#menu-btn');
-    const items = await p.$$eval('#menu-panel a, #menu-panel button', (els) => els.map((e) => e.textContent.trim()).join(', '));
+    // The EN | IT switch in the menu is checked in i18n.test.js.
+    const items = await p.$$eval('#menu-panel a, #menu-panel button:not(.lang-switch button)', (els) => els.map((e) => e.textContent.trim()).join(', '));
     ok(items === 'Jobs, For employers', 'phone menu: Jobs, For employers');
     for (const path of ['/', '/terms', '/privacy', '/jobs']) {
       await p.goto(ENV + path); await p.waitForTimeout(400);
