@@ -4,6 +4,7 @@ import SiteHeader from './components/SiteHeader.jsx';
 import SiteFooter from './components/SiteFooter.jsx';
 import { FeedbackProvider } from './components/Feedback.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import EmailLanguageSync from './components/EmailLanguageSync.jsx';
 import TermsGate from './components/TermsGate.jsx';
 import { PageErrorBoundary } from './components/ErrorBoundary.jsx';
 import { RouteMeta } from './lib/seo.js';
@@ -41,6 +42,7 @@ export default function App() {
   return (
     <FeedbackProvider>
       <ScrollToTop />
+      <EmailLanguageSync />
       <RouteMeta />
       <SiteHeader />
       <PageErrorBoundary>

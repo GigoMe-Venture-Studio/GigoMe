@@ -335,6 +335,7 @@ login, a map and the Metro button). GigoMe sets **no cookies**.
 | --- | --- | --- | --- | --- |
 | localStorage | `sb-<project>-auth-token` | The login session: access and refresh tokens, user ID and email | After logging in | Until "Log out", or the session expires |
 | sessionStorage | `gigome.login.pending` (and `.employer`) | The email a code was just sent to, and when, so a reload doesn't lose it | Between "Send me a code" and entering it | Until the code is used or the tab is closed |
+| localStorage | `gigome-lang` | "en" or "it": the language chosen with the EN \| IT switch | After pressing EN or IT | Until changed, or the browser's site data is cleared |
 | sessionStorage | `gigome.metro` | "off" when someone hides the metro lines on a map | After pressing "Metro" | Until the tab is closed |
 | Turnstile's frame (challenges.cloudflare.com) | Cloudflare's own | Whatever Cloudflare's bot check keeps, inside its own frame, not readable by GigoMe | On the login forms, when Turnstile is on | Cloudflare's rules |
 
@@ -353,6 +354,7 @@ the free plan.
 | --- | --- |
 | Profile: email, university (or the name typed under "Other"), how a student was verified (university email or self-declared), name, degree level, graduation year | The account is deleted. An unfinished sign-up (never completed /welcome: no Terms and no name, or a self-declared student who never said which university; no company): 29 days after its last login. A finished account, verified or self-declared, stays until it is deleted or is an inactive account (24 months, below) |
 | Terms acceptance: which version, when ("I'm 18 or older and I accept the Terms") | The account is deleted |
+| Email language: "en" or "it", so the login code email comes in the language the site was used in (Supabase Auth's user metadata; set when the account is made, updated after login and when a logged-in user switches; in "Download my data") | The account is deleted |
 | Saved jobs | Removed, the account is deleted, or 89 days after the job ended |
 | Saved searches: a name, the filters, when last opened | Deleted, or the account is deleted |
 | Companies followed (the company sees only a count) | Unfollowed, the company is deleted, or the account is deleted |

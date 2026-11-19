@@ -521,6 +521,19 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `labelPairs()` / `labelMap()`, so `LIST.map(([v, l]) …)` and `LABEL[v]`
   read the current language. In Italian, "il 1 / il 8 / al 11 <month>"
   become "il 1º / l'8 / all'11" by themselves.
+- The login email's language: `sendCode()` sends `{ language }` (the site's,
+  with `signup_as` on the student login only) as user metadata, which
+  Supabase saves only when it creates the account; for existing accounts
+  `EmailLanguageSync.jsx` (`src/lib/emailLanguage.js`) calls
+  `updateUser({ data: { language } })` right after login and when a
+  logged-in user switches language, if the saved one differs (once per
+  visit if it fails). The template in `docs/email/login-code.md` picks
+  Italian, English, or both for any other value
+  (`tests/unit/login-email.test.mjs`, `tests/e2e/email-language.test.js`).
+  User metadata is editable by its user: never read it for anything but the
+  email's language, never for anything security-related (the database reads
+  only `signup_as`, once, when it creates the profile). "Download my data"
+  includes it (`account.email_language`).
 - English is the default and the source; Italian is downloaded only when
   chosen. The "EN | IT" switch (`LangSwitch.jsx`) is in the header from
   440px and in the phone menu (the only place under 440px, where the

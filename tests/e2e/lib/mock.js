@@ -113,7 +113,7 @@ function apply(url, rows) {
 }
 
 async function mock(ctx, opts = {}) {
-  const log = { rpc: [], jobs: [], otp: [] };
+  const log = { rpc: [], jobs: [], otp: [], userMeta: opts.userLanguage ? { language: opts.userLanguage } : {} };
   const terms = opts.termsVersion === undefined ? '2.0' : opts.termsVersion;
   const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', student_verification: (opts.accountType || 'student') === 'student' ? opts.verification || 'university_email' : null, other_university: opts.otherUniversity || null, student_declared_at: opts.verification === 'self_declared' ? '2026-11-01T10:00:00Z' : null, terms_version: terms, terms_accepted_at: terms ? '2026-11-01T10:00:00Z' : null };
   await ctx.route(SB + '/**', async (r) => {
@@ -187,7 +187,10 @@ async function mock(ctx, opts = {}) {
     if (path === '/rest/v1/areas') { log.areas = (log.areas || 0) + 1; return j(200, AREAS); }
     if (path === '/rest/v1/universities') return j(200, [{ id: 'u', name: 'Bocconi University', email_domains: ['studbocconi.it'] }]);
     if (path === '/auth/v1/otp') { const b = req.postDataJSON(); log.otp.push(b); if (b.email.startsWith('ratelimit')) return j(429, { code: 429, error_code: 'over_email_send_rate_limit', msg: 'x' }); return j(200, {}); }
-    if (path === '/auth/v1/verify') { const b = req.postDataJSON(); if (b.token !== '123456') return j(403, { code: 403, error_code: 'otp_expired', msg: 'x' }); const exp = Math.floor(Date.now() / 1000) + 3600; return j(200, { access_token: b64({ alg: 'HS256' }) + '.' + b64({ sub: 'u1', exp }) + '.s', token_type: 'bearer', expires_in: 3600, expires_at: exp, refresh_token: 'r', user: { id: 'u1', aud: 'authenticated', email: b.email, app_metadata: {}, user_metadata: {} } }); }
+    if (path === '/auth/v1/verify') { const b = req.postDataJSON(); if (b.token !== '123456') return j(403, { code: 403, error_code: 'otp_expired', msg: 'x' }); const exp = Math.floor(Date.now() / 1000) + 3600; log.userEmail = b.email; return j(200, { access_token: b64({ alg: 'HS256' }) + '.' + b64({ sub: 'u1', exp }) + '.s', token_type: 'bearer', expires_in: 3600, expires_at: exp, refresh_token: 'r', user: { id: 'u1', aud: 'authenticated', email: b.email, app_metadata: {}, user_metadata: { ...log.userMeta } } }); }
+    // updateUser({ data }): merged into the user's metadata, as Supabase does
+    // (opts.userLanguage: the email language already saved with the account).
+    if (path === '/auth/v1/user' && method === 'PUT') { const b = req.postDataJSON(); log.userUpdates = (log.userUpdates || []).concat([b]); if (opts.userUpdateFail) return j(500, { message: 'boom' }); Object.assign(log.userMeta, b.data || {}); return j(200, { id: 'u1', aud: 'authenticated', email: log.userEmail, app_metadata: {}, user_metadata: { ...log.userMeta } }); }
     if (path === '/rest/v1/profiles' && method === 'GET') {
       log.profileSelects = (log.profileSelects || []).concat(url.searchParams.get('select'));
       if (opts.accountFail && /universities/.test(url.searchParams.get('select') || '')) return j(500, { message: 'boom' });
