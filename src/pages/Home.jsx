@@ -39,7 +39,7 @@ export default function Home() {
           <h3>For students</h3>
           <ol>
             <li><Link to="/jobs">Browse jobs</Link>: part-time jobs and gigs you can do in English.</li>
-            <li>Log in with your university email. We send you a 6-digit code, no password needed.</li>
+            <li>Log in with any email: a university email verifies that you're a student. We send you a 6-digit code, no password needed.</li>
             <li>Apply directly with the employer, on their website or by email.</li>
           </ol>
         </div>

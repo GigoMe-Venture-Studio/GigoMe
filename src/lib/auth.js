@@ -1,4 +1,4 @@
-// Student login with a 6-digit email code (see CLAUDE.md: never magic links).
+// Login with a 6-digit email code (see CLAUDE.md: never magic links).
 import { supabase } from './supabase.js';
 import { CONTACT_EMAIL } from './contact.js';
 
@@ -61,10 +61,20 @@ export function universityFor(email, universities) {
 
 // captchaToken: from Turnstile, when it's configured (see src/lib/captcha.js).
 // Supabase ignores it until CAPTCHA protection is turned on in its dashboard.
-export async function sendCode(email, captchaToken) {
+// asStudent: the student login. Supabase stores { signup_as: 'student' } in a
+// NEW user's metadata only (an existing account's is left alone), and the
+// database reads it once, when it creates the profile: any email then becomes
+// a student account, verified ('university_email') if its domain is a listed
+// university's, 'self_declared' otherwise. Without it (the employer login) a
+// new account is a company account, unless its domain is a university's.
+export async function sendCode(email, captchaToken, { asStudent = false } = {}) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { shouldCreateUser: true, ...(captchaToken ? { captchaToken } : {}) }
+    options: {
+      shouldCreateUser: true,
+      ...(asStudent ? { data: { signup_as: 'student' } } : {}),
+      ...(captchaToken ? { captchaToken } : {})
+    }
   });
   return error ? sendErrorMessage(error) : null;
 }
@@ -127,11 +137,24 @@ export function verifyErrorMessage(error, sentAt) {
 export async function fetchProfile(userId) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('full_name, degree_level, graduation_year, account_type, terms_version, terms_accepted_at')
+    .select('full_name, degree_level, graduation_year, account_type, student_verification, student_declared_at, terms_version, terms_accepted_at')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw error;
   return data;
+}
+
+// A student who signed up with an email that isn't a listed university's and
+// hasn't yet answered /welcome's "Which university?" (declare_student).
+export function needsStudentAnswers(profile) {
+  return Boolean(profile) && profile.account_type === 'student' && profile.student_verification === 'self_declared' && !profile.student_declared_at;
+}
+
+// /welcome's answer, recorded once by the database (declare_student): a listed
+// university's id, or "Other" with its name.
+export async function declareStudent({ universityId = null, otherName = null }) {
+  const { error } = await supabase.rpc('declare_student', { p_university_id: universityId, p_other_university: otherName });
+  if (error) throw error;
 }
 
 export async function saveProfile(userId, fields) {

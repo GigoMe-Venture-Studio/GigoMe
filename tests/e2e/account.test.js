@@ -33,6 +33,7 @@ const hasSession = (p) => p.evaluate(() => Object.keys(localStorage).some((k) =>
     ok((await link.getAttribute('aria-current')) === 'page', 'name marked current on /account');
     const main = await p.innerText('main');
     ok(/Your account/.test(main) && main.includes('ana@studbocconi.it') && main.includes('Bocconi University'), 'shows email and university');
+    ok((await p.innerText('.account-verification')) === 'Verified by your university email', 'a university-email student: "Verified by your university email"');
     ok(await p.locator('main input[type=email], main input[name=email], main input[name=university]').count() === 0, 'email and university are not editable');
     ok(log.profileSelects.some((s) => /universities\(name\)/.test(s)), 'reads the university name with the profile');
     ok((await p.inputValue('input[name=full_name]')) === 'Ana Rossi' && (await p.inputValue('select[name=degree_level]')) === 'master' && (await p.inputValue('select[name=graduation_year]')) === '2028', 'fields prefilled');
@@ -63,6 +64,14 @@ const hasSession = (p) => p.evaluate(() => Object.keys(localStorage).some((k) =>
   { const ctx = await b.newContext(desk); await mock(ctx, { accountFail: true }); const p = await ctx.newPage();
     await p.goto(E + '/login'); await login(p); await p.goto(E + '/account'); await p.waitForTimeout(500);
     ok((await p.innerText('main')).includes("We couldn't load your account"), 'load error shown');
+    await ctx.close(); }
+
+  // self-declared student: the university they typed, "not verified", and where to write to change it
+  { const ctx = await b.newContext(desk); await mock(ctx, { verification: 'self_declared', otherUniversity: 'Accademia di Brera' }); const p = await ctx.newPage();
+    await p.goto(E + '/login'); await login(p, 'ana@gmail.example'); await p.goto(E + '/account'); await p.waitForSelector('.account-verification');
+    const main = await p.innerText('main');
+    ok(main.includes('Accademia di Brera') && (await p.innerText('.account-verification')) === 'Not verified: you told us when you signed up'
+       && main.includes("Your email and university can't be changed here. If your university is wrong, write to hello@gigome.org."), 'self-declared student: their university, "Not verified", how to change it');
     await ctx.close(); }
 
   // the two buttons are the same size on phones too

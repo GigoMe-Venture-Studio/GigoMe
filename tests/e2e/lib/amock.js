@@ -42,6 +42,11 @@ async function amock(ctx, opts = {}) {
     if (path.startsWith('/rest/v1/rpc/admin_')) {
       const b = body(); const name = path.split('/').pop(); log.rpcs.push([name, b]);
       if (!opts.admin) return j(403, { code: '42501', message: 'Only admins.' });
+      if (name === 'admin_student_counts') return j(200, opts.studentCounts || [
+        { verification: 'self_declared', university: null, students: 2 }, { verification: 'self_declared', university: 'Other', students: 4 },
+        { verification: 'self_declared', university: 'Politecnico di Milano', students: 3 }, { verification: 'university_email', university: 'Bocconi University', students: 20 },
+        { verification: 'university_email', university: 'Politecnico di Milano', students: 12 }]);
+      if (name === 'admin_other_universities') return j(200, opts.otherUniversities || [{ name: 'Accademia di Brera', students: 3 }, { name: 'NABA', students: 1 }]);
       if (name === 'admin_stats') return j(200, [opts.stats || { students: 41, companies_approved: 7, companies_with_live_job: 5, live_jobs: 12, apply_clicks_this_week: 33, students_clicked_this_week: 19 }]);
       if (name === 'admin_company_contact') { const c = db.companyContact[b.p_company_id] || []; return j(200, [{ contact_email: c[0], login_email: c[1] }]); }
       if (name === 'admin_job_contact') { const c = db.jobContact[b.p_job_id]; return j(200, c ? [{ apply_url: c[0], apply_email: c[1] }] : []); }

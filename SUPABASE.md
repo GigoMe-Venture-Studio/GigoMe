@@ -25,27 +25,44 @@ is in `supabase/migrations/`.
 ## How people get an account
 
 Everyone logs in with a 6-digit code sent to their email. The first time they
-do, the database creates a **profile** for them automatically:
+do, the database creates a **profile** for them automatically, and records
+how a student account came about (`student_verification`):
 
-- If their email ends in a domain listed for a university (for Bocconi,
-  `@studbocconi.it`), they become a **student** of that university. The match
-  is exact and ignores capital letters: `name@studbocconi.it` counts,
-  `name@notstudbocconi.it` doesn't.
-- Everyone else becomes a **company** account.
+- If their email ends in a domain listed for a university (for Politecnico
+  di Milano, `@mail.polimi.it`), they become a **student** of that
+  university, **verified** (`university_email`), whichever login they used.
+  The match is exact and ignores capital letters: `name@mail.polimi.it`
+  counts; `name@notmail.polimi.it`, `name@sub.mail.polimi.it` and the staff
+  domain `name@polimi.it` don't. List only the address students get, never a
+  university's staff domain.
+- Any other email used on the **student login** (`/login`) becomes a
+  **student** too, **self-declared** (`self_declared`). The student login
+  tells Supabase `signup_as: student` when it asks for the code; Supabase
+  keeps that only for a brand-new user, and the database reads it only when
+  it creates the profile. On `/welcome` they then answer, once: "Are you
+  currently a university student?" (No deletes the account the code just
+  created, so no student account exists) and "Which university?" (a listed
+  one, or "Other" with its name), recorded by `declare_student`. Nobody
+  checks that answer.
+- Any other email used on the **employer login** (`/employers`) becomes a
+  **company** account.
 
-Nobody can switch their own account type or university. Students of a
-university that isn't in the list yet first get a company account. As soon
-as their university is added (or its domain is added to an existing
-university), they are upgraded to students automatically, unless they
-already own a company. Nobody is ever downgraded automatically: removing a
-domain changes no one.
+Both kinds of students can do exactly the same things. **One email, one
+role:** the role is set when the account is created and nobody can switch
+their own account type, verification method or university. An email that
+has a company account stays one if it is used on the student login (the
+page says so and points to the employer login), and the reverse. When a
+university is added (or a domain is added to an existing one), company
+accounts with that domain that own no company become students, and
+self-declared students with that domain become verified, automatically.
+Nobody is ever downgraded automatically: removing a domain changes no one.
 
 ## The tables
 
 | Table | What it holds | Who can see it | Who can change it |
 | --- | --- | --- | --- |
-| `universities` | University names and their student email domains. Only Bocconi to start. | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
-| `profiles` | One row per user: account type, university, name, degree level, graduation year, and which version of the Terms they accepted ("I'm 18 or older and I accept the Terms") and when | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year. The Terms acceptance is written only by `accept_terms()`, with the database's time |
+| `universities` | University names and their student email domains (see "Universities" below) | Everyone, including logged-out visitors | Only the team, in the dashboard. Not even admins can change it through the website |
+| `profiles` | One row per user: account type, how a student account was verified (`university_email` or `self_declared`), university (or the name typed under "Other") and when a self-declared student answered, name, degree level, graduation year, and which version of the Terms they accepted ("I'm 18 or older and I accept the Terms") and when | Each user sees only their own; admins see all | Users edit only their name, degree level and graduation year. A self-declared student's university is written once by `declare_student()`. The Terms acceptance is written only by `accept_terms()`, with the database's time |
 | `admins` | The user IDs of admins | Nobody through the website or API | Only the team, in the dashboard |
 | `companies` | Employers: name, website, description, contact email, a status (pending, approved or rejected), when the owner accepted the terms (set by the database on creation), and `is_example` (a made-up company for testers, see "Example listings" below) | Everyone sees approved companies; owners see their own; admins see all. The contact email only reaches the owner and admins, through `get_company_contact_email` | Company accounts create one company and edit its details. Only admins change the status. Only the SQL Editor sets `is_example` |
 | `jobs` | Job listings: title, description, type (gig, part-time, other; no internships), location, remote, hours per week (1 to 40), pay (per hour, per month or per project, always paid; an amount or a range; an hourly equivalent worked out by the database; an optional pay note), Italian level, when it happens (weekday mornings, afternoons, evenings, weekends, flexible), languages used at work (optional), start date, expiry date, status (draft, pending, published, closed, changes requested, rejected), the reviewer's note, who reviewed it and when, when it was closed or rejected (`ended_at`, set by the database, not readable through the API), and `is_example` (a made-up job for testers) | Everyone sees published, unexpired jobs of approved companies; owners see their own (with the reviewer's note); admins see all. Who reviewed a job is not readable through the API | Owners create and edit their own jobs, but can only set draft, pending or closed, and submit (pending) only once their company is approved. Only admins publish, request changes or reject |
@@ -297,6 +314,39 @@ area keeps the centre it had when it was saved.
 | 15 | Bicocca | 45.5150, 9.2110 |
 | 16 | Elsewhere in Milan | (none) |
 
+## Universities
+
+Student accounts are open to these student email domains, added by the
+migrations (`20261107120000_initial_schema.sql` for Bocconi,
+`20261119120000_milan_universities.sql` for the rest). Each domain was
+checked against the university's own pages in November 2026:
+
+| University | Student domain | Not listed (staff and others) |
+| --- | --- | --- |
+| Bocconi University | `studbocconi.it` | `unibocconi.it` |
+| Politecnico di Milano | `mail.polimi.it` | `polimi.it` |
+| University of Milan (La Statale) | `studenti.unimi.it` | `unimi.it` (staff, PhD students) |
+| Università Cattolica del Sacro Cuore | `icatt.it` | `unicatt.it` |
+| University of Milano-Bicocca | `campus.unimib.it` | `unimib.it` |
+| IULM University | `studenti.iulm.it` | `iulm.it` |
+| Humanitas University | `st.hunimed.eu` | `hunimed.eu` |
+| Vita-Salute San Raffaele University | `studenti.unisr.it` | `unisr.it`, `docenti.unisr.it`, `hsr.it` |
+
+Not added, because no official source confirmed the student domain: NABA
+(a third-party page says `studenti.naba.it`) and IED Milano. Add them in
+the Table Editor once the school or a student confirms the domain on an
+official page. Cattolica's `icatt.it` covers all its campuses (Milan, Rome,
+Brescia, Piacenza-Cremona), not only Milan.
+
+The student login shows this list under "Which emails verify you as a
+student?", and /welcome's "Which university?" offers the same universities
+(plus "Other"), both read from the table, so a university added in the
+dashboard shows up there at once. /admin lists the names students typed
+under "Other", with counts: the ones to look up next. `security_check.sql` checks that
+each student domain above makes a student and that the staff domains,
+look-alikes and sub-domains don't: it fails if a staff domain is ever
+listed.
+
 ## When someone deletes their account
 
 Users delete their own account on `/account` ("Delete my account", which
@@ -348,6 +398,8 @@ title and company name, until 730 days after they are resolved.
 | `my_saved_jobs()` | Logged-in users | The caller's saved jobs with title, company, whether each is still live (so a closed job can show "No longer available") and whether it's an example listing. Never anyone else's. |
 | `get_company_contact_email(company_id)` | The company's owner, admins | The company's contact email. Everyone else gets nothing. |
 | `delete_my_account()` | Logged-in users | Deletes the caller's own account (it takes no arguments, so it can't touch anyone else). The account page calls it after the user types DELETE. |
+| `declare_student(university_id, other_university)` | Self-declared students, once | "Which university?" on /welcome: a listed university's id, or "Other" with its name (2 to 200 characters). Only for the caller's own account, only if they signed up with a non-university email, only once. |
+| `admin_student_counts()`, `admin_other_universities()` | Admins | The "Students" section of /admin: students by verification method and university, and the names typed under "Other" with counts. |
 | `accept_terms(version)` | Logged-in users | Records that the caller accepted that version of the Terms, with the database's time. `/welcome` and the employer setup call it when "I'm 18 or older and I accept the Terms" is ticked. |
 | `my_opened_jobs()` | Logged-in users | The jobs the caller pressed "Apply" on, with title, company and whether each is still live ("Jobs you opened" on /saved). |
 | `my_company_follower_count()` | Company owners | How many students follow the caller's company: a number, never who. |
@@ -374,12 +426,18 @@ Notice's limit, so a nightly run is never late. Set by the migrations
 (`20261111120000_data_protection.sql`, then
 `20261111200000_keep_reports.sql`), so the values are in git:
 
-- `incomplete_signups_days` = **29**: accounts that never finished signing
-  up are deleted, like "Delete my account". "Never finished" means: never
-  accepted the Terms, no name, no company, not an admin, and no login for
-  29 days (counted from the last login, or from sign-up if they never
-  logged in). Accounts from before the Terms were asked for that have a
-  name or a company are complete and stay.
+- `incomplete_signups_days` = **29**: **unfinished sign-ups** are deleted,
+  like "Delete my account". Unfinished means the account never completed
+  /welcome: no Terms accepted and no name, or a self-declared student who
+  never answered "Which university?" (even with a name and the Terms); no
+  company, not an admin, and no login for 29 days (counted from the last
+  login, or from sign-up if they never logged in). Accounts from before
+  the Terms were asked for that have a name or a company are finished and
+  stay. **Based on activity, never on verification:** a self-declared
+  student who completed /welcome is kept exactly like one verified by a
+  university email, however long since their last login; only the
+  inactive-accounts rule below (24 months, by hand) applies to them, as to
+  everyone. `security_check.sql` checks both.
 - `ended_job_details_days` = **89**: listings closed, rejected or expired
   89 days ago lose what isn't needed any more: how to apply
   (`job_contacts`), students' saves, the description, the pay note, the
@@ -400,7 +458,7 @@ Notice's limit, so a nightly run is never late. Set by the migrations
 - `ended_jobs_days` (at least 30): deletes ended jobs outright (their
   reports stay, with the job title and company name).
 - `feedback_days` (at least 30): feedback older than this.
-- `inactive_accounts_days` (at least 180): accounts not logged in for this
+- `inactive_accounts_days` (at least 180): **inactive accounts**, not logged in for this
   long, deleted without warning (company accounts with their company and
   jobs). The Privacy Notice's 24 months with a warning is done by hand
   instead: see `HANDOVER.md`, "Data retention: who does what".
@@ -443,13 +501,17 @@ get one row per check; every row should say `passed = true`. If any says
 ## Common tasks
 
 - **Add a university:** Table Editor → `universities` → insert a row with the
-  name and its student email domains, for example `{unimi.it}`. Anyone who
-  already signed up with that domain becomes a student right away, unless they
-  own a company. To check: Table Editor → `profiles`, filter by the new
+  name and its **student** email domains, for example `{studenti.naba.it}`
+  (never a staff domain like `naba.it`, and check it on the school's own
+  site first). Also add it to the table under "Universities". Anyone who
+  already signed up with that domain becomes a verified student right away,
+  unless they own a company. To check: Table Editor → `profiles`, filter by the new
   `university_id`.
 - **Move someone back to a company account:** the database never does this on
   its own. Change their `profiles` row (`account_type` and `university_id`)
-  in the Table Editor.
+  in the Table Editor; the student fields (`student_verification`, the
+  "Other" name) are emptied automatically. The other way (company to
+  student) sets `student_verification` from their email the same way.
 - **Make someone an admin:** find their user ID under Authentication → Users,
   then insert it into the `admins` table.
 - **Approve a company, review a job, handle a report:** log in on the site

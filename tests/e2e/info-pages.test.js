@@ -15,7 +15,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth > 
 const cutOff = (p, sel) => p.$$eval(sel, (els) => els.filter((e) => e.offsetParent !== null).filter((e) => {
   const r = e.getBoundingClientRect(); return e.scrollWidth > e.clientWidth + 1 || r.left < -0.5 || r.right > innerWidth + 0.5;
 }).map((e) => e.tagName + ' ' + e.textContent.trim().slice(0, 40)));
-const STUDENT_QS = ['How do I find jobs?', 'Why do I need a university email?', 'What happens when I press "Apply"?', 'What does GigoMe see, and what doesn\'t it?', 'How do I delete my account?'];
+const STUDENT_QS = ['How do I find jobs?', 'Do I need a university email?', 'What happens when I press "Apply"?', 'What does GigoMe see, and what doesn\'t it?', 'How do I delete my account?'];
 const EMPLOYER_QS = ['How do I sign up?', 'How does the company review work?', 'How do I post a job?', 'Is every job reviewed before it\'s published?', 'How do students contact me?'];
 const STRUCTURED = "What you'll do:\n- Make coffee\n- Run the till\n\nWho we're looking for:\nSomeone friendly.\nNo experience needed.\n\nPractical details:\n1. Saturdays\n2. Sundays";
 

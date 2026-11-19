@@ -54,3 +54,15 @@
 .report-reasons legend { padding: 0; margin-bottom: var(--s2); font-size: 14px; font-weight: 600; }
 .report-form .form-buttons .btn { width: auto; }
 @media (max-width: 599px) { .report-form .form-buttons .btn { width: 100%; } }
+
+/* Students by verification method and university (AdminStudents). */
+.admin-table-wrap { overflow-x: auto; margin-top: var(--s3); }
+.admin-table { border-collapse: collapse; font-size: 14px; min-width: 100%; }
+.admin-table th, .admin-table td { padding: var(--s2) var(--s3); border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.admin-table th:first-child { text-align: left; white-space: normal; font-weight: 400; }
+.admin-table thead th { font-weight: 600; color: var(--muted); }
+.admin-table tfoot th, .admin-table tfoot td { font-weight: 600; border-bottom: 0; }
+.admin-subtitle { margin-top: var(--s5); font-size: 16px; }
+.admin-others { margin-top: var(--s2); padding-left: 1.25em; }
+.admin-others li + li { margin-top: var(--s1); }
+.admin-other-name { overflow-wrap: anywhere; }

@@ -35,6 +35,12 @@
 .auth-notice > .uni-list + p { margin-top: var(--s2); }
 .uni-list li + li { margin-top: var(--s1); }
 .uni-domains { color: var(--muted); overflow-wrap: anywhere; }
+/* "Which emails verify you as a student?": folded under the independence line. */
+.uni-details { margin-top: var(--s2); font-size: 14px; }
+.uni-details summary { cursor: pointer; width: fit-content; color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.uni-details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.uni-details-body { margin-top: var(--s2); padding: var(--s3) var(--s4); border-radius: var(--r-md); background: var(--paper); }
+.uni-details-body > * + * { margin-top: var(--s2); }
 
 .auth-links {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
@@ -67,3 +73,10 @@
 .logout-text { margin-top: var(--s2); color: var(--muted); }
 .logout-buttons { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s5); }
 .logout-buttons .btn { flex: 1 1 120px; height: 44px; }
+
+/* /welcome: "Are you currently a university student?" (self-declared students). */
+.student-question { margin: 0; padding: 0; border: 0; min-width: 0; }
+.student-question legend { padding: 0; margin-bottom: var(--s2); font-size: 14px; font-weight: 600; }
+.student-question-options { display: flex; gap: var(--s5); }
+.student-question-options .check { min-height: 44px; display: inline-flex; align-items: center; gap: var(--s1); }
+.not-student > p + p { margin-top: var(--s2); }

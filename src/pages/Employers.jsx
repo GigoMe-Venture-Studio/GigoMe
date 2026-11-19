@@ -64,8 +64,9 @@ function AlreadyIn({ account, email, next }) {
       <div className="auth-card">
         <h2 className="employers-login-title">You're logged in as a student</h2>
         <p className="lead">
-          <strong className="auth-email">{email}</strong> is a student account. To list jobs, log out and log in here with
-          your work email.
+          <strong className="auth-email">{email}</strong> is a student account. Each email has one role on GigoMe, so to
+          list jobs, log out and log in here with a different email, like your work email. Looking for work?{' '}
+          <Link to="/jobs">Browse jobs</Link>.
         </p>
         <LogOutArea />
       </div>

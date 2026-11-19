@@ -94,6 +94,8 @@ declare
   v_dp_click    bigint;
   v_su          uuid[] := array[gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid(),
                                 gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid()];
+  -- retention and the verification method (20261119130000)
+  v_sr          uuid[] := array[gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid()];
   v_rt_closed   uuid;
   v_rt_expired  uuid;
   v_rt_reported uuid;
@@ -203,6 +205,46 @@ begin
 
     select account_type into v_text from public.profiles where id = v_lookalike;
     results := pg_temp.res(results, 'A look-alike domain (notstudbocconi.it) is not a student', 'company', v_text, v_text = 'company');
+
+    -- The other Milan universities (migration 20261119120000): each student
+    -- domain makes a student (any case); the universities' staff domains,
+    -- look-alikes and sub-domains don't. A staff domain listed in the
+    -- dashboard would fail here: it lets staff get student accounts.
+    declare
+      v_domains text[] := array['mail.polimi.it', 'studenti.unimi.it', 'icatt.it', 'campus.unimib.it',
+                                'studenti.iulm.it', 'st.hunimed.eu', 'studenti.unisr.it'];
+      v_others  text[] := array['unibocconi.it', 'polimi.it', 'unimi.it', 'unicatt.it', 'unimib.it', 'iulm.it', 'hunimed.eu', 'unisr.it',
+                                'notmail.polimi.it', 'mail.polimi.it.example', 'sub.studenti.unimi.it', 'icatt.it.example',
+                                'campus-unimib.it', 'studenti.iulm.com', 'st.hunimed.eu.example', 'xstudenti.unisr.it'];
+      v_ids     uuid[] := '{}';
+      v_id      uuid;
+      v_d       text;
+    begin
+      foreach v_d in array v_domains loop
+        v_id := gen_random_uuid();
+        insert into auth.users (id, email) values (v_id, 'Check.Student@' || upper(v_d));
+        v_ids := v_ids || v_id;
+      end loop;
+      select string_agg(v_domains[i] || ': ' || coalesce(p.account_type, 'no profile')
+                        || case when p.university_id is null then '' else ' of a university' end, ', ' order by i)
+        filter (where p.account_type is distinct from 'student' or p.university_id is null)
+        into v_text
+      from generate_subscripts(v_ids, 1) as i left join public.profiles p on p.id = v_ids[i];
+      results := pg_temp.res(results, 'Sign-up with each Milan university''s student domain (any case) creates a student',
+                             'all 7 students', coalesce(v_text, 'all 7 students'), v_text is null);
+
+      v_ids := '{}';
+      foreach v_d in array v_others loop
+        v_id := gen_random_uuid();
+        insert into auth.users (id, email) values (v_id, 'someone@' || v_d);
+        v_ids := v_ids || v_id;
+      end loop;
+      select string_agg(v_others[i], ', ' order by i) filter (where p.account_type is distinct from 'company')
+        into v_text
+      from generate_subscripts(v_ids, 1) as i left join public.profiles p on p.id = v_ids[i];
+      results := pg_temp.res(results, 'Staff domains, look-alikes and sub-domains of the Milan universities are not students',
+                             'all company', coalesce('students: ' || v_text, 'all company'), v_text is null);
+    end;
 
     insert into public.companies (owner_id, name, status) values (v_company, 'Check Co (pending)', 'pending') returning id into v_co_own;
     insert into public.companies (owner_id, name, status) values (v_other, 'Check Co (approved)', 'approved') returning id into v_co_approved;
@@ -2364,7 +2406,7 @@ begin
     where ns.nspname = 'public'
       and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
       and has_function_privilege('authenticated', p.oid, 'EXECUTE');
-    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'accept_terms, admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, current_account_type, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'accept_terms, admin_company_contact, admin_job_contact, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, current_account_type, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
+    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
 
     select string_agg(c.relname || ':' || pr, ', ' order by c.relname, pr) into v_err
     from pg_class c join pg_namespace ns on ns.oid = c.relnamespace, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) pr
@@ -2900,6 +2942,185 @@ begin
     results := pg_temp.res(results, 'anon cannot call admin_stats', 'error', v_err, v_err like 'error:%');
 
     -- ----------------------------------------------------------------------
+    -- Students with any email (migration 20261119130000): how each student
+    -- account came about, set only by the database
+    -- ----------------------------------------------------------------------
+
+    -- Helper: run one statement as a user; 'ok' or the error.
+    create function pg_temp.try_as(p_uid uuid, p_sql text)
+    returns text language plpgsql as $f$
+    begin
+      begin
+        perform set_config('request.jwt.claims', jsonb_build_object('sub', p_uid, 'role', 'authenticated')::text, true);
+        perform set_config('role', 'authenticated', true);
+        execute p_sql;
+        perform set_config('role', 'none', true);
+        return 'ok';
+      exception when others then
+        perform set_config('role', 'none', true);
+        return 'error: ' || sqlerrm;
+      end;
+    end;
+    $f$;
+
+    declare
+      v_sd      uuid := gen_random_uuid();  -- any email, student login: self-declared
+      v_sd2     uuid := gen_random_uuid();  -- another, who picks a listed university
+      v_sd3     uuid := gen_random_uuid();  -- another, "Other" spelled differently
+      v_sd_up   uuid := gen_random_uuid();  -- self-declared; their university is added later
+      v_ue      uuid := gen_random_uuid();  -- university email through the student login
+      v_co_meta uuid := gen_random_uuid();  -- any email, metadata other than student
+      v_co_none uuid := gen_random_uuid();  -- any email, no metadata (employer login)
+      v_ue_co   uuid := gen_random_uuid();  -- university email claiming to be a company
+      v_hand    uuid := gen_random_uuid();  -- changed by hand in the Table Editor
+      v_uni_up  uuid;
+      v_live    uuid;
+      v_who     uuid;
+      v_perm    text[] := '{}';
+    begin
+      insert into auth.users (id, email, raw_user_meta_data) values
+        (v_sd,      'sd.check@gmail.example',      '{"signup_as":"student"}'),
+        (v_sd2,     'sd2.check@gmail.example',     '{"signup_as":"student"}'),
+        (v_sd3,     'sd3.check@gmail.example',     '{"signup_as":"student"}'),
+        (v_sd_up,   'sd.later@check-later.example', '{"signup_as":"student"}'),
+        (v_ue,      'ue.check@studbocconi.it',     '{"signup_as":"student"}'),
+        (v_co_meta, 'co.meta@gmail.example',       '{"signup_as":"admin","account_type":"student","student_verification":"university_email"}'),
+        (v_co_none, 'co.none@gmail.example',       null),
+        (v_ue_co,   'ue.co@studbocconi.it',        '{"signup_as":"company"}'),
+        (v_hand,    'hand.check@gmail.example',    '{"signup_as":"student"}');
+
+      select string_agg(p.account_type || '/' || coalesce(p.student_verification, '-') || '/' || coalesce(u.name, '-'), ', ' order by x.n)
+        into v_text
+      from unnest(array[v_sd, v_ue, v_student, v_co_meta, v_co_none, v_ue_co]) with ordinality as x(id, n)
+      join public.profiles p on p.id = x.id left join public.universities u on u.id = p.university_id;
+      results := pg_temp.res(results, 'Sign-up: the database decides the role and the verification method (any email at the student login: self_declared; a listed domain: university_email, whatever the metadata says; anything else: company)',
+        'student/self_declared/-, student/university_email/Bocconi University, student/university_email/Bocconi University, company/-/-, company/-/-, student/university_email/Bocconi University',
+        v_text, v_text = 'student/self_declared/-, student/university_email/Bocconi University, student/university_email/Bocconi University, company/-/-, company/-/-, student/university_email/Bocconi University');
+
+      -- Nobody sets their own role, method, university or answers from the browser.
+      select string_agg(c || ': ' || pg_temp.try_as(v_sd, format('update public.profiles set %s where id = %L', c, v_sd)), '; ' order by c)
+        into v_text
+      from unnest(array['account_type = ''company''', 'student_verification = ''university_email''',
+                        'university_id = ' || quote_literal(v_bocconi), 'other_university = ''Somewhere''',
+                        'student_declared_at = now()']) as c;
+      select v_text || ' | now ' || account_type || '/' || student_verification || '/' || coalesce(university_id::text, '-') || '/'
+             || coalesce(other_university, '-') || '/' || coalesce(student_declared_at::text, '-')
+        into v_text from public.profiles where id = v_sd;
+      results := pg_temp.res(results, 'A self-declared student cannot change their role, verification method, university or answers directly',
+        'every update refused, unchanged', v_text, v_text not like '%: ok%' and v_text like '% | now student/self_declared/-/-/-');
+
+      select pg_temp.try_as(v_student, 'update public.profiles set student_verification = ''self_declared'', account_type = ''company'' where id = auth.uid()')
+             || ' | now ' || account_type || '/' || student_verification
+        into v_text from public.profiles where id = v_student;
+      results := pg_temp.res(results, 'A university-email student cannot change their role or verification method', 'error, unchanged',
+        v_text, v_text like 'error:%' and v_text like '% | now student/university_email');
+
+      select pg_temp.try_as(v_co_none, 'update public.profiles set account_type = ''student'' where id = auth.uid()')
+             || ' | now ' || account_type into v_text from public.profiles where id = v_co_none;
+      results := pg_temp.res(results, 'A company account cannot make itself a student (one email, one role)', 'error, still company',
+        v_text, v_text like 'error:%' and v_text like '% | now company');
+
+      -- declare_student: "Which university?", once, self-declared students only.
+      v_text := 'company: ' || pg_temp.try_as(v_co_none, format('select public.declare_student(%L, null)', v_bocconi))
+             || '; university email: ' || pg_temp.try_as(v_student, format('select public.declare_student(%L, null)', v_bocconi))
+             || '; neither: ' || pg_temp.try_as(v_sd, 'select public.declare_student(null, ''   '')')
+             || '; both: ' || pg_temp.try_as(v_sd, format('select public.declare_student(%L, ''Somewhere'')', v_bocconi))
+             || '; unknown university: ' || pg_temp.try_as(v_sd, format('select public.declare_student(%L, null)', gen_random_uuid()))
+             || '; one letter: ' || pg_temp.try_as(v_sd, 'select public.declare_student(null, ''X'')')
+             || '; control character: ' || pg_temp.try_as(v_sd, 'select public.declare_student(null, E''Bad\nName'')');
+      select v_text || ' | ' || coalesce(other_university, '-') || '/' || coalesce(student_declared_at::text, '-')
+        into v_text from public.profiles where id = v_sd;
+      results := pg_temp.res(results, 'declare_student refuses companies, university-email students and bad answers', 'every call refused, nothing recorded',
+        v_text, v_text not like '%: ok%' and v_text like '% | -/-');
+
+      v_text := pg_temp.try_as(v_sd, 'select public.declare_student(null, ''  Accademia   di  Brera '')')
+             || ', again: ' || pg_temp.try_as(v_sd, format('select public.declare_student(%L, null)', v_bocconi));
+      select v_text || ' | ' || account_type || '/' || student_verification || '/' || coalesce(university_id::text, '-') || '/'
+             || coalesce(other_university, '-') || '/' || case when student_declared_at is null then 'not declared' else 'declared' end
+        into v_text from public.profiles where id = v_sd;
+      results := pg_temp.res(results, 'declare_student records "Other" (spaces tidied) once; a second call is refused',
+        'ok, again: error | student/self_declared/-/Accademia di Brera/declared', v_text,
+        v_text like 'ok, again: error:% | student/self_declared/-/Accademia di Brera/declared');
+
+      v_text := pg_temp.try_as(v_sd2, format('select public.declare_student(%L, null)', v_bocconi));
+      select v_text || ' | ' || student_verification || '/' || coalesce((select name from public.universities where id = university_id), '-')
+        into v_text from public.profiles where id = v_sd2;
+      results := pg_temp.res(results, 'declare_student with a listed university: that university, still self-declared (not verified)',
+        'ok | self_declared/Bocconi University', v_text, v_text = 'ok | self_declared/Bocconi University');
+      perform pg_temp.try_as(v_sd3, 'select public.declare_student(null, ''accademia di brera'')');
+
+      -- Both kinds of students: exactly the same permissions.
+      select j.id into v_live from public.jobs j join public.companies c on c.id = j.company_id
+      where j.status = 'published' and j.expires_at > now() and c.status = 'approved' and not j.is_example
+        and exists (select 1 from public.job_contacts jc where jc.job_id = j.id)
+      order by j.created_at limit 1;
+      foreach v_who in array array[v_ue, v_sd] loop
+        v_text := 'reveal: ' || pg_temp.try_as(v_who, format('select * from public.reveal_job_contact(%L)', v_live))
+               || '; save: ' || pg_temp.try_as(v_who, format('insert into public.saved_jobs (job_id) values (%L)', v_live))
+               || '; my_saved_jobs: ' || pg_temp.try_as(v_who, 'select * from public.my_saved_jobs()')
+               || '; report: ' || pg_temp.try_as(v_who, format('insert into public.job_reports (job_id, reason, details) values (%L, ''other'', ''check'')', v_live))
+               || '; follow: ' || pg_temp.try_as(v_who, format('insert into public.company_follows (company_id) values ((select company_id from public.jobs where id = %L))', v_live))
+               || '; save a search: ' || pg_temp.try_as(v_who, 'insert into public.saved_searches (name, params) values (''Check'', ''q=check'')')
+               || '; create a company: ' || pg_temp.try_as(v_who, 'insert into public.companies (name, terms_accepted_at) values (''Check SD Co'', now())')
+               || '; add a job: ' || pg_temp.try_as(v_who, format('insert into public.jobs (company_id, title) values (%L, ''Check'')', v_co_approved))
+               || '; reveal a draft: ' || pg_temp.try_as(v_who, format('select * from public.reveal_job_contact(%L)', v_job_draft))
+               || '; admin_stats: ' || pg_temp.try_as(v_who, 'select * from public.admin_stats()');
+        select v_text || ' | clicks ' || count(*) into v_text from public.job_clicks where user_id = v_who and job_id = v_live;
+        v_perm := v_perm || v_text;
+      end loop;
+      results := pg_temp.res(results, 'A self-declared student has exactly the permissions of a university-email student (same result for every action)',
+        'same, and reveal, save, report, follow, saved search ok; company, jobs, a draft and admin refused; 1 click', v_perm[2],
+        v_perm[1] = v_perm[2]
+        and v_perm[2] like 'reveal: ok; save: ok; my_saved_jobs: ok; report: ok; follow: ok; save a search: ok; create a company: error:%; add a job: error:%; reveal a draft: error:%; admin_stats: error:% | clicks 1');
+      -- Leave the live job as it was for the checks below.
+      delete from public.job_reports where reporter_id in (v_ue, v_sd);
+      delete from public.job_clicks where user_id in (v_ue, v_sd);
+
+      select count(*) into v_count from information_schema.column_privileges
+      where table_schema = 'public' and table_name = 'profiles'
+        and column_name in ('account_type', 'student_verification', 'university_id', 'other_university', 'student_declared_at')
+        and grantee in ('anon', 'authenticated', 'PUBLIC') and privilege_type in ('INSERT', 'UPDATE');
+      results := pg_temp.res(results, 'No insert or update grants on profiles'' role, verification method, university or answers', '0', v_count::text, v_count = 0);
+
+      -- A self-declared student's email domain becomes a university's: verified.
+      insert into public.universities (name, email_domains) values ('Check Later University', array['check-later.example']) returning id into v_uni_up;
+      select account_type || '/' || student_verification || '/' || coalesce((select name from public.universities where id = university_id), '-')
+        into v_text from public.profiles where id = v_sd_up;
+      results := pg_temp.res(results, 'Adding a university upgrades a self-declared student with that email domain to university_email',
+        'student/university_email/Check Later University', v_text, v_text = 'student/university_email/Check Later University');
+
+      -- By hand in the Table Editor: to company empties the student fields; to student, the email decides.
+      update public.profiles set account_type = 'company' where id = v_sd;
+      select account_type || '/' || coalesce(student_verification, '-') || '/' || coalesce(other_university, '-') into v_text from public.profiles where id = v_sd;
+      update public.profiles set account_type = 'student' where id = v_co_none;
+      select v_text || ', ' || account_type || '/' || coalesce(student_verification, '-') into v_text from public.profiles where id = v_co_none;
+      results := pg_temp.res(results, 'Changing account_type by hand keeps the student fields consistent', 'company/-/-, student/self_declared',
+        v_text, v_text = 'company/-/-, student/self_declared');
+      update public.profiles set account_type = 'student' where id = v_sd;  -- back, for the admin numbers below
+      perform pg_temp.try_as(v_sd, 'select public.declare_student(null, ''Accademia di Brera'')');
+
+      -- /admin: students by method and university, and the "Other" names.
+      v_text := pg_temp.try_as(v_student, 'select * from public.admin_student_counts()')
+             || '; ' || pg_temp.try_as(v_sd, 'select * from public.admin_other_universities()');
+      results := pg_temp.res(results, 'admin_student_counts and admin_other_universities refuse anyone who isn''t an admin', 'error; error',
+        v_text, v_text like 'error:%; error:%');
+
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select string_agg(name || ' ' || students, ', ') into v_text from public.admin_other_universities() where name ilike 'accademia di brera';
+      select v_text || ' | ' || string_agg(verification || '/' || coalesce(university, '-') || ' ' || students, ', ' order by verification, university)
+        into v_text from public.admin_student_counts() where university in ('Other', 'Bocconi University', 'Check Later University');
+      perform set_config('role', 'none', true);
+      select string_agg(student_verification || '/' || u || ' ' || n, ', ' order by student_verification, u) into v_count_text
+      from (select p.student_verification, coalesce(un.name, case when p.other_university is not null then 'Other' end) as u, count(*) as n
+            from public.profiles p left join public.universities un on un.id = p.university_id
+            where p.account_type = 'student' group by 1, 2) x
+      where u in ('Other', 'Bocconi University', 'Check Later University');
+      results := pg_temp.res(results, 'admin_other_universities groups the "Other" names (capitals ignored); admin_student_counts splits students by method and university',
+        'Accademia di Brera 2 | ' || v_count_text, v_text, v_text = 'Accademia di Brera 2 | ' || v_count_text and v_count_text like '%self_declared/Other 2%');
+    end;
+
+    -- ----------------------------------------------------------------------
     -- Deleting your own account (delete_my_account)
     -- ----------------------------------------------------------------------
     select coalesce(string_agg(case when grantee = 0 then 'PUBLIC' else grantee::regrole::text end, ', ' order by 1), 'nobody')
@@ -3399,6 +3620,20 @@ begin
     insert into public.companies (owner_id, name) values (v_su[6], 'Check Co (signed up 40 days ago)');
     insert into public.admins (user_id) values (v_su[7]);
 
+    -- Retention is based on activity, never on verification: 1 a self-declared
+    -- student who completed /welcome and 2 a university-email student who did,
+    -- both without a login for 400 days; 3 a self-declared student with a name
+    -- and the Terms who never answered "Which university?"; 4 a self-declared
+    -- sign-up that stopped right after the code. 3 and 4: no login for 40 days.
+    insert into auth.users (id, email, created_at, last_sign_in_at, raw_user_meta_data) values
+      (v_sr[1], 'sr.done@check-signup.example',   now() - interval '420 days', now() - interval '400 days', '{"signup_as":"student"}'),
+      (v_sr[2], 'sr.verified@studbocconi.it',     now() - interval '420 days', now() - interval '400 days', '{"signup_as":"student"}'),
+      (v_sr[3], 'sr.noanswer@check-signup.example', now() - interval '45 days', now() - interval '40 days', '{"signup_as":"student"}'),
+      (v_sr[4], 'sr.stopped@check-signup.example',  now() - interval '45 days', now() - interval '40 days', '{"signup_as":"student"}');
+    update public.profiles set full_name = 'Check Done', terms_version = '2.0', terms_accepted_at = now() - interval '420 days'
+      where id in (v_sr[1], v_sr[2], v_sr[3]);
+    update public.profiles set other_university = 'Check Academy', student_declared_at = now() - interval '420 days' where id = v_sr[1];
+
     -- Listings: closed 100 days ago, expired 100 days ago, closed 100 days
     -- ago but reported, closed 10 days ago. Each with a contact; the first
     -- two saved, the first with an apply click and an exact pin.
@@ -3453,7 +3688,20 @@ begin
     select (select count(*) from auth.users where id in (v_su[1], v_su[2])) || ' users, '
            || (select count(*) from public.profiles where id in (v_su[1], v_su[2])) || ' profiles left'
       into v_text;
-    results := pg_temp.res(results, 'Retention: sign-ups never finished (no Terms, no name, no company), with no login for 29 days, are deleted',
+    results := pg_temp.res(results, 'Retention: unfinished sign-ups (no Terms, no name, no company), with no login for 29 days, are deleted',
+                           '0 users, 0 profiles left', v_text, v_text = '0 users, 0 profiles left');
+
+    select string_agg(p.student_verification || ' ' || case when p.id = v_sr[1] then 'self-declared, finished' else 'verified, finished' end, ', ' order by p.student_verification)
+           || ' | ' || (select count(*) from auth.users where id in (v_sr[1], v_sr[2])) || ' of 2 logins kept'
+      into v_text from public.profiles p where p.id in (v_sr[1], v_sr[2]) and p.account_type = 'student';
+    results := pg_temp.res(results, 'Retention: a self-declared student who completed /welcome is never deleted by the nightly job, exactly like a verified one (400 days without a login)',
+                           'self_declared self-declared, finished, university_email verified, finished | 2 of 2 logins kept', coalesce(v_text, 'deleted'),
+                           v_text = 'self_declared self-declared, finished, university_email verified, finished | 2 of 2 logins kept');
+
+    select (select count(*) from auth.users where id in (v_sr[3], v_sr[4])) || ' users, '
+           || (select count(*) from public.profiles where id in (v_sr[3], v_sr[4])) || ' profiles left'
+      into v_text;
+    results := pg_temp.res(results, 'Retention: unfinished sign-ups are deleted after 29 days whether verified or not (self-declared who never answered "Which university?", even with a name and the Terms)',
                            '0 users, 0 profiles left', v_text, v_text = '0 users, 0 profiles left');
 
     select count(*) || ' of 6 kept' into v_text from auth.users where id = any (v_su[3:8]);

@@ -115,7 +115,7 @@ function apply(url, rows) {
 async function mock(ctx, opts = {}) {
   const log = { rpc: [], jobs: [], otp: [] };
   const terms = opts.termsVersion === undefined ? '2.0' : opts.termsVersion;
-  const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', terms_version: terms, terms_accepted_at: terms ? '2026-11-01T10:00:00Z' : null };
+  const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', student_verification: (opts.accountType || 'student') === 'student' ? opts.verification || 'university_email' : null, other_university: opts.otherUniversity || null, student_declared_at: opts.verification === 'self_declared' ? '2026-11-01T10:00:00Z' : null, terms_version: terms, terms_accepted_at: terms ? '2026-11-01T10:00:00Z' : null };
   await ctx.route(SB + '/**', async (r) => {
     const req = r.request(), url = new URL(req.url()), path = url.pathname, method = req.method();
     const j = (s, b) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(b) });
@@ -192,7 +192,7 @@ async function mock(ctx, opts = {}) {
       log.profileSelects = (log.profileSelects || []).concat(url.searchParams.get('select'));
       if (opts.accountFail && /universities/.test(url.searchParams.get('select') || '')) return j(500, { message: 'boom' });
       const row = { ...profile };
-      if (/universities/.test(url.searchParams.get('select') || '')) row.universities = profile.account_type === 'student' ? { name: 'Bocconi University' } : null;
+      if (/universities/.test(url.searchParams.get('select') || '')) row.universities = profile.account_type === 'student' && !profile.other_university ? { name: 'Bocconi University' } : null;
       const single = /vnd\.pgrst\.object/.test(req.headers()['accept'] || ''); return j(200, single ? row : [row]);
     }
     if (path === '/rest/v1/rpc/accept_terms') { log.acceptTerms = (log.acceptTerms || []).concat([req.postDataJSON()]); if (opts.acceptFail) return j(500, { message: 'boom' }); profile.terms_version = req.postDataJSON().p_version; profile.terms_accepted_at = new Date().toISOString(); return j(200, profile.terms_accepted_at); }

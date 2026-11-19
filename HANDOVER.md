@@ -20,7 +20,7 @@ skip any because "it worked in testing".
 - [x] Who operates GigoMe: named in both texts.
 - [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
       reads it, like `hello@gigome.org`.
-- [x] Retention in the database: incomplete sign-ups 29 days, ended
+- [x] Retention in the database: unfinished sign-ups 29 days, ended
       listings' details 89 days, apply clicks anonymous after 179 days,
       resolved reports deleted after 730 days, applied daily
       (SUPABASE.md, "Data retention").
@@ -46,7 +46,8 @@ skip any because "it worked in testing".
       DMARC) verified in Brevo.
 - [ ] Domain auto-renew on, renewal date filled in (section 10).
 - [ ] `hello@gigome.org` is read by someone, at least weekly.
-- [ ] `universities` holds the right domains (Bocconi's student domain(s)).
+- [ ] `universities` holds only student domains, no staff domains (the list is in
+      SUPABASE.md, "Universities"; `security_check.sql` checks it).
 
 **Data**
 - [ ] Test users, companies and jobs made while building are deleted from
@@ -226,6 +227,15 @@ the `moderation_log` table).
   map, "When" or "Minimum pay" searches. Ask the employer to edit the job
   (it goes back to review). Pending jobs missing any of them are flagged and
   can't be published.
+- **Students:** how many signed up with a university email on the list
+  (verified) and how many with another email and told us their university
+  (not checked), per university. Under it, the names typed under "Other",
+  most common first: once a month, look up the student email domain of the
+  top ones on the university's own site and add it (SUPABASE.md,
+  "Universities"); those students then become verified automatically when
+  their email has that domain. Self-declared students can do everything
+  verified ones can: if a "student" account behaves like a spammer or an
+  employer, treat it like any other report.
 - **Open reports:** read the report and the job.
   - **Scam, or payment demanded from students** (registration fee, deposit,
     training paid by the student, documents up front): press **Reject the
@@ -341,7 +351,7 @@ the free plan.
 
 | What | Kept until |
 | --- | --- |
-| Profile: email, university, name, degree level, graduation year | The account is deleted. An account that never finished signing up (no Terms, no name, no company): 29 days after its last login |
+| Profile: email, university (or the name typed under "Other"), how a student was verified (university email or self-declared), name, degree level, graduation year | The account is deleted. An unfinished sign-up (never completed /welcome: no Terms and no name, or a self-declared student who never said which university; no company): 29 days after its last login. A finished account, verified or self-declared, stays until it is deleted or is an inactive account (24 months, below) |
 | Terms acceptance: which version, when ("I'm 18 or older and I accept the Terms") | The account is deleted |
 | Saved jobs | Removed, the account is deleted, or 89 days after the job ended |
 | Saved searches: a name, the filters, when last opened | Deleted, or the account is deleted |
@@ -360,7 +370,7 @@ location" is never stored (section 7b).
 
 The Privacy Notice (section 9) promises retention periods. The database does
 four of them by itself every night (SUPABASE.md, "Data retention"):
-incomplete sign-ups (29 days), ended listings' details (89 days), apply
+unfinished sign-ups (29 days), ended listings' details (89 days), apply
 clicks made anonymous (179 days) and resolved reports (730 days, 24
 months). Each runs a day before the Notice's limit, so a nightly run is
 never late. Everything below is **done by hand by Emil**, who owns every

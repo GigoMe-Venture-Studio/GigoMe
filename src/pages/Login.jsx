@@ -5,7 +5,7 @@ import CodeLogin from '../components/CodeLogin.jsx';
 import { supabase } from '../lib/supabase.js';
 import { safeNext } from '../lib/auth.js';
 
-// Student login: university email, then the 6-digit code.
+// Student login: any email (a listed university's verifies), then the 6-digit code.
 export default function Login() {
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
