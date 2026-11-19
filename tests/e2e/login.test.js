@@ -38,6 +38,7 @@ async function mockSupabase(ctx, opts = {}) {
       if (body.token !== '123456') return json(403, { code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' });
       const exp = Math.floor(Date.now() / 1000) + 3600;
       const user = { id: 'uid-1', aud: 'authenticated', role: 'authenticated', email: body.email, app_metadata: { provider: 'email' }, user_metadata: {}, created_at: new Date().toISOString() };
+      log.user = user;
       return json(200, { access_token: b64({ alg: 'HS256', typ: 'JWT' }) + '.' + b64({ sub: 'uid-1', role: 'authenticated', exp, email: body.email }) + '.sig', token_type: 'bearer', expires_in: 3600, expires_at: exp, refresh_token: 'refresh-1', user });
     }
     if (path === '/rest/v1/profiles' && method === 'GET') {
@@ -49,6 +50,9 @@ async function mockSupabase(ctx, opts = {}) {
     if (path === '/rest/v1/rpc/declare_student') { log.declare.push(req.postDataJSON()); profile.student_declared_at = new Date().toISOString(); return route.fulfill({ status: 204, body: '' }); }
     if (path === '/rest/v1/rpc/delete_my_account') { log.deleted++; return route.fulfill({ status: 204, body: '' }); }
     if (path === '/auth/v1/logout') { log.logout.push(url.search); return route.fulfill({ status: 204, body: '' }); }
+    // updateUser({ data }) (the login email's language): the logged-in user
+    // with the keys merged into its metadata, as Supabase answers.
+    if (path === '/auth/v1/user' && method === 'PUT' && log.user) { const body = req.postDataJSON(); log.userUpdates = (log.userUpdates || []).concat([body]); log.user = { ...log.user, user_metadata: { ...log.user.user_metadata, ...(body.data || {}) } }; return json(200, log.user); }
     if (path === '/auth/v1/user') return json(200, { id: 'uid-1', email: 'x' });
     return json(404, { msg: 'unmocked ' + method + ' ' + path });
   });
@@ -117,7 +121,7 @@ async function mockSupabase(ctx, opts = {}) {
   for (const any of ['someone@gmail.com', 'x@notstudbocconi.it', 'x@polimi.it', 'ana@mail.polimi.it', 'Ana@Studenti.Unimi.IT', 'ana.rossi01@icatt.it', 'a.rossi1@campus.unimib.it', 'ana@studenti.iulm.it', 'ana@st.hunimed.eu', 'ana@studenti.unisr.it']) {
     const g = await newPage(); await g.p.goto(ENV + '/login'); await g.p.waitForTimeout(200);
     await g.p.fill('input[name=email]', any); await g.p.click('text=Send me a code'); await g.p.waitForTimeout(300);
-    ok(g.log.otp.length === 1 && g.log.otp[0].email === any.toLowerCase() && JSON.stringify(g.log.otp[0].data) === '{"signup_as":"student"}' && g.log.universities === 0
+    ok(g.log.otp.length === 1 && g.log.otp[0].email === any.toLowerCase() && JSON.stringify(g.log.otp[0].data) === '{"signup_as":"student","language":"en"}' && g.log.universities === 0
        && (await g.p.locator('.auth-notice').count()) === 0 && (await txt(g.p, 'h1')) === 'Check your email', 'any email (' + any + '): code sent as a student sign-up, nothing refused, nothing checked in the browser');
     await g.ctx.close();
   }

@@ -1,7 +1,7 @@
 // Login with a 6-digit email code (see CLAUDE.md: never magic links).
 import { supabase } from './supabase.js';
 import { CONTACT_EMAIL } from './contact.js';
-import { labelPairs, t } from './i18n.js';
+import { getLang, labelPairs, t } from './i18n.js';
 
 export const CODE_LENGTH = 6;
 export const RESEND_SECONDS = 60;
@@ -62,12 +62,17 @@ export function universityFor(email, universities) {
 // a student account, verified ('university_email') if its domain is a listed
 // university's, 'self_declared' otherwise. Without it (the employer login) a
 // new account is a company account, unless its domain is a university's.
+// language: the site's language ('en' or 'it'), for the login email only
+// (the email template reads it, docs/email/login-code.md). Like signup_as,
+// Supabase saves it only when it creates the account; an existing account's
+// is kept up to date by EmailLanguageSync.jsx. Nothing else may read it:
+// users can change their own metadata.
 export async function sendCode(email, captchaToken, { asStudent = false } = {}) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       shouldCreateUser: true,
-      ...(asStudent ? { data: { signup_as: 'student' } } : {}),
+      data: { ...(asStudent ? { signup_as: 'student' } : {}), language: getLang() },
       ...(captchaToken ? { captchaToken } : {})
     }
   });

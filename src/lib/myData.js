@@ -30,7 +30,9 @@ export async function collectMyData(user) {
       email: user.email,
       created_at: user.created_at || null,
       last_sign_in_at: user.last_sign_in_at || null,
-      type: profile ? profile.account_type : null
+      type: profile ? profile.account_type : null,
+      // The language of the login email, saved with the account (src/lib/emailLanguage.js).
+      email_language: (user.user_metadata && user.user_metadata.language) || null
     },
     profile: profile && {
       full_name: profile.full_name,
