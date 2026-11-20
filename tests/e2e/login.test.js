@@ -21,7 +21,7 @@ async function mockSupabase(ctx, opts = {}) {
   const profile = {
     full_name: opts.fullName ?? null, degree_level: null, graduation_year: null, account_type: accountType,
     student_verification: accountType === 'student' ? opts.verification || 'university_email' : null, student_declared_at: opts.declaredAt ?? null,
-    terms_version: opts.fullName ? '2.0' : null, terms_accepted_at: opts.fullName ? '2026-11-01T10:00:00Z' : null
+    terms_version: opts.fullName ? '2.1' : null, terms_accepted_at: opts.fullName ? '2026-11-01T10:00:00Z' : null
   };
   await ctx.route(SB + '/**', async (route) => {
     const req = route.request(), url = new URL(req.url()), path = url.pathname, method = req.method();
@@ -166,7 +166,7 @@ async function mockSupabase(ctx, opts = {}) {
   ok(log.patch.length === 0 && !log.accept && new URL(p.url()).pathname === '/welcome', 'details filled but the Terms box not ticked: nothing saved');
   await p.check('input[name=accept_terms]');
   await p.click('text=Save and continue'); await p.waitForTimeout(700);
-  ok(JSON.stringify(log.accept) === '[{"p_version":"2.0"}]', 'the Terms acceptance is recorded with the version: ' + JSON.stringify(log.accept));
+  ok(JSON.stringify(log.accept) === '[{"p_version":"2.1"}]', 'the Terms acceptance is recorded with the version: ' + JSON.stringify(log.accept));
   ok(log.patch.length === 1 && log.patch[0].query.includes('id=eq.uid-1') && JSON.stringify(log.patch[0].body) === JSON.stringify({ full_name: 'Ana Rossi', degree_level: 'master', graduation_year: Number(year) }), 'saves only the three fields, on the own row: ' + JSON.stringify(log.patch[0]));
   ok(new URL(p.url()).pathname === '/welcome' && (await txt(p, 'h1')) === "You're all set, Ana." && (await txt(p, 'main')).includes("You're logged in as name.surname@studbocconi.it."), 'then the confirmation (signup.test.js checks it in full)');
   await p.click('.signup-done >> text=Browse jobs'); await p.waitForTimeout(500);

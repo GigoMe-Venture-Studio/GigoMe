@@ -1,5 +1,6 @@
 // Accepting the Terms: every logged-in account is asked once for the current
-// version (TERMS_VERSION in src/lib/terms.js), then sent back where it was.
+// version (TERMS_MIN_VERSION in src/lib/termsVersion.js; TERMS_VERSION is
+// recorded), then sent back where it was.
 const { OUT } = require('./lib/browser.js');
 const { chromium } = require('./lib/browser.js');
 const { mock, login, ID } = require('./lib/mock.js');
@@ -35,7 +36,7 @@ const desk = { viewport: { width: 1280, height: 900 } };
     await p.goto(E + '/jobs/' + ID(1) + '#apply'); await p.waitForTimeout(500);
     ok(url(p).pathname === '/welcome' && url(p).searchParams.get('next') === '/jobs/' + ID(1) + '#apply', 'a job page: back to it afterwards, hash included');
     await p.check('input[name=accept_terms]'); await p.click('button:has-text("Continue")'); await p.waitForTimeout(700);
-    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]', 'ticked: the acceptance is recorded with the version: ' + JSON.stringify(log.acceptTerms));
+    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]', 'ticked: the acceptance is recorded with the version: ' + JSON.stringify(log.acceptTerms));
     ok(url(p).pathname === '/jobs/' + ID(1) && await p.locator('.apply button:has-text("Apply")').count() === 1, 'then back on the job, which works as usual');
     await p.goto(E + '/saved'); await p.waitForTimeout(500);
     ok(url(p).pathname === '/saved' && log.acceptTerms.length === 1, 'asked once: the other pages open normally afterwards');
@@ -44,11 +45,11 @@ const desk = { viewport: { width: 1280, height: 900 } };
     await ctx.close(); }
 
   // ---- A new version of the Terms asks everyone again
-  { const ctx = await b.newContext(desk); const log = await mock(ctx, { termsVersion: '1.0' }); const p = await ctx.newPage();
+  { const ctx = await b.newContext(desk); const log = await mock(ctx, { termsVersion: '2.0' }); const p = await ctx.newPage();
     await p.goto(E + '/login'); await login(p);
-    ok(url(p).pathname === '/welcome' && (await txt(p, 'h1')) === 'Before you continue', 'accepted an older version: asked again');
+    ok(url(p).pathname === '/welcome' && (await txt(p, 'h1')) === 'Before you continue', 'accepted v2.0 (older than TERMS_MIN_VERSION): asked again');
     await p.check('input[name=accept_terms]'); await p.click('button:has-text("Continue")'); await p.waitForTimeout(700);
-    ok(url(p).pathname === '/' && JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]', 'then on to the home page');
+    ok(url(p).pathname === '/' && JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]', 'then on to the home page');
     await ctx.close(); }
 
   // ---- Current version accepted: never asked
@@ -74,7 +75,7 @@ const desk = { viewport: { width: 1280, height: 900 } };
     ok(url(p).pathname === '/welcome' && url(p).searchParams.get('next') === '/dashboard', 'employer login: /welcome first, then the dashboard: ' + p.url());
     ok((await txt(p, 'h1')) === 'Before you continue' && await p.locator('select[name=degree_level]').count() === 0, 'a company account is asked only the Terms, no student fields');
     await p.check('input[name=accept_terms]'); await p.click('button:has-text("Continue")'); await p.waitForTimeout(800);
-    ok(url(p).pathname === '/dashboard' && JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]', 'accepted: on the dashboard, version recorded: ' + p.url() + ' ' + JSON.stringify(log.acceptTerms));
+    ok(url(p).pathname === '/dashboard' && JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]', 'accepted: on the dashboard, version recorded: ' + p.url() + ' ' + JSON.stringify(log.acceptTerms));
     await ctx.close(); }
 
   // ---- A new company account: the setup asks (no separate stop on /welcome)
@@ -83,7 +84,7 @@ const desk = { viewport: { width: 1280, height: 900 } };
     ok(url(p).pathname === '/employers/setup' && await p.locator('input[name=accept_terms]').count() === 1, 'new employer: the setup page itself has the Terms box');
     await p.fill('input[name=company_name]', 'Nebbia Coffee'); await p.check('input[name=accept_terms]');
     await p.click('button:has-text("Save company")'); await p.waitForTimeout(700);
-    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]' && (await txt(p, 'main')).includes('Your company is submitted'), 'setup: company saved, version recorded: ' + JSON.stringify(log.acceptTerms) + ' ' + (await txt(p, 'main')).slice(0, 200));
+    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]' && (await txt(p, 'main')).includes('Your company is submitted'), 'setup: company saved, version recorded: ' + JSON.stringify(log.acceptTerms) + ' ' + (await txt(p, 'main')).slice(0, 200));
     await p.click('text=Go to your dashboard'); await p.waitForTimeout(600);
     ok(url(p).pathname === '/dashboard', 'and the dashboard opens without asking again');
     await ctx.close(); }

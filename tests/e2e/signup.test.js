@@ -47,7 +47,7 @@ async function fillWelcome(p, name = 'Ana Maria Rossi') {
     ok(await p.locator('.signup-done .auth-buttons a').first().evaluate((e) => e.classList.contains('btn-primary')), 'back to the job is the main button');
     ok(await p.getAttribute('.signup-done-account a', 'href') === '/account' && (await txt(p, '.signup-done-account')) === 'Edit or delete your account', 'small link to /account');
     ok((await txt(p, '.header-user')) === 'Ana Maria Rossi', 'header shows the saved name');
-    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.0"}]', 'Terms accepted as usual');
+    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]', 'Terms accepted as usual');
     await p.click('text=Back to the job'); await p.waitForTimeout(600);
     ok(url(p).pathname === '/jobs/' + ID(1) && await p.locator('.apply button:has-text("Apply")').count() === 1, 'back on the job, with Apply');
     ok(log.rpc.length === 0, 'nothing revealed or counted on the way');

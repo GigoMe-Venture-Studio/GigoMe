@@ -314,11 +314,16 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   older and I accept the Terms" (`TermsCheckbox.jsx`: "Terms" links to
   `/terms`, a hint links to `/privacy`, both in a new tab) on `/welcome` or on
   the employer setup, which calls `accept_terms(TERMS_VERSION)`
-  (`src/lib/terms.js`). `TERMS_VERSION` there is the only place the version
-  is set: change it with a new Terms file and everyone is asked again.
-  `TermsGate` (`src/components/TermsGate.jsx`, around the routes in
-  `App.jsx`) sends a logged-in account that hasn't accepted the current
-  version to `/welcome?next=<page>` once (checked once per login), except on
+  (`src/lib/terms.js`). The versions are set only in
+  `src/lib/termsVersion.js` (no imports, unit-tested): `TERMS_VERSION` is
+  the version on /terms and the one recorded (a test fails unless it is the
+  newest `terms-and-conditions-v*.html`), `TERMS_MIN_VERSION` the oldest
+  acceptance that still counts. With a new Terms file: set both when the
+  legal person says it needs fresh acceptance (everyone is asked again),
+  only `TERMS_VERSION` when it doesn't. `TermsGate`
+  (`src/components/TermsGate.jsx`, around the routes in `App.jsx`) sends a
+  logged-in account whose acceptance doesn't count any more to
+  `/welcome?next=<page>` once (checked once per login), except on
   `/welcome`, `/login`, `/employers`, `/employers/setup`, `/privacy`, `/terms`
   and `/account` (to read the texts, download the data or delete the account
   without accepting). `/welcome` asks only the Terms ("Before you continue")
