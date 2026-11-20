@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/privacy-notice-v1.0.html",
+ "source": "docs/legal/published/privacy-notice-v1.1.html",
  "title": "GigoMe | Privacy Notice",
  "toc": [
   {
@@ -24,7 +24,7 @@
   },
   {
    "href": "#section-5",
-   "label": "4. Contact Reveal: exactly what happens?",
+   "label": "4. Apply: exactly what happens?",
    "sub": false
   },
   {
@@ -105,7 +105,7 @@
    [
     "strong",
     null,
-    "Version 1.0 | Last updated: 11 November 2026"
+    "Version 1.1 | Last updated: 20 November 2026"
    ],
    [
     "br",
@@ -180,7 +180,7 @@
   [
    "p",
    null,
-   "GigoMe enables students to discover work opportunities and reveal contact information or application links supplied by advertisers. ",
+   "GigoMe enables students to discover work opportunities and obtain the application links or email addresses supplied by advertisers. ",
    [
     "strong",
     null,
@@ -191,24 +191,30 @@
   [
    "p",
    null,
-   "When a registered student selects ",
+   "When a registered student presses ",
    [
     "strong",
     null,
-    "Reveal Contact"
+    "Apply"
    ],
-   ", GigoMe records which student account revealed which listing's contact information and the time of the action. ",
+   " on a listing, GigoMe shows and opens that listing's application link or email address and records which student account pressed Apply on which listing and the time of the action (an ",
    [
     "strong",
     null,
-    "This log is not provided to advertisers and can be viewed only by authorized GigoMe administrators."
+    "apply click"
+   ],
+   "). ",
+   [
+    "strong",
+    null,
+    "This record is never shown to advertisers: an advertiser sees only how many times students pressed Apply on each of its listings, never who. Each student can see their own apply clicks; otherwise only authorized GigoMe administrators can view them."
    ],
    " It is used for the limited purposes described below."
   ],
   [
    "p",
    null,
-   "GigoMe uses Supabase for its database and authentication, Cloudflare for hosting and domain-related services, Brevo for authentication emails, and an email inbox service for support and privacy correspondence. The main Supabase project is hosted in ",
+   "GigoMe uses Supabase for its database and authentication, Cloudflare for hosting, domain-related services, bot protection on the login forms and cookieless visit statistics, Brevo for login-code emails, OpenFreeMap and OpenStreetMap for maps and address search, and an email inbox service for support and privacy correspondence. The main Supabase project is hosted in ",
    [
     "strong",
     null,
@@ -231,7 +237,13 @@
   [
    "p",
    null,
-   "The data controller for GigoMe's own processing activities is:"
+   "The data controller for GigoMe's own processing activities (referred to in this Notice as the ",
+   [
+    "strong",
+    null,
+    "Operator"
+   ],
+   ", or as \"we\" or \"us\") is:"
   ],
   [
    "p",
@@ -303,7 +315,7 @@
     null,
     "Account and identity information:"
    ],
-   " name or displayed name, email address, account identifier, role (student, business or private advertiser), university affiliation or verified university email where enabled, and account creation/status information."
+   " name, email address, account identifier, role (student or advertiser; GigoMe does not record whether an advertiser is a business or a private individual), the login used to sign up (student or employer), for students the university and how student status was established (an email address of a listed university, or the student's own statement that they are a university student and which university they attend, chosen from a list or typed in), the language used on the site (English or Italian), so that login emails are sent in that language, and account creation, last-login and status information. An account is created when a login code is first requested for an email address, before the code is entered."
   ],
   [
    "p",
@@ -313,7 +325,7 @@
     null,
     "Student profile information:"
    ],
-   " optional educational background, course of study, languages, skills, past experience, general preferences and, if these fields are enabled, age or nationality. These details are not made available to advertisers through GigoMe. We do not need identity documents, health data or other sensitive information for ordinary profile creation."
+   " name, degree level and expected graduation year. These details are not made available to advertisers through GigoMe. We do not need identity documents, health data or other sensitive information for ordinary profile creation."
   ],
   [
    "p",
@@ -323,7 +335,7 @@
     null,
     "Advertiser and listing information:"
    ],
-   " business or individual identity, organization details, professional contact information, listing descriptions, work location, relevant remuneration and contractual information, chosen email address, phone number or external application URL, publication dates and moderation status. Information designated for display on a listing may be visible to Platform users or visitors according to the applicable publication settings."
+   " the advertiser's name (business or individual), website, description and contact email address, listing descriptions, work location (an area of Milan and, optionally, an exact point on the map), relevant remuneration and contractual information, the application email address and/or external application URL, publication and expiry dates, moderation status and notes, and the number of apply clicks and of students following the advertiser. Published listings and approved advertisers' names, descriptions and websites are visible to everyone; the application email address or URL is shown only to logged-in students who press Apply, and the advertiser's contact email address only to the advertiser and administrators."
   ],
   [
    "p",
@@ -331,9 +343,19 @@
    [
     "strong",
     null,
-    "Contact-reveal records:"
+    "Apply-click records:"
    ],
-   " student account identifier, listing identifier, timestamp and the technical information reasonably necessary to secure or audit the operation. Only authorized administrators can consult these records. We do not automatically notify advertisers of individual reveals."
+   " student account identifier, listing identifier and timestamp. Each student can see their own records (\"Jobs you opened\" on the Saved jobs page, and in \"Download my data\"); advertisers see only the number of apply clicks on each of their listings; otherwise only authorized administrators can consult these records. We do not notify advertisers of individual apply clicks."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Things students choose to keep:"
+   ],
+   " saved jobs, saved searches (a name, the search filters and when the search was last opened, to show how many listings are new) and companies followed. In the service they are visible only to the student; a company sees only how many students follow it, never who. No email is sent about them."
   ],
   [
    "p",
@@ -353,7 +375,7 @@
     null,
     "Communications and reports:"
    ],
-   " emails sent to hello@gigome.org or privacy@gigome.org, requests for help, complaints, fraud reports and information reasonably necessary to investigate them."
+   " emails sent to hello@gigome.org or privacy@gigome.org, messages sent with the Feedback button (with the page they were sent from), job reports sent with \"Report this job\" (the reason and any details), requests for help, complaints, fraud reports and information reasonably necessary to investigate them. Feedback and job reports are stored with the sender's account and read only by authorized administrators."
   ],
   [
    "p",
@@ -363,7 +385,7 @@
     null,
     "Contract and compliance records:"
    ],
-   " date and version of accepted Terms, relevant account notices and records needed to demonstrate compliance or address a dispute."
+   " date and version of accepted Terms (and, for an advertiser, the date the Terms were accepted when its company was created), administrators' moderation decisions on companies, listings and reports (which administrator, when, the decision and any note), relevant account notices and records needed to demonstrate compliance or address a dispute."
   ],
   [
    "p",
@@ -417,7 +439,7 @@
      [
       "td",
       null,
-      "Email, name, role, account ID and necessary profile details"
+      "Email, name, role, account ID, how student status was established and necessary profile details"
      ],
      [
       "td",
@@ -436,7 +458,7 @@
      [
       "td",
       null,
-      "Email, authentication/session events"
+      "Email, authentication/session events, the language used on the site, and browser checks on the login forms (Cloudflare Turnstile)"
      ],
      [
       "td",
@@ -469,7 +491,7 @@
      [
       "td",
       null,
-      "Display advertiser contact details when a Student chooses Reveal Contact"
+      "Show and open an advertiser's application link or email address when a Student presses Apply"
      ],
      [
       "td",
@@ -488,17 +510,74 @@
      [
       "td",
       null,
-      "Record and protect contact reveals, detect abuse and troubleshoot"
+      "Record apply clicks, show each Student their own and each advertiser its totals, detect abuse and troubleshoot"
      ],
      [
       "td",
       null,
-      "Student ID, listing ID, time and relevant technical information"
+      "Student ID, listing ID and time"
      ],
      [
       "td",
       null,
       "Article 6(1)(f): legitimate interests in security, fraud prevention and reliable operation, subject to a balancing assessment"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Keep the saved jobs, saved searches and followed companies a Student chooses, and show advertisers how many Students follow them"
+     ],
+     [
+      "td",
+      null,
+      "Student ID, listing and company IDs, search name and filters, when a search was last opened"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(b)"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Show maps and find an address typed by an advertiser"
+     ],
+     [
+      "td",
+      null,
+      "IP address, browser information and the map area viewed (OpenFreeMap); the address typed (OpenStreetMap Nominatim)"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(f): legitimate interest in showing where jobs are and helping advertisers place them; Article 6(1)(b) for account holders"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Count page visits and measure loading speed without cookies (Cloudflare Web Analytics)"
+     ],
+     [
+      "td",
+      null,
+      "Page visited, referring site, browser, country, loading times"
+     ],
+     [
+      "td",
+      null,
+      "Article 6(1)(f): legitimate interest in understanding how the Platform is used and keeping it fast"
      ]
     ],
     [
@@ -526,12 +605,12 @@
      [
       "td",
       null,
-      "Respond to support and privacy requests"
+      "Respond to support and privacy requests and feedback"
      ],
      [
       "td",
       null,
-      "Correspondence, account and verification information"
+      "Correspondence, feedback messages, account and verification information"
      ],
      [
       "td",
@@ -594,7 +673,7 @@
    {
     "id": "section-5"
    },
-   "4. Contact Reveal: exactly what happens?"
+   "4. Apply: exactly what happens?"
   ],
   [
    "ol",
@@ -607,23 +686,23 @@
    [
     "li",
     null,
-    "The Student voluntarily selects ",
+    "The Student voluntarily presses ",
     [
      "strong",
      null,
-     "Reveal Contact"
+     "Apply"
     ],
-    "."
+    ". Visitors who are not logged in are asked to log in first."
    ],
    [
     "li",
     null,
-    "GigoMe displays the Advertiser's contact information or external application link associated with that listing."
+    "GigoMe displays the external application link and/or email address the Advertiser provided for that listing and opens it: the link in a new browser tab or, if there is no link, the Student's email app with a subject line naming the listing."
    ],
    [
     "li",
     null,
-    "GigoMe records the Student's account identifier, listing identifier and time of the reveal in an administrator-only log."
+    "GigoMe records the Student's account identifier, listing identifier and time of the click. The Student can see their own records; the Advertiser sees only the total number of apply clicks on each of its listings; authorized administrators can see the records."
    ],
    [
     "li",
@@ -631,7 +710,7 @@
     [
      "strong",
      null,
-     "No student profile, CV, application or reveal log is automatically sent to the Advertiser."
+     "No student profile, CV, application or apply-click record is automatically sent to the Advertiser."
     ]
    ],
    [
@@ -643,7 +722,7 @@
   [
    "p",
    null,
-   "The contact-reveal record is personal data even though it is not disclosed to advertisers. It is used only for the limited operational, abuse-prevention and security purposes described in this Notice. We do not use it to create public rankings or sell profiles."
+   "The apply-click record is personal data even though advertisers see only totals. Pressing Apply does not send an application, and GigoMe does not know whether the Student actually applied. It is used only for the limited operational, abuse-prevention and security purposes described in this Notice. We do not use it to create public rankings or sell profiles."
   ],
   [
    "h2",
@@ -660,7 +739,7 @@
     null,
     "The account holder"
    ],
-   " can access their own information through the available service features."
+   " can access their own information through the available service features, including the Account page, where \"Download my data\" provides a copy of the account's data as a file."
   ],
   [
    "p",
@@ -670,7 +749,7 @@
     null,
     "Advertisers"
    ],
-   " cannot search, browse or access Student profiles or contact-reveal logs via GigoMe. A Student may choose independently to contact an advertiser outside the Platform."
+   " cannot search, browse or access Student profiles or apply-click records via GigoMe. They see only how many times Students pressed Apply on each of their listings and how many Students follow their company, never who. A Student may choose independently to contact an advertiser outside the Platform."
   ],
   [
    "p",
@@ -680,7 +759,7 @@
     null,
     "Authorized GigoMe administrators"
    ],
-   " may access the limited account, listing, reveal and reporting information necessary for their assigned responsibilities, subject to access restrictions and confidentiality safeguards."
+   " may access the limited account, listing, apply-click, feedback and reporting information necessary for their assigned responsibilities, subject to access restrictions and confidentiality safeguards."
   ],
   [
    "p",
@@ -690,7 +769,7 @@
     null,
     "Other users and visitors"
    ],
-   " may see listings and the contact information that Advertisers have chosen to display through the relevant service features. We do not intend to publish private Student profiles."
+   " may see published listings and approved advertisers' public pages (name, description, website and open listings). The application link or email address of a listing is shown only to logged-in Students who press Apply, and an advertiser's contact email address is never shown to other users. We do not intend to publish private Student profiles."
   ],
   [
    "p",
@@ -756,7 +835,7 @@
     null,
     "Cloudflare:"
    ],
-   " domain, hosting, web delivery, security and email-forwarding services. Cloudflare may process connection information and other technical data necessary for those functions under the relevant contractual and privacy arrangements. See ",
+   " domain, hosting, web delivery, security and email-forwarding services; bot protection on the login forms (Cloudflare Turnstile, which checks the browser to tell people from automated programs); and visit statistics (Cloudflare Web Analytics, which records the pages visited, loading times, the referring site, the browser and the country, without cookies or other storage on the visitor's device). Cloudflare may process connection information and other technical data necessary for those functions under the relevant contractual and privacy arrangements. See ",
    [
     "a",
     {
@@ -774,7 +853,7 @@
     null,
     "Brevo:"
    ],
-   " delivery of one-time login codes and certain operational emails. Brevo receives the email addresses and technical delivery information necessary for those messages. See ",
+   " delivery of one-time login codes. Brevo receives the email addresses and technical delivery information necessary for those messages. See ",
    [
     "a",
     {
@@ -801,6 +880,70 @@
     "https://policies.google.com/privacy"
    ],
    ". Users should avoid including unnecessary sensitive information in ordinary emails. We will review or replace this arrangement where required to meet our data-protection obligations."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "OpenFreeMap:"
+   ],
+   " map images. When a page shows a map, the visitor's browser downloads the map from OpenFreeMap, which therefore receives the visitor's IP address, browser information and the part of the map viewed. See ",
+   [
+    "a",
+    {
+     "href": "https://openfreemap.org/"
+    },
+    "https://openfreemap.org/"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "OpenStreetMap Nominatim"
+   ],
+   " (OpenStreetMap Foundation): address search on the listing form. Only when an advertiser presses \"Find address\" is the address typed in the listing's location field sent from their browser to Nominatim, with their IP address and browser information. See ",
+   [
+    "a",
+    {
+     "href": "https://osmfoundation.org/wiki/Privacy_Policy"
+    },
+    "https://osmfoundation.org/wiki/Privacy_Policy"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Google Maps:"
+   ],
+   " listing pages offer an \"Open in Google Maps\" link. Only if a visitor clicks it does Google receive the listing's location (or the centre of its area) and the visitor's connection information; GigoMe does not tell Google which page the visitor came from. See ",
+   [
+    "a",
+    {
+     "href": "https://policies.google.com/privacy"
+    },
+    "https://policies.google.com/privacy"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "The browser's location service:"
+   ],
+   " on the Jobs page, \"Use my location\" asks the browser for the device's position only when it is pressed and the visitor allows it. The position stays on the device: it is never sent to GigoMe or stored. The browser may use its maker's location service under that provider's own terms."
   ],
   [
    "p",
@@ -846,17 +989,17 @@
     null,
     "local storage"
    ],
-   ". This technology serves authentication and session continuity; it is not used by GigoMe for behavioural advertising."
+   ". Local storage also keeps the language chosen for the site (English or Italian), and, for the open tab only, the browser's session storage keeps the email address a login code was just sent to and whether metro lines are shown on maps. GigoMe itself sets no cookies. These technologies serve authentication, session continuity and the user's own choices; they are not used by GigoMe for behavioural advertising."
   ],
   [
    "p",
    null,
-   "According to the current technical configuration, GigoMe does not intentionally deploy non-essential advertising, profiling or analytics cookies. Strictly necessary technical storage and similar technologies can generally be used without prior cookie consent, while transparency remains necessary."
+   "According to the current technical configuration, GigoMe does not intentionally deploy non-essential advertising, profiling or analytics cookies. GigoMe uses Cloudflare Web Analytics, which counts page visits without cookies or other storage on the visitor's device (section 6). Strictly necessary technical storage and similar technologies can generally be used without prior cookie consent, while transparency remains necessary."
   ],
   [
    "p",
    null,
-   "Infrastructure providers may also deploy strictly necessary technical or security mechanisms. If the Platform introduces optional analytics, advertising trackers or other non-essential storage/access technologies, we will revise this Notice and implement the required consent and preference controls before activating them."
+   "Infrastructure providers may also deploy strictly necessary technical or security mechanisms. If the Platform introduces analytics that use cookies, advertising trackers or other non-essential storage/access technologies, we will revise this Notice and implement the required consent and preference controls before activating them."
   ],
   [
    "h2",
@@ -900,18 +1043,18 @@
      [
       "td",
       null,
-      "Incomplete/unverified registrations"
+      "Unfinished sign-ups (accounts whose holder never completed sign-up: for example, never accepted the Terms or, having signed up as a student without an email of a listed university, never said which university they attend)"
      ],
      [
       "td",
       null,
-      "Delete within ",
+      "Deleted automatically, with everything linked to them, within ",
       [
        "strong",
        null,
        "30 days"
       ],
-      " if registration is not completed, unless a shorter period is appropriate"
+      " of the last login"
      ]
     ],
     [
@@ -920,18 +1063,18 @@
      [
       "td",
       null,
-      "Active Student and Advertiser accounts and their necessary profile data"
+      "Student and Advertiser accounts and their necessary profile data, with the saved jobs, saved searches, followed companies, feedback and language preference linked to them"
      ],
      [
       "td",
       null,
-      "Until account closure or ",
+      "Until the account is deleted; inactive accounts are deleted ",
       [
        "strong",
        null,
-       "24 months after the last account activity"
+       "24 months after the last login"
       ],
-      "; provide an advance inactivity warning where practicable"
+      ", after an advance warning where practicable. Students can remove saved items earlier"
      ]
     ],
     [
@@ -945,13 +1088,13 @@
      [
       "td",
       null,
-      "While active; remove from public display when expired or withdrawn; delete or anonymize non-essential archived listing data within ",
+      "While active; remove from public display when expired or withdrawn; within ",
       [
        "strong",
        null,
        "90 days"
       ],
-      " of removal"
+      " of a listing being closed, rejected or expiring, its application contact, description, pay note, free-text location, map point and Students' saves of it are deleted automatically, unless the listing has been reported (it is then kept as evidence until the report is deleted)"
      ]
     ],
     [
@@ -960,18 +1103,18 @@
      [
       "td",
       null,
-      "Contact-reveal logs"
+      "Apply-click records"
      ],
      [
       "td",
       null,
-      "Delete or irreversibly anonymize within ",
+      "Irreversibly anonymized automatically within ",
       [
        "strong",
        null,
        "180 days"
       ],
-      " of the reveal, unless a documented incident or legal claim justifies longer retention"
+      " of the click (the Student's account is removed and the time reduced to the day, so advertisers' totals stay correct), unless a documented incident or legal claim justifies longer retention"
      ]
     ],
     [
@@ -1020,7 +1163,7 @@
      [
       "td",
       null,
-      "Fraud, safety and legal-complaint records"
+      "Fraud, safety and legal-complaint records, including job reports"
      ],
      [
       "td",
@@ -1031,7 +1174,7 @@
        null,
        "24 months after resolution"
       ],
-      ", unless required for an ongoing dispute or legal obligation"
+      " (job reports are deleted automatically), unless required for an ongoing dispute or legal obligation. A job report is kept without the reporter's account if the reporter deletes it, and with only the listing title and advertiser name if the listing or advertiser is deleted"
      ]
     ],
     [
@@ -1045,13 +1188,7 @@
      [
       "td",
       null,
-      "For the life of the account and up to ",
-      [
-       "strong",
-       null,
-       "36 months after closure"
-      ],
-      ", where reasonably necessary to establish compliance or defend claims"
+      "For the life of the account; deleted with the account"
      ]
     ]
    ]
@@ -1059,7 +1196,7 @@
   [
    "p",
    null,
-   "These periods do not override binding statutory retention requirements or an obligation to preserve relevant evidence in an actual dispute. Extensions will be limited, documented and reviewed. Technical-service providers may maintain their own short-lived operational logs under their applicable terms; we will assess and document those arrangements."
+   "These periods do not override binding statutory retention requirements or an obligation to preserve relevant evidence in an actual dispute. Extensions will be limited, documented and reviewed. The automatic deletions and anonymizations above run every night; the other periods are applied by an authorized administrator. Technical-service providers may maintain their own short-lived operational logs under their applicable terms; we will assess and document those arrangements."
   ],
   [
    "p",
@@ -1082,19 +1219,30 @@
   [
    "p",
    null,
-   "Users may request account closure, access, correction or deletion of personal data by writing to ",
+   "Users can delete their account themselves at any time on their Account page (",
+   [
+    "strong",
+    null,
+    "Delete my account"
+   ],
+   "). The account and its personal data are deleted immediately, including, for an advertiser, its company, listings and their application contacts, except the records described in section 9 that are kept without the user's account (apply clicks and job reports they sent). On the same page, ",
+   [
+    "strong",
+    null,
+    "Download my data"
+   ],
+   " provides a copy of the account's data as a file. Users may also request account closure, access, correction or deletion of personal data by writing to ",
    [
     "strong",
     null,
     "privacy@gigome.org"
    ],
-   ". Account deletion is currently processed ",
-   [
-    "strong",
-    null,
-    "manually by an authorized administrator"
-   ],
-   "; it is not advertised as an automatic self-service function."
+   ", for example if they can no longer log in; such requests are handled manually by an authorized administrator."
+  ],
+  [
+   "p",
+   null,
+   "A person who signs up through the student login with an email address that does not belong to a listed university, and then answers that they are not a university student, is not given an account: the account created when the login code was requested is deleted at once."
   ],
   [
    "p",
@@ -1200,7 +1348,7 @@
   [
    "p",
    null,
-   "Requests can be sent to ",
+   "On the Account page, Students can correct their name, degree level and graduation year directly, and every user can download a copy of their account's data and delete the account. Requests can be sent to ",
    [
     "strong",
     null,
@@ -1249,7 +1397,7 @@
     null,
     "18 or over"
    ],
-   ". We do not intentionally offer accounts to minors. If we become aware that a minor has registered contrary to these Terms, we will take appropriate steps consistent with applicable law."
+   ". We do not intentionally offer accounts to minors. If we become aware that a minor has registered contrary to the Terms and Conditions, we will take appropriate steps consistent with applicable law."
   ],
   [
    "p",
@@ -1289,7 +1437,7 @@
     null,
     "Row Level Security"
    ],
-   " is enabled for the project's database tables and that student accounts and contact-reveal records are inaccessible to Advertisers through the intended application permissions. Technical testing and monitoring remain necessary."
+   " is enabled for the project's database tables and that student accounts and individual apply-click records are inaccessible to Advertisers through the intended application permissions. Technical testing and monitoring remain necessary."
   ],
   [
    "p",
@@ -1404,7 +1552,7 @@
    [
     "strong",
     null,
-    "End of Privacy Notice, version 1.0."
+    "End of Privacy Notice, version 1.1."
    ]
   ]
  ]

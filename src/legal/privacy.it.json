@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/privacy-notice-v1.0.html",
+ "source": "docs/legal/published/privacy-notice-v1.1.html",
  "title": "GigoMe | Informativa sulla privacy",
  "toc": [
   {
@@ -24,7 +24,7 @@
   },
   {
    "href": "#section-5",
-   "label": "4. Visualizzazione del contatto: cosa succede esattamente?",
+   "label": "4. Candidati: cosa succede esattamente?",
    "sub": false
   },
   {
@@ -105,7 +105,7 @@
    [
     "strong",
     null,
-    "Versione 1.0 | Ultimo aggiornamento: 11 novembre 2026"
+    "Versione 1.1 | Ultimo aggiornamento: 20 novembre 2026"
    ],
    [
     "br",
@@ -180,7 +180,7 @@
   [
    "p",
    null,
-   "GigoMe consente agli studenti di scoprire opportunità di lavoro e di visualizzare le informazioni di contatto o i link per candidarsi forniti dagli inserzionisti. ",
+   "GigoMe consente agli studenti di scoprire opportunità di lavoro e di ottenere i link per candidarsi o gli indirizzi email forniti dagli inserzionisti. ",
    [
     "strong",
     null,
@@ -191,24 +191,30 @@
   [
    "p",
    null,
-   "Quando uno studente registrato seleziona ",
+   "Quando uno studente registrato preme ",
    [
     "strong",
     null,
-    "Mostra contatto"
+    "Candidati"
    ],
-   ", GigoMe registra quale account studente ha visualizzato le informazioni di contatto di quale annuncio e il momento dell'azione. ",
+   " su un annuncio, GigoMe mostra e apre il link per candidarsi o l'indirizzo email di quell'annuncio e registra quale account studente ha premuto Candidati su quale annuncio e il momento dell'azione (un ",
    [
     "strong",
     null,
-    "Questo registro non viene fornito agli inserzionisti e può essere consultato solo dagli amministratori autorizzati di GigoMe."
+    "clic su Candidati"
    ],
-   " Viene utilizzato per le finalità limitate descritte di seguito."
+   "). ",
+   [
+    "strong",
+    null,
+    "Questa registrazione non viene mai mostrata agli inserzionisti: un inserzionista vede solo quante volte gli studenti hanno premuto Candidati su ciascuno dei suoi annunci, mai chi. Ogni studente può vedere i propri clic su Candidati; per il resto, possono consultarli solo gli amministratori autorizzati di GigoMe."
+   ],
+   " Viene utilizzata per le finalità limitate descritte di seguito."
   ],
   [
    "p",
    null,
-   "GigoMe utilizza Supabase per il database e l'autenticazione, Cloudflare per l'hosting e i servizi relativi al dominio, Brevo per le email di autenticazione e un servizio di casella email per la corrispondenza di assistenza e in materia di privacy. Il progetto Supabase principale è ospitato a ",
+   "GigoMe utilizza Supabase per il database e l'autenticazione, Cloudflare per l'hosting, i servizi relativi al dominio, la protezione dai bot nei moduli di accesso e statistiche delle visite senza cookie, Brevo per le email con i codici di accesso, OpenFreeMap e OpenStreetMap per le mappe e la ricerca di indirizzi e un servizio di casella email per la corrispondenza di assistenza e in materia di privacy. Il progetto Supabase principale è ospitato a ",
    [
     "strong",
     null,
@@ -231,7 +237,13 @@
   [
    "p",
    null,
-   "Il titolare del trattamento per le attività di trattamento proprie di GigoMe è:"
+   "Il titolare del trattamento per le attività di trattamento proprie di GigoMe (di seguito, nella presente Informativa, il ",
+   [
+    "strong",
+    null,
+    "Gestore"
+   ],
+   ") è:"
   ],
   [
    "p",
@@ -303,7 +315,7 @@
     null,
     "Informazioni sull'account e sull'identità:"
    ],
-   " nome o nome visualizzato, indirizzo email, identificativo dell'account, ruolo (studente, inserzionista professionale o privato), affiliazione universitaria o email universitaria verificata ove abilitata, e informazioni sulla creazione e sullo stato dell'account."
+   " nome, indirizzo email, identificativo dell'account, ruolo (studente o inserzionista; GigoMe non registra se un inserzionista sia un'impresa o un privato), l'accesso utilizzato per registrarsi (per studenti o per datori di lavoro), per gli studenti l'università e il modo in cui è stato accertato lo status di studente (un indirizzo email di un'università inclusa nell'elenco, oppure la dichiarazione dello studente di essere uno studente universitario e dell'università che frequenta, scelta da un elenco o inserita a mano), la lingua utilizzata sul sito (inglese o italiano), affinché le email di accesso siano inviate in quella lingua, e informazioni sulla creazione, sull'ultimo accesso e sullo stato dell'account. Un account viene creato quando si richiede per la prima volta un codice di accesso per un indirizzo email, prima che il codice venga inserito."
   ],
   [
    "p",
@@ -313,7 +325,7 @@
     null,
     "Informazioni del profilo dello studente:"
    ],
-   " percorso formativo (facoltativo), corso di studi, lingue, competenze, esperienze passate, preferenze generali e, se tali campi sono abilitati, età o nazionalità. Questi dati non sono resi disponibili agli inserzionisti tramite GigoMe. Per la normale creazione del profilo non sono necessari documenti d'identità, dati relativi alla salute o altre informazioni sensibili."
+   " nome, livello di studi e anno di laurea previsto. Questi dati non sono resi disponibili agli inserzionisti tramite GigoMe. Per la normale creazione del profilo non sono necessari documenti d'identità, dati relativi alla salute o altre informazioni sensibili."
   ],
   [
    "p",
@@ -323,7 +335,7 @@
     null,
     "Informazioni sugli inserzionisti e sugli annunci:"
    ],
-   " identità dell'impresa o della persona fisica, dati dell'organizzazione, recapiti professionali, descrizioni degli annunci, luogo di lavoro, informazioni pertinenti su retribuzione e condizioni contrattuali, indirizzo email, numero di telefono o URL esterno per la candidatura scelti, date di pubblicazione e stato di moderazione. Le informazioni destinate a essere mostrate in un annuncio possono essere visibili agli Utenti o ai visitatori della Piattaforma secondo le impostazioni di pubblicazione applicabili."
+   " il nome dell'inserzionista (impresa o persona fisica), sito web, descrizione e indirizzo email di contatto, descrizioni degli annunci, luogo di lavoro (una zona di Milano e, facoltativamente, un punto preciso sulla mappa), informazioni pertinenti su retribuzione e condizioni contrattuali, l'indirizzo email e/o l'URL esterno per la candidatura, date di pubblicazione e di scadenza, stato e note di moderazione, e il numero di clic su Candidati e di studenti che seguono l'inserzionista. Gli annunci pubblicati e il nome, la descrizione e il sito web degli inserzionisti approvati sono visibili a tutti; l'indirizzo email o l'URL per la candidatura è mostrato solo agli studenti che hanno effettuato l'accesso e premono Candidati, e l'indirizzo email di contatto dell'inserzionista solo all'inserzionista stesso e agli amministratori."
   ],
   [
    "p",
@@ -331,9 +343,19 @@
    [
     "strong",
     null,
-    "Registrazioni delle visualizzazioni del contatto:"
+    "Registrazioni dei clic su Candidati:"
    ],
-   " identificativo dell'account studente, identificativo dell'annuncio, marca temporale e le informazioni tecniche ragionevolmente necessarie per proteggere o sottoporre a verifica l'operazione. Solo gli amministratori autorizzati possono consultare queste registrazioni. Il Gestore non informa automaticamente gli inserzionisti delle singole visualizzazioni."
+   " identificativo dell'account studente, identificativo dell'annuncio e marca temporale. Ogni studente può vedere le proprie registrazioni (\"Offerte che hai aperto\" nella pagina Offerte salvate e in \"Scarica i miei dati\"); gli inserzionisti vedono solo il numero di clic su Candidati ricevuti da ciascuno dei loro annunci; per il resto, solo gli amministratori autorizzati possono consultare queste registrazioni. Il Gestore non informa gli inserzionisti dei singoli clic su Candidati."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Elementi che gli studenti scelgono di conservare:"
+   ],
+   " offerte salvate, ricerche salvate (un nome, i filtri di ricerca e la data dell'ultima apertura della ricerca, per indicare quanti annunci sono nuovi) e aziende seguite. Nel servizio sono visibili solo allo studente; un'azienda vede solo quanti studenti la seguono, mai chi. Nessuna email viene inviata in relazione a essi."
   ],
   [
    "p",
@@ -353,7 +375,7 @@
     null,
     "Comunicazioni e segnalazioni:"
    ],
-   " email inviate a hello@gigome.org o privacy@gigome.org, richieste di aiuto, reclami, segnalazioni di frode e le informazioni ragionevolmente necessarie per esaminarli."
+   " email inviate a hello@gigome.org o privacy@gigome.org, messaggi inviati con il pulsante Feedback (insieme alla pagina da cui sono stati inviati), segnalazioni di annunci inviate con \"Segnala questa offerta\" (il motivo ed eventuali dettagli), richieste di aiuto, reclami, segnalazioni di frode e le informazioni ragionevolmente necessarie per esaminarli. I feedback e le segnalazioni di annunci sono conservati insieme all'account di chi li invia e sono letti solo dagli amministratori autorizzati."
   ],
   [
    "p",
@@ -363,7 +385,7 @@
     null,
     "Registrazioni contrattuali e di conformità:"
    ],
-   " data e versione dei Termini accettati, comunicazioni pertinenti relative all'account e registrazioni necessarie per dimostrare la conformità o gestire una controversia."
+   " data e versione dei Termini accettati (e, per un inserzionista, la data in cui ha accettato i Termini creando la propria azienda), decisioni di moderazione degli amministratori su aziende, annunci e segnalazioni (quale amministratore, quando, la decisione ed eventuali note), comunicazioni pertinenti relative all'account e registrazioni necessarie per dimostrare la conformità o gestire una controversia."
   ],
   [
    "p",
@@ -417,7 +439,7 @@
      [
       "td",
       null,
-      "Email, nome, ruolo, ID dell'account e dati del profilo necessari"
+      "Email, nome, ruolo, ID dell'account, modo in cui è stato accertato lo status di studente e dati del profilo necessari"
      ],
      [
       "td",
@@ -436,7 +458,7 @@
      [
       "td",
       null,
-      "Email, eventi di autenticazione/sessione"
+      "Email, eventi di autenticazione/sessione, lingua utilizzata sul sito e verifiche del browser nei moduli di accesso (Cloudflare Turnstile)"
      ],
      [
       "td",
@@ -469,7 +491,7 @@
      [
       "td",
       null,
-      "Mostrare i recapiti dell'inserzionista quando uno Studente sceglie Mostra contatto"
+      "Mostrare e aprire il link per candidarsi o l'indirizzo email di un inserzionista quando uno Studente preme Candidati"
      ],
      [
       "td",
@@ -488,17 +510,74 @@
      [
       "td",
       null,
-      "Registrare e proteggere le visualizzazioni del contatto, rilevare abusi e risolvere problemi"
+      "Registrare i clic su Candidati, mostrare a ogni Studente i propri e a ogni inserzionista i propri totali, rilevare abusi e risolvere problemi"
      ],
      [
       "td",
       null,
-      "ID dello studente, ID dell'annuncio, ora e informazioni tecniche pertinenti"
+      "ID dello studente, ID dell'annuncio e ora"
      ],
      [
       "td",
       null,
       "Art. 6, par. 1, lett. f): legittimi interessi alla sicurezza, alla prevenzione delle frodi e al funzionamento affidabile, previa valutazione di bilanciamento"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Conservare le offerte salvate, le ricerche salvate e le aziende seguite scelte da uno Studente e mostrare agli inserzionisti quanti Studenti li seguono"
+     ],
+     [
+      "td",
+      null,
+      "ID dello studente, ID degli annunci e delle aziende, nome e filtri della ricerca, data dell'ultima apertura di una ricerca"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. b)"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Mostrare mappe e trovare un indirizzo inserito da un inserzionista"
+     ],
+     [
+      "td",
+      null,
+      "Indirizzo IP, informazioni sul browser e zona della mappa visualizzata (OpenFreeMap); indirizzo inserito (OpenStreetMap Nominatim)"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. f): legittimo interesse a mostrare dove si trovano le offerte e ad aiutare gli inserzionisti a collocarle; art. 6, par. 1, lett. b) per i titolari di un account"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Contare le visite alle pagine e misurarne la velocità di caricamento senza cookie (Cloudflare Web Analytics)"
+     ],
+     [
+      "td",
+      null,
+      "Pagina visitata, sito di provenienza, browser, paese, tempi di caricamento"
+     ],
+     [
+      "td",
+      null,
+      "Art. 6, par. 1, lett. f): legittimo interesse a capire come viene utilizzata la Piattaforma e a mantenerla veloce"
      ]
     ],
     [
@@ -526,12 +605,12 @@
      [
       "td",
       null,
-      "Rispondere alle richieste di assistenza e in materia di privacy"
+      "Rispondere alle richieste di assistenza e in materia di privacy e ai feedback"
      ],
      [
       "td",
       null,
-      "Corrispondenza, informazioni sull'account e di verifica"
+      "Corrispondenza, messaggi di feedback, informazioni sull'account e di verifica"
      ],
      [
       "td",
@@ -594,7 +673,7 @@
    {
     "id": "section-5"
    },
-   "4. Visualizzazione del contatto: cosa succede esattamente?"
+   "4. Candidati: cosa succede esattamente?"
   ],
   [
    "ol",
@@ -607,23 +686,23 @@
    [
     "li",
     null,
-    "Lo Studente seleziona volontariamente ",
+    "Lo Studente preme volontariamente ",
     [
      "strong",
      null,
-     "Mostra contatto"
+     "Candidati"
     ],
-    "."
+    ". Ai visitatori che non hanno effettuato l'accesso viene chiesto prima di accedere."
    ],
    [
     "li",
     null,
-    "GigoMe mostra le informazioni di contatto dell'Inserzionista o il link esterno per la candidatura associati a quell'annuncio."
+    "GigoMe mostra il link esterno per la candidatura e/o l'indirizzo email che l'Inserzionista ha fornito per quell'annuncio e lo apre: il link in una nuova scheda del browser oppure, se non c'è un link, l'app email dello Studente con un oggetto che indica l'annuncio."
    ],
    [
     "li",
     null,
-    "GigoMe registra l'identificativo dell'account dello Studente, l'identificativo dell'annuncio e l'ora della visualizzazione in un registro accessibile solo agli amministratori."
+    "GigoMe registra l'identificativo dell'account dello Studente, l'identificativo dell'annuncio e l'ora del clic. Lo Studente può vedere le proprie registrazioni; l'Inserzionista vede solo il numero totale di clic su Candidati ricevuti da ciascuno dei suoi annunci; gli amministratori autorizzati possono vedere le registrazioni."
    ],
    [
     "li",
@@ -631,7 +710,7 @@
     [
      "strong",
      null,
-     "Nessun profilo dello studente, CV, candidatura o registro delle visualizzazioni viene inviato automaticamente all'Inserzionista."
+     "Nessun profilo dello studente, CV, candidatura o registrazione dei clic su Candidati viene inviato automaticamente all'Inserzionista."
     ]
    ],
    [
@@ -643,7 +722,7 @@
   [
    "p",
    null,
-   "La registrazione della visualizzazione del contatto costituisce un dato personale anche se non viene comunicata agli inserzionisti. È utilizzata solo per le finalità limitate operative, di prevenzione degli abusi e di sicurezza descritte nella presente Informativa. Il Gestore non la utilizza per creare classifiche pubbliche né per vendere profili."
+   "La registrazione del clic su Candidati costituisce un dato personale anche se gli inserzionisti ne vedono solo i totali. Premere Candidati non invia alcuna candidatura, e GigoMe non sa se lo Studente si sia effettivamente candidato. È utilizzata solo per le finalità limitate operative, di prevenzione degli abusi e di sicurezza descritte nella presente Informativa. Il Gestore non la utilizza per creare classifiche pubbliche né per vendere profili."
   ],
   [
    "h2",
@@ -660,7 +739,7 @@
     null,
     "L'intestatario dell'account"
    ],
-   " può accedere alle proprie informazioni tramite le funzionalità del servizio disponibili."
+   " può accedere alle proprie informazioni tramite le funzionalità del servizio disponibili, compresa la pagina Account, dove \"Scarica i miei dati\" fornisce una copia dei dati dell'account in un file."
   ],
   [
    "p",
@@ -670,7 +749,7 @@
     null,
     "Gli Inserzionisti"
    ],
-   " non possono cercare, consultare né accedere ai profili degli Studenti o ai registri delle visualizzazioni del contatto tramite GigoMe. Uno Studente può scegliere autonomamente di contattare un inserzionista al di fuori della Piattaforma."
+   " non possono cercare, consultare né accedere ai profili degli Studenti o alle registrazioni dei clic su Candidati tramite GigoMe. Vedono solo quante volte gli Studenti hanno premuto Candidati su ciascuno dei loro annunci e quanti Studenti seguono la loro azienda, mai chi. Uno Studente può scegliere autonomamente di contattare un inserzionista al di fuori della Piattaforma."
   ],
   [
    "p",
@@ -680,7 +759,7 @@
     null,
     "Gli amministratori autorizzati di GigoMe"
    ],
-   " possono accedere alle limitate informazioni relative ad account, annunci, visualizzazioni e segnalazioni necessarie per le responsabilità loro assegnate, nel rispetto di restrizioni di accesso e garanzie di riservatezza."
+   " possono accedere alle limitate informazioni relative ad account, annunci, clic su Candidati, feedback e segnalazioni necessarie per le responsabilità loro assegnate, nel rispetto di restrizioni di accesso e garanzie di riservatezza."
   ],
   [
    "p",
@@ -690,7 +769,7 @@
     null,
     "Gli altri Utenti e i visitatori"
    ],
-   " possono vedere gli annunci e le informazioni di contatto che gli Inserzionisti hanno scelto di mostrare tramite le relative funzionalità del servizio. Il Gestore non intende pubblicare i profili privati degli Studenti."
+   " possono vedere gli annunci pubblicati e le pagine pubbliche degli inserzionisti approvati (nome, descrizione, sito web e annunci aperti). Il link o l'indirizzo email per la candidatura di un annuncio è mostrato solo agli Studenti che hanno effettuato l'accesso e premono Candidati, e l'indirizzo email di contatto di un inserzionista non è mai mostrato agli altri Utenti. Il Gestore non intende pubblicare i profili privati degli Studenti."
   ],
   [
    "p",
@@ -756,7 +835,7 @@
     null,
     "Cloudflare:"
    ],
-   " servizi di dominio, hosting, distribuzione web, sicurezza e inoltro email. Cloudflare può trattare informazioni sulla connessione e altri dati tecnici necessari per tali funzioni in base ai relativi accordi contrattuali e in materia di privacy. Si veda ",
+   " servizi di dominio, hosting, distribuzione web, sicurezza e inoltro email; protezione dai bot nei moduli di accesso (Cloudflare Turnstile, che verifica il browser per distinguere le persone dai programmi automatizzati); statistiche delle visite (Cloudflare Web Analytics, che registra le pagine visitate, i tempi di caricamento, il sito di provenienza, il browser e il paese, senza cookie né altre forme di archiviazione sul dispositivo del visitatore). Cloudflare può trattare informazioni sulla connessione e altri dati tecnici necessari per tali funzioni in base ai relativi accordi contrattuali e in materia di privacy. Si veda ",
    [
     "a",
     {
@@ -774,7 +853,7 @@
     null,
     "Brevo:"
    ],
-   " invio dei codici di accesso monouso e di alcune email operative. Brevo riceve gli indirizzi email e le informazioni tecniche di consegna necessari per tali messaggi. Si veda ",
+   " invio dei codici di accesso monouso. Brevo riceve gli indirizzi email e le informazioni tecniche di consegna necessari per tali messaggi. Si veda ",
    [
     "a",
     {
@@ -801,6 +880,70 @@
     "https://policies.google.com/privacy"
    ],
    ". Gli Utenti dovrebbero evitare di includere informazioni sensibili non necessarie nelle normali email. Il Gestore riesaminerà o sostituirà questa soluzione ove necessario per adempiere ai propri obblighi in materia di protezione dei dati."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "OpenFreeMap:"
+   ],
+   " immagini delle mappe. Quando una pagina mostra una mappa, il browser del visitatore scarica la mappa da OpenFreeMap, che riceve quindi l'indirizzo IP del visitatore, informazioni sul browser e la parte di mappa visualizzata. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://openfreemap.org/"
+    },
+    "https://openfreemap.org/"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "OpenStreetMap Nominatim"
+   ],
+   " (OpenStreetMap Foundation): ricerca di indirizzi nel modulo dell'annuncio. Solo quando un inserzionista preme \"Trova indirizzo\", l'indirizzo inserito nel campo del luogo dell'annuncio viene inviato dal suo browser a Nominatim, insieme al suo indirizzo IP e alle informazioni sul browser. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://osmfoundation.org/wiki/Privacy_Policy"
+    },
+    "https://osmfoundation.org/wiki/Privacy_Policy"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Google Maps:"
+   ],
+   " le pagine degli annunci offrono il link \"Apri in Google Maps\". Solo se un visitatore lo apre, Google riceve la posizione dell'annuncio (o il centro della sua zona) e le informazioni sulla connessione del visitatore; GigoMe non comunica a Google da quale pagina provenga il visitatore. Si veda ",
+   [
+    "a",
+    {
+     "href": "https://policies.google.com/privacy"
+    },
+    "https://policies.google.com/privacy"
+   ],
+   "."
+  ],
+  [
+   "p",
+   null,
+   [
+    "strong",
+    null,
+    "Il servizio di localizzazione del browser:"
+   ],
+   " nella pagina delle offerte, \"Usa la mia posizione\" chiede al browser la posizione del dispositivo solo quando viene premuto e il visitatore lo consente. La posizione resta sul dispositivo: non viene mai inviata a GigoMe né memorizzata. Il browser può utilizzare il servizio di localizzazione del proprio produttore secondo i termini di quest'ultimo."
   ],
   [
    "p",
@@ -846,17 +989,17 @@
     null,
     "archiviazione locale"
    ],
-   " del browser. Questa tecnologia è funzionale all'autenticazione e alla continuità della sessione; GigoMe non la utilizza per la pubblicità comportamentale."
+   " del browser. L'archiviazione locale conserva anche la lingua scelta per il sito (inglese o italiano) e, per la sola scheda aperta, l'archiviazione di sessione del browser conserva l'indirizzo email a cui è appena stato inviato un codice di accesso e l'indicazione se le linee della metropolitana sono mostrate sulle mappe. GigoMe non imposta alcun cookie. Queste tecnologie sono funzionali all'autenticazione, alla continuità della sessione e alle scelte dell'Utente; GigoMe non le utilizza per la pubblicità comportamentale."
   ],
   [
    "p",
    null,
-   "In base all'attuale configurazione tecnica, GigoMe non utilizza intenzionalmente cookie pubblicitari, di profilazione o analitici non essenziali. L'archiviazione tecnica strettamente necessaria e le tecnologie analoghe possono generalmente essere utilizzate senza previo consenso ai cookie, ferma restando la necessità di trasparenza."
+   "In base all'attuale configurazione tecnica, GigoMe non utilizza intenzionalmente cookie pubblicitari, di profilazione o analitici non essenziali. GigoMe utilizza Cloudflare Web Analytics, che conta le visite alle pagine senza cookie né altre forme di archiviazione sul dispositivo del visitatore (sezione 6). L'archiviazione tecnica strettamente necessaria e le tecnologie analoghe possono generalmente essere utilizzate senza previo consenso ai cookie, ferma restando la necessità di trasparenza."
   ],
   [
    "p",
    null,
-   "Anche i fornitori di infrastruttura possono utilizzare meccanismi tecnici o di sicurezza strettamente necessari. Se la Piattaforma introdurrà strumenti analitici facoltativi, tracker pubblicitari o altre tecnologie di archiviazione/accesso non essenziali, il Gestore aggiornerà la presente Informativa e implementerà i necessari controlli di consenso e di preferenza prima di attivarli."
+   "Anche i fornitori di infrastruttura possono utilizzare meccanismi tecnici o di sicurezza strettamente necessari. Se la Piattaforma introdurrà strumenti analitici che utilizzano cookie, tracker pubblicitari o altre tecnologie di archiviazione/accesso non essenziali, il Gestore aggiornerà la presente Informativa e implementerà i necessari controlli di consenso e di preferenza prima di attivarli."
   ],
   [
    "h2",
@@ -900,18 +1043,18 @@
      [
       "td",
       null,
-      "Registrazioni incomplete/non verificate"
+      "Registrazioni non completate (account il cui titolare non ha mai completato la registrazione: ad esempio, non ha mai accettato i Termini oppure, essendosi registrato come studente senza un'email di un'università inclusa nell'elenco, non ha mai indicato quale università frequenta)"
      ],
      [
       "td",
       null,
-      "Cancellazione entro ",
+      "Cancellazione automatica, insieme a tutto ciò che vi è collegato, entro ",
       [
        "strong",
        null,
        "30 giorni"
       ],
-      " se la registrazione non viene completata, salvo che sia opportuno un periodo più breve"
+      " dall'ultimo accesso"
      ]
     ],
     [
@@ -920,18 +1063,18 @@
      [
       "td",
       null,
-      "Account attivi di Studenti e Inserzionisti e relativi dati del profilo necessari"
+      "Account di Studenti e Inserzionisti e relativi dati del profilo necessari, con le offerte salvate, le ricerche salvate, le aziende seguite, i feedback e la preferenza di lingua a essi collegati"
      ],
      [
       "td",
       null,
-      "Fino alla chiusura dell'account o ",
+      "Fino alla cancellazione dell'account; gli account inattivi sono cancellati ",
       [
        "strong",
        null,
-       "24 mesi dopo l'ultima attività dell'account"
+       "24 mesi dopo l'ultimo accesso"
       ],
-      "; invio di un avviso preventivo di inattività ove possibile"
+      ", previo avviso ove possibile. Lo Studente può rimuovere prima gli elementi salvati"
      ]
     ],
     [
@@ -945,13 +1088,13 @@
      [
       "td",
       null,
-      "Finché attivi; rimozione dalla visualizzazione pubblica quando scaduti o ritirati; cancellazione o anonimizzazione dei dati non essenziali degli annunci archiviati entro ",
+      "Finché attivi; rimozione dalla visualizzazione pubblica quando scaduti o ritirati; entro ",
       [
        "strong",
        null,
        "90 giorni"
       ],
-      " dalla rimozione"
+      " dalla chiusura, dal rifiuto o dalla scadenza di un annuncio, ne sono cancellati automaticamente il contatto per la candidatura, la descrizione, la nota sulla retribuzione, il luogo indicato in testo libero, il punto sulla mappa e i salvataggi da parte degli Studenti, salvo che l'annuncio sia stato segnalato (in tal caso è conservato come prova fino alla cancellazione della segnalazione)"
      ]
     ],
     [
@@ -960,18 +1103,18 @@
      [
       "td",
       null,
-      "Registri delle visualizzazioni del contatto"
+      "Registrazioni dei clic su Candidati"
      ],
      [
       "td",
       null,
-      "Cancellazione o anonimizzazione irreversibile entro ",
+      "Anonimizzazione irreversibile automatica entro ",
       [
        "strong",
        null,
        "180 giorni"
       ],
-      " dalla visualizzazione, salvo che un incidente documentato o una pretesa legale giustifichi una conservazione più lunga"
+      " dal clic (l'account dello Studente viene rimosso e l'ora ridotta al giorno, così che i totali degli inserzionisti restino corretti), salvo che un incidente documentato o una pretesa legale giustifichi una conservazione più lunga"
      ]
     ],
     [
@@ -1020,7 +1163,7 @@
      [
       "td",
       null,
-      "Registrazioni relative a frodi, sicurezza e reclami legali"
+      "Registrazioni relative a frodi, sicurezza e reclami legali, comprese le segnalazioni di annunci"
      ],
      [
       "td",
@@ -1031,7 +1174,7 @@
        null,
        "24 mesi dopo la risoluzione"
       ],
-      ", salvo che siano necessarie per una controversia in corso o per un obbligo di legge"
+      " (le segnalazioni di annunci sono cancellate automaticamente), salvo che siano necessarie per una controversia in corso o per un obbligo di legge. Una segnalazione è conservata senza l'account di chi l'ha inviata se questi lo cancella, e con il solo titolo dell'annuncio e il nome dell'inserzionista se l'annuncio o l'inserzionista vengono cancellati"
      ]
     ],
     [
@@ -1045,13 +1188,7 @@
      [
       "td",
       null,
-      "Per tutta la durata dell'account e fino a ",
-      [
-       "strong",
-       null,
-       "36 mesi dopo la chiusura"
-      ],
-      ", ove ragionevolmente necessario per dimostrare la conformità o difendersi da pretese"
+      "Per tutta la durata dell'account; cancellazione insieme all'account"
      ]
     ]
    ]
@@ -1059,7 +1196,7 @@
   [
    "p",
    null,
-   "Questi periodi non prevalgono sugli obblighi di conservazione vincolanti previsti dalla legge né sull'obbligo di conservare le prove pertinenti in una controversia effettiva. Le proroghe saranno limitate, documentate e riesaminate. I fornitori di servizi tecnici possono conservare propri log operativi di breve durata in base ai loro termini applicabili; il Gestore valuterà e documenterà tali soluzioni."
+   "Questi periodi non prevalgono sugli obblighi di conservazione vincolanti previsti dalla legge né sull'obbligo di conservare le prove pertinenti in una controversia effettiva. Le proroghe saranno limitate, documentate e riesaminate. Le cancellazioni e anonimizzazioni automatiche sopra indicate sono eseguite ogni notte; gli altri periodi sono applicati da un amministratore autorizzato. I fornitori di servizi tecnici possono conservare propri log operativi di breve durata in base ai loro termini applicabili; il Gestore valuterà e documenterà tali soluzioni."
   ],
   [
    "p",
@@ -1082,19 +1219,30 @@
   [
    "p",
    null,
-   "Gli Utenti possono chiedere la chiusura dell'account, l'accesso, la rettifica o la cancellazione dei dati personali scrivendo a ",
+   "Gli Utenti possono cancellare autonomamente il proprio account in qualsiasi momento nella pagina Account (",
+   [
+    "strong",
+    null,
+    "Elimina il mio account"
+   ],
+   "). L'account e i relativi dati personali sono cancellati immediatamente, compresi, per un inserzionista, la sua azienda, i suoi annunci e i relativi contatti per la candidatura, ad eccezione delle registrazioni descritte nella sezione 9 che sono conservate senza l'account dell'Utente (clic su Candidati e segnalazioni di annunci inviate). Nella stessa pagina, ",
+   [
+    "strong",
+    null,
+    "Scarica i miei dati"
+   ],
+   " fornisce una copia dei dati dell'account in un file. Gli Utenti possono inoltre chiedere la chiusura dell'account, l'accesso, la rettifica o la cancellazione dei dati personali scrivendo a ",
    [
     "strong",
     null,
     "privacy@gigome.org"
    ],
-   ". La cancellazione dell'account è attualmente gestita ",
-   [
-    "strong",
-    null,
-    "manualmente da un amministratore autorizzato"
-   ],
-   "; non viene presentata come una funzione automatica self-service."
+   ", ad esempio se non riescono più ad accedere; tali richieste sono gestite manualmente da un amministratore autorizzato."
+  ],
+  [
+   "p",
+   null,
+   "Se una persona si registra tramite l'accesso per studenti con un indirizzo email che non appartiene a un'università inclusa nell'elenco e poi dichiara di non essere uno studente universitario, non le viene attribuito alcun account: l'account creato al momento della richiesta del codice di accesso viene cancellato immediatamente."
   ],
   [
    "p",
@@ -1200,7 +1348,7 @@
   [
    "p",
    null,
-   "Le richieste possono essere inviate a ",
+   "Nella pagina Account gli Studenti possono correggere direttamente nome, livello di studi e anno di laurea previsto, e ogni Utente può scaricare una copia dei dati del proprio account e cancellarlo. Le richieste possono essere inviate a ",
    [
     "strong",
     null,
@@ -1249,7 +1397,7 @@
     null,
     "18 anni"
    ],
-   ". Il Gestore non offre intenzionalmente account ai minori. Qualora venga a conoscenza del fatto che un minore si è registrato in violazione dei presenti Termini, adotterà le misure appropriate conformemente alla legge applicabile."
+   ". Il Gestore non offre intenzionalmente account ai minori. Qualora venga a conoscenza del fatto che un minore si è registrato in violazione dei Termini e condizioni, adotterà le misure appropriate conformemente alla legge applicabile."
   ],
   [
    "p",
@@ -1289,7 +1437,7 @@
     null,
     "Row Level Security"
    ],
-   " è abilitata per le tabelle del database del progetto e che gli account degli studenti e le registrazioni delle visualizzazioni del contatto non sono accessibili agli Inserzionisti tramite i permessi previsti dell'applicazione. Restano necessari test e monitoraggio tecnici."
+   " è abilitata per le tabelle del database del progetto e che gli account degli studenti e le singole registrazioni dei clic su Candidati non sono accessibili agli Inserzionisti tramite i permessi previsti dell'applicazione. Restano necessari test e monitoraggio tecnici."
   ],
   [
    "p",
@@ -1404,7 +1552,7 @@
    [
     "strong",
     null,
-    "Fine dell'Informativa sulla privacy, versione 1.0."
+    "Fine dell'Informativa sulla privacy, versione 1.1."
    ]
   ]
  ]

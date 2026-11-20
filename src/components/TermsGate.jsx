@@ -11,7 +11,7 @@ import { acceptedInThisTab, hasAcceptedTerms } from '../lib/terms.js';
 const OPEN = ['/welcome', '/login', '/employers', '/employers/setup', '/privacy', '/terms', '/account'];
 
 // Every logged-in account must have accepted the current Terms
-// (TERMS_VERSION), and a student who signed up with a non-university email
+// (TERMS_MIN_VERSION or newer), and a student who signed up with a non-university email
 // must have said which university (needsStudentAnswers). One that hasn't
 // (new accounts, accounts from before the Terms were asked for, and everyone
 // once the version changes) is sent to /welcome once, then back to the page

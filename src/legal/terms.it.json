@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/terms-and-conditions-v2.0.html",
+ "source": "docs/legal/published/terms-and-conditions-v2.1.html",
  "title": "GigoMe | Termini e condizioni",
  "toc": [
   {
@@ -49,7 +49,7 @@
   },
   {
    "href": "#section-10",
-   "label": "7. Mostra contatto e candidature esterne",
+   "label": "7. Candidati e candidature esterne",
    "sub": true
   },
   {
@@ -165,7 +165,7 @@
    [
     "strong",
     null,
-    "Versione 2.0 | Ultimo aggiornamento: 11 novembre 2026"
+    "Versione 2.1 | Ultimo aggiornamento: 20 novembre 2026"
    ],
    [
     "br",
@@ -240,28 +240,28 @@
   [
    "p",
    null,
-   "GigoMe è un servizio online gratuito che permette di scoprire opportunità di lavoro e di ottenere i recapiti o i link di candidatura esterni forniti dall'inserzionista di riferimento. ",
+   "GigoMe è un servizio online gratuito che permette di scoprire opportunità di lavoro e di ottenere i link di candidatura esterni o gli indirizzi email forniti dall'inserzionista di riferimento. ",
    [
     "strong",
     null,
     "GigoMe non accetta, non inoltra e non gestisce candidature di lavoro; non condivide i profili degli studenti con gli inserzionisti."
    ],
-   " Quando uno studente sceglie ",
+   " Quando uno studente che ha effettuato l'accesso preme ",
    [
     "strong",
     null,
-    "Mostra contatto"
+    "Candidati"
    ],
-   ", GigoMe mostra le informazioni di contatto o il link esterno relativi a quell'annuncio. Lo studente decide poi in autonomia se e come contattare l'inserzionista o candidarsi presso di lui al di fuori di GigoMe."
+   ", GigoMe mostra e apre il link di candidatura esterno o l'indirizzo email relativi a quell'annuncio. Lo studente decide poi in autonomia se e come contattare l'inserzionista o candidarsi presso di lui al di fuori di GigoMe."
   ],
   [
    "p",
    null,
-   "Per fornire, proteggere e valutare questa funzionalità, GigoMe tiene traccia di quale studente registrato ha visualizzato i recapiti di quale annuncio, e di quando. ",
+   "Per fornire, proteggere e valutare questa funzionalità, GigoMe tiene traccia di quale studente registrato ha premuto Candidati su quale annuncio, e di quando. ",
    [
     "strong",
     null,
-    "Questo registro è accessibile solo agli amministratori autorizzati di GigoMe, non agli inserzionisti."
+    "Gli inserzionisti vedono solo quante volte è stato premuto Candidati su ciascuno dei loro annunci, mai da chi; ogni studente può vedere le proprie registrazioni e, per il resto, vi possono accedere solo gli amministratori autorizzati di GigoMe."
    ],
    " Si invita l'Utente a leggere l'Informativa sulla privacy, fornita separatamente."
   ],
@@ -385,12 +385,12 @@
   [
    "p",
    null,
-   "2.2. Un account può essere creato solo dopo che l'Utente ha potuto consultare e accettare attivamente i presenti Termini. Traccia della versione applicabile e dell'accettazione può essere conservata come spiegato nell'Informativa sulla privacy. L'Informativa sulla privacy è fornita separatamente; l'accettazione dei presenti Termini non costituisce un consenso generalizzato al trattamento dei dati o al marketing."
+   "2.2. Un account viene creato quando si richiede per la prima volta un codice di accesso per un indirizzo email. Prima di poter utilizzare l'account, l'Utente deve poter consultare e accettare attivamente i presenti Termini; l'account la cui registrazione non viene mai completata viene cancellato come spiegato nell'Informativa sulla privacy. Traccia della versione applicabile e dell'accettazione può essere conservata come spiegato nell'Informativa sulla privacy. L'Informativa sulla privacy è fornita separatamente; l'accettazione dei presenti Termini non costituisce un consenso generalizzato al trattamento dei dati o al marketing."
   ],
   [
    "p",
    null,
-   "2.3. I presenti Termini si applicano a ogni successivo utilizzo del servizio, compresi ogni annuncio pubblicato da un Inserzionista e ogni contatto visualizzato da uno Studente. Non è necessariamente richiesta una casella di spunta contrattuale separata per ciascuna azione. L'Utente deve tuttavia compiere l'azione in questione volontariamente e ricevere tutte le informazioni richieste in quel momento."
+   "2.3. I presenti Termini si applicano a ogni successivo utilizzo del servizio, compresi ogni annuncio pubblicato da un Inserzionista e ogni volta in cui uno Studente preme Candidati. Non è necessariamente richiesta una casella di spunta contrattuale separata per ciascuna azione. L'Utente deve tuttavia compiere l'azione in questione volontariamente e ricevere tutte le informazioni richieste in quel momento."
   ],
   [
    "p",
@@ -407,7 +407,7 @@
   [
    "p",
    null,
-   "3.1. GigoMe può fornire account utente, annunci, strumenti di ricerca e filtro, informazioni di profilo limitate, funzioni di visualizzazione dei contatti degli inserzionisti e strumenti di segnalazione dei contenuti."
+   "3.1. GigoMe può fornire account utente, annunci, strumenti di ricerca e filtro, mappe, informazioni di profilo limitate, la funzione Candidati, offerte e ricerche salvate, la possibilità di seguire aziende, un modulo di feedback e strumenti di segnalazione dei contenuti."
   ],
   [
    "p",
@@ -418,7 +418,7 @@
     null,
     "Nessuna candidatura sulla piattaforma:"
    ],
-   " GigoMe non riceve moduli di candidatura, CV o candidature di lavoro per conto degli Inserzionisti, non inoltra i profili degli studenti, non informa gli Inserzionisti delle singole visualizzazioni dei contatti, non gestisce le conversazioni tra datori di lavoro e candidati e non seleziona candidati. Eventuali email, moduli, telefonate, colloqui o candidature esterni sono gestiti direttamente dalle parti coinvolte."
+   " GigoMe non riceve moduli di candidatura, CV o candidature di lavoro per conto degli Inserzionisti, non inoltra i profili degli studenti, non informa gli Inserzionisti dei singoli clic su Candidati, non gestisce le conversazioni tra datori di lavoro e candidati e non seleziona candidati. Eventuali email, moduli, telefonate, colloqui o candidature esterni sono gestiti direttamente dalle parti coinvolte."
   ],
   [
    "p",
@@ -429,7 +429,7 @@
     null,
     "Nessun accesso dei datori di lavoro ai profili degli studenti:"
    ],
-   " gli Inserzionisti non possono consultare, cercare o accedere ai profili GigoMe degli Studenti né ai registri amministrativi delle visualizzazioni dei contatti."
+   " gli Inserzionisti non possono consultare, cercare o accedere ai profili GigoMe degli Studenti né alle singole registrazioni dei clic su Candidati."
   ],
   [
    "p",
@@ -492,7 +492,7 @@
   [
    "p",
    null,
-   "6.1. Gli Studenti devono fornire informazioni veritiere e mantenerle ragionevolmente aggiornate. La verifica tramite email universitaria, se utilizzata, conferma il controllo di quella casella di posta nel momento in questione, non necessariamente l'iscrizione in corso, i titoli di studio o l'autorizzazione a lavorare."
+   "6.1. Gli Studenti devono fornire informazioni veritiere e mantenerle ragionevolmente aggiornate. La verifica tramite email universitaria, se utilizzata, conferma il controllo di quella casella di posta nel momento in questione, non necessariamente l'iscrizione in corso, i titoli di studio o l'autorizzazione a lavorare. Lo Studente che si registra con un indirizzo email che non appartiene a un'università inclusa nell'elenco dichiara di essere uno studente universitario e quale università frequenta; GigoMe non verifica tale dichiarazione. Chi dichiara di non essere uno studente universitario non può essere titolare di un account Studente."
   ],
   [
    "p",
@@ -508,25 +508,25 @@
   [
    "p",
    null,
-   "6.3. GigoMe può raccogliere dettagli facoltativi del profilo, come il percorso di studi, le competenze o le preferenze generali, solo in conformità alla propria Informativa sulla privacy. Le opzioni di visibilità del profilo devono rispecchiare le funzionalità effettive della Piattaforma."
+   "6.3. Il profilo dello Studente contiene attualmente solo nome, livello di studi, anno di laurea previsto e università. GigoMe può raccogliere ulteriori dettagli facoltativi del profilo solo in conformità alla propria Informativa sulla privacy. Le opzioni di visibilità del profilo devono rispecchiare le funzionalità effettive della Piattaforma."
   ],
   [
    "h3",
    {
     "id": "section-10"
    },
-   "7. Mostra contatto e candidature esterne"
+   "7. Candidati e candidature esterne"
   ],
   [
    "p",
    null,
-   "7.1. Uno Studente può selezionare ",
+   "7.1. Uno Studente che ha effettuato l'accesso può premere ",
    [
     "strong",
     null,
-    "Mostra contatto"
+    "Candidati"
    ],
-   " su un determinato Annuncio di Lavoro per accedere a un indirizzo email, un numero di telefono, un sito web o un link di candidatura esterno fornito dall'Inserzionista. Questa azione ",
+   " su un determinato Annuncio di Lavoro per accedere al link di candidatura esterno e/o all'indirizzo email forniti dall'Inserzionista, che GigoMe apre anche (il link in una nuova scheda del browser, oppure l'app email dello Studente). Questa azione ",
    [
     "strong",
     null,
@@ -537,7 +537,7 @@
   [
    "p",
    null,
-   "7.2. Le informazioni di contatto vengono mostrate allo Studente. GigoMe registra l'identificativo dell'account dello Studente, l'identificativo dell'annuncio in questione e il momento della visualizzazione per le finalità descritte nell'Informativa sulla privacy. L'inserzionista non riceve tale registro tramite GigoMe."
+   "7.2. Il link o l'indirizzo email per la candidatura vengono mostrati allo Studente. GigoMe registra l'identificativo dell'account dello Studente, l'identificativo dell'annuncio in questione e il momento del clic per le finalità descritte nell'Informativa sulla privacy. L'Inserzionista non riceve tale registrazione tramite GigoMe; vede solo quante volte gli Studenti hanno premuto Candidati su ciascuno dei suoi annunci."
   ],
   [
    "p",
@@ -553,7 +553,7 @@
   [
    "p",
    null,
-   "7.4. Visualizzare un contatto non costituisce una candidatura, un'accettazione, un'offerta di lavoro, un impegno a prestare lavoro né una garanzia di risposta. GigoMe non conferma se uno Studente abbia effettivamente contattato l'Inserzionista, sostenuto un colloquio o sia stato assunto."
+   "7.4. Premere Candidati non costituisce una candidatura, un'accettazione, un'offerta di lavoro, un impegno a prestare lavoro né una garanzia di risposta. GigoMe non conferma se uno Studente abbia effettivamente contattato l'Inserzionista, sostenuto un colloquio o sia stato assunto."
   ],
   [
    "p",
@@ -691,7 +691,7 @@
   [
    "p",
    null,
-   "11.3. GigoMe può comunicare i recapiti scelti da un Inserzionista agli Studenti registrati che utilizzano la funzione Mostra contatto. Non comunica all'Inserzionista quali Studenti hanno visualizzato tali recapiti."
+   "11.3. GigoMe comunica il link e l'indirizzo email per la candidatura di un Inserzionista solo agli Studenti che hanno effettuato l'accesso e premono Candidati. Non comunica all'Inserzionista quali Studenti hanno premuto Candidati; l'Inserzionista vede solo quante volte gli Studenti lo hanno fatto per ciascuno dei suoi annunci."
   ],
   [
    "p",
@@ -792,7 +792,7 @@
   [
    "p",
    null,
-   "14.3. Le recensioni non devono contenere dati personali sensibili, accuse illecite, minacce, molestie o elementi identificativi personali non pertinenti. Il solo fatto di aver visualizzato un contatto non dimostra che uno Studente abbia svolto un lavoro o sia legittimato a recensire un'esperienza lavorativa."
+   "14.3. Le recensioni non devono contenere dati personali sensibili, accuse illecite, minacce, molestie o elementi identificativi personali non pertinenti. Il solo fatto di aver premuto Candidati non dimostra che uno Studente abbia svolto un lavoro o sia legittimato a recensire un'esperienza lavorativa."
   ],
   [
    "h3",
@@ -804,7 +804,13 @@
   [
    "p",
    null,
-   "15.1. Frodi, lavoro non dichiarato, annunci discriminatori, uso improprio di dati, sostituzione di persona e contenuti illeciti possono essere segnalati a ",
+   "15.1. Frodi, lavoro non dichiarato, annunci discriminatori, uso improprio di dati, sostituzione di persona e contenuti illeciti possono essere segnalati con ",
+   [
+    "strong",
+    null,
+    "Segnala questa offerta"
+   ],
+   " nella pagina dell'annuncio oppure a ",
    [
     "strong",
     null,
@@ -843,7 +849,7 @@
   [
    "p",
    null,
-   "16.2. Il servizio si avvale di fornitori tecnici per l'autenticazione, l'hosting, la gestione del database e le comunicazioni. La responsabilità tecnica di un fornitore non trasferisce a quest'ultimo gli obblighi inderogabili in materia di protezione dei dati che gravano sul Gestore."
+   "16.2. Il servizio si avvale di fornitori tecnici per l'autenticazione, l'hosting, la gestione del database, le comunicazioni, la protezione dai bot, le statistiche delle visite e le mappe. La responsabilità tecnica di un fornitore non trasferisce a quest'ultimo gli obblighi inderogabili in materia di protezione dei dati che gravano sul Gestore."
   ],
   [
    "p",
@@ -889,7 +895,7 @@
   [
    "p",
    null,
-   "18.1. La registrazione di base, la consultazione degli annunci e la visualizzazione dei contatti sono attualmente gratuite. Eventuali future funzionalità a pagamento richiederanno un'adeguata informativa e, ove necessario, un'accettazione separata. Non saranno applicati retroattivamente corrispettivi per l'uso gratuito pregresso."
+   "18.1. La registrazione di base, la consultazione degli annunci e la funzione Candidati sono attualmente gratuite. Eventuali future funzionalità a pagamento richiederanno un'adeguata informativa e, ove necessario, un'accettazione separata. Non saranno applicati retroattivamente corrispettivi per l'uso gratuito pregresso."
   ],
   [
    "p",
@@ -934,13 +940,13 @@
   [
    "p",
    null,
-   "20.1. Gli Utenti possono richiedere la chiusura dell'account e la cancellazione dei propri dati personali, ove previsto dalla legge, scrivendo a ",
+   "20.1. Gli Utenti possono cancellare il proprio account in qualsiasi momento nella pagina Account (\"Elimina il mio account\") e scaricarvi una copia dei propri dati (\"Scarica i miei dati\"). Possono inoltre richiedere la chiusura dell'account e la cancellazione dei propri dati personali, ove previsto dalla legge, scrivendo a ",
    [
     "strong",
     null,
     "privacy@gigome.org"
    ],
-   ". Le richieste sono attualmente gestite manualmente. GigoMe deve verificare l'identità ove opportuno e rispettare i termini di risposta e le condizioni previsti dalla legge."
+   ", ad esempio se non riescono più ad accedere; tali richieste sono gestite manualmente. GigoMe deve verificare l'identità ove opportuno e rispettare i termini di risposta e le condizioni previsti dalla legge."
   ],
   [
    "p",
@@ -985,6 +991,11 @@
    "p",
    null,
    "22.3. Se una disposizione è illecita o non azionabile, le restanti disposizioni continuano ad applicarsi nei limiti consentiti dalla legge. La mancata applicazione di una disposizione non comporta automaticamente la rinuncia a un diritto altrimenti valido."
+  ],
+  [
+   "p",
+   null,
+   "22.4. I presenti Termini sono redatti in lingua inglese. Sulla Piattaforma è disponibile una traduzione di cortesia in italiano; in caso di differenze, prevale la versione inglese, fatte salve le norme inderogabili a tutela dei consumatori."
   ],
   [
    "h3",
@@ -1060,7 +1071,7 @@
    [
     "strong",
     null,
-    "Fine dei Termini e condizioni, versione 2.0."
+    "Fine dei Termini e condizioni, versione 2.1."
    ]
   ]
  ]

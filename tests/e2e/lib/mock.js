@@ -114,7 +114,7 @@ function apply(url, rows) {
 
 async function mock(ctx, opts = {}) {
   const log = { rpc: [], jobs: [], otp: [], userMeta: opts.userLanguage ? { language: opts.userLanguage } : {} };
-  const terms = opts.termsVersion === undefined ? '2.0' : opts.termsVersion;
+  const terms = opts.termsVersion === undefined ? '2.1' : opts.termsVersion;
   const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', student_verification: (opts.accountType || 'student') === 'student' ? opts.verification || 'university_email' : null, other_university: opts.otherUniversity || null, student_declared_at: opts.verification === 'self_declared' ? '2026-11-01T10:00:00Z' : null, terms_version: terms, terms_accepted_at: terms ? '2026-11-01T10:00:00Z' : null };
   await ctx.route(SB + '/**', async (r) => {
     const req = r.request(), url = new URL(req.url()), path = url.pathname, method = req.method();

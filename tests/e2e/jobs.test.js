@@ -33,7 +33,7 @@ function applyFilters(url, rows) {
 
 async function mock(ctx, opts = {}) {
   const log = { rpc: [], jobsQueries: [] };
-  const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', terms_version: opts.fullName === null ? null : '2.0', terms_accepted_at: opts.fullName === null ? null : '2026-11-01T10:00:00Z' };
+  const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', terms_version: opts.fullName === null ? null : '2.1', terms_accepted_at: opts.fullName === null ? null : '2026-11-01T10:00:00Z' };
   await ctx.route(SB + '/**', async (r) => {
     const req = r.request(), url = new URL(req.url()), path = url.pathname, method = req.method();
     const j = (s, b) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(b) });
@@ -132,7 +132,7 @@ async function mock(ctx, opts = {}) {
     await p.fill('input[name=full_name]', 'Ana Rossi'); await p.selectOption('select[name=degree_level]', 'master'); await p.selectOption('select[name=graduation_year]', String(new Date().getFullYear() + 1));
     await p.check('input[name=accept_terms]');
     await p.click('text=Save and continue'); await p.waitForTimeout(800);
-    ok((await txt(p, 'h1')) === "You're all set, Ana." && JSON.stringify(log.accept) === '[{"p_version":"2.0"}]', 'after /welcome (Terms accepted, version 2.0): the confirmation');
+    ok((await txt(p, 'h1')) === "You're all set, Ana." && JSON.stringify(log.accept) === '[{"p_version":"2.1"}]', 'after /welcome (Terms accepted, version 2.1): the confirmation');
     await p.click('.signup-done >> text=Back to the job'); await p.waitForTimeout(800);
     ok(new URL(p.url()).pathname === '/jobs/' + ID(1), '"Back to the job": back on the same job');
     ok(log.rpc.length === 0 && await p.locator('.apply button:has-text("Apply")').count() === 1 && await p.locator('.apply >> text=How to apply').count() === 0, 'student sees one "Apply" button; nothing counted yet');
