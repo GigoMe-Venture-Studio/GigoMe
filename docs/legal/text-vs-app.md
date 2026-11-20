@@ -1,5 +1,12 @@
 # Privacy Notice v1.0 and Terms v2.0 compared with what GigoMe does
 
+> **Superseded (20 November 2026):** the drafts Privacy Notice v1.1 and
+> Terms v2.1 fix these points. `docs/legal/v1.1-changes.md` lists every
+> change, how each point below held up when checked again (points 4 and 10
+> are outdated since students can sign up with any email; point 9 is wrong
+> about Terms 11.1), and the decisions left for the legal person. This file
+> is kept as it was, for the record.
+
 For the team's legal person. Written on 11 November 2026 from the code and
 the database rules as they are on that day. The published wording was **not**
 changed: each point below says what the text says, what the app actually

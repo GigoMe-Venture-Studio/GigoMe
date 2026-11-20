@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/terms-and-conditions-v2.0.html",
+ "source": "docs/legal/published/terms-and-conditions-v2.1.html",
  "title": "GigoMe | Terms and Conditions",
  "toc": [
   {
@@ -49,7 +49,7 @@
   },
   {
    "href": "#section-10",
-   "label": "7. Reveal Contact and external applications",
+   "label": "7. Apply and external applications",
    "sub": true
   },
   {
@@ -165,7 +165,7 @@
    [
     "strong",
     null,
-    "Version 2.0 | Last updated: 11 November 2026"
+    "Version 2.1 | Last updated: 20 November 2026"
    ],
    [
     "br",
@@ -240,28 +240,28 @@
   [
    "p",
    null,
-   "GigoMe is a free online service for discovering job opportunities and obtaining the contact details or external application links supplied by the relevant advertiser. ",
+   "GigoMe is a free online service for discovering job opportunities and obtaining the external application links or email addresses supplied by the relevant advertiser. ",
    [
     "strong",
     null,
     "GigoMe does not accept, forward or manage job applications; it does not share student profiles with advertisers."
    ],
-   " When a student chooses ",
+   " When a logged-in student presses ",
    [
     "strong",
     null,
-    "Reveal Contact"
+    "Apply"
    ],
-   ", GigoMe displays the contact information or external link for that listing. The student then independently decides whether and how to contact or apply to the advertiser outside GigoMe."
+   ", GigoMe displays and opens the external application link or email address for that listing. The student then independently decides whether and how to contact or apply to the advertiser outside GigoMe."
   ],
   [
    "p",
    null,
-   "To provide, secure and assess this feature, GigoMe records which registered student revealed which listing's contact details and when. ",
+   "To provide, secure and assess this feature, GigoMe records which registered student pressed Apply on which listing and when. ",
    [
     "strong",
     null,
-    "This log is accessible only to authorized GigoMe administrators, not to advertisers."
+    "Advertisers see only how many times Apply was pressed on each of their listings, never by whom; each student can see their own record, and otherwise only authorized GigoMe administrators can access it."
    ],
    " Please read the separate Privacy Notice."
   ],
@@ -385,12 +385,12 @@
   [
    "p",
    null,
-   "2.2. An account may be created only after the User has been able to consult and actively accept these Terms. A record of the applicable version and acceptance may be retained as explained in the Privacy Notice. The Privacy Notice is supplied separately; accepting these Terms is not blanket consent to data processing or marketing."
+   "2.2. An account is created when a login code is first requested for an email address. Before the account can be used, the User must be able to consult and actively accept these Terms; an account whose sign-up is never completed is deleted as explained in the Privacy Notice. A record of the applicable version and acceptance may be retained as explained in the Privacy Notice. The Privacy Notice is supplied separately; accepting these Terms is not blanket consent to data processing or marketing."
   ],
   [
    "p",
    null,
-   "2.3. These Terms apply to each subsequent use of the service, including each listing published by an Advertiser and each contact revealed by a Student. A separate contractual checkbox is not necessarily required for each action. The User must, however, take the relevant action voluntarily and receive all information required at that point."
+   "2.3. These Terms apply to each subsequent use of the service, including each listing published by an Advertiser and each time a Student presses Apply. A separate contractual checkbox is not necessarily required for each action. The User must, however, take the relevant action voluntarily and receive all information required at that point."
   ],
   [
    "p",
@@ -407,7 +407,7 @@
   [
    "p",
    null,
-   "3.1. GigoMe may provide user accounts, listings, search and filtering tools, limited profile information, advertiser contact-reveal functions and content reporting tools."
+   "3.1. GigoMe may provide user accounts, listings, search and filtering tools, maps, limited profile information, the Apply function, saved jobs and searches, company follows, a feedback form and content reporting tools."
   ],
   [
    "p",
@@ -418,7 +418,7 @@
     null,
     "No in-platform applications:"
    ],
-   " GigoMe does not receive application forms, CVs or employment applications on behalf of Advertisers, forward student profiles, notify Advertisers of individual contact reveals, manage employer–applicant conversations or select candidates. Any external email, form, phone call, interview or application is managed directly by the parties involved."
+   " GigoMe does not receive application forms, CVs or employment applications on behalf of Advertisers, forward student profiles, notify Advertisers of individual apply clicks, manage employer–applicant conversations or select candidates. Any external email, form, phone call, interview or application is managed directly by the parties involved."
   ],
   [
    "p",
@@ -429,7 +429,7 @@
     null,
     "No employer access to student profiles:"
    ],
-   " Advertisers cannot browse, search or access Students' GigoMe profiles or the administrative contact-reveal records."
+   " Advertisers cannot browse, search or access Students' GigoMe profiles or the individual apply-click records."
   ],
   [
    "p",
@@ -492,7 +492,7 @@
   [
    "p",
    null,
-   "6.1. Students must submit truthful information and keep it reasonably up to date. University email verification, if used, confirms control of that inbox at the relevant time, not necessarily current enrollment, academic qualifications or permission to work."
+   "6.1. Students must submit truthful information and keep it reasonably up to date. University email verification, if used, confirms control of that inbox at the relevant time, not necessarily current enrollment, academic qualifications or permission to work. A Student who signs up with an email address that does not belong to a listed university declares that they are a university student and which university they attend; GigoMe does not verify that declaration. A person who answers that they are not a university student cannot hold a Student account."
   ],
   [
    "p",
@@ -508,25 +508,25 @@
   [
    "p",
    null,
-   "6.3. GigoMe may collect optional profile details, such as educational background, skills or general preferences, only in accordance with its Privacy Notice. Profile visibility choices must reflect the Platform's actual features."
+   "6.3. A Student profile currently contains only a name, degree level, expected graduation year and university. GigoMe may collect further optional profile details only in accordance with its Privacy Notice. Profile visibility choices must reflect the Platform's actual features."
   ],
   [
    "h3",
    {
     "id": "section-10"
    },
-   "7. Reveal Contact and external applications"
+   "7. Apply and external applications"
   ],
   [
    "p",
    null,
-   "7.1. A Student may select ",
+   "7.1. A logged-in Student may press ",
    [
     "strong",
     null,
-    "Reveal Contact"
+    "Apply"
    ],
-   " on a particular Job Listing to access an email address, telephone number, website or external application link provided by the Advertiser. This action does ",
+   " on a particular Job Listing to access the external application link and/or email address provided by the Advertiser, which GigoMe also opens (the link in a new browser tab, or the Student's email app). This action does ",
    [
     "strong",
     null,
@@ -537,7 +537,7 @@
   [
    "p",
    null,
-   "7.2. The contact information is displayed to the Student. GigoMe records the Student's account identifier, the relevant listing identifier and the time of the reveal for the purposes described in the Privacy Notice. The advertiser does not receive that log through GigoMe."
+   "7.2. The application link or email address is displayed to the Student. GigoMe records the Student's account identifier, the relevant listing identifier and the time of the click for the purposes described in the Privacy Notice. The Advertiser does not receive that record through GigoMe; it sees only how many times Students pressed Apply on each of its listings."
   ],
   [
    "p",
@@ -553,7 +553,7 @@
   [
    "p",
    null,
-   "7.4. Revealing a contact is not an application, acceptance, employment offer, agreement to work or guarantee of a reply. GigoMe does not confirm whether a Student actually contacted the Advertiser, was interviewed or was hired."
+   "7.4. Pressing Apply is not an application, acceptance, employment offer, agreement to work or guarantee of a reply. GigoMe does not confirm whether a Student actually contacted the Advertiser, was interviewed or was hired."
   ],
   [
    "p",
@@ -691,7 +691,7 @@
   [
    "p",
    null,
-   "11.3. GigoMe may disclose an Advertiser's chosen contact details to registered Students using the Reveal Contact feature. It does not disclose which Students have revealed those details to the Advertiser."
+   "11.3. GigoMe discloses an Advertiser's application link and email address only to logged-in Students who press Apply. It does not disclose to the Advertiser which Students pressed Apply; the Advertiser sees only how many times Students did so for each of its listings."
   ],
   [
    "p",
@@ -792,7 +792,7 @@
   [
    "p",
    null,
-   "14.3. Reviews must not contain sensitive personal data, unlawful allegations, threats, harassment or irrelevant personal identifiers. Merely revealing a contact does not establish that a Student has completed work or is eligible to review an employment experience."
+   "14.3. Reviews must not contain sensitive personal data, unlawful allegations, threats, harassment or irrelevant personal identifiers. Merely pressing Apply does not establish that a Student has completed work or is eligible to review an employment experience."
   ],
   [
    "h3",
@@ -804,7 +804,13 @@
   [
    "p",
    null,
-   "15.1. Fraud, undeclared work, discriminatory listings, misuse of data, impersonation and unlawful content may be reported to ",
+   "15.1. Fraud, undeclared work, discriminatory listings, misuse of data, impersonation and unlawful content may be reported with ",
+   [
+    "strong",
+    null,
+    "Report this job"
+   ],
+   " on the listing's page or to ",
    [
     "strong",
     null,
@@ -843,7 +849,7 @@
   [
    "p",
    null,
-   "16.2. The service uses technical providers for authentication, hosting, database operations and communications. A provider's technical responsibility does not transfer the Operator's own mandatory data-protection obligations to that provider."
+   "16.2. The service uses technical providers for authentication, hosting, database operations, communications, bot protection, visit statistics and maps. A provider's technical responsibility does not transfer the Operator's own mandatory data-protection obligations to that provider."
   ],
   [
    "p",
@@ -889,7 +895,7 @@
   [
    "p",
    null,
-   "18.1. Basic registration, listing discovery and contact reveal are currently free of charge. Any future paid functionality will require appropriate disclosure and, where necessary, separate acceptance. No retroactive fee will be imposed for past free use."
+   "18.1. Basic registration, listing discovery and the Apply function are currently free of charge. Any future paid functionality will require appropriate disclosure and, where necessary, separate acceptance. No retroactive fee will be imposed for past free use."
   ],
   [
    "p",
@@ -934,13 +940,13 @@
   [
    "p",
    null,
-   "20.1. Users can request account closure and the erasure of their personal data, where legally applicable, by emailing ",
+   "20.1. Users can delete their account at any time on their Account page (\"Delete my account\") and download a copy of their data there (\"Download my data\"). They can also request account closure and the erasure of their personal data, where legally applicable, by emailing ",
    [
     "strong",
     null,
     "privacy@gigome.org"
    ],
-   ". Requests are currently handled manually. GigoMe must verify identity where appropriate and comply with the response periods and conditions prescribed by law."
+   ", for example if they can no longer log in; such requests are handled manually. GigoMe must verify identity where appropriate and comply with the response periods and conditions prescribed by law."
   ],
   [
    "p",
@@ -985,6 +991,11 @@
    "p",
    null,
    "22.3. If a provision is unlawful or unenforceable, the remaining provisions continue to operate to the extent permitted by law. Failure to enforce a provision does not automatically waive an otherwise valid right."
+  ],
+  [
+   "p",
+   null,
+   "22.4. These Terms are written in English. An Italian courtesy translation is available on the Platform; in case of differences, the English version prevails, without prejudice to mandatory consumer-protection rules."
   ],
   [
    "h3",
@@ -1060,7 +1071,7 @@
    [
     "strong",
     null,
-    "End of Terms and Conditions, version 2.0."
+    "End of Terms and Conditions, version 2.1."
    ]
   ]
  ]

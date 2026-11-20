@@ -11,12 +11,14 @@ Everything that must be done before real users arrive. Tick each one; don't
 skip any because "it worked in testing".
 
 **Legal (the team's legal person)**
-- [x] Privacy Notice (v1.0) and Terms and Conditions (v2.0) published on
-      `/privacy` and `/terms`, word for word from `docs/legal/published/`
-      (November 2026). Updating them: CLAUDE.md, "`/privacy` and `/terms`".
-- [ ] The points where the texts and the app don't match yet
-      (`docs/legal/text-vs-app.md`) are settled by the legal person: the
-      text changes, or the app does.
+- [x] Privacy Notice and Terms and Conditions published on `/privacy` and
+      `/terms`, word for word from `docs/legal/published/` (v1.0 and v2.0,
+      November 2026; drafts v1.1 and v2.1 match the app and wait for the
+      legal person's approval). Updating them: CLAUDE.md, "`/privacy` and
+      `/terms`".
+- [ ] The legal person has approved v1.1 and v2.1 and made the decisions
+      listed in `docs/legal/v1.1-changes.md` (D1 to D10), including whether
+      everyone must accept the Terms again (D7).
 - [x] Who operates GigoMe: named in both texts.
 - [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
       reads it, like `hello@gigome.org`.
@@ -446,8 +448,9 @@ in the team's shared notes.
   months in Table Editor → `job_reports`.
 
 **Records of Terms acceptance** (up to 36 months after an account closes)
-- Not kept: the acceptance is deleted with the account. That's a decision
-  for the legal person (`docs/legal/text-vs-app.md`, point 11).
+- Not kept: the acceptance is deleted with the account, which is what the
+  v1.1 draft says. Keeping a minimal record instead is decision D2 in
+  `docs/legal/v1.1-changes.md`.
 
 **Backups:** any database dump also holds personal data; keep the newest
 three, none older than three months (`docs/BACKUPS.md`). Who: Emil.
