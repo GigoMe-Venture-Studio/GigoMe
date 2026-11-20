@@ -37,9 +37,13 @@ skip any because "it worked in testing".
       `/admin`.
 - [ ] Cloudflare build variables set for **both** production and preview
       (section 2).
-- [ ] Turnstile: site key in Cloudflare's build variables first, a new
+- [x] Turnstile: site key in Cloudflare's build variables first, a new
       deploy, then the secret key in Supabase's CAPTCHA setting. Log in once
-      as a student and once as an employer afterwards.
+      as a student and once as an employer afterwards. Confirmed on 20 November
+      2026 (widget "GigoMe login", Supabase CAPTCHA protection enabled).
+      Preview logins fail unless the preview builds also have
+      `VITE_TURNSTILE_SITE_KEY` and the preview's hostname is listed on the
+      widget (section 2).
 - [ ] Supabase Auth: Site URL `https://gigome.org`; email templates show the
       6-digit code (no links); rate limits below Brevo's 300 emails a day
       (section 7).
@@ -138,6 +142,15 @@ and (once Turnstile is on) `VITE_TURNSTILE_SITE_KEY` as **build** variables.
 Production and preview builds each have their own variables (one set per
 trigger): set them on both, or previews show "Jobs can't be shown right now"
 and a configuration error on the login pages.
+
+Turnstile is on (confirmed on 20 November 2026): Supabase refuses every login
+without a valid Turnstile token. A preview build can only log in if it has
+`VITE_TURNSTILE_SITE_KEY` too **and** its hostname (the preview URL's host,
+on workers.dev) is listed under Hostnames on the "GigoMe login" widget in
+Cloudflare (Turnstile). Without both, a preview shows pages and jobs but
+every code request fails. The same goes for `npm run dev` against the real
+project: logins there need the site key and `localhost` on the widget.
+Browser tests are unaffected (they mock Supabase and Turnstile).
 
 ## 3. The check-script habit
 
@@ -277,8 +290,11 @@ this section.
 - **Supabase Auth rate limits** (Authentication > Rate Limits): how many
   emails are sent per hour, how many code checks per IP. Current values:
   **[fill in]**. They must stay below Brevo's 300 a day.
-- **Turnstile** (bot check on the login form): free. If it's ever turned off
-  in Supabase, the form still works without it.
+- **Turnstile** (bot check on the login form): free. Confirmed on
+  20 November 2026. If it's ever turned off in Supabase, the form still works without
+  it. To switch it off in an emergency (every login failing): Supabase >
+  Authentication > Attack Protection > CAPTCHA protection off first; the
+  site key can stay.
 - **Daily limits against abuse** (the database): per user 20 feedback
   messages, 10 reports and 50 saves, searches and follows together a day;
   per company 10 jobs sent for review a day. See SUPABASE.md.
