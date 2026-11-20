@@ -2725,9 +2725,10 @@ begin
            || coalesce(click_anonymize_days::text, 'empty') || '; older periods: '
            || coalesce(ended_jobs_days::text, 'empty') || ', ' || coalesce(feedback_days::text, 'empty') || ', '
            || coalesce(resolved_reports_days::text, 'empty') || ', ' || coalesce(inactive_accounts_days::text, 'empty')
+           || '; moderation decisions: ' || coalesce(moderation_log_days::text, 'empty')
       into v_text from public.retention_settings where id = 1;
-    results := pg_temp.res(results, 'Retention periods (Privacy Notice section 9): incomplete sign-ups 29 days, ended listings 89, apply clicks 179, resolved reports 730; ended jobs, feedback and inactive accounts empty',
-                           '29, 89, 179; older periods: empty, empty, 730, empty', v_text, v_text = '29, 89, 179; older periods: empty, empty, 730, empty');
+    results := pg_temp.res(results, 'Retention periods (Privacy Notice section 9): incomplete sign-ups 29 days, ended listings 89, apply clicks 179, feedback 364, resolved reports 730, moderation decisions 729; ended jobs and inactive accounts empty',
+                           '29, 89, 179; older periods: empty, 364, 730, empty; moderation decisions: 729', v_text, v_text = '29, 89, 179; older periods: empty, 364, 730, empty; moderation decisions: 729');
 
     -- Old and recent test rows, then run it with every period empty, then set.
     insert into auth.users (id, email, created_at, last_sign_in_at) values
@@ -2740,16 +2741,25 @@ begin
     insert into public.job_reports (job_id, reporter_id, reason, details, status, resolved_at, created_at) values
       (v_live_b, null, 'other', 'Check old resolved report', 'resolved', now() - interval '400 days', now() - interval '401 days'),
       (v_live_b, null, 'other', 'Check old open report', 'open', null, now() - interval '401 days');
+    insert into public.moderation_log (admin_id, action, note, created_at) values
+      (null, 'company_approved', 'Check old decision', now() - interval '800 days'),
+      (null, 'company_approved', 'Check recent decision', now() - interval '5 days');
     insert into public.jobs (company_id, title, job_type, hours_per_week, status, area_id, schedule, pay_unit, pay_min, created_at, expires_at)
       values (v_co_approved, 'Check long expired', 'gig', 5, 'published', 1, array['flexible'], 'hour', 10, now() - interval '500 days', now() - interval '400 days');
     update public.retention_settings set ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null,
-                                         incomplete_signups_days = null, ended_job_details_days = null, click_anonymize_days = null where id = 1;
+                                         incomplete_signups_days = null, ended_job_details_days = null, click_anonymize_days = null,
+                                         moderation_log_days = null where id = 1;
     select public.run_retention() into v_json;
-    select case when count(*) = 9 and bool_and(value = '0') then 'all 0' else v_json::text end into v_text from jsonb_each_text(v_json);
+    select case when count(*) = 10 and bool_and(value = '0') then 'all 0' else v_json::text end into v_text from jsonb_each_text(v_json);
     results := pg_temp.res(results, 'With every period empty, retention deletes nothing', 'all 0', v_text, v_text = 'all 0');
 
-    update public.retention_settings set ended_jobs_days = 365, feedback_days = 365, resolved_reports_days = 365, inactive_accounts_days = 365 where id = 1;
+    update public.retention_settings set ended_jobs_days = 365, feedback_days = 365, resolved_reports_days = 365, inactive_accounts_days = 365,
+                                         moderation_log_days = 365 where id = 1;
     perform public.run_retention();
+    select (select count(*) from public.moderation_log where note = 'Check old decision') || ' old/'
+           || (select count(*) from public.moderation_log where note = 'Check recent decision') || ' recent decision'
+      into v_text;
+    results := pg_temp.res(results, 'With a period set, retention deletes only older moderation decisions', '0 old/1 recent decision', v_text, v_text = '0 old/1 recent decision');
     select (select count(*) from public.feedback where message = 'Check old feedback') || ' old/'
            || (select count(*) from public.feedback where message = 'Check recent feedback') || ' recent feedback, '
            || (select count(*) from public.jobs where title = 'Check long expired') || ' long-expired job, '
@@ -2761,7 +2771,8 @@ begin
       into v_text;
     results := pg_temp.res(results, 'With periods set, retention deletes only what''s older (never admins, never active users)', '0 old/1 recent feedback, 0 long-expired job, 0 old resolved/1 old open report, 0 inactive user, 1 inactive admin, 1 active student', v_text, v_text = '0 old/1 recent feedback, 0 long-expired job, 0 old resolved/1 old open report, 0 inactive user, 1 inactive admin, 1 active student');
 
-    update public.retention_settings set ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null where id = 1;
+    update public.retention_settings set ended_jobs_days = null, feedback_days = null, resolved_reports_days = null, inactive_accounts_days = null,
+                                         moderation_log_days = null where id = 1;
 
     -- ----------------------------------------------------------------------
     -- Job expiry: owners at most 60 days ahead; "Extend by 60 days"
@@ -3671,11 +3682,30 @@ begin
       (v_job_live, null, 'other', 'Check rt resolved 731 days ago', 'resolved', 'Check note', now() - interval '731 days', now() - interval '740 days'),
       (v_job_live, null, 'other', 'Check rt resolved 700 days ago', 'resolved', 'Check note', now() - interval '700 days', now() - interval '710 days');
 
+    -- Feedback sent 365 and 363 days ago; moderation decisions made 730 and
+    -- 728 days ago.
+    insert into public.feedback (user_id, page, message, created_at) values
+      (null, '/check', 'Check rt feedback 365 days ago', now() - interval '365 days'),
+      (null, '/check', 'Check rt feedback 363 days ago', now() - interval '363 days');
+    insert into public.moderation_log (admin_id, action, note, created_at) values
+      (null, 'job_published', 'Check rt decision 730 days ago', now() - interval '730 days'),
+      (null, 'job_published', 'Check rt decision 728 days ago', now() - interval '728 days');
+
     -- The periods as the migrations set them.
     update public.retention_settings set incomplete_signups_days = 29, ended_job_details_days = 89, click_anonymize_days = 179,
-                                         resolved_reports_days = 730, ended_jobs_days = null, feedback_days = null, inactive_accounts_days = null
+                                         resolved_reports_days = 730, ended_jobs_days = null, feedback_days = 364, inactive_accounts_days = null,
+                                         moderation_log_days = 729
       where id = 1;
     perform public.run_retention();
+
+    select (select count(*) from public.feedback where message = 'Check rt feedback 365 days ago') || ' feedback over 364 days old, '
+           || (select count(*) from public.feedback where message = 'Check rt feedback 363 days ago') || ' feedback 363 days old, '
+           || (select count(*) from public.moderation_log where note = 'Check rt decision 730 days ago') || ' decision over 729 days old, '
+           || (select count(*) from public.moderation_log where note = 'Check rt decision 728 days ago') || ' decision 728 days old'
+      into v_text;
+    results := pg_temp.res(results, 'Retention: feedback is deleted after 364 days (inside 12 months), moderation decisions after 729 (inside 24 months); newer ones stay',
+                           '0 feedback over 364 days old, 1 feedback 363 days old, 0 decision over 729 days old, 1 decision 728 days old', v_text,
+                           v_text = '0 feedback over 364 days old, 1 feedback 363 days old, 0 decision over 729 days old, 1 decision 728 days old');
 
     select (select count(*) from public.job_reports where details = 'Check rt resolved 731 days ago') || ' resolved over 730 days ago, '
            || (select count(*) from public.job_reports where details = 'Check rt resolved 700 days ago') || ' resolved 700 days ago, '
@@ -3744,7 +3774,7 @@ begin
                            v_n || ' (was ' || v_n || '), owner sees ' || v_n, v_text, v_text = v_n || ' (was ' || v_n || '), owner sees ' || v_n);
 
     select public.run_retention() into v_json;
-    select case when count(*) = 9 and bool_and(value = '0') then 'all 0' else v_json::text end into v_text from jsonb_each_text(v_json);
+    select case when count(*) = 10 and bool_and(value = '0') then 'all 0' else v_json::text end into v_text from jsonb_each_text(v_json);
     results := pg_temp.res(results, 'Retention: running it again changes nothing', 'all 0', v_text, v_text = 'all 0');
 
     -- ----------------------------------------------------------------------

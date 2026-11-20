@@ -822,7 +822,9 @@ Schema rules
   location and pin, unless reported (`jobs.ended_at`: trigger
   `job_ended_at`, no grants); apply clicks lose `user_id` and keep only the
   day after 179 days (counts unchanged); resolved reports deleted 730 days
-  after resolution. The other periods (ended jobs, feedback, inactive
+  after resolution; feedback deleted after 364 days and moderation
+  decisions (`moderation_log`, `moderation_log_days`) after 729 (Privacy
+  Notice v1.2: 12 and 24 months). The other periods (ended jobs, inactive
   accounts) stay empty. Never set or shorten a period without the owner's
   go-ahead; change one in a new migration. Never touch Supabase's `auth`
   tables other than `auth.users` from it (`auth.audit_log_entries`: the

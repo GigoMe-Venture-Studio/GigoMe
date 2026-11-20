@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/privacy-notice-v1.1.html",
+ "source": "docs/legal/published/privacy-notice-v1.2.html",
  "title": "GigoMe | Privacy Notice",
  "toc": [
   {
@@ -105,7 +105,7 @@
    [
     "strong",
     null,
-    "Version 1.1 | Last updated: 20 November 2026"
+    "Version 1.2 | Last updated: 20 November 2026"
    ],
    [
     "br",
@@ -893,9 +893,9 @@
    [
     "a",
     {
-     "href": "https://openfreemap.org/"
+     "href": "https://openfreemap.org/privacy/"
     },
-    "https://openfreemap.org/"
+    "https://openfreemap.org/privacy/"
    ],
    "."
   ],
@@ -1063,7 +1063,7 @@
      [
       "td",
       null,
-      "Student and Advertiser accounts and their necessary profile data, with the saved jobs, saved searches, followed companies, feedback and language preference linked to them"
+      "Student and Advertiser accounts and their necessary profile data, with the saved jobs, saved searches, followed companies and language preference linked to them"
      ],
      [
       "td",
@@ -1163,6 +1163,26 @@
      [
       "td",
       null,
+      "Feedback messages sent with the Feedback button (with the page they were sent from)"
+     ],
+     [
+      "td",
+      null,
+      "Deleted automatically within ",
+      [
+       "strong",
+       null,
+       "12 months"
+      ],
+      " of being sent, or earlier with the sender's account"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
       "Fraud, safety and legal-complaint records, including job reports"
      ],
      [
@@ -1175,6 +1195,26 @@
        "24 months after resolution"
       ],
       " (job reports are deleted automatically), unless required for an ongoing dispute or legal obligation. A job report is kept without the reporter's account if the reporter deletes it, and with only the listing title and advertiser name if the listing or advertiser is deleted"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Administrators' moderation decisions on companies, listings and reports (which administrator, when, the decision and any note)"
+     ],
+     [
+      "td",
+      null,
+      "Deleted automatically within ",
+      [
+       "strong",
+       null,
+       "24 months"
+      ],
+      " of the decision; the company, listing or report it concerns stays as it is"
      ]
     ],
     [
@@ -1552,7 +1592,7 @@
    [
     "strong",
     null,
-    "End of Privacy Notice, version 1.1."
+    "End of Privacy Notice, version 1.2."
    ]
   ]
  ]

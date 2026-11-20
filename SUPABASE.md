@@ -361,7 +361,7 @@ done. `security_check.sql` proves it both ways.
 | `auth.users` and Supabase's own login tables (sessions, identities) | Deleted |
 | `profiles` | Deleted, with the name, degree, graduation year and the Terms acceptance |
 | `admins` | Deleted (if they were an admin) |
-| `feedback` | Deleted |
+| `feedback` | Deleted (otherwise deleted 364 days after it was sent, see "Data retention") |
 | `saved_jobs`, `saved_searches`, `company_follows` | Deleted |
 | `job_clicks` (their apply clicks) | **Kept, anonymous:** `user_id` emptied, so each job's click count stays right without pointing to anyone |
 | `job_reports` they filed | **Kept, anonymous:** `reporter_id` emptied, so a report about a bad job isn't lost |
@@ -421,10 +421,12 @@ Editor, one row; each column a number of days, empty = keep forever). It
 writes when it ran and what it did to `last_run_at` and `last_result` in the
 same row.
 
-**On** (Privacy Notice v1.0, section 9). Each runs a day before the
+**On** (Privacy Notice, section 9). Each runs a day before the
 Notice's limit, so a nightly run is never late. Set by the migrations
 (`20261111120000_data_protection.sql`, then
-`20261111200000_keep_reports.sql`), so the values are in git:
+`20261111200000_keep_reports.sql` and
+`20261120120000_feedback_moderation_retention.sql`), so the values are in
+git:
 
 - `incomplete_signups_days` = **29**: **unfinished sign-ups** are deleted,
   like "Delete my account". Unfinished means the account never completed
@@ -452,12 +454,16 @@ Notice's limit, so a nightly run is never late. Set by the migrations
   the KPIs (last 12 weeks) aren't affected.
 - `resolved_reports_days` = **730**: reports resolved 24 months ago are
   deleted. Open reports are never deleted.
+- `feedback_days` = **364**: feedback messages are deleted 364 days after
+  they were sent (the Notice says 12 months).
+- `moderation_log_days` = **729**: admin decisions in `moderation_log` are
+  deleted 729 days after they were made (the Notice says 24 months). Only
+  the decision goes; the company, job or report it was about stays.
 
 **Off** (empty; older settings, kept for later):
 
 - `ended_jobs_days` (at least 30): deletes ended jobs outright (their
   reports stay, with the job title and company name).
-- `feedback_days` (at least 30): feedback older than this.
 - `inactive_accounts_days` (at least 180): **inactive accounts**, not logged in for this
   long, deleted without warning (company accounts with their company and
   jobs). The Privacy Notice's 24 months with a warning is done by hand
