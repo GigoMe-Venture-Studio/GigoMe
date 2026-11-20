@@ -39,7 +39,7 @@ skip any because "it worked in testing".
       (section 2).
 - [x] Turnstile: site key in Cloudflare's build variables first, a new
       deploy, then the secret key in Supabase's CAPTCHA setting. Log in once
-      as a student and once as an employer afterwards. On since 20 November
+      as a student and once as an employer afterwards. Confirmed on 20 November
       2026 (widget "GigoMe login", Supabase CAPTCHA protection enabled).
       Preview logins fail unless the preview builds also have
       `VITE_TURNSTILE_SITE_KEY` and the preview's hostname is listed on the
@@ -143,7 +143,7 @@ Production and preview builds each have their own variables (one set per
 trigger): set them on both, or previews show "Jobs can't be shown right now"
 and a configuration error on the login pages.
 
-Turnstile is on (since 20 November 2026): Supabase refuses every login
+Turnstile is on (confirmed on 20 November 2026): Supabase refuses every login
 without a valid Turnstile token. A preview build can only log in if it has
 `VITE_TURNSTILE_SITE_KEY` too **and** its hostname (the preview URL's host,
 on workers.dev) is listed under Hostnames on the "GigoMe login" widget in
@@ -290,8 +290,8 @@ this section.
 - **Supabase Auth rate limits** (Authentication > Rate Limits): how many
   emails are sent per hour, how many code checks per IP. Current values:
   **[fill in]**. They must stay below Brevo's 300 a day.
-- **Turnstile** (bot check on the login form): free. On since 20 November
-  2026. If it's ever turned off in Supabase, the form still works without
+- **Turnstile** (bot check on the login form): free. Confirmed on
+  20 November 2026. If it's ever turned off in Supabase, the form still works without
   it. To switch it off in an emergency (every login failing): Supabase >
   Authentication > Attack Protection > CAPTCHA protection off first; the
   site key can stay.
