@@ -87,6 +87,9 @@ const ready = (p, sel = '.jobs-map') => p.waitForFunction((s) => { const el = do
     await p.click('button:has-text("Find address")'); await p.waitForTimeout(600);
     ok(log.nominatim.length === 1 && log.nominatim[0].q === 'Via Lazzaretto 10, Milano' && log.nominatim[0].bounded === '1' && log.nominatim[0].limit === '1' && log.nominatim[0].countrycodes === 'it', 'Find address: one Nominatim request, bounded to Milan: ' + JSON.stringify(log.nominatim[0]));
     ok(await p.getAttribute('.picker-map', 'data-pin') === '45.47801,9.20555', 'Find address moves the pin');
+    await p.click('button:has-text("Remove pin")'); await p.waitForTimeout(200);
+    await p.fill('input[name=location]', '  via lazzaretto   10 '); await p.click('button:has-text("Find address")'); await p.waitForTimeout(600);
+    ok(log.nominatim.length === 1 && await p.getAttribute('.picker-map', 'data-pin') === '45.47801,9.20555', 'the same address again (other case and spaces): answered from the cache, no second Nominatim request: ' + log.nominatim.length);
     ok((await txt(p, 'main')).includes('Nominatim, © OpenStreetMap contributors'), 'Nominatim attribution on the form');
     await p.check('input[name=schedule][value=weekends]');
     await p.selectOption('select[name=pay_unit]', 'hour'); await p.fill('input[name=pay_min]', '11');
@@ -106,6 +109,9 @@ const ready = (p, sel = '.jobs-map') => p.waitForFunction((s) => { const el = do
     await p.goto(E + '/dashboard/jobs/new'); await p.waitForTimeout(500); await p.selectOption('select[name=area_id]', '3'); await ready(p, '.picker-map');
     await p.fill('input[name=location]', 'nowhere at all'); await p.click('button:has-text("Find address")'); await p.waitForTimeout(1500);
     ok((await txt(p, 'main')).includes("We couldn't find that address in Milan"), 'address not found: explained');
+    const misses = () => log.nominatim.filter((x) => x.q === 'nowhere at all, Milano').length;
+    await p.click('button:has-text("Find address")'); await p.waitForTimeout(800);
+    ok(misses() === 1 && (await txt(p, 'main')).includes("We couldn't find that address in Milan"), '"not found" is cached too: ' + misses() + ' request(s)');
     await p.screenshot({ path: OUT + '/form.png', fullPage: true });
     await ctx.close(); }
   await b.close(); console.log(`\n${pass} passed, ${fail} failed`);

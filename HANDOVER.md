@@ -17,15 +17,17 @@ skip any because "it worked in testing".
       v2.1 once). Updating them: CLAUDE.md, "`/privacy` and `/terms`".
 - [x] The points where the texts and the app didn't match are settled
       (`docs/legal/v1.1-changes.md`, D1 to D10).
-- [ ] Retention periods for moderation decisions and feedback, from the
-      legal person (`docs/legal/v1.1-changes.md`, D6), then built (A5).
+- [x] Retention periods for moderation decisions and feedback: 24 and 12
+      months (decided by the owner, delegated by the legal person, D6),
+      built (A5), Privacy Notice v1.2 (20 November 2026).
 - [x] Who operates GigoMe: named in both texts.
 - [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
       reads it, like `hello@gigome.org`.
 - [x] Retention in the database: unfinished sign-ups 29 days, ended
       listings' details 89 days, apply clicks anonymous after 179 days,
-      resolved reports deleted after 730 days, applied daily
-      (SUPABASE.md, "Data retention").
+      resolved reports deleted after 730 days, feedback after 364 days,
+      moderation decisions after 729 days, applied daily (SUPABASE.md,
+      "Data retention").
 - [x] Emil owns every manual retention task in section 7d (24-month
       inactivity, security logs, email).
 - [ ] Emil has switched off writing the auth audit log to the database and
@@ -378,9 +380,9 @@ the free plan.
 | Companies followed (the company sees only a count) | Unfollowed, the company is deleted, or the account is deleted |
 | Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | After 179 days, or when the account is deleted: kept without the user (anonymous), the day only |
 | Job reports they filed (admins only) | Kept after the account is deleted, without the reporter, and after the job or company is deleted, with only the job title and company name. Deleted 730 days after the report was resolved |
-| Feedback they sent (admins only) | The account is deleted |
+| Feedback they sent (admins only) | 364 days after it was sent (the Notice says 12 months), or when the account is deleted |
 | Login details kept by Supabase Auth: email, when the account was created, last login | The account is deleted |
-| For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company; reports on its jobs stay with only the job title and company name). 89 days after a job is closed, rejected or expired: its contact, description, pay note, free-text location and pin (unless it was reported) |
+| For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company, until they're deleted 729 days after they were made; reports on its jobs stay with only the job title and company name). 89 days after a job is closed, rejected or expired: its contact, description, pay note, free-text location and pin (unless it was reported) |
 
 "Share" on a job page hands the job's link to the phone's own share sheet
 (the student picks the app) or copies it; GigoMe sees nothing. "Use my
@@ -389,9 +391,10 @@ location" is never stored (section 7b).
 ## 7d. Data retention: who does what
 
 The Privacy Notice (section 9) promises retention periods. The database does
-four of them by itself every night (SUPABASE.md, "Data retention"):
+six of them by itself every night (SUPABASE.md, "Data retention"):
 unfinished sign-ups (29 days), ended listings' details (89 days), apply
-clicks made anonymous (179 days) and resolved reports (730 days, 24
+clicks made anonymous (179 days), resolved reports (730 days, 24 months),
+feedback (364 days, 12 months) and moderation decisions (729 days, 24
 months). Each runs a day before the Notice's limit, so a nightly run is
 never late. Everything below is **done by hand by Emil**, who owns every
 task in this section. Put each in the calendar and note the date each time
@@ -465,7 +468,7 @@ in the team's shared notes.
 
 **Records of Terms acceptance** (up to 36 months after an account closes)
 - Not kept: the acceptance is deleted with the account, as Privacy Notice
-  v1.1 says (decided by the legal person: D2 in
+  v1.1 and v1.2 say (decided by the legal person: D2 in
   `docs/legal/v1.1-changes.md`).
 
 **Backups:** any database dump also holds personal data; keep the newest

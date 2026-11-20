@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/privacy-notice-v1.1.html",
+ "source": "docs/legal/published/privacy-notice-v1.2.html",
  "title": "GigoMe | Informativa sulla privacy",
  "toc": [
   {
@@ -105,7 +105,7 @@
    [
     "strong",
     null,
-    "Versione 1.1 | Ultimo aggiornamento: 20 novembre 2026"
+    "Versione 1.2 | Ultimo aggiornamento: 20 novembre 2026"
    ],
    [
     "br",
@@ -893,9 +893,9 @@
    [
     "a",
     {
-     "href": "https://openfreemap.org/"
+     "href": "https://openfreemap.org/privacy/"
     },
-    "https://openfreemap.org/"
+    "https://openfreemap.org/privacy/"
    ],
    "."
   ],
@@ -1063,7 +1063,7 @@
      [
       "td",
       null,
-      "Account di Studenti e Inserzionisti e relativi dati del profilo necessari, con le offerte salvate, le ricerche salvate, le aziende seguite, i feedback e la preferenza di lingua a essi collegati"
+      "Account di Studenti e Inserzionisti e relativi dati del profilo necessari, con le offerte salvate, le ricerche salvate, le aziende seguite e la preferenza di lingua a essi collegati"
      ],
      [
       "td",
@@ -1163,6 +1163,26 @@
      [
       "td",
       null,
+      "Messaggi di feedback inviati con il pulsante Feedback (insieme alla pagina da cui sono stati inviati)"
+     ],
+     [
+      "td",
+      null,
+      "Cancellazione automatica entro ",
+      [
+       "strong",
+       null,
+       "12 mesi"
+      ],
+      " dall'invio, o prima insieme all'account di chi li ha inviati"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
       "Registrazioni relative a frodi, sicurezza e reclami legali, comprese le segnalazioni di annunci"
      ],
      [
@@ -1175,6 +1195,26 @@
        "24 mesi dopo la risoluzione"
       ],
       " (le segnalazioni di annunci sono cancellate automaticamente), salvo che siano necessarie per una controversia in corso o per un obbligo di legge. Una segnalazione è conservata senza l'account di chi l'ha inviata se questi lo cancella, e con il solo titolo dell'annuncio e il nome dell'inserzionista se l'annuncio o l'inserzionista vengono cancellati"
+     ]
+    ],
+    [
+     "tr",
+     null,
+     [
+      "td",
+      null,
+      "Decisioni di moderazione degli amministratori su aziende, annunci e segnalazioni (quale amministratore, quando, la decisione ed eventuali note)"
+     ],
+     [
+      "td",
+      null,
+      "Cancellazione automatica entro ",
+      [
+       "strong",
+       null,
+       "24 mesi"
+      ],
+      " dalla decisione; l'azienda, l'annuncio o la segnalazione cui si riferisce restano invariati"
      ]
     ],
     [
@@ -1552,7 +1592,7 @@
    [
     "strong",
     null,
-    "Fine dell'Informativa sulla privacy, versione 1.1."
+    "Fine dell'Informativa sulla privacy, versione 1.2."
    ]
   ]
  ]
