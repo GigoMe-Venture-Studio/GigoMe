@@ -252,7 +252,7 @@ const PUBLIC = ['/', '/jobs', `/jobs/${ID(1)}`, `/jobs/${ID(2)}`, `/companies/${
     await p.goto(E + '/login'); await p.waitForTimeout(500);
     await p.locator('details').first().click().catch(() => {}); await p.waitForTimeout(300);
     await audit(p, `${w} login, universities open`);
-    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.locator('form button[type=submit]').first().click(); await p.waitForTimeout(500);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('.login-code-option button'); await p.waitForTimeout(500);
     await audit(p, `${w} login, code step`);
     await p.fill('input[name=code]', '000000'); await p.waitForTimeout(800);
     await audit(p, `${w} login, wrong code`);

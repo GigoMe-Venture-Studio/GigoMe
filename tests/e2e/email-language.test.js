@@ -23,7 +23,7 @@ const italian = (ctx) => ctx.addInitScript(() => { try { if (!localStorage.getIt
 const updates = (log) => (log.userUpdates || []).map((u) => JSON.stringify(u.data));
 // Log in with the Italian page's own words (the login helpers click the English ones).
 async function loginIt(p, email = 'ana@studbocconi.it') {
-  await p.fill('input[name=email]', email); await p.locator('form button[type=submit]').first().click(); await p.waitForTimeout(300);
+  await p.fill('input[name=email]', email); await p.click('.login-code-option button'); await p.waitForTimeout(300);
   await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
 }
 
