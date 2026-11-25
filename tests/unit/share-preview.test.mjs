@@ -34,7 +34,7 @@ test('theme-color is set', () => {
 });
 
 test('the image line, its description and the home page headline say the same', () => {
-  const line = 'Part-time jobs and gigs in Milan, in English.';
+  const line = 'Part-time jobs and gigs for students in Milan.';
   const script = readFileSync(new URL('scripts/build-og-image.mjs', root), 'utf8');
   const tagline = JSON.parse(script.match(/const TAGLINE = (\[.*\]);/)[1].replace(/'/g, '"')).join(' ');
   assert.equal(tagline, line, 'scripts/build-og-image.mjs TAGLINE');

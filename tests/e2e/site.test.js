@@ -14,7 +14,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     await p.goto(ENV + '/'); await p.waitForTimeout(700);
     const page = await txt(p, 'body');
     ok(await p.locator('.protobar, #map-stage, #jump, #reset-demo, .map-pin').count() === 0 && !/Demo\. Sample data|Jump to|Reset|on the map|★/.test(page), 'no demo bar, map, Jump to, Reset or ratings');
-    ok((await txt(p, 'h1')) === 'Part-time jobs and gigs in Milan, in English.' && (await txt(p, '.hero-lead')) === "For international students who don't speak fluent Italian. Free for students, always.", 'hero headline and subline unchanged');
+    ok((await txt(p, 'h1')) === 'Part-time jobs and gigs for students in Milan.' && (await txt(p, '.hero-lead')) === 'For all university students in Milan, whether or not you speak Italian. Free for students, always.', 'hero headline and subline unchanged');
     ok(await p.locator('.hero select#home-area').count() === 1 && await p.isChecked('.hero input[type=checkbox]') && (await txt(p, '.hero button')) === 'Search jobs', 'hero: keyword, area, "No Italian needed" (on), "Search jobs"');
     ok((await titles(p)).join('|') === 'Weekend barista|Event host|English tutor|Finance assistant|Social media helper' && log.jobs.some((q) => q.includes('limit=5')), 'Newest jobs: the 5 most recently published live jobs, asked for with limit=5: ' + (await titles(p)).join('|'));
     ok(log.jobs.some((q) => new URLSearchParams(q).get('order') === 'is_example.asc,published_at.desc.nullslast,created_at.desc'), 'real listings before examples, then newest = published most recently, then written most recently: ' + log.jobs.map((q) => new URLSearchParams(q).get('order')).join(' '));

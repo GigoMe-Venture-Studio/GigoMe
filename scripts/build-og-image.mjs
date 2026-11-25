@@ -13,7 +13,7 @@ import { createRequire } from 'node:module';
 // Through require(), so a Playwright installed globally is found too.
 const { chromium } = createRequire(import.meta.url)('playwright');
 
-const TAGLINE = ['Part-time jobs and gigs', 'in Milan, in English.'];
+const TAGLINE = ['Part-time jobs and gigs', 'for students in Milan.'];
 
 const root = new URL('../', import.meta.url);
 const dataUri = (path, type) => `data:${type};base64,${readFileSync(new URL(path, root)).toString('base64')}`;
