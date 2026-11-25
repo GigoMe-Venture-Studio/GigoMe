@@ -103,7 +103,7 @@ async function emock(ctx, opts = {}) {
 
 async function employerLogin(p, base, email = 'owner@cafe.it') {
   await p.goto(base + '/employers'); await p.waitForTimeout(300);
-  await p.fill('input[name=email]', email); await p.click('text=Send me a code'); await p.waitForTimeout(300);
+  await p.fill('input[name=email]', email); await p.click('text=Email me a code instead'); await p.waitForTimeout(300);
   await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
 }
 module.exports = { emock, employerLogin, login };

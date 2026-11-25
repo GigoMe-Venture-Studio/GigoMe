@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase.js';
 import { useSession } from '../lib/useSession.js';
 import ProfileFields from '../components/ProfileFields.jsx';
 import TermsCheckbox from '../components/TermsCheckbox.jsx';
+import PasswordFields from '../components/PasswordFields.jsx';
 import { StudentReady } from '../components/SignupDone.jsx';
 import {
   declareStudent,
@@ -20,6 +21,7 @@ import LogOutButton from '../components/LogOutButton.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { announceProfileChange, checkProfile } from '../lib/profile.js';
 import { acceptTerms, hasAcceptedTerms, termsRequired } from '../lib/terms.js';
+import { hasPassword, passwordProblem, passwordProblemMessage, setPassword } from '../lib/password.js';
 import { useT } from '../lib/useLang.js';
 
 // /welcome: a new student's name, degree and graduation year, and for every
@@ -35,6 +37,12 @@ import { useT } from '../lib/useLang.js';
 // "Other" with its name; declare_student). "No" creates no student account:
 // the account the login just made is deleted (delete_my_account) and the page
 // says what they can do instead. University emails skip both questions.
+//
+// A new student (no name yet) without a password also chooses one here
+// ("Choose a password"): the email code is needed only at sign-up. It's
+// set first, so nothing else is saved if Supabase refuses it. If Supabase
+// wants a more recent login first (an old, unfinished sign-up), the rest is
+// saved anyway and the password is asked for after the next code login.
 export default function Welcome() {
   return <PageShell>{supabase ? <WelcomeGate /> : <ConfigError />}</PageShell>;
 }
@@ -65,7 +73,10 @@ function WelcomeForm({ user, next, onNotStudent }) {
   const [year, setYear] = useState('');
   // What this account still has to give: its details (a student without a
   // name), the Terms, and a self-declared student's answers.
-  const [needs, setNeeds] = useState({ profile: false, terms: true, answers: false });
+  const [needs, setNeeds] = useState({ profile: false, terms: true, answers: false, password: false });
+  const [pw, setPw] = useState({ password: '', confirm: '' });
+  // The password is set (or can't be set now): a second try skips it.
+  const [passwordDone, setPasswordDone] = useState(null); // null | 'set' | 'later'
   const [termsTicked, setTermsTicked] = useState(false);
   const [isStudent, setIsStudent] = useState(''); // '' | 'yes' | 'no'
   const [universities, setUniversities] = useState(null);
@@ -78,7 +89,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
   // firstTime: a student signing up (no name yet). done: their first name,
   // once saved, to show the confirmation.
   const [firstTime, setFirstTime] = useState(false);
-  const [done, setDone] = useState('');
+  const [done, setDone] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -87,6 +98,8 @@ function WelcomeForm({ user, next, onNotStudent }) {
         const answers = needsStudentAnswers(p);
         // The dropdown: every listed university, by name.
         const list = answers ? await fetchUniversities() : null;
+        const newStudent = Boolean(p) && p.account_type === 'student' && !p.full_name;
+        const noPassword = newStudent ? !(await hasPassword()) : false;
         if (!active) return;
         if (p) {
           setFullName(p.full_name || '');
@@ -96,7 +109,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
         const student = Boolean(p) && p.account_type === 'student';
         setFirstTime(student && !p.full_name);
         setUniversities(list);
-        setNeeds({ profile: student && !p.full_name, terms: !hasAcceptedTerms(p), answers });
+        setNeeds({ profile: student && !p.full_name, terms: !hasAcceptedTerms(p), answers, password: noPassword });
         setLoaded(true);
       })
       .catch(() => active && setLoadError('welcome.loadError'));
@@ -129,10 +142,26 @@ function WelcomeForm({ user, next, onNotStudent }) {
       found = { ...found, ...checked.errors };
       fields = checked.fields;
     }
+    const askPassword = needs.password && !passwordDone;
+    if (askPassword) {
+      const problem = passwordProblem(pw.password, pw.confirm, user.email);
+      if (problem) found = { ...found, password: passwordProblemMessage(problem) };
+    }
     if (needs.terms && !termsTicked) found = { ...found, terms: termsRequired() };
     setErrors(found);
     if (Object.keys(found).length) return;
     setBusy(true);
+    let passwordState = passwordDone;
+    if (askPassword) {
+      const failed = await setPassword(pw.password);
+      if (failed && !failed.reauth) {
+        setErrors({ password: failed.error });
+        setBusy(false);
+        return;
+      }
+      passwordState = failed ? 'later' : 'set';
+      setPasswordDone(passwordState);
+    }
     try {
       if (fields) await saveProfile(user.id, fields);
       // Recorded once: if a later step fails, a second try skips it.
@@ -143,7 +172,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
       if (needs.terms) await acceptTerms(user.id);
       announceProfileChange();
       if (firstTime && fields) {
-        setDone(fields.full_name.split(' ')[0]);
+        setDone({ name: fields.full_name.split(' ')[0], withPassword: !needs.password || passwordState === 'set' });
         return;
       }
       navigate(next || '/', { replace: true });
@@ -167,7 +196,7 @@ function WelcomeForm({ user, next, onNotStudent }) {
     await endDeletedSession();
   }
 
-  if (done) return <StudentReady firstName={done} email={user.email} next={next} />;
+  if (done) return <StudentReady firstName={done.name} withPassword={done.withPassword} email={user.email} next={next} />;
   if (loadError) return <p className="auth-card err" role="alert">{t(loadError)}</p>;
   if (!loaded) return <p className="auth-card muted">{t('common.loading')}</p>;
 
@@ -221,6 +250,14 @@ function WelcomeForm({ user, next, onNotStudent }) {
                 values={{ fullName, degree, year }}
                 onChange={(key, value) => ({ fullName: setFullName, degree: setDegree, year: setYear })[key](value)}
                 errors={errors}
+              />
+            )}
+            {needs.password && !passwordDone && (
+              <PasswordFields
+                email={user.email}
+                values={pw}
+                onChange={(key, value) => setPw((v) => ({ ...v, [key]: value }))}
+                error={errors.password}
               />
             )}
             {needs.terms && <TermsCheckbox checked={termsTicked} onChange={setTermsTicked} error={errors.terms} />}

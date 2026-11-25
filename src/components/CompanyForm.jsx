@@ -6,6 +6,8 @@ import { normalizeUrl } from '../lib/employer.js';
 import { websiteText } from '../lib/jobs.js';
 import { TERMS_REQUIRED } from '../lib/terms.js';
 import TermsCheckbox from './TermsCheckbox.jsx';
+import PasswordFields from './PasswordFields.jsx';
+import { passwordProblem, passwordProblemMessage } from '../lib/password.js';
 import { useT } from '../lib/useLang.js';
 
 const DESCRIPTION_MAX = 1000;
@@ -18,7 +20,10 @@ const DESCRIPTION_MAX = 1000;
 // requireTerms (setup only): "I'm 18 or older and I accept the Terms" must be
 // ticked. The database records when, on the company (on creation only); the
 // setup page also records the version on the account (acceptTerms()).
-export default function CompanyForm({ initial, defaultEmail = '', submitLabel, busyLabel, onSave, onCancel, identityLocked = false, requireTerms = false }) {
+// passwordFor (setup only, an account without a password): the login email;
+// the form asks for a password too and passes it as onSave(fields, password).
+// An error thrown with .userMessage is shown as it is.
+export default function CompanyForm({ initial, defaultEmail = '', submitLabel, busyLabel, onSave, onCancel, identityLocked = false, requireTerms = false, passwordFor = '' }) {
   const t = useT();
   const [values, setValues] = useState({
     name: (initial && initial.name) || '',
@@ -27,6 +32,7 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
     contactEmail: (initial && initial.contact_email) || defaultEmail
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [pw, setPw] = useState({ password: '', confirm: '' });
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -46,6 +52,10 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
       if (website === null || website.length > 300) found.website = t('companyForm.websiteInvalid');
     }
     if (description.length > DESCRIPTION_MAX) found.description = t('companyForm.descriptionTooLong', { max: DESCRIPTION_MAX });
+    if (passwordFor) {
+      const problem = passwordProblem(pw.password, pw.confirm, passwordFor);
+      if (problem) found.password = passwordProblemMessage(problem);
+    }
     if (requireTerms && !termsAccepted) found.terms = TERMS_REQUIRED;
     if (!email) found.contactEmail = t('companyForm.emailMissing');
     else if (!isPlainEmail(email) || email.length > 254) found.contactEmail = t('companyForm.emailInvalid');
@@ -57,9 +67,9 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
       const fields = identityLocked ? editable : { name, website: website || null, ...editable };
       // Any value means "accepted": the database stores its own time.
       if (requireTerms) fields.terms_accepted_at = new Date().toISOString();
-      await onSave(fields);
-    } catch {
-      setSaveError(t('companyForm.saveError'));
+      await onSave(fields, passwordFor ? pw.password : undefined);
+    } catch (err) {
+      setSaveError((err && err.userMessage) || t('companyForm.saveError'));
       setBusy(false);
     }
   }
@@ -107,6 +117,14 @@ export default function CompanyForm({ initial, defaultEmail = '', submitLabel, b
         <span className="field-hint" id="contact-email-hint">{t('companyForm.contactEmailHint')}</span>
         {errors.contactEmail && <span className="err">{errors.contactEmail}</span>}
       </label>
+      {passwordFor && (
+        <PasswordFields
+          email={passwordFor}
+          values={pw}
+          onChange={(key, value) => setPw((v) => ({ ...v, [key]: value }))}
+          error={errors.password}
+        />
+      )}
       {requireTerms && <TermsCheckbox checked={termsAccepted} onChange={setTermsAccepted} error={errors.terms} />}
       {saveError && <p className="err" role="alert">{saveError}</p>}
       <div className="form-buttons">

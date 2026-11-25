@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/privacy-notice-v1.2.html",
+ "source": "docs/legal/published/privacy-notice-v1.3.html",
  "title": "GigoMe | Informativa sulla privacy",
  "toc": [
   {
@@ -105,7 +105,7 @@
    [
     "strong",
     null,
-    "Versione 1.2 | Ultimo aggiornamento: 20 novembre 2026"
+    "Versione 1.3 | Ultimo aggiornamento: 25 novembre 2026"
    ],
    [
     "br",
@@ -365,7 +365,7 @@
     null,
     "Informazioni di autenticazione e sicurezza:"
    ],
-   " email di accesso, invio dei codici monouso ed eventi di autenticazione, identificativi o token di sessione, log tecnici pertinenti e, ove necessario, indirizzo IP, dati sul dispositivo/browser e indicatori di abuso. Agli Utenti non viene chiesto di creare una password GigoMe, e il normale profilo dell'Utente non comprende una password memorizzata né un CV caricato."
+   " email di accesso, invio dei codici monouso ed eventi di autenticazione, la password scelta dall'Utente, identificativi o token di sessione, log tecnici pertinenti e, ove necessario, indirizzo IP, dati sul dispositivo/browser e indicatori di abuso. Le password sono conservate dal nostro fornitore di autenticazione (Supabase) solo sotto forma di hash crittografico non reversibile: nessuno di GigoMe può vederle o recuperarle. Il normale profilo dell'Utente non comprende un CV caricato."
   ],
   [
    "p",
@@ -983,13 +983,13 @@
   [
    "p",
    null,
-   "GigoMe utilizza attualmente codici di accesso monouso a sei cifre inviati via email. Dopo l'autenticazione, le informazioni necessarie per mantenere la sessione di accesso sono memorizzate nell'",
+   "GigoMe utilizza codici di accesso monouso a sei cifre inviati via email al momento della creazione dell'account e ogni volta che l'Utente ne richiede uno, e negli altri casi l'indirizzo email e la password dell'Utente. Dopo l'autenticazione, le informazioni necessarie per mantenere la sessione di accesso sono memorizzate nell'",
    [
     "strong",
     null,
     "archiviazione locale"
    ],
-   " del browser. L'archiviazione locale conserva anche la lingua scelta per il sito (inglese o italiano) e, per la sola scheda aperta, l'archiviazione di sessione del browser conserva l'indirizzo email a cui è appena stato inviato un codice di accesso e l'indicazione se le linee della metropolitana sono mostrate sulle mappe. GigoMe non imposta alcun cookie. Queste tecnologie sono funzionali all'autenticazione, alla continuità della sessione e alle scelte dell'Utente; GigoMe non le utilizza per la pubblicità comportamentale."
+   " del browser. L'archiviazione locale conserva anche la lingua scelta per il sito (inglese o italiano) e, per la sola scheda aperta, l'archiviazione di sessione del browser conserva l'indirizzo email a cui è appena stato inviato un codice di accesso (e se è stato richiesto per scegliere una nuova password) e l'indicazione se le linee della metropolitana sono mostrate sulle mappe. GigoMe non imposta alcun cookie. Queste tecnologie sono funzionali all'autenticazione, alla continuità della sessione e alle scelte dell'Utente; GigoMe non le utilizza per la pubblicità comportamentale."
   ],
   [
    "p",

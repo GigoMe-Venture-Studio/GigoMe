@@ -42,12 +42,12 @@ async function fillWelcome(p, name = 'Ana Maria Rossi') {
     ok((await txt(p, 'h1')) === "You're all set, Ana." && (await txt(p, '.signup-done .lead')) === 'Your GigoMe account is ready.', 'headline with the first name, account ready: ' + await txt(p, 'h1'));
     ok(await p.evaluate(() => document.activeElement && document.activeElement.tagName === 'H1'), 'the heading has the focus (screen readers hear the confirmation)');
     const l = await txt(p, '.signup-done-login');
-    ok(l.includes("You're logged in as ana@studbocconi.it.") && l.includes("Next time, enter this email on the login page and we'll send you a new 6-digit code. There's no password."), 'signed-in email and how login works next time: ' + l);
+    ok(l.includes("You're logged in as ana@studbocconi.it.") && l.includes("Next time, log in on the login page with this email and your password. Forgot it? You can always ask for a code by email instead."), 'signed-in email and how login works next time: ' + l);
     ok((await buttons(p)).join(' | ') === `Back to the job /jobs/${ID(1)} | Browse jobs /jobs`, 'buttons: back to the job, browse jobs: ' + (await buttons(p)).join(' | '));
     ok(await p.locator('.signup-done .auth-buttons a').first().evaluate((e) => e.classList.contains('btn-primary')), 'back to the job is the main button');
     ok(await p.getAttribute('.signup-done-account a', 'href') === '/account' && (await txt(p, '.signup-done-account')) === 'Edit or delete your account', 'small link to /account');
     ok((await txt(p, '.header-user')) === 'Ana Maria Rossi', 'header shows the saved name');
-    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]', 'Terms accepted as usual');
+    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.2"}]', 'Terms accepted as usual');
     await p.click('text=Back to the job'); await p.waitForTimeout(600);
     ok(url(p).pathname === '/jobs/' + ID(1) && await p.locator('.apply button:has-text("Apply")').count() === 1, 'back on the job, with Apply');
     ok(log.rpc.length === 0, 'nothing revealed or counted on the way');
@@ -111,7 +111,7 @@ async function fillWelcome(p, name = 'Ana Maria Rossi') {
        && t.includes('Once your company is approved, submit each job. Students see a job only after it has been reviewed too.')
        && t.includes("Your dashboard shows your company's status. We don't send an email when it changes, so check there."), 'what happens next, as the review flow works');
     ok((t.match(/working days/g) || []).length === 1 && !/\bhours\b|we'll email|we will email|notify/i.test(t), 'only the usual review promise: no other timings, no emails');
-    ok(t.includes("You're logged in as owner@cafe.it.") && t.includes("Next time, enter this email on the For employers page and we'll send you a new 6-digit code. There's no password."), 'signed-in email and how login works next time');
+    ok(t.includes("You're logged in as owner@cafe.it.") && t.includes("Next time, log in on the For employers page with this email and your password. Forgot it? You can always ask for a code by email instead."), 'signed-in email and how login works next time');
     ok((await buttons(p)).join(' | ') === 'Go to your dashboard /dashboard | Write a draft job /dashboard/jobs/new', 'buttons: dashboard, draft job: ' + (await buttons(p)).join(' | '));
     ok(await p.getAttribute('.signup-done-account a', 'href') === '/account', 'small link to /account');
     await p.click('text=Write a draft job'); await p.waitForTimeout(600);

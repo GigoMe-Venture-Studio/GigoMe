@@ -58,7 +58,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       return [-21, 21].every((dy) => { const hit = document.elementFromPoint(x, y + dy); return hit === el || el.contains(hit); }); });
     await p.goto(ENV + '/jobs?q=zzzz'); await p.waitForTimeout(500);
     ok(await tall('.jobs-status button:has-text("Clear filters")') && await tall('.empty-state button:has-text("Clear the keyword")'), '"Clear filters" and the empty state\'s button: 44px tap area');
-    await p.goto(ENV + '/login'); await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.goto(ENV + '/login'); await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     ok(await tall('button:has-text("Use a different email")'), '"Use a different email": 44px tap area');
     await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
     await p.goto(ENV + '/jobs/' + ID(3)); await p.waitForSelector('.report-job button'); // no map on this one

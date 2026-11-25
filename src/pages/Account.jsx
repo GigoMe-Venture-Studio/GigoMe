@@ -10,6 +10,8 @@ import { announceProfileChange, checkProfile } from '../lib/profile.js';
 import { deleteMyAccount, endDeletedSession, fetchAccount } from '../lib/account.js';
 import { collectMyData, downloadJson } from '../lib/myData.js';
 import { CONTACT_EMAIL } from '../lib/contact.js';
+import PasswordFields from '../components/PasswordFields.jsx';
+import { hasPassword, passwordProblem, passwordProblemMessage, setPassword } from '../lib/password.js';
 import { useT } from '../lib/useLang.js';
 
 export default function Account() {
@@ -80,6 +82,8 @@ function AccountPage({ user, onLeaving }) {
 
       <ProfileForm userId={user.id} account={account} student={!isCompany} />
 
+      <PasswordSection email={user.email} />
+
       <DownloadData user={user} isCompany={isCompany} />
 
       <DeleteAccount isCompany={isCompany} onLeaving={onLeaving} />
@@ -129,6 +133,73 @@ function ProfileForm({ userId, account, student }) {
           {status.kind === 'busy' ? t('account.saving') : t('account.saveChanges')}
         </button>
       </form>
+    </section>
+  );
+}
+
+// "Password": whether the account has one, and a form to set or change it
+// (opened with a button, so the page stays short). Supabase accepts it while
+// the login is recent (under 24 hours with "Secure password change" on);
+// after that the message says to log in with a code first. Nothing here
+// sends an email (src/lib/password.js).
+function PasswordSection({ email }) {
+  const t = useT();
+  const [has, setHas] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [values, setValues] = useState({ password: '', confirm: '' });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    hasPassword().then((value) => active && setHas(value));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    if (busy) return;
+    const problem = passwordProblem(values.password, values.confirm, email);
+    if (problem) {
+      setError(passwordProblemMessage(problem));
+      return;
+    }
+    setError('');
+    setBusy(true);
+    const failed = await setPassword(values.password);
+    setBusy(false);
+    if (failed) {
+      setError(failed.error);
+      return;
+    }
+    setHas(true);
+    setOpen(false);
+    setValues({ password: '', confirm: '' });
+    setSaved(true);
+  }
+
+  if (has === null) return null;
+  return (
+    <section className="account-section account-password" aria-labelledby="password-title">
+      <h2 id="password-title">{t('password.accountTitle')}</h2>
+      <p>{has ? t('password.accountHas') : t('password.accountNone')}</p>
+      {open ? (
+        <form className="auth-form" onSubmit={onSubmit} noValidate>
+          <PasswordFields email={email} values={values} onChange={(key, value) => setValues((v) => ({ ...v, [key]: value }))} error={error} />
+          <div className="account-choice">
+            <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? t('password.saving') : t('password.save')}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => { setOpen(false); setError(''); }} disabled={busy}>{t('common.cancel')}</button>
+          </div>
+        </form>
+      ) : (
+        <button type="button" className="btn btn-secondary" onClick={() => { setOpen(true); setSaved(false); }}>
+          {has ? t('password.accountChange') : t('password.accountSet')}
+        </button>
+      )}
+      <p className="account-saved" role="status">{saved ? t('password.saved') : ''}</p>
     </section>
   );
 }

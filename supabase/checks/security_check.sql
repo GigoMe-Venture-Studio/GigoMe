@@ -2320,6 +2320,65 @@ begin
     results := pg_temp.res(results, 'anon cannot call my_company_follower_count', 'error', v_err, v_err like 'error:%');
 
     -- ----------------------------------------------------------------------
+    -- Password login: my_has_password() (20261125120000_password_login.sql)
+    -- ----------------------------------------------------------------------
+
+    select coalesce(nullif(g, ''), 'nobody') into v_text from (
+      select string_agg(case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end, ',' order by 1) g
+      from pg_proc p, aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+      where p.oid = 'public.my_has_password()'::regprocedure and a.privilege_type = 'EXECUTE'
+        and (a.grantee = 0 or a.grantee::regrole::text in ('anon', 'authenticated'))
+    ) s;
+    results := pg_temp.res(results, 'my_has_password: only authenticated can execute it', 'authenticated', v_text, v_text = 'authenticated');
+
+    select case when p.prosecdef and coalesce(array_to_string(p.proconfig, ','), '') = 'search_path=""' then 'definer, empty search_path' else 'other' end
+      into v_text from pg_proc p where p.oid = 'public.my_has_password()'::regprocedure;
+    results := pg_temp.res(results, 'my_has_password: SECURITY DEFINER with an empty search_path', 'definer, empty search_path', v_text, v_text = 'definer, empty search_path');
+
+    -- A bcrypt-shaped hash for one test account (as Supabase stores it); the
+    -- function says only true or false, and only for the caller.
+    update auth.users set encrypted_password = '$2a$10$gigomesecuritycheckxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' where id = v_company;
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_student, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select public.my_has_password()::text into v_text;
+      perform set_config('role', 'none', true);
+    exception when others then v_text := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_has_password: false for an account without a password', 'false', v_text, v_text = 'false');
+
+    begin
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_company, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select public.my_has_password()::text into v_text;
+      perform set_config('role', 'none', true);
+    exception when others then v_text := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_has_password: true for the caller''s own account with a password', 'true', v_text, v_text = 'true');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"authenticated"}', true);
+      perform set_config('role', 'authenticated', true);
+      select public.my_has_password()::text into v_text;
+      perform set_config('role', 'none', true);
+    exception when others then v_text := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'my_has_password: false without a user id', 'false', v_text, v_text = 'false');
+
+    begin
+      perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+      perform set_config('role', 'anon', true);
+      perform public.my_has_password();
+      perform set_config('role', 'none', true);
+      v_err := 'ran';
+    exception when others then v_err := 'error: ' || sqlerrm;
+    end;
+    results := pg_temp.res(results, 'anon cannot call my_has_password', 'error', v_err, v_err like 'error:%');
+
+    update auth.users set encrypted_password = null where id = v_company;
+
+    -- ----------------------------------------------------------------------
     -- Jobs you opened (your own apply clicks)
     -- ----------------------------------------------------------------------
 
@@ -2406,7 +2465,7 @@ begin
     where ns.nspname = 'public'
       and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
       and has_function_privilege('authenticated', p.oid, 'EXECUTE');
-    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
+    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_has_password, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_has_password, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
 
     select string_agg(c.relname || ':' || pr, ', ' order by c.relname, pr) into v_err
     from pg_class c join pg_namespace ns on ns.oid = c.relnamespace, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) pr

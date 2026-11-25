@@ -114,7 +114,7 @@ function apply(url, rows) {
 
 async function mock(ctx, opts = {}) {
   const log = { rpc: [], jobs: [], otp: [], userMeta: opts.userLanguage ? { language: opts.userLanguage } : {} };
-  const terms = opts.termsVersion === undefined ? '2.1' : opts.termsVersion;
+  const terms = opts.termsVersion === undefined ? '2.2' : opts.termsVersion;
   const profile = { full_name: opts.fullName === undefined ? 'Ana Rossi' : opts.fullName, degree_level: 'master', graduation_year: 2028, account_type: opts.accountType || 'student', student_verification: (opts.accountType || 'student') === 'student' ? opts.verification || 'university_email' : null, other_university: opts.otherUniversity || null, student_declared_at: opts.verification === 'self_declared' ? '2026-11-01T10:00:00Z' : null, terms_version: terms, terms_accepted_at: terms ? '2026-11-01T10:00:00Z' : null };
   await ctx.route(SB + '/**', async (r) => {
     const req = r.request(), url = new URL(req.url()), path = url.pathname, method = req.method();
@@ -187,6 +187,27 @@ async function mock(ctx, opts = {}) {
     if (path === '/rest/v1/areas') { log.areas = (log.areas || 0) + 1; return j(200, AREAS); }
     if (path === '/rest/v1/universities') return j(200, [{ id: 'u', name: 'Bocconi University', email_domains: ['studbocconi.it'] }]);
     if (path === '/auth/v1/otp') { const b = req.postDataJSON(); log.otp.push(b); if (b.email.startsWith('ratelimit')) return j(429, { code: 429, error_code: 'over_email_send_rate_limit', msg: 'x' }); return j(200, {}); }
+    // Passwords: my_has_password (opts.hasPassword false: an account from
+    // before passwords), password logins (opts.password is the right one) and
+    // updateUser({ password }) (opts.passwordError: Supabase refuses it).
+    // Anything else that would make Supabase send an email: never called.
+    if (/^\/auth\/v1\/(reauthenticate|recover|resend|magiclink)/.test(path)) { log.otherEmails = (log.otherEmails || []).concat(path); return j(200, {}); }
+    if (path === '/rest/v1/rpc/my_has_password') { log.hasPasswordCalls = (log.hasPasswordCalls || 0) + 1; return j(200, log.passwordSet || opts.hasPassword !== false); }
+    if (path === '/auth/v1/token' && url.searchParams.get('grant_type') === 'password') {
+      const b = req.postDataJSON(); log.passwordLogins = (log.passwordLogins || []).concat([b]);
+      if (b.password !== (opts.password || 'correct horse battery')) return j(400, { code: 400, error_code: 'invalid_credentials', msg: 'Invalid login credentials' });
+      const exp = Math.floor(Date.now() / 1000) + 3600; log.userEmail = b.email;
+      return j(200, { access_token: b64({ alg: 'HS256' }) + '.' + b64({ sub: 'u1', exp }) + '.s', token_type: 'bearer', expires_in: 3600, expires_at: exp, refresh_token: 'r', user: { id: 'u1', aud: 'authenticated', email: b.email, app_metadata: {}, user_metadata: { ...log.userMeta } } });
+    }
+    if (path === '/auth/v1/user' && method === 'PUT' && req.postDataJSON() && req.postDataJSON().password) {
+      const b = req.postDataJSON(); log.passwordUpdates = (log.passwordUpdates || []).concat([b.password]);
+      const e = opts.passwordError;
+      if (e === 'reauth') return j(400, { code: 400, error_code: 'reauthentication_needed', msg: 'Password update requires reauthentication' });
+      if (e === 'pwned') return j(422, { code: 422, error_code: 'weak_password', msg: 'Password is known to be weak and easy to guess, please choose a different one.', weak_password: { reasons: ['pwned'] } });
+      if (e === 'boom') return j(500, { message: 'boom' });
+      log.passwordSet = true;
+      return j(200, { id: 'u1', aud: 'authenticated', email: log.userEmail, app_metadata: {}, user_metadata: { ...log.userMeta } });
+    }
     if (path === '/auth/v1/verify') { const b = req.postDataJSON(); if (b.token !== '123456') return j(403, { code: 403, error_code: 'otp_expired', msg: 'x' }); const exp = Math.floor(Date.now() / 1000) + 3600; log.userEmail = b.email; return j(200, { access_token: b64({ alg: 'HS256' }) + '.' + b64({ sub: 'u1', exp }) + '.s', token_type: 'bearer', expires_in: 3600, expires_at: exp, refresh_token: 'r', user: { id: 'u1', aud: 'authenticated', email: b.email, app_metadata: {}, user_metadata: { ...log.userMeta } } }); }
     // updateUser({ data }): merged into the user's metadata, as Supabase does
     // (opts.userLanguage: the email language already saved with the account).
@@ -209,7 +230,10 @@ async function mock(ctx, opts = {}) {
   return log;
 }
 async function login(p, email = 'ana@studbocconi.it') {
-  await p.fill('input[name=email]', email); await p.click('text=Send me a code'); await p.waitForTimeout(300);
+  await p.fill('input[name=email]', email); await p.click('.login-code-option button'); await p.waitForTimeout(300);
   await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
 }
-module.exports = { sortByOrder, mock, login, ID, JOBS, AREAS, NEBBIA, FINTRA, EXAMPLE_CO, EXAMPLE_JOBS, ago };
+async function passwordLogin(p, email = 'ana@studbocconi.it', password = 'correct horse battery') {
+  await p.fill('input[name=email]', email); await p.fill('input[name=password]', password); await p.click('form button[type=submit]'); await p.waitForTimeout(900);
+}
+module.exports = { sortByOrder, mock, login, passwordLogin, ID, JOBS, AREAS, NEBBIA, FINTRA, EXAMPLE_CO, EXAMPLE_JOBS, ago };

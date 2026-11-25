@@ -371,55 +371,55 @@ Apply on example listings (demo),applyDemo.madeUp,The link and address above are
 Job descriptions,description.headingDo,What you'll do,Cosa farai
 Job descriptions,description.headingWho,Who we're looking for,Chi cerchiamo
 Job descriptions,description.headingDetails,Practical details,Dettagli pratici
-/login and the employer login,codeLogin.loggingIn,Logging you in…,Accesso in corso…
-/login and the employer login,codeLogin.errFullEmailEmployer,"Enter your full email address, like name@company.it.","Inserisci l'indirizzo email completo, ad esempio nome@azienda.it."
-/login and the employer login,codeLogin.errFullEmailStudent,"Enter your full email address, like name@university.it.","Inserisci l'indirizzo email completo, ad esempio nome@universita.it."
-/login and the employer login,codeLogin.errCheckEmail,We couldn't check your email right now. Check your connection and try again.,Non riusciamo a controllare la tua email in questo momento. Controlla la connessione e riprova.
-/login and the employer login,codeLogin.errCodeLength,Enter the {n}-digit code from the email.,Inserisci il codice di {n} cifre che trovi nell'email.
-/login and the employer login,codeLogin.newCodeSent,We sent you a new code. Only the newest code works.,Ti abbiamo inviato un nuovo codice. Funziona solo il più recente.
-/login and the employer login,codeLogin.titleEmployer,Employer login,Accesso aziende
-/login and the employer login,codeLogin.titleStudent,Log in or sign up,Accedi o registrati
-/login and the employer login,codeLogin.digitCode,{n}-digit,di {n} cifre
-/login and the employer login,codeLogin.leadEmployer,"Use your work email. We'll send you a {code} code, no password needed.","Usa la tua email di lavoro. Ti invieremo un codice {code}, senza bisogno di password."
-/login and the employer login,codeLogin.leadStudent,"Use any email. A university email verifies that you're a student. We'll send you a {code} code, no password needed.","Usa qualsiasi email. Un'email universitaria verifica che sei studente. Ti invieremo un codice {code}, senza bisogno di password."
-/login and the employer login,codeLogin.switchEmployer,Looking for work? <link>Student login</link>,Cerchi lavoro? <link>Accesso studenti</link>
-/login and the employer login,codeLogin.switchStudent,Hiring? <link>Use the employer login</link>,Cerchi personale? <link>Usa l'accesso aziende</link>
-/login and the employer login,codeLogin.disclaimer,"GigoMe is an independent student project, not affiliated with or endorsed by any university.","GigoMe è un progetto studentesco indipendente, non affiliato ad alcuna università né approvato da alcuna di esse."
-/login and the employer login,codeLogin.uniSummary,Which emails verify you as a student?,Quali email verificano che sei studente?
-/login and the employer login,codeLogin.uniListIntro,A student email from one of these universities verifies that you're a student:,Un'email da studente di una di queste università verifica che sei studente:
-/login and the employer login,codeLogin.uniListError,"We couldn't load the list right now. Check your connection, then close this and open it again.","Non riusciamo a caricare l'elenco in questo momento. Controlla la connessione, poi chiudi questa sezione e riaprila."
-/login and the employer login,codeLogin.uniOtherEmail,"Any other email works too: after logging in, you tell us that you're a student and at which university.",Va bene anche qualsiasi altra email: dopo l'accesso ci dirai che sei studente e in quale università.
-/login and the employer login,codeLogin.uniMissing,Is your university missing?,Manca la tua università?
-/login and the employer login,codeLogin.uniMissingLink,Email {email},Scrivi a {email}
-/login and the employer login,codeLogin.uniMissingSubject,Add my university to GigoMe,Aggiungete la mia università a GigoMe
-/login and the employer login,codeLogin.labelWorkEmail,Work email,Email di lavoro
-/login and the employer login,codeLogin.labelEmail,Email,Email
-/login and the employer login,codeLogin.placeholderEmployer,name@company.it,nome@azienda.it
-/login and the employer login,codeLogin.placeholderStudent,name@university.it,nome@universita.it
-/login and the employer login,codeLogin.privacyEmployer,"We use your email to log you in and, if needed, to contact you about your company. See our <link>Privacy Notice</link>.","Usiamo la tua email per farti accedere e, se serve, per contattarti riguardo alla tua azienda. Leggi l'<link>Informativa sulla privacy</link>."
-/login and the employer login,codeLogin.privacyStudent,We use your email to log you in and to check whether it's a university email on our list. See our <link>Privacy Notice</link>.,Usiamo la tua email per farti accedere e per controllare se è un'email universitaria del nostro elenco. Leggi l'<link>Informativa sulla privacy</link>.
-/login and the employer login,codeLogin.uniEmailNotice,That's a university email. Students <link>log in here</link>.,"Questa è un'email universitaria. Se studi, <link>accedi qui</link>."
-/login and the employer login,codeLogin.uniEmailHiring,Hiring for a company? Use your work email instead.,Cerchi personale per un'azienda? Usa invece la tua email di lavoro.
-/login and the employer login,codeLogin.checking,Checking…,Verifica in corso…
-/login and the employer login,codeLogin.sendCode,Send me a code,Inviami un codice
-/login and the employer login,codeLogin.captchaFailed,"We couldn't load the check that keeps bots out. Reload the page, or try another browser or network.","Non riusciamo a caricare il controllo anti-bot. Ricarica la pagina, oppure prova con un altro browser o un'altra rete."
-/login and the employer login,codeLogin.captchaWaiting,One moment: checking you're not a bot…,Un attimo: stiamo verificando che tu non sia un bot…
-/login and the employer login,codeLogin.checkEmail,Check your email,Controlla la tua email
-/login and the employer login,codeLogin.sentTo,We sent a {code} code to {email}.,Abbiamo inviato un codice {code} a {email}.
-/login and the employer login,codeLogin.yourCode,Your code,Il tuo codice
-/login and the employer login,codeLogin.codeHint,"It can take a minute to arrive. Can't find it? Check your Junk or Spam folder and mark it as 'Not junk', so the next one arrives in your inbox.","Può volerci un minuto. Non lo trovi? Controlla la cartella Posta indesiderata o Spam e segna l'email come ""Non è posta indesiderata"", così il prossimo codice arriverà nella posta in arrivo."
-/login and the employer login,codeLogin.logIn,Log in,Accedi
-/login and the employer login,codeLogin.resendWait,Send a new code ({s}s),Invia un nuovo codice ({s}s)
-/login and the employer login,codeLogin.resend,Send a new code,Invia un nuovo codice
-/login and the employer login,codeLogin.differentEmail,Use a different email,Usa un'altra email
-/login and the employer login,codeLogin.wrongRoleTitle,This email has an employer account,Questa email ha un account aziendale
-/login and the employer login,codeLogin.wrongRoleLead,"{email} is registered as an employer. Each email has one role on GigoMe, so it can't also be a student account.","{email} è registrata come azienda. Su GigoMe ogni email ha un solo ruolo, quindi non può essere anche un account studente."
-/login and the employer login,codeLogin.wrongRoleHelp,"To hire, use the <link>employer login</link>. To look for work, log out and sign up here with a different email, like your university email.","Per assumere, usa l'<link>accesso aziende</link>. Per cercare lavoro, esci e registrati qui con un'altra email, ad esempio quella universitaria."
-/login and the employer login,codeLogin.goEmployerLogin,Go to the employer login,Vai all'accesso aziende
-/login and the employer login,codeLogin.loggedInTitle,You're logged in,Hai effettuato l'accesso
-/login and the employer login,codeLogin.loggedInAs,Logged in as {email}.,Accesso effettuato come {email}.
-/login and the employer login,codeLogin.continue,Continue,Continua
-/login and the employer login,codeLogin.goHome,Go to GigoMe,Vai a GigoMe
+/login and the employer login (and passwords),codeLogin.loggingIn,Logging you in…,Accesso in corso…
+/login and the employer login (and passwords),codeLogin.errFullEmailEmployer,"Enter your full email address, like name@company.it.","Inserisci l'indirizzo email completo, ad esempio nome@azienda.it."
+/login and the employer login (and passwords),codeLogin.errFullEmailStudent,"Enter your full email address, like name@university.it.","Inserisci l'indirizzo email completo, ad esempio nome@universita.it."
+/login and the employer login (and passwords),codeLogin.errCheckEmail,We couldn't check your email right now. Check your connection and try again.,Non riusciamo a controllare la tua email in questo momento. Controlla la connessione e riprova.
+/login and the employer login (and passwords),codeLogin.errCodeLength,Enter the {n}-digit code from the email.,Inserisci il codice di {n} cifre che trovi nell'email.
+/login and the employer login (and passwords),codeLogin.newCodeSent,We sent you a new code. Only the newest code works.,Ti abbiamo inviato un nuovo codice. Funziona solo il più recente.
+/login and the employer login (and passwords),codeLogin.titleEmployer,Employer login,Accesso aziende
+/login and the employer login (and passwords),codeLogin.titleStudent,Log in or sign up,Accedi o registrati
+/login and the employer login (and passwords),codeLogin.digitCode,{n}-digit,di {n} cifre
+/login and the employer login (and passwords),codeLogin.leadEmployer,Use your work email.,Usa la tua email di lavoro.
+/login and the employer login (and passwords),codeLogin.leadStudent,Use any email. A university email verifies that you're a student.,Usa qualsiasi email. Un'email universitaria verifica che sei studente.
+/login and the employer login (and passwords),codeLogin.switchEmployer,Looking for work? <link>Student login</link>,Cerchi lavoro? <link>Accesso studenti</link>
+/login and the employer login (and passwords),codeLogin.switchStudent,Hiring? <link>Use the employer login</link>,Cerchi personale? <link>Usa l'accesso aziende</link>
+/login and the employer login (and passwords),codeLogin.disclaimer,"GigoMe is an independent student project, not affiliated with or endorsed by any university.","GigoMe è un progetto studentesco indipendente, non affiliato ad alcuna università né approvato da alcuna di esse."
+/login and the employer login (and passwords),codeLogin.uniSummary,Which emails verify you as a student?,Quali email verificano che sei studente?
+/login and the employer login (and passwords),codeLogin.uniListIntro,A student email from one of these universities verifies that you're a student:,Un'email da studente di una di queste università verifica che sei studente:
+/login and the employer login (and passwords),codeLogin.uniListError,"We couldn't load the list right now. Check your connection, then close this and open it again.","Non riusciamo a caricare l'elenco in questo momento. Controlla la connessione, poi chiudi questa sezione e riaprila."
+/login and the employer login (and passwords),codeLogin.uniOtherEmail,"Any other email works too: after logging in, you tell us that you're a student and at which university.",Va bene anche qualsiasi altra email: dopo l'accesso ci dirai che sei studente e in quale università.
+/login and the employer login (and passwords),codeLogin.uniMissing,Is your university missing?,Manca la tua università?
+/login and the employer login (and passwords),codeLogin.uniMissingLink,Email {email},Scrivi a {email}
+/login and the employer login (and passwords),codeLogin.uniMissingSubject,Add my university to GigoMe,Aggiungete la mia università a GigoMe
+/login and the employer login (and passwords),codeLogin.labelWorkEmail,Work email,Email di lavoro
+/login and the employer login (and passwords),codeLogin.labelEmail,Email,Email
+/login and the employer login (and passwords),codeLogin.placeholderEmployer,name@company.it,nome@azienda.it
+/login and the employer login (and passwords),codeLogin.placeholderStudent,name@university.it,nome@universita.it
+/login and the employer login (and passwords),codeLogin.privacyEmployer,"We use your email to log you in and, if needed, to contact you about your company. See our <link>Privacy Notice</link>.","Usiamo la tua email per farti accedere e, se serve, per contattarti riguardo alla tua azienda. Leggi l'<link>Informativa sulla privacy</link>."
+/login and the employer login (and passwords),codeLogin.privacyStudent,We use your email to log you in and to check whether it's a university email on our list. See our <link>Privacy Notice</link>.,Usiamo la tua email per farti accedere e per controllare se è un'email universitaria del nostro elenco. Leggi l'<link>Informativa sulla privacy</link>.
+/login and the employer login (and passwords),codeLogin.uniEmailNotice,That's a university email. Students <link>log in here</link>.,"Questa è un'email universitaria. Se studi, <link>accedi qui</link>."
+/login and the employer login (and passwords),codeLogin.uniEmailHiring,Hiring for a company? Use your work email instead.,Cerchi personale per un'azienda? Usa invece la tua email di lavoro.
+/login and the employer login (and passwords),codeLogin.checking,Checking…,Verifica in corso…
+/login and the employer login (and passwords),codeLogin.sendCode,Send me a code,Inviami un codice
+/login and the employer login (and passwords),codeLogin.captchaFailed,"We couldn't load the check that keeps bots out. Reload the page, or try another browser or network.","Non riusciamo a caricare il controllo anti-bot. Ricarica la pagina, oppure prova con un altro browser o un'altra rete."
+/login and the employer login (and passwords),codeLogin.captchaWaiting,One moment: checking you're not a bot…,Un attimo: stiamo verificando che tu non sia un bot…
+/login and the employer login (and passwords),codeLogin.checkEmail,Check your email,Controlla la tua email
+/login and the employer login (and passwords),codeLogin.sentTo,We sent a {code} code to {email}.,Abbiamo inviato un codice {code} a {email}.
+/login and the employer login (and passwords),codeLogin.yourCode,Your code,Il tuo codice
+/login and the employer login (and passwords),codeLogin.codeHint,"It can take a minute to arrive. Can't find it? Check your Junk or Spam folder and mark it as 'Not junk', so the next one arrives in your inbox.","Può volerci un minuto. Non lo trovi? Controlla la cartella Posta indesiderata o Spam e segna l'email come ""Non è posta indesiderata"", così il prossimo codice arriverà nella posta in arrivo."
+/login and the employer login (and passwords),codeLogin.logIn,Log in,Accedi
+/login and the employer login (and passwords),codeLogin.resendWait,Send a new code ({s}s),Invia un nuovo codice ({s}s)
+/login and the employer login (and passwords),codeLogin.resend,Send a new code,Invia un nuovo codice
+/login and the employer login (and passwords),codeLogin.differentEmail,Use a different email,Usa un'altra email
+/login and the employer login (and passwords),codeLogin.wrongRoleTitle,This email has an employer account,Questa email ha un account aziendale
+/login and the employer login (and passwords),codeLogin.wrongRoleLead,"{email} is registered as an employer. Each email has one role on GigoMe, so it can't also be a student account.","{email} è registrata come azienda. Su GigoMe ogni email ha un solo ruolo, quindi non può essere anche un account studente."
+/login and the employer login (and passwords),codeLogin.wrongRoleHelp,"To hire, use the <link>employer login</link>. To look for work, log out and sign up here with a different email, like your university email.","Per assumere, usa l'<link>accesso aziende</link>. Per cercare lavoro, esci e registrati qui con un'altra email, ad esempio quella universitaria."
+/login and the employer login (and passwords),codeLogin.goEmployerLogin,Go to the employer login,Vai all'accesso aziende
+/login and the employer login (and passwords),codeLogin.loggedInTitle,You're logged in,Hai effettuato l'accesso
+/login and the employer login (and passwords),codeLogin.loggedInAs,Logged in as {email}.,Accesso effettuato come {email}.
+/login and the employer login (and passwords),codeLogin.continue,Continue,Continua
+/login and the employer login (and passwords),codeLogin.goHome,Go to GigoMe,Vai a GigoMe
 /welcome,welcome.loadError,We couldn't load your profile. Check your connection and reload the page.,Non riusciamo a caricare il tuo profilo. Controlla la connessione e ricarica la pagina.
 /welcome,welcome.errYesNo,Choose Yes or No.,Scegli Sì o No.
 /welcome,welcome.errUniversity,"Choose your university, or ""Other"".","Scegli la tua università, oppure ""Altra""."
@@ -504,7 +504,8 @@ Job descriptions,description.headingDetails,Practical details,Dettagli pratici
 /account,account.deletingBtn,Deleting…,Eliminazione…
 /account,account.deleteError,We couldn't delete your account. Check your connection and try again.,Non riusciamo a eliminare il tuo account. Controlla la connessione e riprova.
 After signing up (confirmation),signup.loggedInAs,You're logged in as {email}.,Hai effettuato l'accesso come {email}.
-After signing up (confirmation),signup.nextTime,"Next time, enter this email on {page} and we'll send you a new 6-digit code. There's no password.","La prossima volta, inserisci questa email {page} e ti invieremo un nuovo codice di 6 cifre. Non serve nessuna password."
+After signing up (confirmation),signup.nextTime,"Next time, log in on {page} with this email and your password. Forgot it? You can always ask for a code by email instead.","La prossima volta, accedi {page} con questa email e la tua password. L'hai dimenticata? Puoi sempre farti inviare un codice via email."
+After signing up (confirmation),signup.nextTimeCode,"Next time, enter this email on {page} and we'll send you a new 6-digit code. You can set a password after that login.","La prossima volta, inserisci questa email {page} e ti invieremo un nuovo codice di 6 cifre. Dopo quell'accesso potrai scegliere una password."
 After signing up (confirmation),signup.pageLogin,the login page,nella pagina di accesso
 After signing up (confirmation),signup.pageEmployers,the For employers page,nella pagina Per le aziende
 After signing up (confirmation),signup.accountLink,Edit or delete your account,Modifica o elimina il tuo account
@@ -527,19 +528,56 @@ Terms checkbox,termsBox.hint,How we use your data: <link>Privacy Notice</link>.,
 Terms checkbox,termsBox.required,Tick this box to continue.,Spunta questa casella per continuare.
 Log out,logout.button,Log out,Esci
 Log out,logout.title,Log out?,Vuoi uscire?
-Log out,logout.text,You'll need a new code from your email to log back in.,Per accedere di nuovo ti servirà un nuovo codice via email.
+Log out,logout.text,"To log back in, you'll need your password or a new code from your email.",Per accedere di nuovo ti servirà la tua password o un nuovo codice via email.
 Log out,logout.busy,Logging out…,Uscita in corso…
-/login and the employer login,auth.captcha,We couldn't confirm you're not a bot. Please try again.,Non riusciamo a confermare che tu non sia un bot. Riprova.
-/login and the employer login,auth.overSendLimit,We're sending a lot of login emails right now. Please try again in a few minutes.,Stiamo inviando molte email di accesso in questo momento. Riprova tra qualche minuto.
-/login and the employer login,auth.paused,Logging in is paused right now. Please write to {email}.,L'accesso è sospeso in questo momento. Scrivi a {email}.
-/login and the employer login,auth.badEmail,That email address doesn't look right. Check it and try again.,Questo indirizzo email non sembra corretto. Controllalo e riprova.
-/login and the employer login,auth.waitMinute,Please wait a minute before asking for another code.,Aspetta un minuto prima di chiedere un altro codice.
-/login and the employer login,auth.sendFailed,We couldn't send your code. Check your connection and try again.,Non riusciamo a inviare il codice. Controlla la connessione e riprova.
-/login and the employer login,auth.tooMany,"Too many attempts. Please wait a few minutes, then try again or ask for a new code.","Troppi tentativi. Aspetta qualche minuto, poi riprova o chiedi un nuovo codice."
-/login and the employer login,auth.expired,This code has expired. Ask for a new one below.,Questo codice è scaduto. Chiedine uno nuovo qui sotto.
-/login and the employer login,auth.wrongCode,That code isn't right. Check the 6 digits in the latest email we sent you.,Il codice non è corretto. Controlla le 6 cifre nell'ultima email che ti abbiamo inviato.
-/login and the employer login,auth.verifyFailed,We couldn't check your code. Check your connection and try again.,Non riusciamo a verificare il codice. Controlla la connessione e riprova.
-/login and the employer login,auth.logOutFailed,We couldn't log you out. Check your connection and try again.,Non riusciamo a farti uscire. Controlla la connessione e riprova.
+/login and the employer login (and passwords),auth.captcha,We couldn't confirm you're not a bot. Please try again.,Non riusciamo a confermare che tu non sia un bot. Riprova.
+/login and the employer login (and passwords),auth.overSendLimit,We're sending a lot of login emails right now. Please try again in a few minutes.,Stiamo inviando molte email di accesso in questo momento. Riprova tra qualche minuto.
+/login and the employer login (and passwords),auth.paused,Logging in is paused right now. Please write to {email}.,L'accesso è sospeso in questo momento. Scrivi a {email}.
+/login and the employer login (and passwords),auth.badEmail,That email address doesn't look right. Check it and try again.,Questo indirizzo email non sembra corretto. Controllalo e riprova.
+/login and the employer login (and passwords),auth.waitMinute,Please wait a minute before asking for another code.,Aspetta un minuto prima di chiedere un altro codice.
+/login and the employer login (and passwords),auth.sendFailed,We couldn't send your code. Check your connection and try again.,Non riusciamo a inviare il codice. Controlla la connessione e riprova.
+/login and the employer login (and passwords),auth.tooMany,"Too many attempts. Please wait a few minutes, then try again or ask for a new code.","Troppi tentativi. Aspetta qualche minuto, poi riprova o chiedi un nuovo codice."
+/login and the employer login (and passwords),auth.expired,This code has expired. Ask for a new one below.,Questo codice è scaduto. Chiedine uno nuovo qui sotto.
+/login and the employer login (and passwords),auth.wrongCode,That code isn't right. Check the 6 digits in the latest email we sent you.,Il codice non è corretto. Controlla le 6 cifre nell'ultima email che ti abbiamo inviato.
+/login and the employer login (and passwords),auth.verifyFailed,We couldn't check your code. Check your connection and try again.,Non riusciamo a verificare il codice. Controlla la connessione e riprova.
+/login and the employer login (and passwords),auth.logOutFailed,We couldn't log you out. Check your connection and try again.,Non riusciamo a farti uscire. Controlla la connessione e riprova.
+/login and the employer login (and passwords),password.label,Password,Password
+/login and the employer login (and passwords),password.show,Show password,Mostra password
+/login and the employer login (and passwords),password.forgot,Forgot your password?,Hai dimenticato la password?
+/login and the employer login (and passwords),password.logIn,Log in,Accedi
+/login and the employer login (and passwords),password.codeHint,"New to GigoMe, or no password yet? We'll email you a {code} code.",Sei nuovo su GigoMe o non hai ancora una password? Ti inviamo via email un codice {code}.
+/login and the employer login (and passwords),password.codeInstead,Email me a code instead,Inviami invece un codice via email
+/login and the employer login (and passwords),password.loginMissing,"Enter your password, or press ""Email me a code instead"".","Inserisci la password, oppure premi ""Inviami invece un codice via email""."
+/login and the employer login (and passwords),password.loginWrong,"That email and password don't match. No password yet, or forgot it? Press ""Email me a code instead"".","Email e password non corrispondono. Non hai ancora una password o l'hai dimenticata? Premi ""Inviami invece un codice via email""."
+/login and the employer login (and passwords),password.loginTooMany,"Too many attempts. Please wait a few minutes, or press ""Email me a code instead"".","Troppi tentativi. Aspetta qualche minuto, oppure premi ""Inviami invece un codice via email""."
+/login and the employer login (and passwords),password.loginFailed,We couldn't log you in. Check your connection and try again.,Non siamo riusciti a farti accedere. Controlla la connessione e riprova.
+/login and the employer login (and passwords),password.newLabel,Choose a password,Scegli una password
+/login and the employer login (and passwords),password.confirmLabel,Type it again,Scrivila di nuovo
+/login and the employer login (and passwords),password.rules,At least {n} characters. A few words together are easy to remember and hard to guess. Don't reuse a password from another site.,Almeno {n} caratteri. Qualche parola messa insieme è facile da ricordare e difficile da indovinare. Non riusare una password di un altro sito.
+/login and the employer login (and passwords),password.err.missing,Choose a password.,Scegli una password.
+/login and the employer login (and passwords),password.err.short,Use at least {n} characters.,Usa almeno {n} caratteri.
+/login and the employer login (and passwords),password.err.long,That's too long: use at most 72 characters (fewer with accents or emoji).,È troppo lunga: usa al massimo 72 caratteri (meno con accenti o emoji).
+/login and the employer login (and passwords),password.err.email,Don't use your email address as your password.,Non usare il tuo indirizzo email come password.
+/login and the employer login (and passwords),password.err.mismatch,The two passwords don't match.,Le due password non corrispondono.
+/login and the employer login (and passwords),password.err.pwned,"This password has appeared in a data leak elsewhere, so it isn't safe to use. Choose a different one.","Questa password è comparsa in una fuga di dati su un altro sito, quindi non è sicura. Scegline un'altra."
+/login and the employer login (and passwords),password.err.weak,"That password isn't accepted. Choose a longer one, at least {n} characters, mixing letters and numbers.","Questa password non è accettata. Scegline una più lunga, di almeno {n} caratteri, con lettere e numeri."
+/login and the employer login (and passwords),password.err.reauth,"For your security, a password can only be set soon after logging in with an email code. Log out, log in again with ""Email me a code instead"", and set it then.","Per la tua sicurezza, puoi impostare una password solo poco dopo aver effettuato l'accesso con un codice via email. Esci, accedi di nuovo con ""Inviami invece un codice via email"" e impostala allora."
+/login and the employer login (and passwords),password.err.tooMany,Too many attempts. Please wait a few minutes and try again.,Troppi tentativi. Aspetta qualche minuto e riprova.
+/login and the employer login (and passwords),password.err.failed,We couldn't save your password. Check your connection and try again.,Non siamo riusciti a salvare la password. Controlla la connessione e riprova.
+/login and the employer login (and passwords),password.promptTitle,Set a password,Imposta una password
+/login and the employer login (and passwords),password.promptLead,"Next time, log in with {email} and your password, without waiting for a code.","La prossima volta accedi con {email} e la tua password, senza aspettare un codice."
+/login and the employer login (and passwords),password.resetTitle,Choose a new password,Scegli una nuova password
+/login and the employer login (and passwords),password.resetLead,You're logged in as {email}. Choose a new password for next time.,Hai effettuato l'accesso come {email}. Scegli una nuova password per la prossima volta.
+/login and the employer login (and passwords),password.save,Save password,Salva la password
+/login and the employer login (and passwords),password.saving,Saving…,Salvataggio…
+/login and the employer login (and passwords),password.notNow,Not now,Non ora
+/login and the employer login (and passwords),password.askAgain,Not now? We'll ask again the next time you log in with a code.,Non ora? Te lo chiederemo di nuovo la prossima volta che accedi con un codice.
+/login and the employer login (and passwords),password.accountTitle,Password,Password
+/login and the employer login (and passwords),password.accountHas,You log in with your email and password. You can always log in with an email code instead.,Accedi con la tua email e la tua password. Puoi sempre accedere invece con un codice via email.
+/login and the employer login (and passwords),password.accountNone,"You don't have a password yet, so you log in with an email code. Set one to log in without waiting for a code.","Non hai ancora una password, quindi accedi con un codice via email. Impostane una per accedere senza aspettare un codice."
+/login and the employer login (and passwords),password.accountChange,Change password,Cambia password
+/login and the employer login (and passwords),password.accountSet,Set a password,Imposta una password
+/login and the employer login (and passwords),password.saved,Your password is saved.,La tua password è salvata.
 /account,myData.aboutFile,"Everything GigoMe (gigome.org) holds about your account, as of the time below. Your login session on this device is kept by your browser and is not included.","Tutto ciò che GigoMe (gigome.org) conserva sul tuo account, alla data e ora indicate qui sotto. La sessione di accesso su questo dispositivo è conservata dal browser e non è inclusa."
 /employers,employers.title,Reach university students in Milan,Raggiungi gli studenti universitari di Milano
 /employers,employers.lead,GigoMe is a job board for university students in Milan: paid part-time jobs and gigs. We don't list internships or unpaid roles.,GigoMe è una bacheca di offerte di lavoro per studenti universitari a Milano: lavori part-time e lavoretti retribuiti. Non pubblichiamo stage né ruoli non retribuiti.
@@ -978,7 +1016,7 @@ Dettagli pratici:
 / (home page),home.howTitle,How it works,Come funziona
 / (home page),home.forStudents,For students,Per gli studenti
 / (home page),home.step1,"<link>Browse jobs</link>: part-time jobs and gigs, with a filter for jobs that need no Italian.","<link>Sfoglia le offerte</link>: lavori part-time e lavoretti, con un filtro per le offerte in cui l'italiano non è richiesto."
-/ (home page),home.step2,"Log in with any email: a university email verifies that you're a student. We send you a 6-digit code, no password needed.","Accedi con qualsiasi email: un'email universitaria verifica il tuo status di studente. Ti mandiamo un codice di 6 cifre, senza bisogno di password."
+/ (home page),home.step2,"Log in with any email: a university email verifies that you're a student. The first time, we send you a 6-digit code; then you choose a password.","Accedi con qualsiasi email: un'email universitaria verifica il tuo status di studente. La prima volta ti mandiamo un codice di 6 cifre, poi scegli una password."
 / (home page),home.step3,"Apply directly with the employer, on their website or by email.","Candidati direttamente presso il datore di lavoro, sul suo sito o via email."
 / (home page),home.forEmployers,For employers,Per le aziende
 / (home page),home.employers,Want to list a job? It's free: <link>see how it works for employers</link>.,Vuoi pubblicare un'offerta? È gratis: <link>scopri come funziona per le aziende</link>.
@@ -1012,7 +1050,7 @@ Dettagli pratici:
 /how-it-works,how.findA2,Log in to save jobs and searches and to follow companies. They stay on GigoMe: we don't email you about them.,Accedi per salvare offerte e ricerche e per seguire le aziende. Restano su GigoMe: non ti mandiamo email al riguardo.
 /how-it-works,how.emailQ,Do I need a university email?,Mi serve un'email universitaria?
 /how-it-works,how.emailA1,"No, any email works. GigoMe is for university students, and a student email from a university on our list verifies that you're a student. To see the list, open ""Which emails verify you as a student?"" on the <link>student login</link>. With any other email, you tell us after logging in that you're a university student and which university; we don't check that answer.","No, va bene qualsiasi email. GigoMe è per chi studia all'università, e un'email studentesca di un'università del nostro elenco verifica il tuo status di studente. Per vedere l'elenco, apri ""Quali email verificano che sei studente?"" nella pagina di <link>accesso studenti</link>. Con qualsiasi altra email, dopo l'accesso ci dici che studi all'università e in quale; non controlliamo questa risposta."
-/how-it-works,how.emailA2,"When you log in, we send a 6-digit code to your email; there's no password. The code only shows that you can read that inbox. It doesn't check that you're enrolled or that you're allowed to work in Italy. Is your university missing from the list? Write to {email}.","Quando accedi, ti mandiamo un codice di 6 cifre via email; non c'è nessuna password. Il codice dimostra solo che puoi leggere quella casella di posta. Non controlla la tua iscrizione né il tuo diritto a lavorare in Italia. La tua università non è nell'elenco? Scrivi a {email}."
+/how-it-works,how.emailA2,"The first time you log in, we send a 6-digit code to your email, then you choose a password for next time. You can always log in with a new code instead, for example if you forget your password. The code only shows that you can read that inbox. It doesn't check that you're enrolled or that you're allowed to work in Italy. Your password is kept only in scrambled form (a one-way hash) by our login provider: nobody at GigoMe can see it. Is your university missing from the list? Write to {email}.","La prima volta che accedi ti mandiamo un codice di 6 cifre via email, poi scegli una password per le volte successive. Puoi sempre accedere con un nuovo codice, per esempio se dimentichi la password. Il codice dimostra solo che puoi leggere quella casella di posta. Non controlla la tua iscrizione né il tuo diritto a lavorare in Italia. La tua password è conservata solo in forma cifrata (un hash non reversibile) dal nostro fornitore di accesso: nessuno di GigoMe può vederla. La tua università non è nell'elenco? Scrivi a {email}."
 /how-it-works,how.applyQ,"What happens when I press ""Apply""?","Cosa succede quando premo ""Candidati""?"
 /how-it-works,how.applyA1,"GigoMe shows you how to apply for that job, the employer's application page or email address, and opens it. You then contact the employer directly, outside GigoMe. GigoMe doesn't send them your profile, your CV or anything else, and pressing Apply isn't an application.","GigoMe ti mostra come candidarti per quell'offerta, cioè la pagina di candidatura o l'indirizzo email del datore di lavoro, e la apre. Poi contatti direttamente il datore di lavoro, fuori da GigoMe. GigoMe non gli invia il tuo profilo, il tuo CV né nient'altro, e premere ""Candidati"" non è una candidatura."
 /how-it-works,how.applyA2,"GigoMe records that your account pressed Apply on that job, and when. You see it under ""Jobs you opened"" on your Saved jobs page. The employer only sees how many times Apply was pressed on their job, never by whom. Within 180 days, the record no longer shows who pressed it.","GigoMe registra che il tuo account ha premuto ""Candidati"" su quell'offerta, e quando. Lo vedi in ""Offerte che hai aperto"" nella pagina Offerte salvate. Il datore di lavoro vede solo quante volte è stato premuto ""Candidati"" sulla sua offerta, mai da chi. Entro 180 giorni, il dato non mostra più chi l'ha premuto."
@@ -1025,7 +1063,7 @@ Dettagli pratici:
 /how-it-works,how.deleteA2,"Some records stay without your name, such as that Apply was pressed on a job, or a report you sent. Anything you sent to an employer stays with them. You can also write to {email}.","Alcuni dati restano senza il tuo nome, come il fatto che è stato premuto ""Candidati"" su un'offerta, o una segnalazione che hai inviato. Ciò che hai inviato a un datore di lavoro resta a lui. Puoi anche scrivere a {email}."
 /how-it-works,how.employersTitle,For employers,Per le aziende
 /how-it-works,how.signupQ,How do I sign up?,Come mi registro?
-/how-it-works,how.signupA1,"Go to <link>For employers</link> and log in with your work email. We send you a 6-digit code; there's no password. University email addresses are for student accounts, and each email has one role: an email that already has a student account can't also be an employer account.","Vai su <link>Per le aziende</link> e accedi con la tua email di lavoro. Ti mandiamo un codice di 6 cifre; non c'è nessuna password. Gli indirizzi email universitari sono per gli account studente, e ogni email ha un solo ruolo: un'email che ha già un account studente non può essere anche un account azienda."
+/how-it-works,how.signupA1,"Go to <link>For employers</link> and log in with your work email. The first time, we send you a 6-digit code, then you choose a password. University email addresses are for student accounts, and each email has one role: an email that already has a student account can't also be an employer account.","Vai su <link>Per le aziende</link> e accedi con la tua email di lavoro. La prima volta ti mandiamo un codice di 6 cifre, poi scegli una password. Gli indirizzi email universitari sono per gli account studente, e ogni email ha un solo ruolo: un'email che ha già un account studente non può essere anche un account azienda."
 /how-it-works,how.signupA2,"Then tell us about your company: its name, website and a short description, and a contact email that only the GigoMe team sees. Tick the box to accept the Terms. Listing jobs is free.","Poi parlaci della tua azienda: nome, sito web e una breve descrizione, e un'email di contatto che vede solo il team di GigoMe. Spunta la casella per accettare i Termini. Pubblicare offerte è gratis."
 /how-it-works,how.reviewQ,How does the company review work?,Come funziona la revisione dell'azienda?
 /how-it-works,how.reviewA1,"A person at GigoMe reviews every new company before its jobs can go live, usually within 2 working days. Your dashboard shows the status: In review, Approved or Not approved. We don't email you when it changes.","Una persona di GigoMe controlla ogni nuova azienda prima che le sue offerte possano essere pubblicate, di solito entro 2 giorni lavorativi. La tua dashboard mostra lo stato: In revisione, Approvata o Non approvata. Non ti mandiamo email quando cambia."
@@ -1057,7 +1095,7 @@ Dettagli pratici:
 /safety,safety.tip3,"<strong>Meeting at an address for the first time?</strong> Tell someone where you're going and when you'll be back, and go during the business's opening hours.","<strong>Primo incontro a un indirizzo?</strong> Di' a qualcuno dove vai e quando torni, e vai durante l'orario di apertura dell'attività."
 /safety,safety.tip4,"<strong>Get the essential terms in writing before you start:</strong> what you'll do, the hours, the place, the pay and the type of contract (<link>Terms, section 8.1</link>).","<strong>Fatti dare per iscritto le condizioni essenziali prima di iniziare:</strong> cosa farai, l'orario, il luogo, la paga e il tipo di contratto (<link>Termini, sezione 8.1</link>)."
 /safety,safety.tip5,"<strong>Unpaid ""trial shifts"" doing real work are a red flag.</strong> Work should be paid.","<strong>I ""turni di prova"" non pagati in cui fai un lavoro vero sono un campanello d'allarme.</strong> Il lavoro va pagato."
-/safety,safety.tip6,<strong>Never share passwords or login codes.</strong> GigoMe never asks for your login code.,<strong>Non condividere mai password o codici di accesso.</strong> GigoMe non ti chiede mai il tuo codice di accesso.
+/safety,safety.tip6,<strong>Never share passwords or login codes.</strong> GigoMe never asks for your password or your login code.,<strong>Non condividere mai password o codici di accesso.</strong> GigoMe non ti chiede mai la tua password né il tuo codice di accesso.
 /safety,safety.tip7,"<strong>Keep your bank details to yourself until you have the written terms of a real job.</strong> An employer needs your bank account only to pay you, and never needs your card number or PIN.","<strong>Non dare i tuoi dati bancari finché non hai le condizioni scritte di un lavoro vero.</strong> A un datore di lavoro il tuo conto serve solo per pagarti, e il numero della tua carta o il PIN non gli servono mai."
 /safety,safety.tip8,"<strong>From outside the EU?</strong> Check how many hours your residence permit lets you work on an official source, such as the <link>Italian government's portal for migrants</link>, or ask your university's international office.","<strong>Vieni da un paese fuori dall'UE?</strong> Controlla su una fonte ufficiale quante ore ti permette di lavorare il tuo permesso di soggiorno, come il <link>portale del governo italiano per i migranti</link>, oppure chiedi all'ufficio internazionale della tua università."
 /safety,safety.wrongTitle,If something's wrong,Se qualcosa non va

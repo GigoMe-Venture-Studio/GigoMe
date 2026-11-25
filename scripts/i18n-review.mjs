@@ -36,7 +36,7 @@ const PAGES = [
   [/^applyDemo\./, 'Apply on example listings (demo)'],
   [/^company\./, '/companies/<id> (company page)'],
   [/^description\./, 'Job descriptions'],
-  [/^(login|codeLogin|captcha|auth)\./, '/login and the employer login'],
+  [/^(login|codeLogin|captcha|auth|password)\./, '/login and the employer login (and passwords)'],
   [/^welcome\./, '/welcome'],
   [/^(account|myData)\./, '/account'],
   [/^profile\./, '/welcome and /account (profile fields)'],

@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/terms-and-conditions-v2.1.html",
+ "source": "docs/legal/published/terms-and-conditions-v2.2.html",
  "title": "GigoMe | Termini e condizioni",
  "toc": [
   {
@@ -165,7 +165,7 @@
    [
     "strong",
     null,
-    "Versione 2.1 | Ultimo aggiornamento: 20 novembre 2026"
+    "Versione 2.2 | Ultimo aggiornamento: 25 novembre 2026"
    ],
    [
     "br",
@@ -451,12 +451,12 @@
   [
    "p",
    null,
-   "4.1. Gli Utenti devono proteggere l'accesso ai propri account email e ai codici di autenticazione, comunicare tempestivamente a GigoMe qualsiasi accesso non autorizzato ed evitare di fornire ad altri i codici di accesso."
+   "4.1. Gli Utenti devono proteggere l'accesso ai propri account email, alle proprie password e ai codici di autenticazione, comunicare tempestivamente a GigoMe qualsiasi accesso non autorizzato ed evitare di fornire ad altri le password o i codici di accesso."
   ],
   [
    "p",
    null,
-   "4.2. Attualmente GigoMe autentica gli utenti con un codice monouso inviato via email. Non chiede agli Utenti di creare una password GigoMe. Gli Utenti non devono condividere i codici di autenticazione né spacciarsi per altri."
+   "4.2. GigoMe autentica gli utenti con un codice monouso inviato via email al momento della creazione dell'account. Agli Utenti viene poi chiesto di scegliere una password e in seguito possono accedere con il proprio indirizzo email e la password, oppure con un nuovo codice monouso, per esempio se dimenticano la password. Gli Utenti devono mantenere riservata la propria password e non devono condividere password o codici di autenticazione né spacciarsi per altri."
   ],
   [
    "p",

@@ -11,8 +11,8 @@ import { legalToJson } from '../../scripts/legal-to-json.mjs';
 const root = new URL('../../', import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), 'utf8');
 const DOCS = [
-  ['docs/legal/published/privacy-notice-v1.2.html', 'src/legal/privacy.json', 'GigoMe | Privacy Notice'],
-  ['docs/legal/published/terms-and-conditions-v2.1.html', 'src/legal/terms.json', 'GigoMe | Terms and Conditions']
+  ['docs/legal/published/privacy-notice-v1.3.html', 'src/legal/privacy.json', 'GigoMe | Privacy Notice'],
+  ['docs/legal/published/terms-and-conditions-v2.2.html', 'src/legal/terms.json', 'GigoMe | Terms and Conditions']
 ];
 const NOTE = '(activate this link before publication)';
 

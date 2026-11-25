@@ -80,3 +80,18 @@
 .student-question-options { display: flex; gap: var(--s5); }
 .student-question-options .check { min-height: 44px; display: inline-flex; align-items: center; gap: var(--s1); }
 .not-student > p + p { margin-top: var(--s2); }
+
+/* Passwords (CodeLogin.jsx, PasswordFields.jsx). */
+.password-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 0 var(--s4); font-size: 14px;
+}
+.auth-form > .password-row { margin-top: var(--s1); }
+.password-show { font-size: 14px; min-height: 44px; }
+.password-fields > * + * { margin-top: var(--s3); }
+.password-fields > .password-rules { margin-top: var(--s1); }
+/* "Email me a code instead": the fallback, set apart from "Log in". */
+.login-code-option { padding-top: var(--s4); border-top: 1px solid var(--line); }
+.auth-form > .login-code-option { margin-top: var(--s5); }
+.login-code-option > * + * { margin-top: var(--s2); }
+.set-password h1:focus { outline: none; }

@@ -21,6 +21,10 @@ skip any because "it worked in testing".
       months (decided by the owner, delegated by the legal person, D6),
       built (A5), Privacy Notice v1.2 (20 November 2026).
 - [x] Who operates GigoMe: named in both texts.
+- [ ] Privacy Notice v1.3 and Terms v2.2 (passwords, 25 November 2026)
+      approved by the legal person, English and Italian
+      (`docs/legal/v2.2-changes.md`). They are live from the merge, and
+      everyone accepts v2.2 once.
 - [ ] `privacy@gigome.org` (named in both texts) receives mail and someone
       reads it, like `hello@gigome.org`.
 - [x] Retention in the database: unfinished sign-ups 29 days, ended
@@ -49,6 +53,8 @@ skip any because "it worked in testing".
 - [ ] Supabase Auth: Site URL `https://gigome.org`; email templates show the
       6-digit code (no links); rate limits below Brevo's 300 emails a day
       (section 7).
+- [ ] Supabase Auth password settings as in section 6b (minimum length 10,
+      "Password changed" email off, "Require current password" off).
 - [ ] Brevo: SMTP key's creation date noted and a renewal reminder set
       (section 6); the gigome.org DNS records Brevo asked for (SPF, DKIM,
       DMARC) verified in Brevo.
@@ -282,7 +288,35 @@ the `moderation_log` table).
   to check a code arrives > delete the old key in Brevo > update Bitwarden.
   Current key created on: **[fill in]**.
 - Brevo's free plan sends at most 300 emails a day for the whole account.
-  Each login sends one email. Don't build anything that emails users in bulk.
+  Each code login sends one email: signing up, "Email me a code instead"
+  and "Forgot your password?". Logging in with a password sends none.
+  Don't build anything that emails users in bulk.
+
+## 6b. Passwords (Supabase settings)
+
+The email code is needed once, at sign-up; then people log in with their
+email and password (CLAUDE.md, "Passwords"). Supabase stores only a hash
+of each password. GigoMe never sends a password reset link: "Forgot your
+password?" is a code login followed by "Choose a new password". Setting a
+password must never send an email. The site is built for these settings
+(Supabase > Authentication):
+
+| Setting | Where | Value | Why |
+| --- | --- | --- | --- |
+| Email provider | Sign In / Providers > Email | On (as now) | Password logins are part of it |
+| Minimum password length | Sign In / Providers > Email | **10** | The site asks for 10; this makes the API refuse shorter ones too. Default 6 works, but is weaker |
+| Password requirements | Sign In / Providers > Email | **No required characters** | The site asks for length only (NIST). A stricter setting works, but the site can only say "too weak" |
+| Secure password change | Sign In / Providers > Email | **On** | Asks for a recent login (under 24 hours) to change a password. GigoMe only sets passwords right after a code login, so nobody gets an extra email; an older session is told to log in with a code first. GigoMe never calls Supabase's "reauthenticate", which would email a second code |
+| Require current password when updating | Sign In / Providers > Email (newer dashboards) | **Off** | On, it would break "Forgot your password?": nobody who forgot it can type it |
+| Prevent use of leaked passwords | Sign In / Providers > Email (Pro plan only) | On, if the plan has it | The site says so when Supabase refuses one |
+| "Password changed" notification | Emails > Security notifications (or Notifications) | **Off** (Supabase's default) | On, every new password sends an email (Brevo's 300 a day) |
+| "Reset password" template | Emails > Templates | Unused | GigoMe never asks Supabase for a reset email |
+| CAPTCHA protection | Attack Protection | On (as now) | Covers the password login too: the site sends the Turnstile token with it |
+| Rate limits | Rate Limits | As now | "Sign-ups and sign-ins" also limits password attempts per IP |
+
+To check after a change: log in with a password on a phone; "Forgot your
+password?" sends one code and nothing else; setting a new password sends no
+email (Brevo > Transactional > Logs).
 
 ## 7. Limits
 
@@ -354,7 +388,7 @@ login, a map and the Metro button). GigoMe sets **no cookies**.
 | Where | Name | What | When | How long |
 | --- | --- | --- | --- | --- |
 | localStorage | `sb-<project>-auth-token` | The login session: access and refresh tokens, user ID and email | After logging in | Until "Log out", or the session expires |
-| sessionStorage | `gigome.login.pending` (and `.employer`) | The email a code was just sent to, and when, so a reload doesn't lose it | Between "Send me a code" and entering it | Until the code is used or the tab is closed |
+| sessionStorage | `gigome.login.pending` (and `.employer`) | The email a code was just sent to, and when, and whether it was "Forgot your password?", so a reload doesn't lose it | Between "Email me a code instead" (or "Forgot your password?") and entering it | Until the code is used or the tab is closed |
 | localStorage | `gigome-lang` | "en" or "it": the language chosen with the EN \| IT switch | After pressing EN or IT | Until changed, or the browser's site data is cleared |
 | sessionStorage | `gigome.metro` | "off" when someone hides the metro lines on a map | After pressing "Metro" | Until the tab is closed |
 | Turnstile's frame (challenges.cloudflare.com) | Cloudflare's own | Whatever Cloudflare's bot check keeps, inside its own frame, not readable by GigoMe | On the login forms, when Turnstile is on | Cloudflare's rules |
@@ -381,7 +415,7 @@ the free plan.
 | Apply clicks: which job and when "Apply" was pressed. The student sees their own as "Jobs you opened"; admins see all; employers see counts only | After 179 days, or when the account is deleted: kept without the user (anonymous), the day only |
 | Job reports they filed (admins only) | Kept after the account is deleted, without the reporter, and after the job or company is deleted, with only the job title and company name. Deleted 730 days after the report was resolved |
 | Feedback they sent (admins only) | 364 days after it was sent (the Notice says 12 months), or when the account is deleted |
-| Login details kept by Supabase Auth: email, when the account was created, last login | The account is deleted |
+| Login details kept by Supabase Auth: email, when the account was created, last login, and the password as a bcrypt hash only (nobody can read it back; the site asks the database only whether there is one, `my_has_password()`) | The account is deleted |
 | For company accounts: the company (name, website, description, contact email, when the terms were accepted), its jobs, how to apply, apply-click counts, moderation notes | The account is deleted (moderation decisions stay in `moderation_log` without the job or company, until they're deleted 729 days after they were made; reports on its jobs stay with only the job title and company name). 89 days after a job is closed, rejected or expired: its contact, description, pay note, free-text location and pin (unless it was reported) |
 
 "Share" on a job page hands the job's link to the phone's own share sheet
@@ -492,6 +526,19 @@ team's legal person first.
   the employer deal with each other directly).
 - **Email to all users** (newsletters, alerts): Brevo's free plan allows 300
   emails a day, and those are needed for login codes.
+
+## 8b. Planned, not built yet
+
+- **Sign in with Google (later).** It removes the email step entirely: no
+  code and no password for people who choose it, and no Brevo email. It
+  needs a Google Cloud OAuth client (consent screen with the GigoMe name,
+  logo and privacy link; redirect URL from Supabase), Supabase >
+  Authentication > Sign In / Providers > Google with that client's ID and
+  secret, `signInWithOAuth` on both logins (keeping one email, one role and
+  `signup_as` for new students), `accounts.google.com` in the
+  Content-Security-Policy and section 7b, and a Privacy Notice line naming
+  Google as a sign-in provider (what it receives and sends back). Ask the
+  legal person before building it.
 
 ## 9. Backups: there are none
 

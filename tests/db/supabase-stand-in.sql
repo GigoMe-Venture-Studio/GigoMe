@@ -24,6 +24,8 @@ create table if not exists auth.users (
   raw_user_meta_data jsonb
 );
 alter table auth.users add column if not exists raw_user_meta_data jsonb;
+-- Where Supabase keeps the bcrypt hash of a password (my_has_password()).
+alter table auth.users add column if not exists encrypted_password varchar(255);
 -- Same definitions Supabase uses
 create or replace function auth.uid() returns uuid language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claim.sub', true), ''),
