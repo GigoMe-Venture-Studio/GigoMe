@@ -1,31 +1,36 @@
 # GigoMe
 
-**Part-time jobs and gigs in Milan, in English.**
+**Part-time jobs and gigs for students in Milan.**
 
-GigoMe is a job discovery platform for international and English-speaking
-university students in Milan. Employers list English-friendly roles, students
-log in with their university email and apply directly with the employer. It is a
-student-run project built by the GigoMe Venture Studio team. Free for
-students. No monetisation before the platform is useful.
+GigoMe is a job discovery platform for university students in Milan, from
+any university, whether or not they speak Italian. Jobs that need no
+Italian are a highlighted filter ("No Italian needed"), not the limit of
+the platform. Students log in with any email (a university email verifies
+them) and apply directly with the employer. It is a student-run project
+built by the GigoMe Venture Studio team. Free for students. No
+monetisation before the platform is useful.
 
 **Website:** https://gigome.org
 
 ## The problem
 
-International students in Milan often struggle to find flexible,
-student-friendly work. Many opportunities require Italian, and the ones that
-don't are scattered across informal channels: group chats, word of mouth and
-notice boards. At the same time, small businesses that would happily hire an
-English-speaking student have no simple way to reach them.
+Students in Milan often struggle to find flexible, student-friendly work
+that fits around their studies. Opportunities are scattered across
+informal channels: group chats, word of mouth and notice boards. For
+international students it's harder still, since many jobs require
+Italian and the ones that don't are hard to spot. At the same time,
+small businesses that would happily hire a student have no simple way to
+reach them.
 
 ## What GigoMe does
 
-- **For students:** browse paid part-time jobs, gigs and tutoring that
-  don't need Italian, filtered by keyword, job type, remote work, Italian
-  level and hours. No internships and no unpaid roles.
+- **For students:** browse paid part-time jobs, gigs and tutoring,
+  filtered by keyword, area, job type, schedule, pay, hours and how much
+  Italian is needed (including "No Italian needed"). No internships and
+  no unpaid roles.
 - **For employers:** businesses and private people (a family looking for a
-  tutor, someone who needs a dog walker) list roles for free by writing to
-  hello@gigome.org.
+  tutor, someone who needs a dog walker) list roles for free from their
+  own dashboard; a person reviews every company and job first.
 - **Direct contact:** students apply on the employer's site or by email.
   Contracts and pay are agreed directly between them, outside the platform.
 
@@ -88,8 +93,8 @@ Launch with **100+ registered students and 10+ registered companies by
 
 ## Open questions
 
-- **Access scope:** international students only, or open to all students from
-  day one?
+- **Access scope:** decided in November 2026: open to all university
+  students in Milan, with jobs that need no Italian as a highlighted filter.
 - **Student verification:** university email domains plus email
   verification, unless a stronger integration turns out to be needed.
 - **Legal status:** confirm whether registration or other formal steps are

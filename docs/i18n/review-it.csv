@@ -114,12 +114,12 @@ Error pages,error.appText,"GigoMe hit an error and couldn't show this page. Relo
 Error pages,error.pageText,"This page hit an error and couldn't be shown. Reloading usually fixes it, for example after we've put out a new version of the site.","Questa pagina ha avuto un errore e non è stato possibile mostrarla. Di solito basta ricaricarla, per esempio dopo che abbiamo pubblicato una nuova versione del sito."
 Error pages,error.reload,Reload the page,Ricarica la pagina
 Error pages,error.tellUs,"If it keeps happening, <link>tell us what you were doing</link> so we can fix it.","Se succede ancora, <link>raccontaci cosa stavi facendo</link> così possiamo sistemarlo."
-Browser tab titles and search results,seo.description,"Part-time jobs and gigs in Milan, in English. A free, student-run job board for international students.","Lavori part-time e lavoretti a Milano, in inglese. Una bacheca di offerte gratuita, gestita da studenti, per studenti internazionali."
-Browser tab titles and search results,seo.home.title,"GigoMe: part-time jobs and gigs in Milan, in English","GigoMe: lavori part-time e lavoretti a Milano, in inglese"
-Browser tab titles and search results,seo.jobs.title,Jobs in Milan in English,Offerte di lavoro a Milano in inglese
-Browser tab titles and search results,seo.jobs.description,"Part-time jobs and gigs in Milan you can do in English. Filter by area, schedule, pay and how much Italian is needed.","Lavori part-time e lavoretti a Milano che puoi fare in inglese. Filtra per zona, orari, paga e livello di italiano richiesto."
-Browser tab titles and search results,seo.employers.title,Hire international students in Milan,Assumi studenti internazionali a Milano
-Browser tab titles and search results,seo.employers.description,"Post paid part-time jobs and gigs for international students in Milan who work in English. Free, reviewed by the GigoMe team.","Pubblica lavori part-time e lavoretti retribuiti per studenti internazionali a Milano che lavorano in inglese. Gratis, con revisione del team di GigoMe."
+Browser tab titles and search results,seo.description,"Part-time jobs and gigs for students in Milan. A free, student-run job board for university students, with a filter for jobs that need no Italian.","Lavori part-time e lavoretti per studenti a Milano. Una bacheca di offerte gratuita, gestita da studenti, per studenti universitari, con un filtro per le offerte in cui l'italiano non è richiesto."
+Browser tab titles and search results,seo.home.title,GigoMe: part-time jobs and gigs for students in Milan,GigoMe: lavori part-time e lavoretti per studenti a Milano
+Browser tab titles and search results,seo.jobs.title,Part-time jobs for students in Milan,Lavori part-time per studenti a Milano
+Browser tab titles and search results,seo.jobs.description,"Part-time jobs and gigs for students in Milan. Filter by area, schedule, pay and how much Italian is needed, including jobs with no Italian needed.","Lavori part-time e lavoretti per studenti a Milano. Filtra per zona, orari, paga e livello di italiano richiesto, comprese le offerte in cui l'italiano non è richiesto."
+Browser tab titles and search results,seo.employers.title,Reach university students in Milan,Raggiungi gli studenti universitari di Milano
+Browser tab titles and search results,seo.employers.description,"Post paid part-time jobs and gigs for university students in Milan. Free, reviewed by the GigoMe team.","Pubblica lavori part-time e lavoretti retribuiti per studenti universitari a Milano. Gratis, con revisione del team di GigoMe."
 Browser tab titles and search results,seo.privacy.title,Privacy Notice,Informativa sulla privacy
 Browser tab titles and search results,seo.privacy.description,"How GigoMe handles personal data: who is responsible, what is collected and why, who can see it, how long it is kept, and your rights.","Come GigoMe tratta i dati personali: chi è responsabile, cosa raccogliamo e perché, chi può vederli, per quanto tempo li conserviamo e quali sono i tuoi diritti."
 Browser tab titles and search results,seo.howItWorks.title,How GigoMe works,Come funziona GigoMe
@@ -145,7 +145,7 @@ Browser tab titles and search results,seo.notFound.title,Page not found,Pagina n
 Job lists and job pages (labels),area.elsewhere,Elsewhere in Milan,Altrove a Milano
 /jobs,jobs.configError,Jobs can't be shown right now,Non riusciamo a mostrare le offerte in questo momento
 /jobs,jobs.title,Jobs in Milan,Offerte di lavoro a Milano
-/jobs,jobs.lead,"Part-time jobs and gigs for students, in English.","Lavori part-time e lavoretti per studenti, in inglese."
+/jobs,jobs.lead,Part-time jobs and gigs for students in Milan.,Lavori part-time e lavoretti per studenti a Milano.
 /jobs,jobs.filtersLabel,Filter jobs,Filtra le offerte
 /jobs,jobs.keyword,Keyword,Parola chiave
 /jobs,jobs.keywordPlaceholder,"e.g. barista, tutor","es. barista, ripetizioni"
@@ -352,7 +352,7 @@ Apply on example listings (demo),applyDemo.subject,Subject: {subject},Oggetto: {
 Apply on example listings (demo),applyDemo.madeUp,The link and address above are made up: they don't work.,Il link e l'indirizzo qui sopra sono inventati: non funzionano.
 /companies/<id> (company page),company.configError,This page can't be shown right now,Non riusciamo a mostrare questa pagina in questo momento
 /companies/<id> (company page),company.metaTitle,{name}: jobs in Milan,{name}: offerte di lavoro a Milano
-/companies/<id> (company page),company.metaDescription,{name} on GigoMe: open jobs in Milan for students who work in English. {description},{name} su GigoMe: offerte di lavoro aperte a Milano per studenti che lavorano in inglese. {description}
+/companies/<id> (company page),company.metaDescription,{name} on GigoMe: open jobs in Milan for university students. {description},{name} su GigoMe: offerte di lavoro aperte a Milano per studenti universitari. {description}
 /companies/<id> (company page),company.missingTitle,This company isn't on GigoMe,Questa azienda non è su GigoMe
 /companies/<id> (company page),company.loadError,We couldn't load this company. Check your connection and reload the page.,Non siamo riusciti a caricare questa azienda. Controlla la connessione e ricarica la pagina.
 /companies/<id> (company page),company.missingText,"It may not be approved yet, or the link is wrong.","Potrebbe non essere ancora stata approvata, oppure il link è sbagliato."
@@ -541,8 +541,8 @@ Log out,logout.busy,Logging out…,Uscita in corso…
 /login and the employer login,auth.verifyFailed,We couldn't check your code. Check your connection and try again.,Non riusciamo a verificare il codice. Controlla la connessione e riprova.
 /login and the employer login,auth.logOutFailed,We couldn't log you out. Check your connection and try again.,Non riusciamo a farti uscire. Controlla la connessione e riprova.
 /account,myData.aboutFile,"Everything GigoMe (gigome.org) holds about your account, as of the time below. Your login session on this device is kept by your browser and is not included.","Tutto ciò che GigoMe (gigome.org) conserva sul tuo account, alla data e ora indicate qui sotto. La sessione di accesso su questo dispositivo è conservata dal browser e non è inclusa."
-/employers,employers.title,Hire students in Milan who work in English,Assumi studenti a Milano che lavorano in inglese
-/employers,employers.lead,GigoMe is a job board for international students in Milan: paid part-time jobs and gigs they can do in English. We don't list internships or unpaid roles.,GigoMe è una bacheca di offerte di lavoro per studenti internazionali a Milano: lavori part-time e lavoretti retribuiti che si possono svolgere in inglese. Non pubblichiamo stage né ruoli non retribuiti.
+/employers,employers.title,Reach university students in Milan,Raggiungi gli studenti universitari di Milano
+/employers,employers.lead,GigoMe is a job board for university students in Milan: paid part-time jobs and gigs. We don't list internships or unpaid roles.,GigoMe è una bacheca di offerte di lavoro per studenti universitari a Milano: lavori part-time e lavoretti retribuiti. Non pubblichiamo stage né ruoli non retribuiti.
 /employers,employers.freeTitle,Free to list jobs,Pubblicare offerte è gratis
 /employers,employers.freeText,"Listing jobs on GigoMe is free. Students apply directly with you, on your website or by email.","Pubblicare offerte su GigoMe è gratuito. Gli studenti si candidano direttamente con te, sul tuo sito o via email."
 /employers,employers.reviewTitle,How review works,Come funziona la revisione
@@ -972,12 +972,12 @@ Dettagli pratici:
 /saved,student.save.limit,You can save up to {max} searches. Delete one on Saved jobs first.,Puoi salvare fino a {max} ricerche. Prima eliminane una su Offerte salvate.
 /saved,student.save.failed,We couldn't save this search. Try again.,Non siamo riusciti a salvare questa ricerca. Riprova.
 /saved,student.opened,You opened the application on {date},Hai aperto la candidatura il {date}
-/ (home page),home.title,"Part-time jobs and gigs in Milan, in English.","Lavori part-time e lavoretti a Milano, in inglese."
-/ (home page),home.lead,"For international students who don't speak fluent Italian. Free for students, always.",Per studenti internazionali che non parlano bene l'italiano. Sempre gratis per gli studenti.
+/ (home page),home.title,Part-time jobs and gigs for students in Milan.,Lavori part-time e lavoretti per studenti a Milano.
+/ (home page),home.lead,"For all university students in Milan, whether or not you speak Italian. Free for students, always.","Per tutti gli studenti universitari di Milano, che tu parli italiano o no. Sempre gratis per gli studenti."
 / (home page),home.newestTitle,Newest jobs,Offerte più recenti
 / (home page),home.howTitle,How it works,Come funziona
 / (home page),home.forStudents,For students,Per gli studenti
-/ (home page),home.step1,<link>Browse jobs</link>: part-time jobs and gigs you can do in English.,<link>Sfoglia le offerte</link>: lavori part-time e lavoretti che puoi fare in inglese.
+/ (home page),home.step1,"<link>Browse jobs</link>: part-time jobs and gigs, with a filter for jobs that need no Italian.","<link>Sfoglia le offerte</link>: lavori part-time e lavoretti, con un filtro per le offerte in cui l'italiano non è richiesto."
 / (home page),home.step2,"Log in with any email: a university email verifies that you're a student. We send you a 6-digit code, no password needed.","Accedi con qualsiasi email: un'email universitaria verifica il tuo status di studente. Ti mandiamo un codice di 6 cifre, senza bisogno di password."
 / (home page),home.step3,"Apply directly with the employer, on their website or by email.","Candidati direttamente presso il datore di lavoro, sul suo sito o via email."
 / (home page),home.forEmployers,For employers,Per le aziende
@@ -1004,7 +1004,7 @@ Dettagli pratici:
 / (home page),home.mapTitle,Map of current jobs,Mappa delle offerte attuali
 / (home page),home.mapLead,"Jobs with an exact address. Jobs that show only their area, and remote jobs, are in the <link>job list</link>.","Offerte con un indirizzo esatto. Quelle che mostrano solo la zona, e quelle da remoto, sono nell'<link>elenco delle offerte</link>."
 /how-it-works,how.title,How GigoMe works,Come funziona GigoMe
-/how-it-works,how.lead,"GigoMe lists paid part-time jobs and gigs in Milan that you can do in English. You find a job here, then contact the employer directly: GigoMe isn't part of the application or the work.","GigoMe pubblica lavori part-time e lavoretti retribuiti a Milano che puoi fare in inglese. Trovi un'offerta qui, poi contatti direttamente il datore di lavoro: GigoMe non partecipa alla candidatura né al lavoro."
+/how-it-works,how.lead,"GigoMe lists paid part-time jobs and gigs in Milan for university students, and you can filter for jobs that need no Italian. You find a job here, then contact the employer directly: GigoMe isn't part of the application or the work.","GigoMe pubblica lavori part-time e lavoretti retribuiti a Milano per studenti universitari, e puoi filtrare le offerte in cui l'italiano non è richiesto. Trovi un'offerta qui, poi contatti direttamente il datore di lavoro: GigoMe non partecipa alla candidatura né al lavoro."
 /how-it-works,how.aside,Some jobs mean meeting an employer at an address. <link>Read Staying safe</link>.,Per alcune offerte devi incontrare un datore di lavoro a un indirizzo. <link>Leggi la pagina Sicurezza</link>.
 /how-it-works,how.studentsTitle,For students,Per gli studenti
 /how-it-works,how.findQ,How do I find jobs?,Come trovo le offerte?

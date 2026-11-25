@@ -207,8 +207,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   emailed.
 - Paid part-time jobs and gigs only: no internships and nothing unpaid
   anywhere (job types gig, part-time, other; pay per hour, month or
-  project). The tagline is "Part-time jobs and gigs in Milan, in English."
-  (home page headline, titles, meta and the share image). An older job
+  project). GigoMe is for all university students in Milan, not only
+  international ones or people who don't speak Italian: jobs that need no
+  Italian are a highlighted filter and selling point ("No Italian needed"
+  in the home page search and on /jobs), never the definition of the
+  platform, and the employer pitch ("Reach university students in Milan")
+  doesn't mention language skills. The tagline is "Part-time jobs and gigs
+  for students in Milan." (home page headline, titles, meta and the share
+  image). An older job
   with `internship` or `unpaid_curricular` shows no type and "Pay not
   listed", and the job form starts both fields empty so the owner chooses
   again.

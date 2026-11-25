@@ -59,11 +59,11 @@ async function downloadJson(p, click) {
     };
     await p.goto(E + '/'); await p.waitForTimeout(500);
     let m = await meta();
-    ok(m.title === 'GigoMe: part-time jobs and gigs in Milan, in English' && m.canonical === 'https://gigome.org/' && !m.robots, 'home: title and canonical: ' + JSON.stringify(m));
+    ok(m.title === 'GigoMe: part-time jobs and gigs for students in Milan' && m.canonical === 'https://gigome.org/' && !m.robots, 'home: title and canonical: ' + JSON.stringify(m));
     ok(m.site.length === 1 && JSON.stringify(JSON.parse(m.site[0])) === JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'GigoMe', url: 'https://gigome.org/' }) && m.ld.length === 0,
       'home: WebSite data with the name GigoMe and https://gigome.org/: ' + JSON.stringify(m.site));
     await p.goto(E + '/jobs?area=3'); await p.waitForSelector('.job-list .role-row'); m = await meta();
-    ok(m.title === 'Jobs in Milan in English | GigoMe' && m.canonical === 'https://gigome.org/jobs' && /Filter by area/.test(m.desc), '/jobs: title, description, canonical without the filters: ' + JSON.stringify(m));
+    ok(m.title === 'Part-time jobs for students in Milan | GigoMe' && m.canonical === 'https://gigome.org/jobs' && /Filter by area/.test(m.desc), '/jobs: title, description, canonical without the filters: ' + JSON.stringify(m));
     await p.goto(E + '/jobs/' + ID(1)); await p.waitForSelector('.facts'); await p.waitForTimeout(300); m = await meta();
     ok(m.title === 'Weekend barista at Nebbia Coffee Bar | GigoMe' && /^Weekend barista at Nebbia Coffee Bar, Milan\. Serve coffee/.test(m.desc), 'job page: title and description: ' + JSON.stringify(m));
     ok(m.ld.length === 1 && m.site.length === 1, 'job page: one JobPosting block, and the WebSite block once');
@@ -79,7 +79,7 @@ async function downloadJson(p, click) {
     await p.goto(E + '/companies/' + NEBBIA.id); await p.waitForSelector('.company-page'); await p.waitForTimeout(300); m = await meta();
     ok(m.title === 'Nebbia Coffee Bar: jobs in Milan | GigoMe' && m.ld.length === 0, 'company page: title, no job data left over: ' + JSON.stringify(m.title));
     await p.goto(E + '/employers'); await p.waitForTimeout(300); m = await meta();
-    ok(m.title === 'Hire international students in Milan | GigoMe', 'employers: title');
+    ok(m.title === 'Reach university students in Milan | GigoMe', 'employers: title');
     ok(m.desc.startsWith('Post paid part-time jobs and gigs') && (await p.innerText('.employers-intro .lead')).includes("We don't list internships or unpaid roles."), 'employers: paid part-time jobs and gigs only, said up front');
     for (const path of ['/', '/jobs']) {
       await p.goto(E + path); await p.waitForTimeout(400); m = await meta();
