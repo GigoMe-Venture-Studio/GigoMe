@@ -28,3 +28,6 @@
 .auth-form .account-choice .btn, .account-choice .btn { width: 100%; height: auto; min-height: 48px; padding: var(--s2) var(--s3); white-space: normal; text-align: center; line-height: 1.25; }
 .account-kept { margin-top: var(--s3); font-weight: 600; }
 @media (max-width: 359px) { .account-choice { grid-template-columns: 1fr; } }
+/* "Password": whether the account has one; the form opens from a button. */
+.account-password > p, .account-password > .btn { margin-top: var(--s3); }
+.account-password > .account-saved:empty { display: none; }

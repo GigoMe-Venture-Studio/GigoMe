@@ -252,7 +252,7 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `src/components/`). Styles for them go in their own file (e.g.
   `src/styles/auth.css`) and reuse the tokens and classes in `site.css`.
   Check new class names don't clash with existing ones (`grep src/styles/`).
-- The 6-digit code login lives in `src/components/CodeLogin.jsx`, used by
+- The login lives in `src/components/CodeLogin.jsx`, used by
   `/login` (`audience="student"`: any email, sent with `signup_as:
   'student'`) and `/employers` (`audience="employer"`: any email except a
   listed university's, which are sent to `/login`). Change the flow there,
@@ -264,20 +264,52 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   "Looking for work? Student login" (employers). The code step says "Can't
   find it? Check your Junk or Spam folder and mark it as 'Not junk', so the
   next one arrives in your inbox."
+- Passwords: the email code is needed once, at sign-up. The login form is
+  email and password first ("Log in", `logInWithPassword()` in
+  `src/lib/password.js`), with "Show password", "Forgot your password?" and,
+  set apart below, "Email me a code instead" ("New to GigoMe, or no password
+  yet? We'll email you a 6-digit code."): that's how new accounts sign up
+  and accounts without a password log in. Supabase answers a wrong
+  password, an unknown email and an account without a password the same
+  way; the message points to the code. "Forgot your password?" is the same
+  code login (intent `reset`, kept in the pending sessionStorage entry)
+  followed by "Choose a new password". After any other code login, an
+  account without a password (`hasPassword()` = `my_has_password()`) gets
+  "Set a password" with "Not now" (asked again at every code login), except
+  a brand-new account: /welcome (students without a name) and
+  /employers/setup ask for it there, required, set before anything else is
+  saved. /account has a "Password" section (set or change it, folded
+  behind a button). The fields are `src/components/PasswordFields.jsx`
+  (password, "Type it again", the rules as visible text, "Show password",
+  `autocomplete` new-password/current-password/username); the rules are
+  `src/lib/passwordRules.js` (no imports, unit-tested): at least
+  `PASSWORD_MIN` (10) characters, at most 72 bytes (bcrypt), not the email,
+  typed twice the same; no character-class rules. Never send an email for
+  a password: no `resetPasswordForEmail`, no `reauthenticate()`. Passwords
+  are only set right after a code login, so Supabase's "Secure password
+  change" (24 hours) never needs a second code; if it still answers
+  `reauthentication_needed`, the person is told to log in with a code
+  (/welcome and the setup then finish without the password, and the
+  confirmation says the next login is by code). The dashboard settings this
+  relies on are in HANDOVER.md, section 6b.
 - Every "Log out" is `src/components/LogOutButton.jsx`: it first asks "Log
-  out?" ("You'll need a new code from your email to log back in.", Log out
+  out?" ("To log back in, you'll need your password or a new code from
+  your email.", Log out
   and Cancel, Cancel focused) in a native `<dialog>`, then signs out this
   device only. On phones it is the last item of the Menu panel, set apart
   by a line (`.menu-logout`); the header bar has none under 768px.
 - Bot check: Cloudflare Turnstile (`src/components/Turnstile.jsx`,
   `src/lib/captcha.js`) on that same form, checked by Supabase Auth's CAPTCHA
   protection. Only on when the build variable `VITE_TURNSTILE_SITE_KEY` is
-  set. Every Supabase Auth call (send code, resend, verify) passes the current
-  token, then the widget is reset: tokens work once. The Turnstile secret key
+  set. Every Supabase Auth call (password login, send code, resend, verify)
+  passes the current token, then the widget is reset: tokens work once
+  (Supabase checks it on `grant_type=password` too; setting a password,
+  `updateUser`, needs none). The Turnstile secret key
   lives only in the Supabase dashboard.
-- Student login: `src/pages/Login.jsx` (email, then 6-digit code),
-  `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year when the
-  profile has no name yet, the Terms box until the current version is
+- Student login: `src/pages/Login.jsx` (email and password, or email, then
+  6-digit code),
+  `src/pages/Welcome.jsx` (full_name, degree_level, graduation_year and a
+  password when the profile has no name yet, the Terms box until the current version is
   accepted, and for self-declared students the two questions below), logic
   in `src/lib/auth.js`, session in `src/lib/useSession.js`. Any email gets
   a code ("Use any email. A university email verifies that you're a
@@ -306,7 +338,8 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   login, a Terms update or a reload; no database change, no email):
   `StudentReady` after a new student's first save on `/welcome` ("You're
   all set, <first name>.", the email they're logged in with, how login
-  works next time, "Back to the job" when `?next=` is a job page
+  works next time (email and password; by code if the password couldn't be
+  set), "Back to the job" when `?next=` is a job page
   (`isJobPath()` in `links.js`: Save or Apply sent them to log in),
   "Continue" for any other `?next=`, "Browse jobs", and "Edit or delete
   your account"); `CompanySubmitted` after the employer setup (in review,
@@ -584,8 +617,10 @@ of the built site before and after.
 - All auth emails are sent by Supabase Auth through Brevo SMTP. The SMTP
   settings live only in the Supabase dashboard. Never put SMTP keys, API keys
   or any Brevo credentials in the repo, or in env files committed to it.
-- Login uses 6-digit email OTP codes (`signInWithOtp`, then `verifyOtp` with
-  `type: 'email'`), never magic links. Brevo rewrites links in emails, so auth
+- Sign-up, "Email me a code instead" and "Forgot your password?" use
+  6-digit email OTP codes (`signInWithOtp`, then `verifyOtp` with
+  `type: 'email'`), never magic links or reset links; other logins use the
+  password and send no email. Brevo rewrites links in emails, so auth
   emails must not depend on a clickable link.
 - The sender for auth emails is `GigoMe <hello@gigome.org>`. The login code
   email (subject, HTML, plain text, and which dashboard templates it goes

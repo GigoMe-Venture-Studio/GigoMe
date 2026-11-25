@@ -20,12 +20,14 @@ function useHeadingFocus() {
   return ref;
 }
 
-function NextLogin({ email, page }) {
+// withPassword: the account has a password now (set on /welcome or the
+// setup); otherwise the next login is with a code, which then offers one.
+function NextLogin({ email, page, withPassword = true }) {
   const t = useT();
   return (
     <div className="signup-done-login">
       <p>{t('signup.loggedInAs', { email: <strong className="auth-email">{email}</strong> })}</p>
-      <p>{t('signup.nextTime', { page })}</p>
+      <p>{t(withPassword ? 'signup.nextTime' : 'signup.nextTimeCode', { page })}</p>
     </div>
   );
 }
@@ -41,7 +43,7 @@ function AccountLink() {
 
 // next: the safe ?next= path the student came from (Save or Apply on a job
 // sends them to /login?next=/jobs/<id>), or ''.
-export function StudentReady({ firstName, email, next }) {
+export function StudentReady({ firstName, email, next, withPassword = true }) {
   const heading = useHeadingFocus();
   const t = useT();
   const fromJob = isJobPath(next);
@@ -50,7 +52,7 @@ export function StudentReady({ firstName, email, next }) {
     <div className="auth-card signup-done">
       <h1 ref={heading} tabIndex={-1}>{t('signup.allSet', { name: firstName })}</h1>
       <p className="lead">{t('signup.ready')}</p>
-      <NextLogin email={email} page={t('signup.pageLogin')} />
+      <NextLogin email={email} page={t('signup.pageLogin')} withPassword={withPassword} />
       <div className="auth-buttons">
         {fromJob && <Link className="btn btn-primary" to={next}>{t('signup.backToJob')}</Link>}
         {elsewhere && <Link className="btn btn-primary" to={elsewhere}>{t('signup.continue')}</Link>}
@@ -67,7 +69,7 @@ export function StudentReady({ firstName, email, next }) {
 // same promise as /employers and the dashboard); drafts can be written meanwhile; jobs
 // are submitted only once it's approved and each is reviewed too; nobody is
 // emailed about it, the dashboard shows the status.
-export function CompanySubmitted({ companyName, email }) {
+export function CompanySubmitted({ companyName, email, withPassword = true }) {
   const heading = useHeadingFocus();
   const t = useT();
   return (
@@ -80,7 +82,7 @@ export function CompanySubmitted({ companyName, email }) {
         <li>{t('signup.step2')}</li>
         <li>{t('signup.step3')}</li>
       </ul>
-      <NextLogin email={email} page={t('signup.pageEmployers')} />
+      <NextLogin email={email} page={t('signup.pageEmployers')} withPassword={withPassword} />
       <div className="auth-buttons">
         <Link className="btn btn-primary" to="/dashboard">{t('signup.goDashboard')}</Link>
         <Link className="btn btn-secondary" to="/dashboard/jobs/new">{t('signup.writeDraft')}</Link>

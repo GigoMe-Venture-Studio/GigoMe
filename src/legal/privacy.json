@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/privacy-notice-v1.2.html",
+ "source": "docs/legal/published/privacy-notice-v1.3.html",
  "title": "GigoMe | Privacy Notice",
  "toc": [
   {
@@ -105,7 +105,7 @@
    [
     "strong",
     null,
-    "Version 1.2 | Last updated: 20 November 2026"
+    "Version 1.3 | Last updated: 25 November 2026"
    ],
    [
     "br",
@@ -365,7 +365,7 @@
     null,
     "Authentication and security information:"
    ],
-   " login email, one-time-code delivery and authentication events, session identifiers or tokens, relevant technical logs and, where necessary, IP address, device/browser data and abuse indicators. We do not ask users to create a GigoMe password, and the normal user profile does not include a stored password or uploaded CV."
+   " login email, one-time-code delivery and authentication events, the password chosen by the user, session identifiers or tokens, relevant technical logs and, where necessary, IP address, device/browser data and abuse indicators. Passwords are stored by our authentication provider (Supabase) only as a one-way cryptographic hash: nobody at GigoMe can see or recover them. The normal user profile does not include an uploaded CV."
   ],
   [
    "p",
@@ -983,13 +983,13 @@
   [
    "p",
    null,
-   "GigoMe currently uses email-delivered six-digit one-time login codes. Following authentication, information necessary to maintain the login session is stored in the browser's ",
+   "GigoMe uses email-delivered six-digit one-time login codes when an account is created and whenever a user asks for one, and otherwise the user's email address and password. Following authentication, information necessary to maintain the login session is stored in the browser's ",
    [
     "strong",
     null,
     "local storage"
    ],
-   ". Local storage also keeps the language chosen for the site (English or Italian), and, for the open tab only, the browser's session storage keeps the email address a login code was just sent to and whether metro lines are shown on maps. GigoMe itself sets no cookies. These technologies serve authentication, session continuity and the user's own choices; they are not used by GigoMe for behavioural advertising."
+   ". Local storage also keeps the language chosen for the site (English or Italian), and, for the open tab only, the browser's session storage keeps the email address a login code was just sent to (and whether it was requested to choose a new password) and whether metro lines are shown on maps. GigoMe itself sets no cookies. These technologies serve authentication, session continuity and the user's own choices; they are not used by GigoMe for behavioural advertising."
   ],
   [
    "p",

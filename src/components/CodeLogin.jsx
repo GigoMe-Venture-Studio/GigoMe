@@ -19,12 +19,24 @@ import { mailtoHref } from '../lib/links.js';
 import { fetchMyCompany } from '../lib/employer.js';
 import { hasAcceptedTerms } from '../lib/terms.js';
 import { captchaEnabled } from '../lib/captcha.js';
+import { hasPassword, logInWithPassword, passwordProblem, passwordProblemMessage, setPassword } from '../lib/password.js';
 import Turnstile from './Turnstile.jsx';
+import PasswordFields from './PasswordFields.jsx';
 import { useT } from '../lib/useLang.js';
 
-// The 6-digit email code login, used by /login (students) and /employers
-// (companies). Same steps for both; what differs is which emails are
-// accepted, the wording, and where people go afterwards.
+// The login, used by /login (students) and /employers (companies). Same
+// steps for both; what differs is which emails are accepted, the wording,
+// and where people go afterwards.
+//
+// Email and password first (logInWithPassword). "Email me a code instead"
+// sends the 6-digit code: that's how a new account signs up, and how anyone
+// without a password (accounts from before passwords) logs in. "Forgot your
+// password?" is the same code login, followed by "Choose a new password".
+// After a code login, an account without a password is asked to set one
+// (SetPasswordStep; "Not now" skips it until the next code login), except a
+// brand-new one: /welcome and the employer setup ask for it there. GigoMe
+// never sends a password reset link. Turnstile covers both the password and
+// the code (Supabase checks the token on both).
 //
 //   audience 'student': any email gets a code, sent with signup_as 'student'
 //     (sendCode): the database makes a new account a student, verified when
@@ -45,7 +57,7 @@ const pendingKey = (audience) => (audience === 'employer' ? PENDING_KEY + '.empl
 function readPending(audience) {
   try {
     const p = JSON.parse(sessionStorage.getItem(pendingKey(audience)) || 'null');
-    return p && p.email && p.sentAt ? p : null;
+    return p && p.email && p.sentAt ? { ...p, intent: p.intent === 'reset' ? 'reset' : '' } : null;
   } catch {
     return null;
   }
@@ -68,6 +80,12 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
 
   const [step, setStep] = useState(pending ? 'code' : 'email');
   const [email, setEmail] = useState(pending ? pending.email : '');
+  const [password, setPasswordValue] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  // 'reset': the code was asked for with "Forgot your password?".
+  const [intent, setIntent] = useState(pending ? pending.intent : '');
+  // After a code login: where to go once the password is set or skipped.
+  const [after, setAfter] = useState(null);
   const [sentAt, setSentAt] = useState(pending ? pending.sentAt : 0);
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -97,6 +115,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   const waitingForCaptcha = captchaEnabled && !captchaToken;
 
   if (loading) return <p className="auth-card muted">{t('common.loading')}</p>;
+  if (after) return <SetPasswordStep email={email} reset={after.reset} onDone={() => navigate(after.to, { replace: true })} />;
   if (finishing) return <p className="auth-card muted" role="status">{t('codeLogin.loggingIn')}</p>;
   if (session) return loggedIn ? loggedIn(session) : <LoggedIn userId={session.user.id} email={session.user.email} next={next} />;
 
@@ -112,8 +131,8 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     }
   }
 
-  async function onSubmitEmail(e) {
-    e.preventDefault();
+  // The email typed, checked; or null with the error shown.
+  function checkedEmail() {
     setError('');
     setInfo('');
     setIsStudentEmail(false);
@@ -122,8 +141,40 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     if (!looksLikeEmail(value)) {
       setError(employer ? t('codeLogin.errFullEmailEmployer') : t('codeLogin.errFullEmailStudent'));
       setEmailInvalid(true);
+      return null;
+    }
+    return value;
+  }
+
+  // "Log in": email and password.
+  async function onSubmitPassword(e) {
+    e.preventDefault();
+    if (busy) return;
+    const value = checkedEmail();
+    if (!value) return;
+    if (!password) {
+      setError(t('password.loginMissing'));
       return;
     }
+    setBusy(true);
+    const result = await logInWithPassword(value, password, captchaToken);
+    newCaptcha();
+    if (result.error) {
+      setBusy(false);
+      setError(result.error);
+      return;
+    }
+    setFinishing(true);
+    writePending(audience, null);
+    await goOn(result.user.id, false);
+  }
+
+  // "Email me a code instead" (intent '') and "Forgot your password?"
+  // (intent 'reset'): the 6-digit code.
+  async function onSendCode(nextIntent) {
+    if (busy) return;
+    const value = checkedEmail();
+    if (!value) return;
     setBusy(true);
     try {
       // Employers: a listed university's email is a student's (the database
@@ -149,13 +200,45 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
       }
       const now = Date.now();
       setEmail(value);
+      setPasswordValue('');
+      setIntent(nextIntent);
       setSentAt(now);
       setCode('');
       setStep('code');
-      writePending(audience, { email: value, sentAt: now });
+      writePending(audience, { email: value, sentAt: now, intent: nextIntent });
     } finally {
       setBusy(false);
     }
+  }
+
+  // Logged in (password or code): on to the right page. After a code login,
+  // an account without a password (or one that forgot it) chooses one first,
+  // unless it's brand new: /welcome and the employer setup ask for it.
+  async function goOn(userId, byCode) {
+    let profile = null;
+    try {
+      profile = await fetchProfile(userId);
+    } catch {
+      /* the welcome page loads the profile again and shows any error */
+    }
+    const to = await destination(audience, profile, userId, next);
+    if (!to) {
+      // The other role's account (one email, one role): the logged-in view
+      // (LoggedIn, or the employer page's loggedIn) says so.
+      setFinishing(false);
+      setBusy(false);
+      return;
+    }
+    if (byCode) {
+      const newAccount = to === '/employers/setup' || (to.startsWith('/welcome') && !(profile && profile.full_name));
+      if (!newAccount && (intent === 'reset' || !(await hasPassword()))) {
+        setAfter({ to, reset: intent === 'reset' });
+        setFinishing(false);
+        setBusy(false);
+        return;
+      }
+    }
+    navigate(to, { replace: true });
   }
 
   async function onVerify(value) {
@@ -177,21 +260,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     }
     setFinishing(true);
     writePending(audience, null);
-    let profile = null;
-    try {
-      profile = await fetchProfile(result.user.id);
-    } catch {
-      /* the welcome page loads the profile again and shows any error */
-    }
-    const to = await destination(audience, profile, result.user.id, next);
-    if (!to) {
-      // The other role's account (one email, one role): the logged-in view
-      // (LoggedIn, or the employer page's loggedIn) says so.
-      setFinishing(false);
-      setBusy(false);
-      return;
-    }
-    navigate(to, { replace: true });
+    await goOn(result.user.id, true);
   }
 
   async function onResend() {
@@ -208,12 +277,13 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
     const now = Date.now();
     setSentAt(now);
     setCode('');
-    writePending(audience, { email, sentAt: now });
+    writePending(audience, { email, sentAt: now, intent });
     setInfo(t('codeLogin.newCodeSent'));
   }
 
   function onDifferentEmail() {
     writePending(audience, null);
+    setIntent('');
     setStep('email');
     setCode('');
     setError('');
@@ -246,7 +316,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
   return (
     <div className="auth-card">
       <h1>{employer ? t('codeLogin.titleEmployer') : t('codeLogin.titleStudent')}</h1>
-      <p className="lead">{t(employer ? 'codeLogin.leadEmployer' : 'codeLogin.leadStudent', { code: digitCode })}</p>
+      <p className="lead">{t(employer ? 'codeLogin.leadEmployer' : 'codeLogin.leadStudent')}</p>
       {/* This line is always on the student login, above the only place a
           university is named: "Which emails verify you as a student?"
           (folded, CLAUDE.md). */}
@@ -279,7 +349,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
           </div>
         </details>
       )}
-      <form className="auth-form" onSubmit={onSubmitEmail} noValidate>
+      <form className="auth-form" onSubmit={onSubmitPassword} noValidate>
         <label className="field">
           {employer ? t('codeLogin.labelWorkEmail') : t('codeLogin.labelEmail')}
           <input
@@ -287,7 +357,7 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
             type="email"
             name="email"
             inputMode="email"
-            autoComplete="email"
+            autoComplete="username" /* i18n-ignore: attribute value, not text */
             autoCapitalize="none"
             spellCheck="false"
             placeholder={employer ? t('codeLogin.placeholderEmployer') : t('codeLogin.placeholderStudent')}
@@ -308,6 +378,27 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         <p className="auth-small" id="login-privacy">
           {t(employer ? 'codeLogin.privacyEmployer' : 'codeLogin.privacyStudent', { link: (s) => <Link to="/privacy">{s}</Link> })}
         </p>
+        <label className="field">
+          {t('password.label')}
+          <input
+            className="input"
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            autoComplete="current-password" /* i18n-ignore: attribute value, not text */
+            autoCapitalize="none"
+            spellCheck="false"
+            value={password}
+            onChange={(e) => setPasswordValue(e.target.value)}
+          />
+        </label>
+        <div className="password-row">
+          <label className="check password-show">
+            <input type="checkbox" name="show-password" checked={showPassword} onChange={(e) => setShowPassword(e.target.checked)} /> {t('password.show')}
+          </label>
+          <button type="button" className="btn-link tap-44" onClick={() => onSendCode('reset')} disabled={busy || waitingForCaptcha}>
+            {t('password.forgot')}
+          </button>
+        </div>
         {error && <p className="err" role="alert">{error}</p>}
         {isStudentEmail && (
           <div className="note auth-notice" role="alert">
@@ -317,8 +408,14 @@ export default function CodeLogin({ audience = 'student', next = '', loggedIn })
         )}
         <CaptchaCheck props={captchaProps} failed={captchaFailed} waiting={waitingForCaptcha} />
         <button type="submit" className="btn btn-primary" disabled={busy || waitingForCaptcha}>
-          {busy ? t('codeLogin.checking') : t('codeLogin.sendCode')}
+          {busy ? t('codeLogin.checking') : t('password.logIn')}
         </button>
+        <div className="login-code-option">
+          <p className="auth-small">{t('password.codeHint', { code: digitCode })}</p>
+          <button type="button" className="btn btn-secondary" onClick={() => onSendCode('')} disabled={busy || waitingForCaptcha}>
+            {t('password.codeInstead')}
+          </button>
+        </div>
       </form>
     </div>
   );
@@ -337,6 +434,70 @@ function CaptchaCheck({ props, failed, waiting }) {
       ) : (
         waiting && <p className="auth-small" role="status">{t('codeLogin.captchaWaiting')}</p>
       )}
+    </div>
+  );
+}
+
+// Right after a code login: "Set a password" for an account without one
+// (asked again at every code login until it has one: "Not now" skips it), or
+// "Choose a new password" after "Forgot your password?". The session is
+// minutes old, so Supabase sets it without asking for anything else and
+// without sending any email (src/lib/password.js).
+function SetPasswordStep({ email, reset, onDone }) {
+  const t = useT();
+  const heading = useRef(null);
+  const [values, setValues] = useState({ password: '', confirm: '' });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (heading.current) heading.current.focus();
+  }, []);
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    if (busy) return;
+    const problem = passwordProblem(values.password, values.confirm, email);
+    if (problem) {
+      setError(passwordProblemMessage(problem));
+      return;
+    }
+    setError('');
+    setBusy(true);
+    const failed = await setPassword(values.password);
+    if (failed) {
+      setError(failed.error);
+      setBusy(false);
+      return;
+    }
+    onDone();
+  }
+
+  return (
+    <div className="auth-card set-password">
+      <h1 ref={heading} tabIndex={-1}>{reset ? t('password.resetTitle') : t('password.promptTitle')}</h1>
+      <p className="lead">
+        {reset
+          ? t('password.resetLead', { email: <strong className="auth-email">{email}</strong> })
+          : t('password.promptLead', { email: <strong className="auth-email">{email}</strong> })}
+      </p>
+      <form className="auth-form" onSubmit={onSubmit} noValidate>
+        <PasswordFields
+          email={email}
+          values={values}
+          onChange={(key, value) => setValues((v) => ({ ...v, [key]: value }))}
+          error={error}
+        />
+        <div className="auth-buttons">
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? t('password.saving') : t('password.save')}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={onDone} disabled={busy}>
+            {t('password.notNow')}
+          </button>
+        </div>
+        {!reset && <p className="auth-small">{t('password.askAgain')}</p>}
+      </form>
     </div>
   );
 }

@@ -13,8 +13,8 @@
 // - they say it doesn't: set only TERMS_VERSION. New acceptances record the
 //   version people actually saw, and nobody is asked again.
 // These are the only places the versions are set.
-export const TERMS_VERSION = '2.1';
-export const TERMS_MIN_VERSION = '2.1';
+export const TERMS_VERSION = '2.2';
+export const TERMS_MIN_VERSION = '2.2';
 
 // "2.10" is newer than "2.9": compares the numbers, not the text.
 export function compareVersions(a, b) {

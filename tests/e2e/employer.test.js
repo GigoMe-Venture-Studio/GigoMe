@@ -33,17 +33,17 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
     await p.screenshot({ path: OUT + '/employers.png', fullPage: true });
     // a student email is pointed to the student login, no code sent
     const before = 0;
-    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     const note = await txt(p, '.employers-login');
     ok(/university email/.test(note) && await p.locator('.employers-login .auth-notice a[href="/login"]').count() === 1, 'student email: pointed to the student login');
     ok(await p.locator('input[name=code]').count() === 0, 'student email: no code step');
     // any other email gets a code on /employers, without the student sign-up mark
-    await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     ok(log.otp.length === 1 && log.otp[0].email === 'owner@cafe.it' && !(log.otp[0].data && log.otp[0].data.signup_as) && await p.locator('input[name=code]').count() === 1, 'employer login: code sent without signup_as (the database makes it a company account)');
     // /login takes any email (one email, one role is decided by the database) and links to /employers in its "Hiring?" line
     await p.goto(E + '/login'); await p.waitForTimeout(300);
     ok(await p.locator('main .login-switch a[href="/employers"]').count() === 1, '/login: "Hiring? Use the employer login" links to /employers');
-    await p.fill('input[name=email]', 'owner2@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'owner2@cafe.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     ok(log.otp.length === 2 && log.otp[1].data && log.otp[1].data.signup_as === 'student' && await p.locator('main .auth-notice').count() === 0, '/login: any email gets a code, marked as a student sign-up');
     await p.goto(E + '/dashboard'); await p.waitForTimeout(400);
     ok(path(p) === '/employers' && new URL(p.url()).searchParams.get('next') === '/dashboard', 'logged out /dashboard goes to /employers?next=/dashboard');
@@ -68,7 +68,7 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
     const post = log.req.find((x) => x.method === 'POST' && x.path === '/rest/v1/companies');
     const pb = post ? { ...post.body } : {}; const ta = pb.terms_accepted_at; delete pb.terms_accepted_at;
     ok(post && JSON.stringify(pb) === JSON.stringify({ name: 'Nebbia Coffee', website: 'https://nebbia.it', description: 'Specialty coffee.', contact_email: 'hiring@nebbia.it' }) && ta && !isNaN(Date.parse(ta)), 'creates the company without status, with terms accepted: ' + JSON.stringify(post && post.body));
-    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.1"}]', 'setup: the account records the Terms version too: ' + JSON.stringify(log.acceptTerms));
+    ok(JSON.stringify(log.acceptTerms) === '[{"p_version":"2.2"}]', 'setup: the account records the Terms version too: ' + JSON.stringify(log.acceptTerms));
     ok((await txt(p, 'h1')) === 'Your company is submitted' && (await txt(p, 'main')).includes('Nebbia Coffee is now in review.'), 'confirmation after setup (signup.test.js checks it in full)');
     ok(db.company.status === 'pending', 'company is pending');
     await p.waitForTimeout(300);
@@ -229,7 +229,7 @@ const future = (d) => new Date(Date.now() + d * 864e5).toISOString();
   { const ctx = await b.newContext(desk); await emock(ctx, { company: { name: 'Nebbia', status: 'approved' } }); const p = await ctx.newPage();
     await p.goto(E + '/dashboard/jobs/new'); await p.waitForTimeout(400);
     ok(path(p) === '/employers', 'logged out job form -> /employers');
-    await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(300);
+    await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(300);
     await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
     ok(path(p) === '/dashboard/jobs/new', 'after login: back to the job form: ' + p.url());
     await ctx.close(); }

@@ -1,5 +1,5 @@
 {
- "source": "docs/legal/published/terms-and-conditions-v2.1.html",
+ "source": "docs/legal/published/terms-and-conditions-v2.2.html",
  "title": "GigoMe | Terms and Conditions",
  "toc": [
   {
@@ -165,7 +165,7 @@
    [
     "strong",
     null,
-    "Version 2.1 | Last updated: 20 November 2026"
+    "Version 2.2 | Last updated: 25 November 2026"
    ],
    [
     "br",
@@ -451,12 +451,12 @@
   [
    "p",
    null,
-   "4.1. Users must safeguard access to their email accounts and authentication codes, promptly notify GigoMe of unauthorized access and avoid giving login codes to others."
+   "4.1. Users must safeguard access to their email accounts, passwords and authentication codes, promptly notify GigoMe of unauthorized access and avoid giving passwords or login codes to others."
   ],
   [
    "p",
    null,
-   "4.2. GigoMe currently authenticates users with a one-time code delivered by email. It does not ask Users to create a GigoMe password. Users must not share authentication codes or impersonate others."
+   "4.2. GigoMe authenticates users with a one-time code delivered by email when an account is created. Users are then asked to choose a password and can afterwards log in with their email address and password, or with a new one-time code, for example if they forget their password. Users must keep their password confidential and must not share passwords or authentication codes or impersonate others."
   ],
   [
    "p",

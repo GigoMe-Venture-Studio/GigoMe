@@ -26,7 +26,7 @@ const cutOff = (p, sel, vertical = false) => p.$$eval(sel, (els, v) => els.filte
     await p.goto(E + '/login'); await login(p); await p.goto(E + '/jobs'); await p.waitForSelector('.header-user');
     await p.click('.site-header .header-actions > button.signin'); await p.waitForTimeout(200);
     ok(await p.locator(DIALOG).count() === 1, 'Log out opens the confirmation');
-    ok((await txt(p, DIALOG + ' .logout-title')) === 'Log out?' && (await txt(p, DIALOG + ' .logout-text')) === "You'll need a new code from your email to log back in.", 'the wording');
+    ok((await txt(p, DIALOG + ' .logout-title')) === 'Log out?' && (await txt(p, DIALOG + ' .logout-text')) === "To log back in, you'll need your password or a new code from your email.", 'the wording');
     ok(JSON.stringify(await p.$$eval(DIALOG + ' button', (bs) => bs.map((x) => x.textContent))) === '["Log out","Cancel"]', 'two buttons: Log out and Cancel');
     ok(await p.evaluate(() => document.activeElement && document.activeElement.textContent === 'Cancel'), 'Cancel has the focus');
     ok(await p.$eval(DIALOG, (d) => d.getAttribute('aria-labelledby') && document.getElementById(d.getAttribute('aria-labelledby')).textContent === 'Log out?'), 'the dialog is named "Log out?"');
@@ -76,7 +76,7 @@ const cutOff = (p, sel, vertical = false) => p.$$eval(sel, (els, v) => els.filte
   for (const width of [320, 375]) {
     for (const [path, email, mk] of [['/login', 'ana@studbocconi.it', mock], ['/employers', 'owner@cafe.it', emock]]) {
       const ctx = await b.newContext(phoneAt(width)); await mk(ctx); const p = await ctx.newPage();
-      await p.goto(E + path); await p.fill('input[name=email]', email); await p.click('text=Send me a code'); await p.waitForSelector('#code-hint');
+      await p.goto(E + path); await p.fill('input[name=email]', email); await p.click('text=Email me a code instead'); await p.waitForSelector('#code-hint');
       ok((await txt(p, '#code-hint')).includes(JUNK), `${width}px ${path}: the Junk folder line`);
       const cut = await cutOff(p, '#code-hint');
       ok(cut.length === 0 && !(await sideways(p)), `${width}px ${path}: not cut off, no sideways scroll`);

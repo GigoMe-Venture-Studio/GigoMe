@@ -21,7 +21,7 @@ async function mockSupabase(ctx, opts = {}) {
   const profile = {
     full_name: opts.fullName ?? null, degree_level: null, graduation_year: null, account_type: accountType,
     student_verification: accountType === 'student' ? opts.verification || 'university_email' : null, student_declared_at: opts.declaredAt ?? null,
-    terms_version: opts.fullName ? '2.1' : null, terms_accepted_at: opts.fullName ? '2026-11-01T10:00:00Z' : null
+    terms_version: opts.fullName ? '2.2' : null, terms_accepted_at: opts.fullName ? '2026-11-01T10:00:00Z' : null
   };
   await ctx.route(SB + '/**', async (route) => {
     const req = route.request(), url = new URL(req.url()), path = url.pathname, method = req.method();
@@ -101,10 +101,10 @@ async function mockSupabase(ctx, opts = {}) {
   await p.goto(ENV + '/login'); await p.waitForTimeout(300);
   ok(await p.evaluate(() => document.activeElement && document.activeElement.name === 'email'), 'email field is focused');
   ok((await p.getAttribute('input[name=email]', 'inputmode')) === 'email' && (await p.getAttribute('input[name=email]', 'autocapitalize')) === 'none', 'email field: email keyboard, no auto-capitals');
-  ok((await txt(p, '.lead')) === "Use any email. A university email verifies that you're a student. We'll send you a 6-digit code, no password needed." && (await txt(p, 'label.field')).startsWith('Email'), 'student login: any email works, a university email verifies');
+  ok((await txt(p, '.lead')) === "Use any email. A university email verifies that you're a student." && (await txt(p, 'label.field')).startsWith('Email'), 'student login: any email works, a university email verifies');
   ok((await txt(p, '#login-privacy')) === "We use your email to log you in and to check whether it's a university email on our list. See our Privacy Notice." && (await p.getAttribute('#login-privacy a', 'href')) === '/privacy', 'privacy line under the email field: what the email is used for, links to /privacy (nothing to "agree" to)');
   ok((await txt(p, '.login-disclaimer')) === 'GigoMe is an independent student project, not affiliated with or endorsed by any university.' && !/bocconi/i.test(await txt(p, 'main')) && log.universities === 0, 'student login: the independence line, no university named, universities not read on load');
-  await p.fill('input[name=email]', 'not-an-email'); await p.click('text=Send me a code'); await p.waitForTimeout(200);
+  await p.fill('input[name=email]', 'not-an-email'); await p.click('text=Email me a code instead'); await p.waitForTimeout(200);
   ok((await txt(p, '.err')) === 'Enter your full email address, like name@university.it.' && log.otp.length === 0 && log.universities === 0, 'invalid email: message, nothing sent, universities not read');
   // "Which emails verify you as a student?": folded, under the independence line; the list is read only when opened, once.
   ok((await p.locator('.login-disclaimer + details.uni-details').count()) === 1 && !(await p.locator('.uni-details').evaluate((d) => d.open)) && (await txt(p, '.uni-details summary')) === 'Which emails verify you as a student?', 'student login: "Which emails verify you as a student?" folded under the independence line');
@@ -120,12 +120,12 @@ async function mockSupabase(ctx, opts = {}) {
   // Any email gets a code, marked as a student sign-up; the database decides whether it's verified. Nothing is refused.
   for (const any of ['someone@gmail.com', 'x@notstudbocconi.it', 'x@polimi.it', 'ana@mail.polimi.it', 'Ana@Studenti.Unimi.IT', 'ana.rossi01@icatt.it', 'a.rossi1@campus.unimib.it', 'ana@studenti.iulm.it', 'ana@st.hunimed.eu', 'ana@studenti.unisr.it']) {
     const g = await newPage(); await g.p.goto(ENV + '/login'); await g.p.waitForTimeout(200);
-    await g.p.fill('input[name=email]', any); await g.p.click('text=Send me a code'); await g.p.waitForTimeout(300);
+    await g.p.fill('input[name=email]', any); await g.p.click('text=Email me a code instead'); await g.p.waitForTimeout(300);
     ok(g.log.otp.length === 1 && g.log.otp[0].email === any.toLowerCase() && JSON.stringify(g.log.otp[0].data) === '{"signup_as":"student","language":"en"}' && g.log.universities === 0
        && (await g.p.locator('.auth-notice').count()) === 0 && (await txt(g.p, 'h1')) === 'Check your email', 'any email (' + any + '): code sent as a student sign-up, nothing refused, nothing checked in the browser');
     await g.ctx.close();
   }
-  await p.fill('input[name=email]', '  Name.Surname@StudBocconi.IT '); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+  await p.fill('input[name=email]', '  Name.Surname@StudBocconi.IT '); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
   ok(log.otp.length === 1 && log.otp[0].email === 'name.surname@studbocconi.it' && log.otp[0].create_user === true && log.otp[0].data && log.otp[0].data.signup_as === 'student', 'code requested for the lowercased email, create_user true, signup_as student (' + JSON.stringify(log.otp[0] && { email: log.otp[0].email, create_user: log.otp[0].create_user, data: log.otp[0].data }) + ')');
   ok(!('options' in (log.otp[0] || {})) && !JSON.stringify(log.otp[0]).includes('redirect'), 'no magic-link redirect in the request');
   ok((await txt(p, 'h1')) === 'Check your email' && (await txt(p, '.lead')).includes('name.surname@studbocconi.it'), 'code step shows the email');
@@ -143,7 +143,7 @@ async function mockSupabase(ctx, opts = {}) {
   ok((await txt(p, '.err')).startsWith('Too many attempts.'), 'too many attempts: ' + await txt(p, '.err'));
   await p.click('text=Use a different email'); await p.waitForTimeout(200);
   ok((await txt(p, 'h1')) === 'Log in or sign up' && (await p.inputValue('input[name=email]')) === 'name.surname@studbocconi.it', 'use a different email: back to step one, email kept');
-  await p.click('text=Send me a code'); await p.waitForTimeout(400);
+  await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
   // paste with a space, then success -> /welcome
   await p.locator('input[name=code]').fill('123 456'); await p.waitForTimeout(800);
   ok(log.verify.at(-1).token === '123456', 'pasted "123 456" is cleaned to 123456');
@@ -166,7 +166,7 @@ async function mockSupabase(ctx, opts = {}) {
   ok(log.patch.length === 0 && !log.accept && new URL(p.url()).pathname === '/welcome', 'details filled but the Terms box not ticked: nothing saved');
   await p.check('input[name=accept_terms]');
   await p.click('text=Save and continue'); await p.waitForTimeout(700);
-  ok(JSON.stringify(log.accept) === '[{"p_version":"2.1"}]', 'the Terms acceptance is recorded with the version: ' + JSON.stringify(log.accept));
+  ok(JSON.stringify(log.accept) === '[{"p_version":"2.2"}]', 'the Terms acceptance is recorded with the version: ' + JSON.stringify(log.accept));
   ok(log.patch.length === 1 && log.patch[0].query.includes('id=eq.uid-1') && JSON.stringify(log.patch[0].body) === JSON.stringify({ full_name: 'Ana Rossi', degree_level: 'master', graduation_year: Number(year) }), 'saves only the three fields, on the own row: ' + JSON.stringify(log.patch[0]));
   ok(new URL(p.url()).pathname === '/welcome' && (await txt(p, 'h1')) === "You're all set, Ana." && (await txt(p, 'main')).includes("You're logged in as name.surname@studbocconi.it."), 'then the confirmation (signup.test.js checks it in full)');
   await p.click('.signup-done >> text=Browse jobs'); await p.waitForTimeout(500);
@@ -187,7 +187,7 @@ async function mockSupabase(ctx, opts = {}) {
   // 4. Returning student with a name goes straight home
   { const { ctx, p } = await newPage(phone, { fullName: 'Ana Rossi' });
     await p.goto(ENV + '/login'); await p.waitForTimeout(300);
-    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     await p.fill('input[name=code]', '123456'); await p.waitForTimeout(800);
     ok(new URL(p.url()).pathname === '/', 'returning student with a name skips /welcome');
     await ctx.close(); }
@@ -196,7 +196,7 @@ async function mockSupabase(ctx, opts = {}) {
   { const { ctx, p, log } = await newPage();
     await p.clock.install();
     await p.goto(ENV + '/login'); await p.waitForTimeout(300);
-    await p.fill('input[name=email]', 'late@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'late@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     await p.clock.fastForward(30_000); await p.waitForTimeout(100);
     ok(await p.locator('text=/Send a new code/').isDisabled(), 'resend still disabled after 30 seconds');
     await p.clock.fastForward(31_000); await p.waitForTimeout(200);
@@ -212,7 +212,7 @@ async function mockSupabase(ctx, opts = {}) {
   // 5b. Any other email: a self-declared student answers "Are you a student?" and "Which university?" once.
   const signUp = async (p, email) => {
     await p.goto(ENV + '/login'); await p.waitForTimeout(300);
-    await p.fill('input[name=email]', email); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', email); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     await p.fill('input[name=code]', '123456'); await p.waitForTimeout(900);
   };
   { const { ctx, p, log } = await newPage(phone, { verification: 'self_declared' });
@@ -286,7 +286,7 @@ async function mockSupabase(ctx, opts = {}) {
   // 6. Sending too many emails
   { const { ctx, p } = await newPage();
     await p.goto(ENV + '/login'); await p.waitForTimeout(300);
-    await p.fill('input[name=email]', 'ratelimit@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'ratelimit@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(400);
     ok((await txt(p, '.err')).includes('try again in a few minutes') && (await txt(p, 'h1')) === 'Log in or sign up', 'email rate limit: friendly message, stays on step one');
     await p.screenshot({ path: SHOTS + 'phone-email.png' });
     await ctx.close(); }

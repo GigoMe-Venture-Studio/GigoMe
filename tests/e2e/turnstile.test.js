@@ -21,7 +21,7 @@ async function setup(b, opts = {}) {
     await p.goto(T + '/login'); await p.waitForTimeout(400);
     const w = await p.evaluate(() => window.__ts);
     ok(log.ts === 1 && w && w[0].sitekey === '1x00000000000000000000AA' && w[0].appearance === 'interaction-only' && w[0].action === 'login', 'student login: Turnstile loaded once with the site key, invisible unless needed');
-    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(500);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(500);
     ok(log.otp[0] && log.otp[0].gotrue_meta_security && log.otp[0].gotrue_meta_security.captcha_token === 'tok-w1-1', 'code request carries the token: ' + JSON.stringify(log.otp[0] && log.otp[0].gotrue_meta_security));
     await p.waitForTimeout(500);
     const resend = p.locator('button:has-text("Send a new code")');
@@ -33,30 +33,41 @@ async function setup(b, opts = {}) {
     ok(log.verify[1] && log.verify[1].gotrue_meta_security.captcha_token !== log.verify[0].gotrue_meta_security.captcha_token, 'every attempt uses a new token (tokens work once)');
     ok(new URL(p.url()).pathname !== '/login', 'logged in: ' + p.url());
     await ctx.close(); }
+  // password login with Turnstile: the token goes with the password too
+  // (Supabase checks it on grant_type=password when CAPTCHA protection is on)
+  { const { ctx, log, p } = await setup(b);
+    await p.goto(T + '/login'); await p.waitForTimeout(400);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.fill('input[name=password]', 'wrong password'); await p.click('form button[type=submit]'); await p.waitForTimeout(500);
+    ok(log.passwordLogins && log.passwordLogins[0].gotrue_meta_security && log.passwordLogins[0].gotrue_meta_security.captcha_token === 'tok-w1-1', 'password login carries the token: ' + JSON.stringify(log.passwordLogins && log.passwordLogins[0]));
+    await p.waitForTimeout(300);
+    await p.fill('input[name=password]', 'correct horse battery'); await p.click('form button[type=submit]'); await p.waitForTimeout(900);
+    ok(log.passwordLogins[1] && log.passwordLogins[1].gotrue_meta_security.captcha_token === 'tok-w1-2', 'the next try uses a new token: ' + JSON.stringify(log.passwordLogins[1] && log.passwordLogins[1].gotrue_meta_security));
+    ok(new URL(p.url()).pathname !== '/login' && log.otp.length === 0, 'logged in with the password, no email: ' + p.url());
+    await ctx.close(); }
   // employer login with Turnstile
   { const { ctx, log, p } = await setup(b, { accountType: 'company' });
     await p.goto(T + '/employers'); await p.waitForTimeout(400);
-    await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Send me a code'); await p.waitForTimeout(500);
+    await p.fill('input[name=email]', 'owner@cafe.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(500);
     ok(log.otp[0] && log.otp[0].gotrue_meta_security.captcha_token === 'tok-w1-1', 'employer login: code request carries the token');
     await ctx.close(); }
   // Turnstile blocked: clear message, no code request
   { const { ctx, log, p } = await setup(b, { blockTs: true });
     await p.goto(T + '/login'); await p.waitForTimeout(600);
-    ok((await p.innerText('main')).includes("We couldn't load the check that keeps bots out.") && await p.locator('button:has-text("Send me a code")').isDisabled(), 'script blocked: message, Send disabled');
+    ok((await p.innerText('main')).includes("We couldn't load the check that keeps bots out.") && await p.locator('button:has-text("Email me a code instead")').isDisabled(), 'script blocked: message, Send disabled');
     ok(!log.otp.length, 'script blocked: nothing sent');
     await ctx.close(); }
   // Supabase refuses the token
   { const { ctx, log, p } = await setup(b, { captchaFail: true });
     await p.goto(T + '/login'); await p.waitForTimeout(400);
-    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(600);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(600);
     ok((await p.innerText('main')).includes("We couldn't confirm you're not a bot. Please try again."), 'captcha refused: friendly message');
     await p.waitForTimeout(300);
-    ok(!(await p.locator('button:has-text("Send me a code")').isDisabled()), 'captcha refused: a new token arrives, can try again');
+    ok(!(await p.locator('button:has-text("Email me a code instead")').isDisabled()), 'captcha refused: a new token arrives, can try again');
     await ctx.close(); }
   // no site key: no Turnstile at all
   { const { ctx, log, p } = await setup(b);
     await p.goto(E + '/login'); await p.waitForTimeout(400);
-    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Send me a code'); await p.waitForTimeout(500);
+    await p.fill('input[name=email]', 'ana@studbocconi.it'); await p.click('text=Email me a code instead'); await p.waitForTimeout(500);
     ok(log.ts === 0 && log.otp[0] && !log.otp[0].gotrue_meta_security?.captcha_token, 'no site key: script never loaded, no token sent, login works as before');
     await ctx.close(); }
   await b.close(); console.log(`\n${pass} passed, ${fail} failed`);

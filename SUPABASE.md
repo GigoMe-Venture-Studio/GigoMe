@@ -24,9 +24,16 @@ is in `supabase/migrations/`.
 
 ## How people get an account
 
-Everyone logs in with a 6-digit code sent to their email. The first time they
-do, the database creates a **profile** for them automatically, and records
-how a student account came about (`student_verification`):
+Everyone signs up with a 6-digit code sent to their email, and then chooses
+a password; afterwards they log in with their email and password, or with a
+new code ("Email me a code instead", "Forgot your password?"). Supabase Auth
+keeps the password as a bcrypt hash in `auth.users.encrypted_password`;
+nothing in `public` stores, reads or returns it, and `my_has_password()`
+tells the site only whether the caller has one (accounts from before
+passwords have none and are asked after their next code login). The first
+time someone gets a code, the database creates a **profile** for them
+automatically, and records how a student account came about
+(`student_verification`):
 
 - If their email ends in a domain listed for a university (for Politecnico
   di Milano, `@mail.polimi.it`), they become a **student** of that
@@ -402,6 +409,7 @@ title and company name, until 730 days after they are resolved.
 | `admin_student_counts()`, `admin_other_universities()` | Admins | The "Students" section of /admin: students by verification method and university, and the names typed under "Other" with counts. |
 | `accept_terms(version)` | Logged-in users | Records that the caller accepted that version of the Terms, with the database's time. `/welcome` and the employer setup call it when "I'm 18 or older and I accept the Terms" is ticked. |
 | `my_opened_jobs()` | Logged-in users | The jobs the caller pressed "Apply" on, with title, company and whether each is still live ("Jobs you opened" on /saved). |
+| `my_has_password()` | Logged-in users | Whether the caller's own account has a password yet (true or false, never the password or its hash). The site asks after a code login, on /welcome, on the employer setup and on /account. |
 | `my_company_follower_count()` | Company owners | How many students follow the caller's company: a number, never who. |
 | `my_feedback()`, `my_reports()` | Logged-in users | The caller's own feedback and the reports they filed (without the admin's note or who resolved them), for "Download my data". |
 | `extend_my_job(job_id)` | Company owners | "Extend by 60 days": a published job of the caller's own approved company, live or expired at most 14 days ago, is shown until 60 days from now, without a new review. Older expired jobs are refused ("Edit it and submit it again for review"). |
