@@ -592,8 +592,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   on the switch (so the login email, the legal pages and every later page
   follow), and is taken out of the address with `history.replaceState`
   (`withoutLinkLang()` works on the raw query, so every other parameter and
-  the `#` part stay exactly as written). Exactly `en` or `it`; anything else
-  (`IT`, `fr`, empty) is ignored and left in the address. If Italian can't
+  the `#` part stay exactly as written). `en` or `it` in any case (`IT`,
+  `It` too); anything else (`fr`, `it-IT`, empty) is ignored and left in
+  the address. If Italian can't
   be loaded, English, and nothing is stored. Checked in
   `tests/unit/link-lang.test.mjs` and `tests/e2e/link-lang.test.js`.
 - Never translated: what users write (jobs, companies, the example

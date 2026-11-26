@@ -5,7 +5,8 @@
 //     keeping every other parameter (/jobs's own ?lang= filter included);
 //   * everything follows: <html lang>, the switch, the login email's
 //     language sent with the code, the legal pages;
-//   * any other value is ignored; if Italian can't be loaded, English.
+//   * the value in any case (IT, It); any other value is ignored; if
+//     Italian can't be loaded, English.
 const { chromium } = require('./lib/browser.js');
 const { mock } = require('./lib/mock.js');
 const it = require('../../src/i18n/it.json');
@@ -49,8 +50,22 @@ const loads = (p) => p.evaluate(() => [performance.getEntriesByType('navigation'
     ok(await saved(p) === 'en' && path(p) === '/employers', 'and "en" remembered, hl gone: ' + await saved(p) + ' ' + path(p));
     await ctx.close(); }
 
+  // ---- any case works: ?hl=IT and ?hl=It like ?hl=it, removed the same way
+  for (const v of ['IT', 'It']) {
+    const ctx = await b.newContext(desk); await mock(ctx); const p = await ctx.newPage();
+    await p.goto(E + `/employers?hl=${v}`); await p.waitForSelector('#employers-title');
+    ok(await htmlLang(p) === 'it' && (await p.textContent('#employers-title')).trim() === it['employers.title'], `?hl=${v}: Italian`);
+    ok(await saved(p) === 'it', `?hl=${v}: remembered as "it": ${await saved(p)}`);
+    ok(path(p) === '/employers', `?hl=${v}: taken out of the address: ${path(p)}`);
+    await ctx.close();
+  }
+  { const ctx = await b.newContext(desk); await remember(ctx, 'it'); await mock(ctx); const p = await ctx.newPage();
+    await p.goto(E + '/jobs?lang=en&hl=EN'); await p.waitForSelector('.job-card');
+    ok(await htmlLang(p) === 'en' && await saved(p) === 'en' && path(p) === '/jobs?lang=en', '?hl=EN over a remembered "it": English, "en" remembered, ?lang= kept: ' + path(p));
+    await ctx.close(); }
+
   // ---- an invalid value: ignored, left in the address, nothing remembered
-  for (const [v, before, want] of [['fr', null, 'en'], ['IT', null, 'en'], ['', null, 'en'], ['xx', 'it', 'it']]) {
+  for (const [v, before, want] of [['fr', null, 'en'], ['it-IT', null, 'en'], ['', null, 'en'], ['xx', 'it', 'it']]) {
     const ctx = await b.newContext(desk); if (before) await remember(ctx, before); await mock(ctx); const p = await ctx.newPage();
     await p.goto(E + `/employers?hl=${v}`); await p.waitForSelector('#employers-title');
     ok(await htmlLang(p) === want, `?hl=${v} (remembered: ${before}): stays ${want}, got ${await htmlLang(p)}`);

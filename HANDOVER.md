@@ -231,7 +231,7 @@ week. It only reads.
   already has a `?`, e.g. https://gigome.org/jobs?italian=none&hl=it. The
   site opens in that language, remembers it like a press on EN | IT, and
   takes `hl` out of the address bar, so a link copied from there is plain.
-  Only lowercase `it` and `en` work. It doesn't tell you which partner sent
+  `it` and `en` work in any case (`IT` too). It doesn't tell you which partner sent
   anyone: it's a language setting, not a tracking code.
 - **Someone asks for their data or its deletion:** they can do both
   themselves on `/account` ("Download my data", "Delete my account"). If

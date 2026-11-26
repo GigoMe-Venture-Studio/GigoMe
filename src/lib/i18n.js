@@ -61,15 +61,16 @@ function apply(l) {
 // page (not "lang": /jobs uses that for its job-language filter). Read once,
 // when the site loads; it wins over the remembered choice, is remembered
 // like a press on EN | IT, and is taken out of the address bar (no reload,
-// every other parameter and the #part left exactly as they were). Any other
-// value is ignored and left alone. Nothing reads the browser's language.
+// every other parameter and the #part left exactly as they were). The value
+// in any case (it, IT, It); any other value is ignored and left alone.
+// Nothing reads the browser's language.
 const LINK_PARAM = 'hl';
 const pairs = (search) => search.replace(/^\?/, '').split('&').filter(Boolean);
 const isLinkParam = (pair) => new URLSearchParams(pair).has(LINK_PARAM);
 
-// The language a ?hl= link asks for ("en" or "it"), or null.
+// The language a ?hl= link asks for ("en" or "it", from any case), or null.
 export function linkLang(search) {
-  const v = new URLSearchParams(search).get(LINK_PARAM);
+  const v = (new URLSearchParams(search).get(LINK_PARAM) || '').toLowerCase();
   return LANGS.includes(v) ? v : null;
 }
 // The query string without hl ("?a=1&b=2", or "" when nothing is left).

@@ -4,12 +4,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getLang, initLang, linkLang, withoutLinkLang } from '../../src/lib/i18n.js';
 
-test('only hl=en and hl=it count', () => {
+test('hl=en and hl=it count, in any case; nothing else does', () => {
   assert.equal(linkLang('?hl=it'), 'it');
   assert.equal(linkLang('?hl=en'), 'en');
   assert.equal(linkLang('hl=it'), 'it');
   assert.equal(linkLang('?q=bar&hl=it&area=3'), 'it');
-  for (const s of ['', '?', '?hl=', '?hl=fr', '?hl=IT', '?hl=it-IT', '?hl= it', '?lang=it', '?hl', '?xhl=it'])
+  for (const [s, want] of [['?hl=IT', 'it'], ['?hl=It', 'it'], ['?hl=iT', 'it'], ['?hl=EN', 'en'], ['?hl=En', 'en']])
+    assert.equal(linkLang(s), want, s);
+  for (const s of ['', '?', '?hl=', '?hl=fr', '?hl=it-IT', '?hl=IT-it', '?hl= it', '?lang=it', '?hl', '?xhl=it'])
     assert.equal(linkLang(s), null, s);
 });
 
@@ -20,6 +22,7 @@ test('taking hl out keeps every other parameter exactly as written', () => {
   assert.equal(withoutLinkLang('?q=caf%C3%A9+bar&hl=it&when=weekends,flexible'), '?q=caf%C3%A9+bar&when=weekends,flexible');
   assert.equal(withoutLinkLang('?next=%2Fjobs%2F1&hl=en'), '?next=%2Fjobs%2F1');
   assert.equal(withoutLinkLang('?hl=it&hl=en'), '');
+  assert.equal(withoutLinkLang('?lang=en&hl=IT'), '?lang=en');
 });
 
 // A stand-in for the browser: address, history and localStorage.
@@ -53,6 +56,20 @@ test('hl wins over the remembered choice, both ways', async () => {
   await initLang();
   assert.equal(getLang(), 'it');
   assert.equal(b.store.get('gigome-lang'), 'it');
+});
+
+test('?hl=IT and ?hl=It work like ?hl=it, stored as "it"', async () => {
+  for (const v of ['IT', 'It']) {
+    const { w, store } = browser(`/jobs?lang=en&hl=${v}`, 'en');
+    await initLang();
+    assert.equal(getLang(), 'it', v);
+    assert.equal(store.get('gigome-lang'), 'it', v);
+    assert.equal(w.replaced[0].url, '/jobs?lang=en', v);
+  }
+  const { store } = browser('/?hl=EN', 'it');
+  await initLang();
+  assert.equal(getLang(), 'en');
+  assert.equal(store.get('gigome-lang'), 'en');
 });
 
 test('other parameters and the #part stay', async () => {
