@@ -585,6 +585,17 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   (`gigome-lang`, try/catch) and `<html lang>` follows it. Nothing reads the
   browser's language. Prices and dates follow it ("€9,50/h", "3 giorni
   fa").
+- A link can choose the language: `?hl=it` or `?hl=en` on any page (not
+  `lang`: /jobs uses that for its job-language filter), for partners
+  (https://gigome.org/?hl=it). `initLang()` reads it once, before the first
+  render: a valid value wins over the stored choice, is stored like a press
+  on the switch (so the login email, the legal pages and every later page
+  follow), and is taken out of the address with `history.replaceState`
+  (`withoutLinkLang()` works on the raw query, so every other parameter and
+  the `#` part stay exactly as written). Exactly `en` or `it`; anything else
+  (`IT`, `fr`, empty) is ignored and left in the address. If Italian can't
+  be loaded, English, and nothing is stored. Checked in
+  `tests/unit/link-lang.test.mjs` and `tests/e2e/link-lang.test.js`.
 - Never translated: what users write (jobs, companies, the example
   listings, feedback, reports, names), database values (universities,
   metro stations, area names except "Elsewhere in Milan", `areaName()` in

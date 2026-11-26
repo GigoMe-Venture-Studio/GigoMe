@@ -225,6 +225,14 @@ week. It only reads.
   to update the contact email. The old owner's account is then a company
   account without a company: delete it if they ask. Note the change
   somewhere (it isn't in the moderation log).
+- **Give a partner a link in Italian (or English):** add `?hl=it` (or
+  `?hl=en`) to any page's address: https://gigome.org/?hl=it,
+  https://gigome.org/employers?hl=it, or `&hl=it` after an address that
+  already has a `?`, e.g. https://gigome.org/jobs?italian=none&hl=it. The
+  site opens in that language, remembers it like a press on EN | IT, and
+  takes `hl` out of the address bar, so a link copied from there is plain.
+  Only lowercase `it` and `en` work. It doesn't tell you which partner sent
+  anyone: it's a language setting, not a tracking code.
 - **Someone asks for their data or its deletion:** they can do both
   themselves on `/account` ("Download my data", "Delete my account"). If
   they can't log in, check it's really them (a reply from that email
@@ -389,7 +397,7 @@ login, a map and the Metro button). GigoMe sets **no cookies**.
 | --- | --- | --- | --- | --- |
 | localStorage | `sb-<project>-auth-token` | The login session: access and refresh tokens, user ID and email | After logging in | Until "Log out", or the session expires |
 | sessionStorage | `gigome.login.pending` (and `.employer`) | The email a code was just sent to, and when, and whether it was "Forgot your password?", so a reload doesn't lose it | Between "Email me a code instead" (or "Forgot your password?") and entering it | Until the code is used or the tab is closed |
-| localStorage | `gigome-lang` | "en" or "it": the language chosen with the EN \| IT switch | After pressing EN or IT | Until changed, or the browser's site data is cleared |
+| localStorage | `gigome-lang` | "en" or "it": the language chosen with the EN \| IT switch, or by a link ending in `?hl=it` / `?hl=en` | After pressing EN or IT, or opening such a link | Until changed, or the browser's site data is cleared |
 | sessionStorage | `gigome.metro` | "off" when someone hides the metro lines on a map | After pressing "Metro" | Until the tab is closed |
 | Turnstile's frame (challenges.cloudflare.com) | Cloudflare's own | Whatever Cloudflare's bot check keeps, inside its own frame, not readable by GigoMe | On the login forms, when Turnstile is on | Cloudflare's rules |
 
