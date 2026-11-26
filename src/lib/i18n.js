@@ -2,9 +2,9 @@
 // file per language (src/i18n/en.json, src/i18n/it.json: flat keys, the
 // same keys in both, checked by tests/unit/i18n.test.mjs) through t().
 // English is the default and is always loaded; Italian is downloaded only
-// when chosen (the switch in the header) or remembered from an earlier
-// visit. The choice stays in this browser only (localStorage), and
-// <html lang> follows it.
+// when chosen (the switch in the header, or a ?hl=it link: initLang()) or
+// remembered from an earlier visit. The choice stays in this browser only
+// (localStorage), and <html lang> follows it.
 //
 //   t('jobs.title')                          plain text
 //   t('jobs.found', { count: 3 })            {count} filled in, and the
@@ -57,18 +57,60 @@ function apply(l) {
   listeners.forEach((f) => f());
 }
 
-// Before the first render: the remembered language, if Italian could be
-// loaded (offline, the site stays in English).
+// A link that opens the site in a given language: ?hl=it or ?hl=en, on any
+// page (not "lang": /jobs uses that for its job-language filter). Read once,
+// when the site loads; it wins over the remembered choice, is remembered
+// like a press on EN | IT, and is taken out of the address bar (no reload,
+// every other parameter and the #part left exactly as they were). The value
+// in any case (it, IT, It); any other value is ignored and left alone.
+// Nothing reads the browser's language.
+const LINK_PARAM = 'hl';
+const pairs = (search) => search.replace(/^\?/, '').split('&').filter(Boolean);
+const isLinkParam = (pair) => new URLSearchParams(pair).has(LINK_PARAM);
+
+// The language a ?hl= link asks for ("en" or "it", from any case), or null.
+export function linkLang(search) {
+  const v = (new URLSearchParams(search).get(LINK_PARAM) || '').toLowerCase();
+  return LANGS.includes(v) ? v : null;
+}
+// The query string without hl ("?a=1&b=2", or "" when nothing is left).
+// Works on the raw text so the other parameters keep their exact spelling.
+export function withoutLinkLang(search) {
+  const rest = pairs(search).filter((p) => !isLinkParam(p));
+  return rest.length ? '?' + rest.join('&') : '';
+}
+
+function takeLinkLang() {
+  const { location, history } = window;
+  const l = linkLang(location.search);
+  if (!l) return null;
+  try {
+    history.replaceState(history.state, '', location.pathname + withoutLinkLang(location.search) + location.hash);
+  } catch {
+    // The language still applies; only the address keeps ?hl=.
+  }
+  return l;
+}
+
+// Before the first render: the language of a ?hl= link, else the remembered
+// one, if Italian could be loaded (offline, the site stays in English and a
+// link's "it" isn't remembered).
 export async function initLang() {
-  const l = typeof window === 'undefined' ? null : stored();
+  const browser = typeof window !== 'undefined';
+  const fromLink = browser ? takeLinkLang() : null;
+  const l = fromLink || (browser ? stored() : null);
   if (l && l !== DEFAULT_LANG) {
     try {
       await load(l);
+      if (fromLink) store(l);
       apply(l);
     } catch {
       apply(DEFAULT_LANG);
     }
-  } else apply(DEFAULT_LANG);
+  } else {
+    if (fromLink) store(fromLink);
+    apply(DEFAULT_LANG);
+  }
 }
 
 export async function setLang(l) {
