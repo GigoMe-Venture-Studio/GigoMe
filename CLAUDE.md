@@ -438,12 +438,12 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   into `job_reports`.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
-  `header-mark.webp` under 360px, and under 400px in Italian, where
-  "Accesso studenti" and the wordmark don't fit side by side; alt "GigoMe",
-  links to `/`), the "EN | IT"
+  `header-mark.webp` under 360px; alt "GigoMe", links to `/`), the "EN | IT"
   switch (from 440px; under 440px only in the Menu panel), Jobs
-  (`/jobs`), then: logged out, "For employers" and "Student login" (the
-  button opens `/login`, the student login only); a
+  (`/jobs`), then: logged out, "For employers" and "Student login" ("Area
+  studenti" in Italian; the button opens `/login`, the student login only,
+  and on `/employers` it is outlined like Menu instead of purple, so "Log in
+  or register your company" is the purple one there); a
   student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
   and "Log out"; a company account, "Dashboard", the company name (a link to
   `/account`) and "Log out". The footer shows "For employers" when logged

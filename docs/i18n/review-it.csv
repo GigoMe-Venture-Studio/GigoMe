@@ -77,7 +77,7 @@ Header,header.mobileNav,Mobile,Menu mobile
 Header,header.jobs,Jobs,Offerte
 Header,header.accountTitle,{name}: your account,{name}: il tuo account
 Header,header.accountLabel,Your account ({name}),Il tuo account ({name})
-Header,header.studentLogin,Student login,Accesso studenti
+Header,header.studentLogin,Student login,Area studenti
 Header,header.menu,Menu,Menu
 Footer,footer.tagline,A student project in Milan. Free for students.,Un progetto studentesco a Milano. Gratis per gli studenti.
 Footer,footer.nav,Footer,Piè di pagina

@@ -1,15 +1,18 @@
 // Companies on a phone (/employers?hl=it from a partner's link):
 //   * the header's logged-out button says who it's for, "Student login" /
-//     "Accesso studenti", and fits next to Menu without pushing anything off
-//     screen (in Italian the logo is the G alone under 400px: the wordmark
-//     and "Accesso studenti" don't fit together below that);
+//     "Area studenti", and fits next to the wordmark (from 360px; the G
+//     alone below) and Menu, with nothing pushed off screen;
+//   * on /employers only, that button is outlined like Menu, so the purple
+//     button a company sees is the one to its own login; every other page
+//     keeps it purple;
 //   * /employers, while the login is below the pitch (under 900px), has
 //     "Log in or register your company" / "Accedi o registra la tua azienda"
 //     under the lead, on the first screen: it scrolls to the login and puts
 //     focus there, without changing the address or adding a history entry.
 //     From 900px (side by side) and when logged in there is no such button.
-// In Italian and English, at 320 and 390px (and at 360, 375 and 399 for the
-// header, the widths where the Italian button and the wordmark collide).
+// In Italian and English, at 320 and 390px (the header also at 360, 375, 399
+// and 400px, the button's style at 390 and 1280px).
+
 const { chromium } = require('./lib/browser.js');
 const { mock } = require('./lib/mock.js');
 const { emock, employerLogin } = require('./lib/emock.js');
@@ -21,32 +24,44 @@ const ok = (c, m) => { if (c) pass++; else { fail++; console.log('FAIL', m); } }
 const L = { it, en };
 const phone = (width, height) => ({ viewport: { width, height }, isMobile: true, hasTouch: true });
 const box = (p, s) => p.evaluate((sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, height: r.height, visible: getComputedStyle(e).visibility === 'visible' && r.width > 0 }; }, s);
+const HEADER_BTN = '.site-header .header-actions a[href="/login"]';
+// Visible links and buttons drawn in the accent purple (inside the screen
+// only, if onScreen), with their text and whether they're in the login card.
+const purple = (p, onScreen) => p.evaluate((only) => {
+  const probe = document.createElement('span'); probe.style.color = 'var(--accent)'; document.body.append(probe);
+  const accent = getComputedStyle(probe).color; probe.remove();
+  return [...document.querySelectorAll('a, button')].filter((e) => {
+    const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+    if (!r.width || !r.height || cs.visibility !== 'visible' || cs.backgroundColor !== accent) return false;
+    return !only || (r.bottom > 0 && r.top < innerHeight);
+  }).map((e) => ({ text: e.textContent.trim(), inLogin: Boolean(e.closest('.employers-login')), header: Boolean(e.closest('.site-header')) }));
+}, onScreen);
 const path = (p) => { const u = new URL(p.url()); return u.pathname + u.search + u.hash; };
 
 (async () => {
   const b = await chromium.launch();
 
-  // ---- the header's logged-out button, and it fits
-  for (const lang of ['it', 'en']) for (const [w, h] of [[320, 568], [360, 640], [375, 667], [390, 844], [399, 844]]) {
+  // ---- the header's logged-out button, and it fits (the G alone under 360px only)
+  for (const lang of ['it', 'en']) for (const [w, h] of [[320, 568], [360, 640], [375, 667], [390, 844], [399, 844], [400, 844]]) {
     const ctx = await b.newContext(phone(w, h)); await mock(ctx); const p = await ctx.newPage();
     await p.goto(`${E}/employers?hl=${lang}`); await p.waitForSelector('.employers-login input[name=email]'); await p.waitForTimeout(300);
     const at = `${lang} ${w}px`;
-    const btn = p.locator('.site-header .header-actions a.btn-primary');
+    const btn = p.locator(HEADER_BTN);
     const label = (await btn.textContent()).trim();
-    ok(label === L[lang]['header.studentLogin'] && label === (lang === 'it' ? 'Accesso studenti' : 'Student login'), `${at}: the header button says "${L[lang]['header.studentLogin']}": ${label}`);
-    ok(await btn.getAttribute('href') === '/login', `${at}: it opens the student login`);
-    const r = await p.evaluate(() => {
+    ok(label === L[lang]['header.studentLogin'] && label === (lang === 'it' ? 'Area studenti' : 'Student login'), `${at}: the header button says "${L[lang]['header.studentLogin']}": ${label}`);
+    const r = await p.evaluate((sel) => {
       const q = (s) => document.querySelector(s).getBoundingClientRect();
-      const logo = q('.site-logo'), btn = q('.site-header .header-actions a.btn-primary'), menu = q('#menu-btn');
-      const b = document.querySelector('.site-header .header-actions a.btn-primary');
-      return { logoRight: logo.right, btnLeft: btn.left, btnRight: btn.right, btnHeight: btn.height, menuLeft: menu.left, menuRight: menu.right,
+      const logo = q('.site-logo'), btn = q(sel), menu = q('#menu-btn');
+      const b = document.querySelector(sel);
+      return { logoRight: logo.right, btnLeft: btn.left, btnRight: btn.right, btnHeight: btn.height, menuLeft: menu.left, menuRight: menu.right, menuTop: menu.top, menuBottom: menu.bottom,
         cut: b.scrollWidth > b.clientWidth, page: document.documentElement.scrollWidth, win: innerWidth,
         logo: document.querySelector('.site-logo img').currentSrc };
-    });
+    }, HEADER_BTN);
     ok(r.page <= r.win, `${at}: nothing wider than the screen: ${r.page} > ${r.win}`);
-    ok(r.btnLeft >= r.logoRight + 8 && r.btnRight <= r.menuLeft && r.menuRight <= r.win - 8, `${at}: logo, button and Menu side by side, all on screen: ${JSON.stringify(r)}`);
+    ok(r.menuLeft >= 0 && r.menuRight <= r.win - 8 && r.menuTop >= 0 && r.menuBottom <= 64, `${at}: Menu fully visible: ${JSON.stringify(r)}`);
+    ok(r.btnLeft >= r.logoRight + 8 && r.btnRight <= r.menuLeft, `${at}: logo, button and Menu side by side, not overlapping: ${JSON.stringify(r)}`);
     ok(!r.cut && r.btnHeight === 32, `${at}: the button's words on one line, not cut: ${JSON.stringify(r)}`);
-    const mark = w < 360 || (lang === 'it' && w < 400);
+    const mark = w < 360;
     ok(r.logo.endsWith(mark ? '/brand/header-mark.webp' : '/brand/header-wordmark.webp'), `${at}: the ${mark ? 'G alone' : 'wordmark'}: ${r.logo}`);
     if (w === 320) {
       await btn.click(); await p.waitForURL('**/login');
@@ -55,21 +70,36 @@ const path = (p) => { const u = new URL(p.url()); return u.pathname + u.search +
     }
     await ctx.close();
   }
-  // In Italian from 400px the wordmark is back.
-  { const ctx = await b.newContext(phone(400, 844)); await mock(ctx); const p = await ctx.newPage();
-    await p.goto(`${E}/employers?hl=it`); await p.waitForSelector('.employers-login input[name=email]'); await p.waitForTimeout(300);
-    ok((await p.evaluate(() => document.querySelector('.site-logo img').currentSrc)).endsWith('/brand/header-wordmark.webp'), 'it 400px: the wordmark');
-    ok(await p.evaluate(() => document.documentElement.scrollWidth) === 400, 'it 400px: nothing wider than the screen');
-    // Switching language changes the logo at once (the <source> follows the
-    // language). Under 440px the switch is in the Menu panel.
-    await p.setViewportSize({ width: 375, height: 667 }); await p.waitForTimeout(300);
-    ok((await p.evaluate(() => document.querySelector('.site-logo img').currentSrc)).endsWith('/brand/header-mark.webp'), 'it 375px: the G alone');
-    await p.click('#menu-btn'); await p.click('.menu-panel .lang-switch button[lang=en]'); await p.waitForTimeout(300);
-    ok((await p.evaluate(() => document.querySelector('.site-logo img').currentSrc)).endsWith('/brand/header-wordmark.webp'), 'en 375px after the switch: the wordmark');
-    if (!(await p.isVisible('.menu-panel'))) await p.click('#menu-btn'); await p.click('.menu-panel .lang-switch button[lang=it]'); await p.waitForTimeout(300);
-    ok((await p.evaluate(() => document.querySelector('.site-logo img').currentSrc)).endsWith('/brand/header-mark.webp'), 'it 375px after the switch: the G alone');
-    ok(await p.evaluate(() => document.documentElement.scrollWidth) === 375, 'it 375px after the switch: nothing wider than the screen');
-    await ctx.close(); }
+
+  // ---- the header button: outlined like Menu on /employers, purple everywhere else
+  for (const lang of ['it', 'en']) for (const [w, h, opts] of [[390, 844, phone(390, 844)], [1280, 900, { viewport: { width: 1280, height: 900 } }]]) {
+    const ctx = await b.newContext(opts); await mock(ctx); const p = await ctx.newPage();
+    const at = `${lang} ${w}px`;
+    await p.goto(`${E}/employers?hl=${lang}`); await p.waitForSelector('.employers-login input[name=email]'); await p.waitForTimeout(300);
+    const look = (sel) => p.evaluate((s) => { const cs = getComputedStyle(document.querySelector(s)); return [cs.backgroundColor, cs.color, cs.borderTopColor, cs.borderTopWidth, cs.height].join(' '); }, sel);
+    ok(await p.locator(HEADER_BTN).getAttribute('class') === 'btn btn-secondary btn-sm', `${at} /employers: the header button has Menu's classes: ${await p.locator(HEADER_BTN).getAttribute('class')}`);
+    ok(await look(HEADER_BTN) === await look('#menu-btn'), `${at} /employers: and looks like Menu: ${await look(HEADER_BTN)} / ${await look('#menu-btn')}`);
+    if (w === 390) {
+      const seen = await purple(p, true);
+      ok(seen.length === 1 && seen[0].text === L[lang]['employers.jumpToLogin'], `${at} /employers: the only purple button on the first screen is "${L[lang]['employers.jumpToLogin']}": ${JSON.stringify(seen)}`);
+    } else {
+      // From 900px there's no jump button: the login is beside the pitch, and
+      // its own "Log in" button is the purple one.
+      const seen = await purple(p, false);
+      ok(seen.length >= 1 && seen.every((x) => x.inLogin) && !seen.some((x) => x.header), `${at} /employers: purple only inside the employer login, none in the header: ${JSON.stringify(seen)}`);
+    }
+    // Every other page keeps it purple, including after leaving /employers in the app.
+    for (const pg of ['/', '/jobs', '/how-it-works']) {
+      await p.goto(E + pg); await p.waitForSelector(HEADER_BTN); await p.waitForTimeout(200);
+      ok(await p.locator(HEADER_BTN).getAttribute('class') === 'btn btn-primary btn-sm' && (await purple(p, false)).some((x) => x.header && x.text === L[lang]['header.studentLogin']), `${at} ${pg}: the header button stays purple`);
+    }
+    await p.goto(`${E}/employers`); await p.waitForSelector('.employers-login input[name=email]'); await p.waitForTimeout(200);
+    if (w === 1280) await p.click('.main-nav a[href="/jobs"]');
+    else { await p.click('#menu-btn'); await p.click('.menu-panel a[href="/jobs"]'); }
+    await p.waitForURL('**/jobs'); await p.waitForTimeout(200);
+    ok(await p.locator(HEADER_BTN).getAttribute('class') === 'btn btn-primary btn-sm', `${at}: from /employers to /jobs in the app, purple again`);
+    await ctx.close();
+  }
 
   // ---- /employers on a phone: the button to the login
   for (const lang of ['it', 'en']) for (const [w, h] of [[320, 568], [390, 844]]) {
