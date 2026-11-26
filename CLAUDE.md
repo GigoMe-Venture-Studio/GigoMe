@@ -393,7 +393,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   supplied file. Both pages are loaded only when opened, and are in the
   footer.
 - Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
-  login), `EmployerSetup.jsx` (`/employers/setup`: a company account without
+  login; under 900px, where the login comes after the pitch, "Log in or
+  register your company" under the lead scrolls to it and focuses it, for
+  logged-out visitors only, checked in `employer-phone.test.js`),
+  `EmployerSetup.jsx` (`/employers/setup`: a company account without
   a company creates it, status pending; "I'm 18 or older and I accept the
   Terms" must be ticked: the account records the version (`accept_terms`)
   and the database stores the company's `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
@@ -435,7 +438,9 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   into `job_reports`.
 - `src/components/SiteHeader.jsx`: the header on every page (rendered once in
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
-  `header-mark.webp` under 360px; alt "GigoMe", links to `/`), the "EN | IT"
+  `header-mark.webp` under 360px, and under 400px in Italian, where
+  "Accesso studenti" and the wordmark don't fit side by side; alt "GigoMe",
+  links to `/`), the "EN | IT"
   switch (from 440px; under 440px only in the Menu panel), Jobs
   (`/jobs`), then: logged out, "For employers" and "Student login" (the
   button opens `/login`, the student login only); a

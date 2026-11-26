@@ -77,7 +77,7 @@ Header,header.mobileNav,Mobile,Menu mobile
 Header,header.jobs,Jobs,Offerte
 Header,header.accountTitle,{name}: your account,{name}: il tuo account
 Header,header.accountLabel,Your account ({name}),Il tuo account ({name})
-Header,header.studentLogin,Student login,Accedi
+Header,header.studentLogin,Student login,Accesso studenti
 Header,header.menu,Menu,Menu
 Footer,footer.tagline,A student project in Milan. Free for students.,Un progetto studentesco a Milano. Gratis per gli studenti.
 Footer,footer.nav,Footer,Piè di pagina
@@ -581,6 +581,7 @@ Log out,logout.busy,Logging out…,Uscita in corso…
 /account,myData.aboutFile,"Everything GigoMe (gigome.org) holds about your account, as of the time below. Your login session on this device is kept by your browser and is not included.","Tutto ciò che GigoMe (gigome.org) conserva sul tuo account, alla data e ora indicate qui sotto. La sessione di accesso su questo dispositivo è conservata dal browser e non è inclusa."
 /employers,employers.title,Reach university students in Milan,Raggiungi gli studenti universitari di Milano
 /employers,employers.lead,GigoMe is a job board for university students in Milan: paid part-time jobs and gigs. We don't list internships or unpaid roles.,GigoMe è una bacheca di offerte di lavoro per studenti universitari a Milano: lavori part-time e lavoretti retribuiti. Non pubblichiamo stage né ruoli non retribuiti.
+/employers,employers.jumpToLogin,Log in or register your company,Accedi o registra la tua azienda
 /employers,employers.freeTitle,Free to list jobs,Pubblicare offerte è gratis
 /employers,employers.freeText,"Listing jobs on GigoMe is free. Students apply directly with you, on your website or by email.","Pubblicare offerte su GigoMe è gratuito. Gli studenti si candidano direttamente con te, sul tuo sito o via email."
 /employers,employers.reviewTitle,How review works,Come funziona la revisione
