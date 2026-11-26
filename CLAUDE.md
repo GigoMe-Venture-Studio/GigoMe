@@ -393,7 +393,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   supplied file. Both pages are loaded only when opened, and are in the
   footer.
 - Employer side: `src/pages/Employers.jsx` (`/employers`: pitch and employer
-  login), `EmployerSetup.jsx` (`/employers/setup`: a company account without
+  login; under 900px, where the login comes after the pitch, "Log in or
+  register your company" under the lead scrolls to it and focuses it, for
+  logged-out visitors only, checked in `employer-phone.test.js`),
+  `EmployerSetup.jsx` (`/employers/setup`: a company account without
   a company creates it, status pending; "I'm 18 or older and I accept the
   Terms" must be ticked: the account records the version (`accept_terms`)
   and the database stores the company's `terms_accepted_at`), `Dashboard.jsx` (`/dashboard`:
@@ -437,8 +440,10 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   `App.jsx`): the logo (`public/brand/header-wordmark.webp`, 30px high, or
   `header-mark.webp` under 360px; alt "GigoMe", links to `/`), the "EN | IT"
   switch (from 440px; under 440px only in the Menu panel), Jobs
-  (`/jobs`), then: logged out, "For employers" and "Student login" (the
-  button opens `/login`, the student login only); a
+  (`/jobs`), then: logged out, "For employers" and "Student login" ("Area
+  studenti" in Italian; the button opens `/login`, the student login only,
+  and on `/employers` it is outlined like Menu instead of purple, so "Log in
+  or register your company" is the purple one there); a
   student, "Saved jobs", their name (a link to `/account`, truncated when it doesn't fit)
   and "Log out"; a company account, "Dashboard", the company name (a link to
   `/account`) and "Log out". The footer shows "For employers" when logged

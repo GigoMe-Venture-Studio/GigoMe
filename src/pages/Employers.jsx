@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import PageShell from '../components/PageShell.jsx';
 import ConfigError from '../components/ConfigError.jsx';
@@ -8,19 +8,25 @@ import { safeNext } from '../lib/auth.js';
 import LogOutButton from '../components/LogOutButton.jsx';
 import { CONTACT_EMAIL } from '../lib/contact.js';
 import { useCompanyAccount } from '../lib/useCompanyAccount.js';
+import { useSession } from '../lib/useSession.js';
 import { useT } from '../lib/useLang.js';
 
 // /employers: what GigoMe is for companies, and the employer login.
+// Under 900px the login comes after the whole pitch, so a button under the
+// lead jumps to it (JumpToLogin); from 900px they sit side by side and the
+// button is hidden (employer.css).
 export default function Employers() {
   const t = useT();
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
+  const login = useRef(null);
   return (
     <PageShell className="employers-main">
       <div className="employers">
         <section className="employers-intro" aria-labelledby="employers-title">
           <h1 id="employers-title">{t('employers.title')}</h1>
           <p className="lead">{t('employers.lead')}</p>
+          {supabase && <JumpToLogin target={login} />}
           <h2>{t('employers.freeTitle')}</h2>
           <p>{t('employers.freeText')}</p>
           <h2>{t('employers.reviewTitle')}</h2>
@@ -33,11 +39,36 @@ export default function Employers() {
             {t('employers.questions', { email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> })}
           </p>
         </section>
-        <div className="employers-login">
+        <div className="employers-login" id="employer-login" ref={login} tabIndex={-1}>
           {supabase ? <EmployerLogin next={next} /> : <ConfigError />}
         </div>
       </div>
     </PageShell>
+  );
+}
+
+// "Log in or register your company": scrolls to the login and moves focus
+// there (the card, not the email field, so no keyboard pops up over it). No
+// URL change, so Back still leaves the page. Only for logged-out visitors:
+// while the session loads it holds its place, invisible, so the page doesn't
+// jump; logged in, the card says what to do instead.
+function JumpToLogin({ target }) {
+  const t = useT();
+  const { session, loading } = useSession();
+  if (session) return null;
+  const jump = () => {
+    const el = target.current;
+    if (!el) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+    el.focus({ preventScroll: true });
+  };
+  return (
+    <p className={loading ? 'employers-jump is-pending' : 'employers-jump'} aria-hidden={loading || undefined}>
+      <button type="button" className="btn btn-primary" onClick={jump} tabIndex={loading ? -1 : undefined}>
+        {t('employers.jumpToLogin')}
+      </button>
+    </p>
   );
 }
 

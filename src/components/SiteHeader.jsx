@@ -9,7 +9,9 @@ import { useT } from '../lib/useLang.js';
 
 // The site header on every page: the GigoMe logo (the G alone on narrow
 // phones), Jobs, then
-//   logged out: "For employers" and "Student login";
+//   logged out: "For employers" and "Student login" (on /employers in the
+//   outline style, like Menu: there the only purple button is the one to
+//   the employer login);
 //   student: "Saved jobs", their name (a link to /account) and "Log out";
 //   company account: "Dashboard", the company name (a link to /account) and
 //   "Log out".
@@ -69,6 +71,7 @@ export default function SiteHeader() {
   const jobsCurrent = pathname === '/jobs' || pathname.startsWith('/jobs/');
   const accountCurrent = pathname === '/account';
   const employersCurrent = pathname === '/employers' || pathname.startsWith('/employers/');
+  const onEmployers = pathname === '/employers';
   const dashboardCurrent = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
   const savedCurrent = pathname === '/saved';
   const label = (who.isCompany && who.company) || who.name || (session ? session.user.email : '');
@@ -109,7 +112,7 @@ export default function SiteHeader() {
             </>
           ) : (
             /* It opens the student login only (employers log in on /employers). */
-            <Link className="btn btn-primary btn-sm" to="/login">{t('header.studentLogin')}</Link>
+            <Link className={onEmployers ? 'btn btn-secondary btn-sm' : 'btn btn-primary btn-sm'} to="/login">{t('header.studentLogin')}</Link>
           )}
           <button
             type="button"

@@ -12,12 +12,20 @@
 .employers-steps { padding-left: var(--s5); }
 .employers-steps li + li { margin-top: var(--s2); }
 .employers-login .auth-card { margin: 0; }
+/* "Log in or register your company" (JumpToLogin in Employers.jsx): only
+   while the login is below the pitch. The login is focused after the jump:
+   no outline round the whole card, and a little space above it. */
+.employers-jump { margin-top: var(--s4); }
+.employers-jump.is-pending { visibility: hidden; }
+.employers-login { scroll-margin-top: var(--s4); }
+.employers-login:focus { outline: none; }
 .employers-login-title { font-size: 24px; font-weight: 700; }
 @media (min-width: 900px) {
   .employers-main { padding-top: var(--s7); padding-bottom: var(--s8); }
   .employers { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--s8); align-items: start; }
   .employers-intro h1 { font-size: 36px; }
   .employers-login { padding: var(--s5); border: 1px solid var(--line); border-radius: var(--r-md); }
+  .employers-jump { display: none; }
 }
 
 .setup-next { margin-top: var(--s4); }
