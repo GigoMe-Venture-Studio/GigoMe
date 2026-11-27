@@ -66,3 +66,12 @@
 .admin-others { margin-top: var(--s2); padding-left: 1.25em; }
 .admin-others li + li { margin-top: var(--s1); }
 .admin-other-name { overflow-wrap: anywhere; }
+
+/* Student and employer accounts (AdminAccounts.jsx): read only. */
+.admin-accounts-note { margin-top: var(--s3); padding: var(--s2) var(--s3); border-left: 3px solid var(--warn); background: var(--paper); font-size: 14px; }
+.admin-accounts-list { margin-top: var(--s5); }
+.admin-accounts-search { margin-top: var(--s2); max-width: 420px; }
+.admin-accounts-table th, .admin-accounts-table td { text-align: left; }
+.admin-accounts-table th:first-child { font-weight: 600; }
+.admin-pager { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s3); font-size: 14px; }
+.admin-accounts-list > .field-hint { margin-top: var(--s2); }

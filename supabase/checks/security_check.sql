@@ -2465,7 +2465,7 @@ begin
     where ns.nspname = 'public'
       and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
       and has_function_privilege('authenticated', p.oid, 'EXECUTE');
-    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_has_password, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'accept_terms, admin_company_contact, admin_job_contact, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_has_password, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
+    results := pg_temp.res(results, 'Logged-in users can call exactly these functions, no others', 'accept_terms, admin_company_contact, admin_job_contact, admin_list_employers, admin_list_students, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_has_password, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact', coalesce(v_text, 'none'), v_text = 'accept_terms, admin_company_contact, admin_job_contact, admin_list_employers, admin_list_students, admin_other_universities, admin_resolve_report, admin_review_job, admin_set_company_status, admin_set_job_status, admin_stats, admin_student_counts, current_account_type, declare_student, delete_my_account, extend_my_job, get_company_contact_email, get_own_job_contact, is_admin, my_company_follower_count, my_feedback, my_has_password, my_job_stats, my_opened_jobs, my_reports, my_saved_jobs, reveal_job_contact, set_job_contact');
 
     select string_agg(c.relname || ':' || pr, ', ' order by c.relname, pr) into v_err
     from pg_class c join pg_namespace ns on ns.oid = c.relnamespace, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) pr
@@ -3188,6 +3188,115 @@ begin
       where u in ('Other', 'Bocconi University', 'Check Later University');
       results := pg_temp.res(results, 'admin_other_universities groups the "Other" names (capitals ignored); admin_student_counts splits students by method and university',
         'Accademia di Brera 2 | ' || v_count_text, v_text, v_text = 'Accademia di Brera 2 | ' || v_count_text and v_count_text like '%self_declared/Other 2%');
+
+      -- /admin: the student and employer account lists (migration 20261127120000).
+      -- Read only, admins only.
+      select string_agg(p.proname || ': ' || coalesce((
+               select string_agg(case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end, ',' order by 1)
+               from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+               where a.privilege_type = 'EXECUTE' and (a.grantee = 0 or a.grantee::regrole::text in ('anon', 'authenticated'))), 'nobody')
+             || ', ' || case p.provolatile when 's' then 'stable' when 'i' then 'immutable' else 'volatile' end
+             || case when p.prosecdef then ', definer' else ', invoker' end
+             || case when 'search_path=""' = any (coalesce(p.proconfig, '{}')) then ', empty search_path' else ', other search_path' end
+             || case when p.prosrc ~* '\m(insert|update|delete|truncate|perform|execute)\M' then ', writes' else ', reads only' end,
+             '; ' order by p.proname)
+        into v_text
+      from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+      where ns.nspname = 'public' and p.proname in ('admin_list_students', 'admin_list_employers');
+      results := pg_temp.res(results, 'admin_list_students and admin_list_employers: only logged-in users may call them, stable, SECURITY DEFINER with an empty search_path, no writes',
+        'admin_list_employers: authenticated, stable, definer, empty search_path, reads only; admin_list_students: authenticated, stable, definer, empty search_path, reads only',
+        coalesce(v_text, 'missing'),
+        v_text = 'admin_list_employers: authenticated, stable, definer, empty search_path, reads only; admin_list_students: authenticated, stable, definer, empty search_path, reads only');
+
+      v_text := 'student: ' || pg_temp.try_as(v_student, 'select * from public.admin_list_students()')
+             || '; ' || pg_temp.try_as(v_student, 'select * from public.admin_list_employers()')
+             || ' | self-declared: ' || pg_temp.try_as(v_sd, 'select * from public.admin_list_students()')
+             || ' | company owner: ' || pg_temp.try_as(v_company, 'select * from public.admin_list_students()')
+             || '; ' || pg_temp.try_as(v_company, 'select * from public.admin_list_employers()');
+      begin
+        perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+        perform set_config('role', 'anon', true);
+        perform * from public.admin_list_students();
+        perform set_config('role', 'none', true);
+        v_text := v_text || ' | anon: ran';
+      exception when others then
+        perform set_config('role', 'none', true);
+        v_text := v_text || ' | anon: error';
+      end;
+      begin
+        perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+        perform set_config('role', 'anon', true);
+        perform * from public.admin_list_employers();
+        perform set_config('role', 'none', true);
+        v_text := v_text || '; ran';
+      exception when others then
+        perform set_config('role', 'none', true);
+        v_text := v_text || '; error';
+      end;
+      results := pg_temp.res(results, 'admin_list_students and admin_list_employers refuse students, company owners and logged-out visitors',
+        'every call refused', v_text,
+        v_text like 'student: error:%; error:% | self-declared: error:% | company owner: error:%; error:% | anon: error; error');
+
+      -- Independent counts, as the SQL Editor's role.
+      select count(*) into v_count from public.profiles where account_type = 'student';
+      select count(*) || '/' || count(*) filter (where j.status = 'published' and j.expires_at > now() and c.status = 'approved')
+        into v_count_text
+      from public.jobs j join public.companies c on c.id = j.company_id where c.id = v_co_approved;
+
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      -- A self-declared student who chose "Other", found by part of the email (capitals ignored).
+      select string_agg(email || ' | ' || coalesce(university, '-') || ' | ' || coalesce(other_university, '-') || ' | ' || verification
+                        || ' | ' || case when signed_up_at is not null then 'signed up' else 'no date' end || ' | total ' || total, ', ')
+        into v_text from public.admin_list_students('  SD.Check@Gmail ');
+      -- Students found by their university's name (both ways of signing up).
+      select v_text || ' || ' || coalesce(max(total)::text, '0') || ' at Bocconi, all of Bocconi: '
+             || coalesce(bool_and(university = 'Bocconi University')::text, 'none')
+             || ', both methods: ' || (count(distinct verification) = 2)::text
+        into v_text from public.admin_list_students('bocconi univ', 0, 100);
+      -- Employers: a company owner with a company, and one without.
+      select v_text || ' || ' || string_agg(email || ' | ' || coalesce(company_name, '-') || ' | ' || coalesce(company_status, '-')
+                        || ' | ' || jobs || '/' || live_jobs || ' | total ' || total, ', ')
+        into v_text from public.admin_list_employers('CHECK-APPROVED.example');
+      select v_text || ' || ' || string_agg(email || ' | ' || coalesce(company_name, '-') || ' | ' || coalesce(company_status, '-')
+                        || ' | ' || jobs || '/' || live_jobs, ', ')
+        into v_text from public.admin_list_employers('co.meta@gmail');
+      -- Each list holds only its own kind of account.
+      select v_text || ' || students matching an employer: ' || count(*) into v_text from public.admin_list_students('check-approved');
+      select v_text || ', employers matching a student: ' || count(*) into v_text from public.admin_list_employers('sd.check@gmail');
+      perform set_config('role', 'none', true);
+      select count(*) into v_rows from public.profiles p join public.universities u on u.id = p.university_id
+      where p.account_type = 'student' and u.name = 'Bocconi University';
+      results := pg_temp.res(results, 'admin_list_students and admin_list_employers: an admin sees the right rows, found by email, name or university (capitals and spaces ignored), each list only its own accounts',
+        'sd.check@gmail.example | - | Accademia di Brera | self_declared | signed up | total 1 || ' || v_rows || ' at Bocconi, all of Bocconi: true, both methods: true || owner@check-approved.example | Check Co (approved) | approved | '
+          || v_count_text || ' | total 1 || co.meta@gmail.example | - | - | 0/0 || students matching an employer: 0, employers matching a student: 0',
+        v_text,
+        v_text = 'sd.check@gmail.example | - | Accademia di Brera | self_declared | signed up | total 1 || ' || v_rows || ' at Bocconi, all of Bocconi: true, both methods: true || owner@check-approved.example | Check Co (approved) | approved | '
+          || v_count_text || ' | total 1 || co.meta@gmail.example | - | - | 0/0 || students matching an employer: 0, employers matching a student: 0'
+        and v_rows > 1);
+
+      -- Pagination, order, the 100-row cap, and no wildcards in the search.
+      select count(*) into v_rows from public.profiles where account_type = 'company';
+      perform set_config('request.jwt.claims', jsonb_build_object('sub', v_other, 'role', 'authenticated')::text, true);
+      perform set_config('role', 'authenticated', true);
+      select 'students total ' || (select max(total) from public.admin_list_students(null, 0, 2))
+          || ', employers total ' || (select max(total) from public.admin_list_employers(null, 0, 2))
+          || ', pages overlap: ' || (select count(*) from public.admin_list_students(null, 0, 3) a join public.admin_list_students(null, 3, 3) b on a.id = b.id)
+          || ', newest first: ' || (select bool_and(prev is null or signed_up_at <= prev)
+                                    from (select signed_up_at, lag(signed_up_at) over (order by ordinality) as prev
+                                          from public.admin_list_students(null, 0, 100) with ordinality) x)::text
+          || ', rows for limit 1000: ' || (select count(*) from public.admin_list_students(null, 0, 1000))
+          || ', for limit 0: ' || (select count(*) from public.admin_list_employers(null, 0, 0))
+          || ', "%" and "_" as wildcards: ' || (select count(*) from public.admin_list_students('%')) || '/' || (select count(*) from public.admin_list_employers('_'))
+        into v_text;
+      perform set_config('role', 'none', true);
+      results := pg_temp.res(results, 'admin_list_students and admin_list_employers: total before paging, pages don''t overlap, newest first, at most 100 rows, at least 1, no wildcards',
+        'students total ' || v_count || ', employers total ' || v_rows || ', pages overlap: 0, newest first: true, rows for limit 1000: ' || least(v_count, 100)
+          || ', for limit 0: 1, "%" and "_" as wildcards: 0/0',
+        v_text,
+        v_text = 'students total ' || v_count || ', employers total ' || v_rows || ', pages overlap: 0, newest first: true, rows for limit 1000: ' || least(v_count, 100)
+          || ', for limit 0: 1, "%" and "_" as wildcards: 0/0'
+        and v_count > 6);
     end;
 
     -- ----------------------------------------------------------------------

@@ -8,6 +8,7 @@ import { useSession } from '../lib/useSession.js';
 import { labelMap, labelPairs, locale } from '../lib/i18n.js';
 import { useT } from '../lib/useLang.js';
 import ExampleTag from '../components/ExampleTag.jsx';
+import AdminAccounts from '../components/AdminAccounts.jsx';
 import { CATEGORY_LABEL, ITALIAN_LABEL, JOB_TYPE_LABEL, dateLabel, isExample, languageLabels, payLabel, payNote, placeLabel, scheduleLabels, websiteHref, websiteText } from '../lib/jobs.js';
 import { JOB_STATUS, shownStatus } from '../lib/employer.js';
 import { REPORT_REASON_LABEL } from '../lib/reports.js';
@@ -150,6 +151,8 @@ function AdminPage() {
       </section>
 
       <AdminStudents />
+
+      <AdminAccounts />
 
       <section className="admin-section" id="admin-feedback" aria-labelledby="feedback-title">
         <h2 id="feedback-title">{t('admin.feedback.title')}</h2>

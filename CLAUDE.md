@@ -420,6 +420,14 @@ Hosted on Cloudflare Workers (static assets) at https://gigome.org, built from
   self-declared students who haven't answered) and the names typed under
   "Other" with counts (`admin_other_universities()`), to look up and add
   their student domains.
+  "Accounts" (`AdminAccounts.jsx`): read-only lists of student accounts
+  (email, name, university, how they signed up, sign-up date, last login)
+  and employer accounts (company, login email, company status, jobs with
+  how many are live, sign-up date, last login), newest first, searched and
+  paged in the database (`admin_list_students()`,
+  `admin_list_employers()`, 25 a page). Under the line "For running GigoMe
+  only. Don't use these emails for newsletters or promotion without
+  consent." No editing, no export.
   Pending companies (approve/reject, with contact and login email from
   `admin_company_contact`), pending jobs (publish/request changes/reject, a
   note required for the last two, Publish only once the five-item review
@@ -864,7 +872,7 @@ Schema rules
   days ago (`EXTEND_GRACE_DAYS` / `canExtend()` in `src/lib/employer.js` match
   it); older expired jobs are refused and must be edited and resubmitted.
 - `my_feedback()` / `my_reports()`: the caller's own rows only (reports
-  without the resolution note or resolver). `admin_stats()`, `admin_student_counts()`, `admin_other_universities()`: admins only.
+  without the resolution note or resolver). `admin_stats()`, `admin_student_counts()`, `admin_other_universities()`, `admin_list_students()`, `admin_list_employers()`: admins only, read only.
 - Retention: `retention_settings` (one row, no grants) and `run_retention()`
   (no grants), run daily at 03:37 UTC by pg_cron job `gigome-retention`.
   On (Privacy Notice section 9, owner's go-ahead in November 2026; each a
