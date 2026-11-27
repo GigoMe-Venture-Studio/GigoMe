@@ -115,6 +115,38 @@ const probe = (sel) => { const b = document.querySelector('.feedback-fab'); cons
     ok(lg.includes('"Asked for a fee: unpublished."'), 'log shows notes');
     await ctx.close(); }
 
+  // ---- the account lists: read only, newest first, search and pages
+  { const ctx = await b.newContext(desk); const { log } = await amock(ctx, { admin: true }); const p = await ctx.newPage();
+    await p.goto(E + '/login'); await login(p); await p.goto(E + '/admin'); await p.waitForSelector('#admin-accounts tbody tr');
+    const sec = p.locator('#admin-accounts');
+    ok((await sec.locator('.admin-accounts-note').innerText()).trim() === "For running GigoMe only. Don't use these emails for newsletters or promotion without consent.", 'accounts: the note above the lists');
+    const st = sec.locator('.admin-accounts-list').nth(0), em = sec.locator('.admin-accounts-list').nth(1);
+    ok((await st.locator('thead').innerText()).replace(/\s+/g, ' ').trim() === 'Email Name University Signed up with Signed up Last login', 'students: the columns');
+    ok(await st.locator('tbody tr').count() === 25 && (await st.locator('tbody tr').first().innerText()).includes('student0@studbocconi.it'), 'students: first page of 25, newest first');
+    const s1 = await st.locator('tbody tr').nth(1).innerText(), s2 = await st.locator('tbody tr').nth(2).innerText(), s3 = await st.locator('tbody tr').nth(3).innerText();
+    ok(s1.includes('No name yet') && s2.includes('Other: Accademia di Brera') && s2.includes('Told us (any email)') && s3.includes('Never') && /University email/.test(s1), 'students: no name, "Other", method and "Never"');
+    ok((await st.locator('.admin-pager').innerText()).includes('1–25 of 30'), 'students: range shown');
+    ok(await st.locator('button:has-text("Previous")').isDisabled(), 'students: Previous off on the first page');
+    await st.locator('button:has-text("Next")').click(); await p.waitForTimeout(400);
+    ok(await st.locator('tbody tr').count() === 5 && (await st.locator('.admin-pager').innerText()).includes('26–30 of 30') && await st.locator('button:has-text("Next")').isDisabled(), 'students: second page of 5');
+    ok(JSON.stringify(log.rpcs.filter((x) => x[0] === 'admin_list_students').pop()[1]) === JSON.stringify({ p_search: null, p_offset: 25, p_limit: 25 }), 'students: page asked of the database');
+    await st.locator('input[type=search]').fill('  BRERA '); await p.waitForTimeout(800);
+    ok(await st.locator('tbody tr').count() === 1 && (await st.locator('tbody').innerText()).includes('student2@studbocconi.it') && await st.locator('.admin-pager').count() === 0
+       && (await st.innerText()).includes('1 account'), 'students: search from the first page, one match');
+    ok(JSON.stringify(log.rpcs.filter((x) => x[0] === 'admin_list_students').pop()[1]) === JSON.stringify({ p_search: 'BRERA', p_offset: 0, p_limit: 25 }), 'students: search sent to the database, trimmed');
+    await st.locator('input[type=search]').fill('nobody-here'); await p.waitForTimeout(800);
+    ok((await st.innerText()).includes('No accounts match.'), 'students: no match');
+    ok((await em.locator('thead').innerText()).replace(/\s+/g, ' ').trim() === 'Company Email Company status Jobs Signed up Last login', 'employers: the columns');
+    const e1 = await em.locator('tbody tr').nth(0).innerText(), e2 = await em.locator('tbody tr').nth(1).innerText();
+    ok(e1.includes('Nebbia Coffee Bar') && e1.includes('owner@nebbia.it') && e1.includes('Approved') && e1.includes('3 (1 live)'), 'employers: company, email, status, jobs');
+    ok(e2.includes('No company yet') && e2.includes('new@gmail.example') && e2.includes('Never'), 'employers: an account without a company');
+    ok(await sec.locator('input:not([type=search]), textarea, select, a[download]').count() === 0
+       && (await sec.locator('button').allInnerTexts()).every((x) => /^(Previous|Next)$/.test(x.trim())), 'accounts: nothing to edit or export, only Previous and Next');
+    await em.locator('input[type=search]').fill('nebbia'); await p.waitForTimeout(800);
+    ok(await em.locator('tbody tr').count() === 1, 'employers: search');
+    await p.screenshot({ path: OUT + '/admin-accounts.png', fullPage: true });
+    await ctx.close(); }
+
   // ---- 320px and 375px: the review lists are not cut off
   for (const width of [320, 375]) {
     const ctx = await b.newContext({ viewport: { width, height: 640 }, isMobile: true, hasTouch: true }); await amock(ctx, { admin: true }); const p = await ctx.newPage();

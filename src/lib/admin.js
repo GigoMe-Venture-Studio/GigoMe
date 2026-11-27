@@ -194,3 +194,20 @@ export async function fetchStats() {
   if (error) throw error;
   return (data || [])[0] || null;
 }
+
+// The student and employer account lists (admin_list_students(),
+// admin_list_employers()): read only, newest sign-ups first, searched and
+// paged in the database. Admins only; the database refuses anyone else.
+export const ACCOUNTS_PAGE = 25;
+async function accountPage(fn, search, page) {
+  const { data, error } = await supabase.rpc(fn, {
+    p_search: search.trim() || null,
+    p_offset: page * ACCOUNTS_PAGE,
+    p_limit: ACCOUNTS_PAGE
+  });
+  if (error) throw error;
+  const rows = data || [];
+  return { rows, total: rows.length ? Number(rows[0].total) : null };
+}
+export const fetchStudentAccounts = (search, page) => accountPage('admin_list_students', search, page);
+export const fetchEmployerAccounts = (search, page) => accountPage('admin_list_employers', search, page);

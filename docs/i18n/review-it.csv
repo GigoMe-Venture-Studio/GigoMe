@@ -892,6 +892,39 @@ Dettagli pratici:
 /admin (moderation),admin.students.hint,"University email: verified by an email of a listed university. Told us: signed up with another email and chose their university on /welcome, unchecked. Not answered yet: signed up, hasn't answered.","Email universitaria: verificato con l'email di un'università in elenco. Dichiarato: iscritto con un'altra email, ha scelto l'università su /welcome, senza verifica. Non ha ancora risposto: iscritto, non ha risposto."
 /admin (moderation),admin.students.othersTitle,"""Other"" universities","Università ""Altra"""
 /admin (moderation),admin.students.othersHint,"As typed (capitals and spaces ignored when counting). To add one, find its student email domain on the university's own site and add it in the Table Editor (SUPABASE.md, ""Universities"").","Come sono state scritte (maiuscole e spazi ignorati nel conteggio). Per aggiungerne una, trova il dominio email degli studenti sul sito dell'università e aggiungilo nel Table Editor (SUPABASE.md, ""Universities"")."
+/admin (moderation),admin.accounts.title,Accounts,Account
+/admin (moderation),admin.accounts.note,For running GigoMe only. Don't use these emails for newsletters or promotion without consent.,Solo per gestire GigoMe. Non usare queste email per newsletter o promozioni senza consenso.
+/admin (moderation),admin.accounts.students.title,Student accounts,Account degli studenti
+/admin (moderation),admin.accounts.students.search,"Search by email, name or university","Cerca per email, nome o università"
+/admin (moderation),admin.accounts.students.caption,"Student accounts, newest first","Account degli studenti, dai più recenti"
+/admin (moderation),admin.accounts.students.pages,Pages of student accounts,Pagine degli account degli studenti
+/admin (moderation),admin.accounts.employers.title,Employer accounts,Account delle aziende
+/admin (moderation),admin.accounts.employers.search,Search by email or company name,Cerca per email o nome dell'azienda
+/admin (moderation),admin.accounts.employers.caption,"Employer accounts, newest first","Account delle aziende, dai più recenti"
+/admin (moderation),admin.accounts.employers.pages,Pages of employer accounts,Pagine degli account delle aziende
+/admin (moderation),admin.accounts.col.email,Email,Email
+/admin (moderation),admin.accounts.col.name,Name,Nome
+/admin (moderation),admin.accounts.col.university,University,Università
+/admin (moderation),admin.accounts.col.method,Signed up with,Iscrizione con
+/admin (moderation),admin.accounts.col.signedUp,Signed up,Iscrizione
+/admin (moderation),admin.accounts.col.lastLogin,Last login,Ultimo accesso
+/admin (moderation),admin.accounts.col.company,Company,Azienda
+/admin (moderation),admin.accounts.col.status,Company status,Stato dell'azienda
+/admin (moderation),admin.accounts.col.jobs,Jobs,Offerte
+/admin (moderation),admin.accounts.noName,No name yet,Ancora senza nome
+/admin (moderation),admin.accounts.otherUni,Other: {name},Altra: {name}
+/admin (moderation),admin.accounts.noCompany,No company yet,Ancora nessuna azienda
+/admin (moderation),admin.accounts.jobs,{jobs} ({live} live),{jobs} ({live} attive)
+/admin (moderation),admin.accounts.never,Never,Mai
+/admin (moderation),admin.accounts.range,{from}–{to} of {total},{from}–{to} di {total}
+/admin (moderation),admin.accounts.count_one,{count} account,{count} account
+/admin (moderation),admin.accounts.count_other,{count} accounts,{count} account
+/admin (moderation),admin.accounts.previous,Previous,Precedente
+/admin (moderation),admin.accounts.next,Next,Successiva
+/admin (moderation),admin.accounts.none,No accounts yet.,Ancora nessun account.
+/admin (moderation),admin.accounts.noMatch,No accounts match.,Nessun account corrisponde.
+/admin (moderation),admin.accounts.noMore,No more accounts.,Non ci sono altri account.
+/admin (moderation),admin.accounts.error,We couldn't load this list. Reload the page.,Non siamo riusciti a caricare questo elenco. Ricarica la pagina.
 /admin (moderation),admin.actionFailed,That didn't work. Try again.,Non ha funzionato. Riprova.
 /admin (moderation),admin.company.signedUp,Signed up {date},Iscritta il {date}
 /admin (moderation),admin.company.website,Website,Sito web

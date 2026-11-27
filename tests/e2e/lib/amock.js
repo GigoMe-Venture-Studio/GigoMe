@@ -20,7 +20,17 @@ async function amock(ctx, opts = {}) {
       ...(opts.goneReport ? [{ id: 'r2', reason: 'misleading', details: 'Pay was half.', created_at: ago(1), reporter_id: null, job_id: null, job_title: 'Night shift', company_name: 'Gone Ltd', status: 'open' }] : [])],
     profiles: { u1: { id: 'u1', full_name: 'Ana Rossi', account_type: 'student' }, u9: { id: 'u9', full_name: 'Marco Bianchi', account_type: 'student' } },
     log: [{ id: 1, created_at: ago(20), admin_id: 'u1', action: 'company_approved', note: null, company_id: 'c3', job_id: null }],
-    myReports: []
+    myReports: [],
+    // 30 students (one page of 25 and one of 5), newest first; 2 employers.
+    studentAccounts: Array.from({ length: 30 }, (_, i) => ({
+      id: 's' + i, email: `student${i}@studbocconi.it`, full_name: i === 1 ? null : `Student ${i}`,
+      university: i === 2 ? null : 'Bocconi University', other_university: i === 2 ? 'Accademia di Brera' : null,
+      verification: i === 2 ? 'self_declared' : 'university_email', signed_up_at: ago(i * 24), last_login_at: i === 3 ? null : ago(i * 24 - 1)
+    })),
+    employerAccounts: [
+      { id: 'e1', email: 'owner@nebbia.it', company_id: 'c1', company_name: 'Nebbia Coffee Bar', company_status: 'approved', jobs: 3, live_jobs: 1, signed_up_at: ago(30), last_login_at: ago(2) },
+      { id: 'e2', email: 'new@gmail.example', company_id: null, company_name: null, company_status: null, jobs: 0, live_jobs: 0, signed_up_at: ago(60), last_login_at: null }
+    ]
   };
   log.rpcs = [];
   if (opts.extraJobs) db.jobs.push(...opts.extraJobs);
@@ -46,6 +56,13 @@ async function amock(ctx, opts = {}) {
         { verification: 'self_declared', university: null, students: 2 }, { verification: 'self_declared', university: 'Other', students: 4 },
         { verification: 'self_declared', university: 'Politecnico di Milano', students: 3 }, { verification: 'university_email', university: 'Bocconi University', students: 20 },
         { verification: 'university_email', university: 'Politecnico di Milano', students: 12 }]);
+      // The account lists: newest first, searched and paged like the database.
+      if (name === 'admin_list_students' || name === 'admin_list_employers') {
+        const all = name === 'admin_list_students' ? db.studentAccounts : db.employerAccounts;
+        const q = (b.p_search || '').trim().toLowerCase();
+        const hit = all.filter((a) => !q || [a.email, a.full_name, a.university, a.other_university, a.company_name].some((v) => (v || '').toLowerCase().includes(q)));
+        return j(200, hit.slice(b.p_offset, b.p_offset + b.p_limit).map((a) => ({ ...a, total: hit.length })));
+      }
       if (name === 'admin_other_universities') return j(200, opts.otherUniversities || [{ name: 'Accademia di Brera', students: 3 }, { name: 'NABA', students: 1 }]);
       if (name === 'admin_stats') return j(200, [opts.stats || { students: 41, companies_approved: 7, companies_with_live_job: 5, live_jobs: 12, apply_clicks_this_week: 33, students_clicked_this_week: 19 }]);
       if (name === 'admin_company_contact') { const c = db.companyContact[b.p_company_id] || []; return j(200, [{ contact_email: c[0], login_email: c[1] }]); }
